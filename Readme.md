@@ -26,6 +26,7 @@ I originally wrote this repository before DeepSeek published their official API.
 ## Running Manim Animations
 
 ### Basic Command Structure
+might need to install libs manim need:(ubuntu) `sudo apt-get install -y libcairo2-dev pkg-config python3-dev libpangocairo-1.0-0 libpango1.0-dev`
 ```bash
 python -m manim [flags] your_script.py SceneName
 ```
