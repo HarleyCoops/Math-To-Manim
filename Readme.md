@@ -634,3 +634,58 @@ model_4bit = AutoModelForSeq2SeqLM.from_pretrained(
     load_in_4bit=True
 )
 ```
+
+# Quantum Field Theory Animations
+
+This project contains Manim animations for a presentation on Quantum Field Theory, focusing on the electromagnetic interaction. The animations visualize key concepts from QED (Quantum Electrodynamics) in an educational format.
+
+## Scenes Included
+
+1. **CosmicIntroduction**: Title and introduction with cosmic backdrop
+2. **MinkowskiSpace**: Visualization of Minkowski space and the metric equation
+3. **FieldVisual**: Electric and magnetic field visualizations
+4. **MaxwellEquations**: Classical to tensor formulation of Maxwell's equations
+5. **LagrangianDensity**: The QED Lagrangian density
+6. **FeynmanDiagram**: Basic electron-photon interaction diagram
+7. **CouplingConstant**: The fine structure constant
+8. **Renormalization**: Basic visualization of renormalization concept
+9. **FinalScene**: Concluding animation
+
+## Requirements
+
+- Python 3.7+
+- Manim Community Edition
+- LaTeX distribution (for rendering equations)
+
+## Running the Animations
+
+### Individual Scenes
+
+To render a specific scene:
+
+```bash
+python -m manim Hunyuan-T1QED.py SceneName -pql
+```
+
+Where:
+- `-p` previews the animation
+- `-q` sets quality (l=low, m=medium, h=high, k=4K)
+- `-l` for low quality (faster)
+
+### Running All Scenes
+
+To render all scenes in sequence:
+
+```bash
+python run_presentation.py l
+```
+
+The parameter can be:
+- `l` for low quality (fast)
+- `m` for medium quality
+- `h` for high quality
+- `k` for 4K quality (very slow)
+
+## Output
+
+All rendered videos are stored in the `media/videos/Hunyuan-T1QED` directory, organized by resolution.
