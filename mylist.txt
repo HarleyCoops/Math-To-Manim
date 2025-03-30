@@ -1,0 +1,6 @@
+file 'media/videos/regularization/480p15/Scene1.mp4'
+file 'media/videos/regularization/480p15/Scene2.mp4'
+file 'media/videos/regularization/480p15/Scene3.mp4'
+file 'media/videos/regularization/480p15/Scene4.mp4'
+file 'media/videos/regularization/480p15/Scene5.mp4'
+file 'media/videos/regularization/480p15/Scene6.mp4'

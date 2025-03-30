@@ -1,3 +1,5 @@
+from manim import *
+
 class CameraJourneyRhombicosidodecahedron(ThreeDScene):
     def construct(self):
         # [Keep all previous vertex/face/polyhedron setup code identical...]
