@@ -1,6 +1,7 @@
 # Environment variables
 .env
 .env.*
+!.env.example
 
 # Python
 __pycache__/
@@ -47,4 +48,4 @@ media/videos/
 
 # Ignore GIFs except in SpatialReasoningTest
 *.gif
-!SpatialReasoningTest/*.gif 
+!SpatialReasoningTest/*.gif

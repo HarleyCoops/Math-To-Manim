@@ -4,6 +4,12 @@ numpy>=1.22.0  # Required by Manim
 gradio>=3.50.0  # For the web interface
 python-dotenv>=1.0.0  # For environment variables
 sentry-sdk>=1.40.0  # For error logging
+openai>=1.0.0  # For DeepSeek API integration
+google-generativeai>=0.3.0  # For Google AI integration
+
+# Google Cloud integration (optional)
+google-cloud-storage>=2.10.0  # For storing generated assets
+google-cloud-run>=0.10.0  # For deploying the app
 
 # Text and LaTeX rendering
 manimpango>=0.5.0  # For text rendering in Manim
