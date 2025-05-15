@@ -1,31 +1,13 @@
-# Core dependencies
-manim>=0.19.0  # For mathematical animations
-numpy>=1.22.0  # Required by Manim
-gradio>=3.50.0  # For the web interface
-python-dotenv>=1.0.0  # For environment variables
-sentry-sdk>=1.40.0  # For error logging
+manim>=0.19.0
+numpy>=1.20.0
+scipy>=1.7.0
+matplotlib>=3.5.0
+openai>=1.0.0
+python-dotenv>=0.19.0
+gradio>=3.50.0
+transformers>=4.34.0
+torch>=2.0.0
+accelerate>=0.24.0
+bitsandbytes>=0.39.0
+# smolagents will be added when available
 
-# Text and LaTeX rendering
-manimpango>=0.5.0  # For text rendering in Manim
-latex>=0.7.0  # Python LaTeX utilities
-
-# Note: The following LaTeX distributions need to be installed via system package manager:
-# Windows: MiKTeX (https://miktex.org/download)
-# Ubuntu/Debian: texlive-full
-# macOS: MacTeX
-
-# Optional but recommended for development
-ipython>=8.0.0  # For interactive development
-pytest>=7.0.0  # For testing
-black>=22.0.0  # For code formatting
-
-# Additional System Requirements:
-# FFmpeg - Required for video rendering with Manim
-# Installation options:
-# 1. Windows: Download from https://www.gyan.dev/ffmpeg/builds/
-#    - Recommended: Get the "ffmpeg-git-full.7z" release
-#    - Extract and add the bin folder to system PATH
-# 2. Alternative: Install via package managers
-#    - Windows (Chocolatey): choco install ffmpeg
-#    - Linux: apt-get install ffmpeg
-#    - macOS: brew install ffmpeg
