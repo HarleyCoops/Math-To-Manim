@@ -9,21 +9,21 @@
 
 [![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date)](https://star-history.com/#HarleyCoops/Math-To-Manim&Date)
 
-## 🚨 Important Note
+## Important Note
 
 This repository contains the **output files** of a mathematical animation generation process, not the complete pipeline. Users can run these files to render the animations on their machines, but the model and methodology used to generate these animation scripts are not included. 
 
 In other words, this repo provides the Manim code that produces the visualizations, but not the AI system that creates this code from mathematical concepts. The complete pipeline from mathematical concept to animation code remains proprietary.
 
-## 📢 Latest Updates
+## Latest Updates
 
 **[March 3rd]**: I will soon publish an [@smolagents](https://github.com/huggingface/smolagents) that is trained on taking basic prompts and turning them into the prompts the LLM needs. You need about a 2000 token prompt to get fully working manim code out. The agent will make that for you. Rendering will still happen on your machine. The output is the python, depending on the scene, render time could be 5 minutes to 4 hours. There are a wide number of examples already in the repo. The /Doc folder is the Latex output from the model rendered into a PDF. An agent seems like what would help most people so I'll publish that soon.
 
-## 🔍 Project Overview 
+## Project Overview 
 
 This project uses DeepSeek AI (and some Google Gemini and now #Grok3) to generate mathematical animations using Manim with better prompts. It includes various examples of complex mathematical concepts visualized through animation. The intent here is to attempt to automatically chart concepts that far exceed most humans' capacity to visualize complex connections across math and physics in a one-shot animation. The future intent is to use RL to fine tune a model on all the working verbose prompts to arrive at 100% one-shot animations from only text descriptions.
 
-## 🌟 Key Features & Innovations
+## Key Features & Innovations
 
 ### Technical Highlights
 - **LaTeX Matters**: Base prompt engineering technique yielding much better results for displaying formulas on screen.
@@ -44,7 +44,7 @@ The model is *not yet* a fully fine-tuned version of [DeepSeek's R1 Zero](https:
 
 An interesting new thing to ask for is the capacity to generate simultaneous "study notes" that accompany each animation with a complete explanation of the math and context of the animation. The Benamou animation and notes were the first attempt at this. This also just works straight from the prompt if you pass the scene code directly back to the model.
 
-## 🚀 Quick Start
+## Quick Start
 
 1. **Clone & Setup**
    ```bash
@@ -90,7 +90,7 @@ An interesting new thing to ask for is the capacity to generate simultaneous "st
    python app.py
    ```
 
-## 📝 Prompt Requirements
+## Prompt Requirements
 
 Your prompts need extreme detail in order for this to work. For example, this below is a BASIC prompt. You MUST have this level of detail. Most people can't write half of this so the project uses training to try and improve what someone might write as a basic prompt into a what the LLMs are actually looking for. Anyone can do this on your own, I promise this is all prompting but the secret NOT prompting in english - you have to prompt in Latex. Happy hunting!
 
@@ -113,12 +113,12 @@ Next, pan the camera over to a large black background to present a simplified Fe
 
 The electron lines are labeled e−e^- in bright blue, and the photon line is labeled γ\\gamma in yellow. Subtitles and small pop-up text boxes narrate how this basic vertex encapsulates the electromagnetic interaction between charged fermions, highlighting that the photon is the force carrier. Then, animate the coupling constant α≈1137\\alpha \\approx \\frac{1}{137} flashing above the diagram, gradually evolving from a numeric approximation to the symbolic form α=e24πε0ℏc\\alpha = \\frac{e^2}{4 \\pi \\epsilon_0 \\hbar c}.
 
-Afterward, transition to a 2D graph that plots the running of the coupling constant α\\alpha with respect to energy scale, using the renormalization group flow. As the graph materializes, a vertical axis labeled 'Coupling Strength' and a horizontal axis labeled 'Energy Scale' come into view, each sporting major tick marks and numerical values. The curve gently slopes upward, illustrating how α\\alpha grows at higher energies, with dynamic markers along the curve to indicate different experimental data points. Meanwhile, short textual captions in the corners clarify that this phenomenon arises from virtual particle-antiparticle pairs contributing to vacuum polarization.
+Afterward, transition to a 2D graph that plots the running of the coupling constant α\\alpha with respect to energy scale, using the renormalization group flow. As the graph materializes, a vertical axis labeled 'Coupling Strength' and a horizontal axis labeled 'Energy Scale' come into view, each sporting major tick marks and numerical values. The curve gentl...(truncated from 20157 characters)...nwhile, short textual captions in the corners clarify that this phenomenon arises from virtual particle-antiparticle pairs contributing to vacuum polarization.
 
 In the final sequence, zoom back out to reveal a cohesive collage of all elements: the rotating spacetime grid, the undulating electromagnetic fields, the QED Lagrangian, and the Feynman diagram floating in the foreground. Fade in an overarching summary text reading 'QED: Unifying Light and Matter Through Gauge Theory,' emphasized by a halo effect. The camera then slowly pulls away, letting the cosmic background re-emerge until each component gracefully dissolves, ending on a single star field reminiscent of the opening shot. A concluding subtitle, 'Finis,' appears, marking the animation's closure and prompting reflection on how fundamental quantum field theory is in describing our universe." 
 ```
 
-## 🎬 Rendering Options
+## Rendering Options
 
 ### Quality Settings
 - `-ql` : 480p (development)
@@ -151,7 +151,7 @@ python -m manim -pql QED.py QEDJourney
 python -m manim -qh QED.py QEDJourney
 ```
 
-## 🧠 Upcoming Smolagents Integration
+## Upcoming Smolagents Integration
 
 The upcoming smolagents integration will revolutionize how you interact with Math-To-Manim:
 
@@ -167,14 +167,14 @@ The upcoming smolagents integration will revolutionize how you interact with Mat
 
 The smolagent will be published as a separate repository that you can easily integrate with this codebase. Stay tuned for the release announcement!
 
-## 📚 Documentation
+## Documentation
 
 - [Examples](docs/EXAMPLES.md) - Showcase of various mathematical animations
 - [Architecture](docs/ARCHITECTURE.md) - Technical details of the system
 - [MCP Troubleshooting](docs/MCP_TROUBLESHOOTING.md) - Guide for resolving MCP server issues
 - [Contributing](CONTRIBUTING.md) - Guidelines for contributing to the project
 
-## 🔬 Technical Details: Why DeepSeek Might Be So Good At This
+## Technical Details: Why DeepSeek Might Be So Good At This
 
 DeepSeek R1-Zero represents the culmination of **multi-year research** at DeepSeek AI into **transfer learning**, **instruction tuning**, and **long-context neural architectures**. Its central objective is to provide a single, all-purpose encoder-decoder model that can handle:
 
@@ -223,7 +223,7 @@ From a **cognitive science** perspective, R1-Zero aspires to mimic a layered app
 | **Training Paradigm**      | Instruction-tuned + Additional domain tasks      |
 | **Precision**              | FP32, FP16, 4-bit, 8-bit quantization (via BnB)  |
 
-## 📊 Quantization & Memory Footprint
+## Quantization & Memory Footprint
 
 DeepSeek R1-Zero supports **multi-bit quantization** to optimize memory usage:
 
@@ -250,7 +250,7 @@ model_4bit = AutoModelForSeq2SeqLM.from_pretrained(
 )
 ```
 
-## 🔧 Installation & Requirements
+## Installation & Requirements
 
 ### Requirements
 
@@ -291,11 +291,43 @@ pip install --upgrade torch transformers accelerate bitsandbytes
 
 If your environment's default PyTorch is older than 2.0, consider updating or installing from PyPI/conda channels that provide a recent version.
 
-## 📋 License & Usage Restrictions
+## License & Usage Restrictions
 
 [Insert license information here]
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 [Insert acknowledgments here]
+
+# Math-To-Manim Documentation
+
+Welcome to the Math-To-Manim documentation! This directory contains comprehensive documentation for the Math-To-Manim project.
+
+## Table of Contents
+
+- [Architecture](ARCHITECTURE.md) - Technical details of the system architecture
+- [Examples](EXAMPLES.md) - Showcase of various mathematical animations
+- [MCP Troubleshooting](MCP_TROUBLESHOOTING.md) - Guide for resolving MCP server issues
+- [Smolagents Implementation](SMOLAGENTS_IMPLEMENTATION.md) - Details on the smolagents integration
+
+## Getting Started
+
+If you're new to Math-To-Manim, we recommend starting with the main [README.md](../README.md) file in the root directory, which provides an overview of the project and installation instructions.
+
+## Contributing to Documentation
+
+We welcome contributions to the documentation! If you find any errors or have suggestions for improvements, please feel free to submit a pull request or open an issue.
+
+When contributing to documentation, please follow these guidelines:
+
+1. Use clear, concise language
+2. Include examples where appropriate
+3. Use proper Markdown formatting
+4. Keep documentation up-to-date with code changes
+
+## Building Documentation
+
+The documentation is written in Markdown and can be viewed directly on GitHub or in any Markdown viewer.
+
+If you want to generate a more polished documentation site, you can use tools like MkDocs or Sphinx with the markdown extension. Instructions for setting up these tools will be added in the future.
 
