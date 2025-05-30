@@ -19,6 +19,10 @@ ipython>=8.0.0  # For interactive development
 pytest>=7.0.0  # For testing
 black>=22.0.0  # For code formatting
 
+# Prompt expansion via SmolAgents
+pyyaml>=6.0
+git+https://github.com/huggingface/smolagents.git@main#egg=smolagents
+
 # Additional System Requirements:
 # FFmpeg - Required for video rendering with Manim
 # Installation options:

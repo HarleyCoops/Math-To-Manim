@@ -24,7 +24,41 @@
 
 ## Latest Updates
 
-[March 3rd]: Will soon publish an [@smolagents](https://github.com/huggingface/smolagents) that is trained on taking basic prompts and turning them into the prompts the LLM needs. You need about a 2000 token prompt to get fully working manim code out. The agent will make that for you. Rendering will still happen on your machine. The output is the python, depending on the scene, render time could be 5 minutes to 4 hours. There are a wide number of examples already in the repo. The /Doc folder is the Latex output from the model rendered into a PDF. An agent seems like what would help most people so i'll publish that soon.
+## SmolAgents Prompt Expander
+
+We now integrate Hugging Face's [SmolAgents](https://github.com/huggingface/smolagents) to automatically expand short user prompts into the detailed LaTeX‑based prompts required for one‑shot animations.
+
+**Installation**
+```bash
+pip install git+https://github.com/huggingface/smolagents.git@main
+```
+
+**Usage**
+```bash
+python Scripts/smolagent_expander.py "Draw me the universe as explained through cosmology" \
+    > expanded_prompt.tex
+```
+
+The generated `expanded_prompt.tex` can then be passed to your Math‑To‑Manim pipeline or DeepSeek client to produce fully featured animations.
+
+### Customizing the Expansion Template
+
+By default, the expander uses a built-in system prompt to instruct the agent. You can inspect or override it using the `--system-prompt` flag.
+
+```text
+You are an expert prompt engineer specializing in converting short, high-level user descriptions into extremely detailed, step-by-step animation directives for Manim.
+Each instruction must use LaTeX for any mathematical expressions.
+Your expanded prompt should guide the animation engine through scene setup, camera movements, text renderings, equation animations, and transitions.
+Be explicit about durations, visual styles, colors, and scene composition.
+Structure your output with clear sections and bullet points.
+Do not include any code; only provide the LaTeX-based storyboard for the animation.
+```
+
+```bash
+python Scripts/smolagent_expander.py "Draw me the universe as explained through cosmology" \
+    --system-prompt "$(cat my_system_prompt.txt)" \
+    > expanded_prompt.tex
+```
 
 ## Important Note
 
