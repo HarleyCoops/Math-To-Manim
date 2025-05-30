@@ -1,8 +1,15 @@
 # Core dependencies
 manim>=0.19.0  # For mathematical animations
 numpy>=1.22.0  # Required by Manim
+scipy>=1.7.0
+matplotlib>=3.5.0
+openai>=1.0.0
 gradio>=3.50.0  # For the web interface
 python-dotenv>=1.0.0  # For environment variables
+transformers>=4.34.0
+torch>=2.0.0
+accelerate>=0.24.0
+bitsandbytes>=0.39.0
 sentry-sdk>=1.40.0  # For error logging
 
 # Text and LaTeX rendering
@@ -18,9 +25,10 @@ latex>=0.7.0  # Python LaTeX utilities
 ipython>=8.0.0  # For interactive development
 pytest>=7.0.0  # For testing
 black>=22.0.0  # For code formatting
-
-# Prompt expansion via SmolAgents
 pyyaml>=6.0
+
+# smolagents will be added when available
+# Prompt expansion via SmolAgents
 git+https://github.com/huggingface/smolagents.git@main#egg=smolagents
 
 # Additional System Requirements:
