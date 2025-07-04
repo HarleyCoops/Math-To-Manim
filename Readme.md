@@ -1,6 +1,6 @@
 # Math-To-Manim
 
-[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![FFmpeg Required](https://img.shields.io/badge/FFmpeg-required-red)](https://ffmpeg.org/)
 [![Manim Version](https://img.shields.io/badge/manim-v0.19.0-orange)](https://www.manim.community/)
@@ -53,23 +53,6 @@ An interesting new thing to ask for is the capacity to generate simultaneous "st
    ```
 
 2. **Environment Setup**
-
-   ### Option 1: Using Poetry (Recommended)
-   ```bash
-   # Install Poetry
-   curl -sSL https://install.python-poetry.org | python3 -
-   
-   # Create and configure .env file with your API key
-   echo "DEEPSEEK_API_KEY=your_key_here" > .env
-   
-   # Install all dependencies
-   poetry install
-   
-   # Activate virtual environment
-   poetry shell
-   ```
-   
-   ### Option 2: Using pip
    ```bash
    # Create and configure .env file with your API key
    echo "DEEPSEEK_API_KEY=your_key_here" > .env
@@ -167,30 +150,6 @@ python -m manim -pql QED.py QEDJourney
 # Final render (render QEDJourney scene from QED.py in high quality)
 python -m manim -qh QED.py QEDJourney
 ```
-
-## Testing
-
-The project now includes a comprehensive testing infrastructure using pytest.
-
-### Running Tests
-
-```bash
-# With Poetry (recommended)
-poetry run test              # Run all tests
-poetry run pytest -m unit    # Run unit tests only
-poetry run pytest -m integration  # Run integration tests only
-poetry run pytest --cov=Scripts   # Run with coverage report
-
-# Without full environment
-python3 tests/test_simple_validation.py  # Basic validation tests
-```
-
-### Test Coverage
-
-- **Unit Tests**: Fast tests for code structure, imports, and patterns
-- **Integration Tests**: Tests that require Manim and FFmpeg for actual rendering
-- **Coverage Requirement**: 80% minimum
-- **Reports**: Terminal output, HTML (`htmlcov/`), and XML for CI/CD
 
 ## Upcoming Smolagents Integration
 
