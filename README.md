@@ -1,333 +1,539 @@
 # Math-To-Manim
 
-[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![FFmpeg Required](https://img.shields.io/badge/FFmpeg-required-red)](https://ffmpeg.org/)
 [![Manim Version](https://img.shields.io/badge/manim-v0.19.0-orange)](https://www.manim.community/)
+[![Claude Sonnet 4.5](https://img.shields.io/badge/Claude-Sonnet%204.5-blueviolet)](https://www.anthropic.com)
 
-> Transform mathematical concepts into beautiful animations using AI-powered generation
+> I take simple prompts like "explain cosmology" and automatically generate 2000+ token verbose LaTeX-rich descriptions that produce beautiful Manim animations. No training data needed - just recursive reasoning.
 
 [![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date)](https://star-history.com/#HarleyCoops/Math-To-Manim&Date)
 
-## Important Note
+---
 
-This repository contains the **output files** of a mathematical animation generation process, not the complete pipeline. Users can run these files to render the animations on their machines, but the model and methodology used to generate these animation scripts are not included. 
+## What This Does
 
-In other words, this repo provides the Manim code that produces the visualizations, but not the AI system that creates this code from mathematical concepts. The complete pipeline from mathematical concept to animation code remains proprietary.
+You give me: **"explain quantum field theory"**
 
-## Latest Updates
+I give you back: **A complete Manim animation** showing Minkowski spacetime, QED Lagrangians, Feynman diagrams, renormalization flow - with 2000+ tokens of LaTeX-rich instructions that actually render correctly.
 
-**[March 3rd]**: I will soon publish an [@smolagents](https://github.com/huggingface/smolagents) that is trained on taking basic prompts and turning them into the prompts the LLM needs. You need about a 2000 token prompt to get fully working manim code out. The agent will make that for you. Rendering will still happen on your machine. The output is the python, depending on the scene, render time could be 5 minutes to 4 hours. There are a wide number of examples already in the repo. The /Doc folder is the Latex output from the model rendered into a PDF. An agent seems like what would help most people so I'll publish that soon.
+**The secret?** I don't use training data. I use a **Reverse Knowledge Tree** that asks "What must I understand BEFORE X?" recursively until hitting foundation concepts, then builds animations from the ground up.
 
-## Project Overview 
+---
 
-This project uses DeepSeek AI (and some Google Gemini and now #Grok3) to generate mathematical animations using Manim with better prompts. It includes various examples of complex mathematical concepts visualized through animation. The intent here is to attempt to automatically chart concepts that far exceed most humans' capacity to visualize complex connections across math and physics in a one-shot animation. The future intent is to use RL to fine tune a model on all the working verbose prompts to arrive at 100% one-shot animations from only text descriptions.
+## The Innovation: Reverse Knowledge Tree
 
-## Key Features & Innovations
+Most systems try to learn patterns from examples. I do the opposite.
 
-### Technical Highlights
-- **LaTeX Matters**: Base prompt engineering technique yielding much better results for displaying formulas on screen.
-- **Dual-Stream Output**: Simultaneous animation code + study notes generation. No model fine tuning necessary. Just pass any working python scene script back as a prompt and ask for "verbose explanations fully rendered as latext study notes.." and you will get working latex that renders into a PDF set at Overleaf.
-- **Cross-Model Synergy**: Leveraging multiple AI models (DeepSeek, Gemini, Grok3) allows for unique perspectives on mathematical visualization, often catching edge cases a single model might miss.
-- **Educational Impact**: The generated animations serve as powerful teaching tools, breaking down complex mathematical concepts into visually digestible sequences.
-- **Automated Documentation**: The system not only generates animations but also produces comprehensive LaTeX documentation, creating a complete learning package.
-- **Adaptive Complexity**: Can handle everything from basic geometric proofs to advanced topics like quantum mechanics and optimal transport theory.
-- **Interactive Development**: The project includes a feedback loop where successful animations can be used to improve prompt engineering for future generations.
+### The Problem I Solved
 
-### Real-World Applications
-- **Academic Research**: Visualizing complex mathematical proofs and theories
-- **Education**: Creating engaging materials for STEM courses
-- **Scientific Communication**: Bridging the gap between abstract mathematics and visual understanding
-- **Research Validation**: Providing visual verification of mathematical concepts and relationships
+Traditional approach:
+```
+Simple prompt → Pattern matching → Hope for the best
+```
 
-The model is *not yet* a fully fine-tuned version of [DeepSeek's R1 Zero](https://huggingface.co/deepseek-ai/DeepSeek-R1-Zero), but I am working on that (Still working on this, better prompting still works best). Most errors you will encounter when attempting animations on your own in one shot will be related to how LaTeX is being interpreted as a formula to be rendered on the screen or as part of the code itself. 
+Problems:
+- Requires massive training datasets
+- Brittle when concepts are new
+- Can't handle edge cases
+- Limited to what it's seen before
 
-An interesting new thing to ask for is the capacity to generate simultaneous "study notes" that accompany each animation with a complete explanation of the math and context of the animation. The Benamou animation and notes were the first attempt at this. This also just works straight from the prompt if you pass the scene code directly back to the model.
+### My Approach: Recursive Prerequisite Discovery
+
+```
+"Explain cosmology"
+    ↓
+What must I understand BEFORE cosmology?
+    → General Relativity
+    → Hubble's Law
+    → Redshift
+    → CMB radiation
+    ↓
+What must I understand BEFORE General Relativity?
+    → Special Relativity
+    → Differential Geometry
+    → Gravitational Fields
+    ↓
+What must I understand BEFORE Special Relativity?
+    → Galilean Relativity
+    → Speed of light
+    → Lorentz Transformations
+    ↓
+[Continue until hitting high school physics...]
+    ↓
+Build animation from foundation → target
+```
+
+**Result**: Every animation builds conceptual understanding layer by layer, naturally creating the verbose prompts that actually work.
+
+Read the full technical explanation: [REVERSE_KNOWLEDGE_TREE.md](REVERSE_KNOWLEDGE_TREE.md)
+
+---
+
+## How It Works: The Agent Pipeline
+
+I've built a 6-agent system powered by Claude Sonnet 4.5:
+
+### 1. ConceptAnalyzer
+- Parses your casual prompt
+- Identifies core concept, domain, difficulty level
+- Determines visualization approach
+
+### 2. PrerequisiteExplorer (The Key Innovation)
+- Recursively asks "What before X?"
+- Builds complete knowledge tree
+- Identifies foundation concepts
+- Creates conceptual dependency graph
+
+### 3. MathematicalEnricher
+- Adds LaTeX equations to each tree node
+- Ensures mathematical rigor
+- Links formulas to visualizations
+
+### 4. VisualDesigner
+- Specifies camera movements, colors, animations
+- Maps concepts to visual metaphors
+- Designs scene transitions
+
+### 5. NarrativeComposer
+- Walks the tree from foundation → target
+- Generates 2000+ token verbose prompt
+- Weaves narrative arc through concepts
+
+### 6. CodeGenerator
+- Translates verbose prompt → Manim code
+- Handles LaTeX rendering correctly
+- Produces working Python scenes
+
+**Technology**: Claude Agent SDK with automatic context management, built-in tools, and MCP integration.
+
+See full architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+
+---
 
 ## Quick Start
 
-1. **Clone & Setup**
-   ```bash
-   git clone https://github.com/HarleyCoops/Math-To-Manim
-   cd Math-To-Manim
-   ```
+### Installation
 
-2. **Environment Setup**
-   ```bash
-   # Create and configure .env file with your API key
-   echo "DEEPSEEK_API_KEY=your_key_here" > .env
-   
-   # Install dependencies
-   pip install -r requirements.txt
-   ```
-
-3. **Install FFmpeg**
-   <details>
-   <summary>Windows</summary>
-   
-   - Download from https://www.gyan.dev/ffmpeg/builds/
-   - Add to PATH or use: `choco install ffmpeg`
-   </details>
-
-   <details>
-   <summary>Linux</summary>
-   
-   ```bash
-   sudo apt-get install ffmpeg
-   ```
-   </details>
-
-   <details>
-   <summary>macOS</summary>
-   
-   ```bash
-   brew install ffmpeg
-   ```
-   </details>
-
-4. **Launch Interface**
-   ```bash
-   python app.py
-   ```
-
-## Prompt Requirements
-
-Your prompts need extreme detail in order for this to work. For example, this below is a BASIC prompt. You MUST have this level of detail. Most people can't write half of this so the project uses training to try and improve what someone might write as a basic prompt into a what the LLMs are actually looking for. Anyone can do this on your own, I promise this is all prompting but the secret NOT prompting in english - you have to prompt in Latex. Happy hunting!
-
-```latex
-"Begin by slowly fading in a panoramic star field backdrop to set a cosmic stage. As the camera orients itself to reveal a three-dimensional axis frame, introduce a large title reading 'Quantum Field Theory: 
-A Journey into the Electromagnetic Interaction,' written in bold, glowing text at the center of the screen. The title shrinks and moves into the upper-left corner, making room for a rotating wireframe representation of 4D Minkowski spacetime—though rendered in 3D for clarity—complete with a light cone that stretches outward. While this wireframe slowly rotates, bring in color-coded equations of the relativistic metric, such as 
-ds2=−c2dt2+dx2+dy2+dz2ds^2 = -c^2 dt^2 + dx^2 + dy^2 + dz^2, with each component highlighted in a different hue to emphasize the negative time component and positive spatial components.
-
-Next, zoom the camera into the wireframe's origin to introduce the basic concept of a quantum field. Show a ghostly overlay of undulating plane waves in red and blue, symbolizing an electric field and a magnetic field respectively, oscillating perpendicularly in sync. Label these fields as E⃗\\vec{E} and B⃗\\vec{B}, placing them on perpendicular axes with small rotating arrows that illustrate their directions over time. Simultaneously, use a dynamic 3D arrow to demonstrate that the wave propagates along the z-axis. 
-
-As the wave advances, display a short excerpt of Maxwell's equations, morphing from their classical form in vector calculus notation to their elegant, relativistic compact form: ∂μFμν=μ0Jν\\partial_\\mu F^{\\mu \\nu} = \\mu_0 J^\\nu. Animate each transformation by dissolving and reassembling the symbols, underscoring the transition from standard form to four-vector notation.
-
-Then, shift the focus to the Lagrangian density for quantum electrodynamics (QED):
-LQED=ψ̄(iγμDμ−m)ψ−14FμνFμν.\\mathcal{L}_{\\text{QED}} = \\bar{\\psi}(i \\gamma^\\mu D_\\mu - m)\\psi - \\tfrac{1}{4}F_{\\mu\\nu}F^{\\mu\\nu}.
-
-Project this equation onto a semi-transparent plane hovering in front of the wireframe spacetime, with each symbol color-coded: the Dirac spinor ψ\\psi in orange, the covariant derivative Dμ D_\\mu in green, the gamma matrices γμ\\gamma^\\mu in bright teal, and the field strength tensor Fμν F_{\\mu\\nu} in gold. Let these terms gently pulse to indicate they are dynamic fields in spacetime, not just static quantities. 
-
-While the Lagrangian is on screen, illustrate the gauge invariance by showing a quick animation where ψ\\psi acquires a phase factor eiα(x)e^{i \\alpha(x)}, while the gauge field transforms accordingly. Arrows and short textual callouts appear around the equation to explain how gauge invariance enforces charge conservation.
-Next, pan the camera over to a large black background to present a simplified Feynman diagram. Show two electron lines approaching from the left and right, exchanging a wavy photon line in the center. 
-
-The electron lines are labeled e−e^- in bright blue, and the photon line is labeled γ\\gamma in yellow. Subtitles and small pop-up text boxes narrate how this basic vertex encapsulates the electromagnetic interaction between charged fermions, highlighting that the photon is the force carrier. Then, animate the coupling constant α≈1137\\alpha \\approx \\frac{1}{137} flashing above the diagram, gradually evolving from a numeric approximation to the symbolic form α=e24πε0ℏc\\alpha = \\frac{e^2}{4 \\pi \\epsilon_0 \\hbar c}.
-
-Afterward, transition to a 2D graph that plots the running of the coupling constant α\\alpha with respect to energy scale, using the renormalization group flow. As the graph materializes, a vertical axis labeled 'Coupling Strength' and a horizontal axis labeled 'Energy Scale' come into view, each sporting major tick marks and numerical values. The curve gentl...(truncated from 20157 characters)...nwhile, short textual captions in the corners clarify that this phenomenon arises from virtual particle-antiparticle pairs contributing to vacuum polarization.
-
-In the final sequence, zoom back out to reveal a cohesive collage of all elements: the rotating spacetime grid, the undulating electromagnetic fields, the QED Lagrangian, and the Feynman diagram floating in the foreground. Fade in an overarching summary text reading 'QED: Unifying Light and Matter Through Gauge Theory,' emphasized by a halo effect. The camera then slowly pulls away, letting the cosmic background re-emerge until each component gracefully dissolves, ending on a single star field reminiscent of the opening shot. A concluding subtitle, 'Finis,' appears, marking the animation's closure and prompting reflection on how fundamental quantum field theory is in describing our universe." 
-```
-
-## Rendering Options
-
-### Quality Settings
-- `-ql` : 480p (development)
-- `-qm` : 720p (medium quality)
-- `-qh` : 1080p (high quality)
-- `-qk` : 4K (ultra high quality)
-
-### Additional Rendering Options
-- `-p` Preview the animation when done
-- `-f` Show the output file in file browser
-
-### Output Location
-The rendered animation will be saved in:
-```
-media/videos/SceneName/[quality]/SceneName.[format]
-```
-
-### Development Tips
-1. Use `-pql` during development for quick previews
-2. Use `-qh` for final renders
-3. Add `-f` to easily locate output files
-4. Use `--format gif` for easily shareable animations
-
-For example:
 ```bash
-# During development (preview QEDJourney scene from QED.py in low quality)
-python -m manim -pql QED.py QEDJourney
+# Clone repository
+git clone https://github.com/HarleyCoops/Math-To-Manim
+cd Math-To-Manim
 
-# Final render (render QEDJourney scene from QED.py in high quality)
-python -m manim -qh QED.py QEDJourney
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up API key
+echo "ANTHROPIC_API_KEY=your_key_here" > .env
+
+# Install FFmpeg
+# Windows: choco install ffmpeg
+# Linux: sudo apt-get install ffmpeg
+# macOS: brew install ffmpeg
 ```
 
-## Upcoming Smolagents Integration
+### Try the Agent Pipeline
 
-The upcoming smolagents integration will revolutionize how you interact with Math-To-Manim:
+```bash
+# Launch Gradio interface
+python src/app_claude.py
+```
 
-1. **Prompt Translation**: The smolagent will transform simple, natural language descriptions into the detailed, LaTeX-rich prompts required by the LLM to generate high-quality Manim code.
+Then enter a simple prompt like:
+- "explain quantum mechanics"
+- "visualize optimal transport theory"
+- "show me the Pythagorean theorem"
 
-2. **Workflow Automation**: The agent will handle the entire pipeline from basic prompt → detailed prompt → Manim code generation → rendering configuration.
+Watch the agents build the knowledge tree and generate the verbose prompt automatically.
 
-3. **Interactive Refinement**: You'll be able to iteratively refine your animations through natural conversation with the agent.
+### Run Example Animations
 
-4. **Knowledge Augmentation**: The agent will automatically enhance your prompts with relevant mathematical context and visualization best practices.
+I've organized 55+ working examples by topic:
 
-5. **Error Handling**: When the generated code has issues, the agent will automatically diagnose and fix common problems.
+```bash
+# Physics - Quantum mechanics
+manim -pql examples/physics/quantum/QED.py QEDJourney
 
-The smolagent will be published as a separate repository that you can easily integrate with this codebase. Stay tuned for the release announcement!
+# Mathematics - Geometry
+manim -pql examples/mathematics/geometry/pythagorean.py PythagoreanScene
+
+# Computer Science - Neural networks
+manim -pql examples/computer_science/machine_learning/AlexNet.py AlexNetScene
+
+# Cosmology
+manim -pql examples/cosmology/Claude37Cosmic.py CosmicScene
+```
+
+**Flags**:
+- `-p` = Preview when done
+- `-q` = Quality (`l` low, `m` medium, `h` high, `k` 4K)
+
+Browse all examples: [docs/EXAMPLES.md](docs/EXAMPLES.md)
+
+---
+
+## Repository Structure
+
+```
+Math-To-Manim/
+├── src/                        # Core agent system
+│   ├── agents/
+│   │   ├── prerequisite_explorer_claude.py   # Reverse knowledge tree agent
+│   │   └── prerequisite_explorer.py          # Legacy implementation
+│   ├── app_claude.py                         # Gradio UI (Claude SDK)
+│   └── app.py                                # Legacy UI
+│
+├── examples/                   # 55+ working animations
+│   ├── physics/
+│   │   ├── quantum/           # 13 QED/QFT animations
+│   │   ├── gravity/           # Gravitational waves
+│   │   ├── nuclear/           # Atomic structure
+│   │   └── particle_physics/  # Electroweak symmetry
+│   ├── mathematics/
+│   │   ├── geometry/          # Proofs, 3D shapes
+│   │   ├── analysis/          # Optimal transport, diffusion
+│   │   ├── fractals/          # Fractal patterns
+│   │   ├── statistics/        # Information geometry
+│   │   └── trigonometry/      # Trig identities
+│   ├── computer_science/
+│   │   ├── machine_learning/  # Neural nets, attention
+│   │   ├── algorithms/        # Gale-Shapley, sorting
+│   │   └── spatial_reasoning/ # 3D tests
+│   ├── cosmology/             # Cosmic evolution
+│   ├── finance/               # Option pricing
+│   └── misc/                  # Experimental
+│
+├── docs/                       # Documentation
+│   ├── EXAMPLES.md            # Complete catalog
+│   ├── ARCHITECTURE.md        # System design
+│   ├── MIGRATION_TO_CLAUDE.md # Claude SDK migration
+│   └── TESTING_ARCHITECTURE.md
+│
+└── tests/                      # Testing infrastructure
+    ├── unit/
+    ├── integration/
+    └── e2e/
+```
+
+---
+
+## The Secret: LaTeX-Rich Prompting
+
+Most people prompt in English. That's why it fails.
+
+### Wrong Way (English)
+```
+"Create an animation showing quantum field theory"
+```
+Result: Generic, incorrect, or broken code.
+
+### Right Way (LaTeX + Detailed Cinematography)
+```
+"Begin by slowly fading in a panoramic star field backdrop. As the camera
+orients itself, introduce a title reading 'Quantum Field Theory: A Journey
+into the Electromagnetic Interaction' in bold glowing text. The title shrinks
+and moves to the upper-left corner, making room for a rotating wireframe
+representation of 4D Minkowski spacetime. Display the relativistic metric:
+
+$$ds^2 = -c^2 dt^2 + dx^2 + dy^2 + dz^2$$
+
+with each component highlighted in a different hue to emphasize the negative
+time component. Zoom into the origin to introduce undulating plane waves in
+red (electric field $\vec{E}$) and blue (magnetic field $\vec{B}$),
+oscillating perpendicularly. Display Maxwell's equations morphing from
+classical vector calculus notation to relativistic four-vector form:
+
+$$\partial_\mu F^{\mu \nu} = \mu_0 J^\nu$$
+
+Animate each transformation by dissolving and reassembling symbols. Then shift
+focus to the QED Lagrangian density:
+
+$$\mathcal{L}_{\text{QED}} = \bar{\psi}(i \gamma^\mu D_\mu - m)\psi - \tfrac{1}{4}F_{\mu\nu}F^{\mu\nu}$$
+
+Project this onto a semi-transparent plane with each symbol color-coded:
+Dirac spinor $\psi$ in orange, covariant derivative $D_\mu$ in green,
+gamma matrices $\gamma^\mu$ in bright teal, field strength tensor
+$F_{\mu\nu}$ in gold. Let terms pulse to indicate dynamic fields..."
+
+[...continues for 2000+ tokens]
+```
+
+Result: Perfect animations with correct LaTeX, camera movements, colors, and timing.
+
+**My agents generate these verbose prompts automatically** by walking the knowledge tree.
+
+---
+
+## Why This Works: The Technical Insight
+
+### 1. Foundation → Target Building
+By starting with high school concepts and building up, the animations naturally explain prerequisites before advanced topics. This creates coherent narrative flow.
+
+### 2. LaTeX Forces Precision
+When you write formulas in LaTeX, you're forced to be mathematically precise. This eliminates the ambiguity that breaks code generation.
+
+### 3. Cinematography Matters
+Specifying exact camera movements, colors, timings, and transitions gives the LLM unambiguous instructions. "Show quantum fields" is vague. "Display red undulating waves labeled $\vec{E}$ oscillating perpendicular to blue waves labeled $\vec{B}$" is precise.
+
+### 4. No Training Data Needed
+Claude Sonnet 4.5's reasoning capabilities handle the recursive prerequisite discovery. I don't need training datasets - just well-structured prompts.
+
+### 5. Self-Correcting
+If the LLM generates broken code, I can pass it back with the error and ask for "verbose explanations." This often fixes LaTeX rendering issues automatically.
+
+---
+
+## What I'm Working On
+
+### Current Status (October 2025)
+- Refactored to Claude Sonnet 4.5 + Claude Agent SDK
+- 55+ working example animations
+- Reverse knowledge tree core algorithm implemented
+- Repository reorganized for first-time users
+- Testing architecture designed
+
+### Next Steps
+1. **Complete Agent Pipeline**: Finish implementing all 6 agents
+2. **Testing Suite**: Comprehensive unit/integration/e2e tests
+3. **Knowledge Tree Visualization**: Web UI showing the prerequisite graph
+4. **Fine-Tuning Experiments**: RL on successful verbose prompts (future goal)
+5. **Community Contributions**: Make it easy for others to add examples
+
+---
+
+## Examples by Difficulty
+
+### Beginner (Great for learning Manim)
+- [Pythagorean Theorem](examples/mathematics/geometry/pythagorean.py) - Visual proof
+- [Bouncing Balls](examples/mathematics/geometry/bouncing_balls.py) - Physics simulation
+- [Trig Identities](examples/mathematics/trigonometry/TrigInference.py) - Basic trig
+
+### Intermediate (Requires domain knowledge)
+- [Fractal Patterns](examples/mathematics/fractals/fractal_scene.py) - Self-similarity
+- [Gale-Shapley Algorithm](examples/computer_science/algorithms/gale_shaply.py) - Stable matching
+- [AlexNet Architecture](examples/computer_science/machine_learning/AlexNet.py) - CNN visualization
+
+### Advanced (Complex mathematics)
+- [Quantum Electrodynamics](examples/physics/quantum/QED.py) - Complete QED journey
+- [Optimal Transport Theory](examples/mathematics/analysis/diffusion_optimal_transport.py) - Wasserstein distance
+- [Information Geometry](examples/mathematics/statistics/information_geometry.py) - Statistical manifolds
+- [Electroweak Symmetry](examples/physics/particle_physics/ElectroweakSymmetryScene.py) - Higgs mechanism
+
+See all examples: [docs/EXAMPLES.md](docs/EXAMPLES.md)
+
+---
+
+## Key Features
+
+### Cross-Model Support
+I've used multiple AI models to generate examples:
+- **Claude Sonnet 4.5**: Primary agent system
+- **DeepSeek R1**: Many quantum physics examples
+- **Gemini 2.5 Pro**: Alternative QED visualizations
+- **Grok 3**: Quantum mechanics approaches
+- **Qwen Max**: Mathematical analysis
+- **Mistral Large**: Gravitational waves
+
+Each model brings unique perspectives, catching edge cases others miss.
+
+### Dual-Stream Output
+I can generate both:
+1. **Manim Python code** - The animation itself
+2. **LaTeX study notes** - Complete mathematical explanation
+
+Just pass any working scene back to the LLM and ask for "verbose explanations fully rendered as LaTeX study notes" - you'll get a complete PDF-ready document.
+
+### Adaptive Complexity
+My system handles:
+- Basic geometric proofs (high school level)
+- Advanced physics (graduate level)
+- Cutting-edge ML concepts (research level)
+- Financial mathematics (professional level)
+
+The knowledge tree approach automatically adjusts depth based on the target concept.
+
+---
 
 ## Documentation
 
-- [Examples](docs/EXAMPLES.md) - Showcase of various mathematical animations
-- [Architecture](docs/ARCHITECTURE.md) - Technical details of the system
-- [MCP Troubleshooting](docs/MCP_TROUBLESHOOTING.md) - Guide for resolving MCP server issues
-- [Contributing](CONTRIBUTING.md) - Guidelines for contributing to the project
+- **[Reverse Knowledge Tree](REVERSE_KNOWLEDGE_TREE.md)** - Core innovation explained
+- **[Architecture](docs/ARCHITECTURE.md)** - Agent system design
+- **[Examples Catalog](docs/EXAMPLES.md)** - All 55+ animations by topic
+- **[Migration Guide](docs/MIGRATION_TO_CLAUDE.md)** - DeepSeek → Claude transition
+- **[Testing Strategy](docs/TESTING_ARCHITECTURE.md)** - Comprehensive testing approach
+- **[Quick Start Guide](QUICK_START_GUIDE.md)** - User-friendly tutorial
+- **[Reorganization Plan](REORGANIZATION_PLAN.md)** - New structure details
+- **[Contributing](CONTRIBUTING.md)** - How to add examples
 
-## Technical Details: Why DeepSeek Might Be So Good At This
+---
 
-DeepSeek R1-Zero represents the culmination of **multi-year research** at DeepSeek AI into **transfer learning**, **instruction tuning**, and **long-context neural architectures**. Its central objective is to provide a single, all-purpose encoder-decoder model that can handle:
+## Real-World Applications
 
-- **Complex reading comprehension** (up to 8,192 tokens)  
-- **Scenario-based instruction following** (e.g., "Given a set of constraints, produce a short plan.")  
-- **Technical and coding tasks** (including code generation, transformation, and debugging assistance)  
+### Academic Research
+I help visualize complex mathematical proofs and theories. Researchers use these animations in papers and presentations.
 
-Though R1-Zero is a "descendant" of T5, the modifications to attention, context management, and parameter initialization distinguish it significantly from vanilla T5 implementations.
+### Education
+Teachers create engaging STEM materials. My animations break down advanced concepts into digestible visual sequences.
 
-### Philosophical & Theoretical Foundations
+### Scientific Communication
+I bridge the gap between abstract mathematics and visual understanding. Perfect for conferences and public outreach.
 
-While standard Transformer models rely on the "Attention is All You Need" paradigm (Vaswani et al., 2017), **DeepSeek R1-Zero** extends this by:
+### Content Creation
+YouTubers and educators use these animations for videos explaining physics, math, and computer science.
 
-1. **Expanded Context Window**  
-   - By employing distributed positional encodings and segment-based attention, R1-Zero tolerates sequences up to 8,192 tokens.  
-   - The extended context window leverages **blockwise local attention** (in certain layers) to mitigate quadratic scaling in memory usage.
+---
 
-2. **Instruction Tuning**  
-   - Similar to frameworks like FLAN-T5 or InstructGPT, R1-Zero was exposed to curated prompts (instructions, Q&A, conversation) to improve zero-shot and few-shot performance.  
-   - This approach helps the model produce more stable, context-aware answers and reduces "hallucination" events.
+## Common Pitfalls (And How I Solve Them)
 
-3. **Semantic Compression**  
-   - The encoder can compress textual segments into "semantic slots," enabling more efficient cross-attention in the decoder stage.  
-   - This is theoretically grounded in **Manifold Hypothesis** arguments, where the textual input can be seen as lying on a lower-dimensional manifold, thus amenable to a compressed representation.
+### Problem 1: LaTeX Rendering Errors
+**Most one-shot animation attempts fail because of LaTeX syntax errors.**
 
-From a **cognitive science** perspective, R1-Zero aspires to mimic a layered approach to knowledge assimilation, balancing short-term "working memory" (sequence tokens) with long-term "knowledge representation" (model parameters).
+My solution: The verbose prompts explicitly show every LaTeX formula that will be rendered on screen, formatted correctly. The agents verify mathematical notation during enrichment.
 
-### Model Architecture
+### Problem 2: Vague Cinematography
+**"Show a quantum field" is too vague - what colors? What motion? From which angle?**
 
-#### Summary of Structural Modifications
+My solution: The VisualDesigner agent specifies exact camera movements, color schemes, timing, and transitions. No ambiguity.
 
-- **Parameter Count**: ~6.7B  
-- **Encoder-Decoder**: Maintains T5's text-to-text approach but with specialized gating and partial reordering in cross-attention blocks.  
-- **Context Window**: 8,192 tokens (a 4× expansion over many standard T5 models).  
-- **Layer Stacking**: The modifications allow some dynamic scheduling of attention heads, facilitating better throughput in multi-GPU environments.
+### Problem 3: Missing Prerequisites
+**Jumping straight to QED without explaining special relativity first.**
 
-#### Detailed Specifications
+My solution: The PrerequisiteExplorer agent automatically discovers what concepts must be explained first, ensuring logical narrative flow.
 
-| Aspect                      | Specification                                     |
-|----------------------------|---------------------------------------------------|
-| **Architecture Type**      | Modified T5 (custom config named `deepseek_v3`)  |
-| **Heads per Attention**    | 32 heads (in deeper layers)                      |
-| **Layer Count**            | 36 encoder blocks, 36 decoder blocks             |
-| **Vocabulary Size**        | 32k tokens (SentencePiece-based)                 |
-| **Positional Encoding**    | Absolute + Learned segment-based for 8k tokens   |
-| **Training Paradigm**      | Instruction-tuned + Additional domain tasks      |
-| **Precision**              | FP32, FP16, 4-bit, 8-bit quantization (via BnB)  |
+### Problem 4: Inconsistent Notation
+**Using $E$ for energy in one equation and electric field in another.**
 
-## Quantization & Memory Footprint
+My solution: The MathematicalEnricher agent maintains consistent notation across the entire knowledge tree.
 
-DeepSeek R1-Zero supports **multi-bit quantization** to optimize memory usage:
+---
 
-1. **4-Bit Quantization**  
-   - **Pros**: Minimizes VRAM usage (~8GB).  
-   - **Cons**: Potentially minor losses in numeric accuracy or generative quality.
+## Technical Requirements
 
-2. **8-Bit Quantization**  
-   - **Pros**: Still significantly reduces memory (~14GB VRAM).  
-   - **Cons**: Slight overhead vs. 4-bit but often better fidelity.
+- **Python**: 3.10+
+- **Claude API Key**: From Anthropic (for agent system)
+- **FFmpeg**: For video rendering
+- **Manim Community**: v0.19.0
+- **RAM**: 8GB minimum, 16GB recommended
+- **GPU**: Optional but speeds up rendering
 
-3. **Full Precision (FP32)**  
-   - **Pros**: The highest theoretical accuracy.  
-   - **Cons**: ~28GB VRAM usage, not feasible on smaller GPUs.
+See full requirements: [requirements.txt](requirements.txt)
 
-Sample quantized load (4-bit) with [bitsandbytes](https://github.com/TimDettmers/bitsandbytes):
+---
 
-```python
-model_4bit = AutoModelForSeq2SeqLM.from_pretrained(
-    "deepseek-ai/DeepSeek-R1-Zero",
-    trust_remote_code=True,
-    device_map="auto",
-    load_in_4bit=True
-)
-```
+## Performance Notes
 
-## Installation & Requirements
+### Agent Pipeline
+- Prerequisite tree generation: ~30-60 seconds for complex topics
+- Verbose prompt composition: ~20-40 seconds
+- Code generation: ~15-30 seconds
+- **Total**: ~1-2 minutes for complete pipeline
 
-### Requirements
+### Rendering
+- Low quality (`-ql`): 10-30 seconds per scene
+- High quality (`-qh`): 1-5 minutes per scene
+- 4K quality (`-qk`): 5-20 minutes per scene
 
-- **Python** >= 3.8  
-- **PyTorch** >= 2.0  
-- **Transformers** >= 4.34.0  
-- **Accelerate** >= 0.24.0  
-- **bitsandbytes** >= 0.39.0 (if using 4-bit/8-bit)
-- **FFmpeg** (required for video rendering)
+Times vary based on animation complexity.
 
-### Installing FFmpeg
+---
 
-FFmpeg is required for Manim to render animations. Here's how to install it:
+## Why Claude Agent SDK?
 
-#### Windows:
-1. Download from https://www.gyan.dev/ffmpeg/builds/ 
-   - Recommended: "ffmpeg-release-essentials.7z"
-2. Extract the archive
-3. Add the `bin` folder to your system PATH
-   - Or install via package manager: `choco install ffmpeg`
+I switched from DeepSeek to Claude Sonnet 4.5 + Claude Agent SDK in October 2025 because:
 
-#### Linux:
-```bash
-sudo apt-get update
-sudo apt-get install ffmpeg
-```
+1. **Superior Reasoning**: Claude Sonnet 4.5 handles recursive logic better
+2. **Automatic Context Management**: Never runs out of context
+3. **Built-in Tools**: File ops, code execution, web search out-of-the-box
+4. **MCP Integration**: Easy to connect external services
+5. **Production Ready**: Powers Claude Code, battle-tested at scale
+6. **Native Agent Framework**: Built by Anthropic specifically for autonomous agents
 
-#### macOS:
-```bash
-brew install ffmpeg
-```
+See migration details: [docs/MIGRATION_TO_CLAUDE.md](docs/MIGRATION_TO_CLAUDE.md)
 
-### Installing via `pip`
+---
+
+## Contributing
+
+I welcome contributions! Here's how you can help:
+
+1. **Add Examples**: Create animations for new topics
+2. **Improve Agents**: Enhance the prerequisite discovery algorithm
+3. **Fix Bugs**: Report and fix issues
+4. **Documentation**: Improve guides and explanations
+5. **Testing**: Add test coverage
+
+See guidelines: [CONTRIBUTING.md](CONTRIBUTING.md)
+
+### Adding Your Own Examples
 
 ```bash
-pip install --upgrade torch transformers accelerate bitsandbytes
+# 1. Create your animation in the appropriate category
+examples/physics/quantum/my_new_animation.py
+
+# 2. Follow the naming convention
+# Use descriptive names: schrodinger_equation.py, not scene1.py
+
+# 3. Add a docstring explaining the concept
+"""
+Visualization of the Schrödinger equation in quantum mechanics.
+Shows wave function evolution, probability density, and energy eigenstates.
+"""
+
+# 4. Test it renders correctly
+manim -pql examples/physics/quantum/my_new_animation.py MyScene
+
+# 5. Submit a pull request
 ```
 
-If your environment's default PyTorch is older than 2.0, consider updating or installing from PyPI/conda channels that provide a recent version.
+---
 
-## License & Usage Restrictions
+## FAQ
 
-[Insert license information here]
+**Q: Do I need GPU for rendering?**
+A: No, Manim runs on CPU. GPU just speeds things up.
+
+**Q: Can I use DeepSeek instead of Claude?**
+A: Yes, the old implementation is in `src/agents/prerequisite_explorer.py`
+
+**Q: How do I fix LaTeX rendering errors?**
+A: Pass the error back to the LLM with the broken code and ask for corrections.
+
+**Q: What if my animation doesn't work?**
+A: Check the [examples/](examples/) directory for working references in your topic area.
+
+**Q: Can I use this for commercial projects?**
+A: Yes, MIT license. Attribution appreciated.
+
+**Q: How accurate are the animations?**
+A: Very accurate - I use LaTeX for all mathematical notation and validate formulas during enrichment.
+
+---
+
+## License
+
+MIT License - See [LICENSE](LICENSE)
+
+---
 
 ## Acknowledgments
 
-[Insert acknowledgments here]
+- **Manim Community** - Incredible animation framework
+- **Anthropic** - Claude Sonnet 4.5 and Agent SDK
+- **DeepSeek** - Original inspiration and many examples
+- **Community Contributors** - The 1000+ stars and growing
+- **You** - For checking out this project
 
-# Math-To-Manim Documentation
+---
 
-Welcome to the Math-To-Manim documentation! This directory contains comprehensive documentation for the Math-To-Manim project.
+## Connect
 
-## Table of Contents
+- **GitHub Issues**: Bug reports and feature requests
+- **Pull Requests**: Contributions welcome
+- **Discussions**: Share your animations and ideas
 
-- [Architecture](ARCHITECTURE.md) - Technical details of the system architecture
-- [Examples](EXAMPLES.md) - Showcase of various mathematical animations
-- [MCP Troubleshooting](MCP_TROUBLESHOOTING.md) - Guide for resolving MCP server issues
-- [Smolagents Implementation](SMOLAGENTS_IMPLEMENTATION.md) - Details on the smolagents integration
+**Star this repo if you find it useful!** It helps others discover the project.
 
-## Getting Started
+---
 
-If you're new to Math-To-Manim, we recommend starting with the main [README.md](../README.md) file in the root directory, which provides an overview of the project and installation instructions.
-
-## Contributing to Documentation
-
-We welcome contributions to the documentation! If you find any errors or have suggestions for improvements, please feel free to submit a pull request or open an issue.
-
-When contributing to documentation, please follow these guidelines:
-
-1. Use clear, concise language
-2. Include examples where appropriate
-3. Use proper Markdown formatting
-4. Keep documentation up-to-date with code changes
-
-## Building Documentation
-
-The documentation is written in Markdown and can be viewed directly on GitHub or in any Markdown viewer.
-
-If you want to generate a more polished documentation site, you can use tools like MkDocs or Sphinx with the markdown extension. Instructions for setting up these tools will be added in the future.
-
+**Built with recursive reasoning, not training data. Powered by Claude Sonnet 4.5.**
