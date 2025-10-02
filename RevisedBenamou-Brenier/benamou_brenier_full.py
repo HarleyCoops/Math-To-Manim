@@ -63,7 +63,9 @@ class Scene1_IntroProbabilitySpace(Scene):
         self.play(ReplacementTransform(box1, box2), ReplacementTransform(constraint1, constraint2))
         self.wait(2)
 
-        self.play(FadeOut(VGroup(*self.mobjects)))
+        # Fade out all VMobjects (excluding camera which is a Mobject)
+        all_objects = VGroup(omega, label_omega, axes, mu_graph, mu_label, equation, box2, constraint2)
+        self.play(FadeOut(all_objects))
 
 
 class Scene2_WassersteinDistance(Scene):

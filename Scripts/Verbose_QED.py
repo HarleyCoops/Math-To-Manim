@@ -66,33 +66,6 @@ class QEDJourney(ThreeDScene):
         )
         self.wait(1)
 
-        # Correct camera zooms using MoveCamera for 3D scene (fixing AttributeError)
-        # Initial wide view to closer view for title, then back slightly for positioning
-        self.play(
-            self.move_camera(
-                lambda t: {
-                    "zoom": interpolate(3.0, 2.5, t),  # Zoom from 3.0 to 2.5 for title fade-in
-                    "phi": 70 * DEGREES,  # Maintain elevation
-                    "theta": -30 * DEGREES  # Maintain azimuth
-                },
-                run_time=3
-            ),
-            run_time=3
-        )
-        self.wait(1)  # Pause after first zoom
-
-        self.play(
-            self.move_camera(
-                lambda t: {
-                    "zoom": interpolate(2.5, 2.0, t),  # Zoom from 2.5 to 2.0 for final positioning
-                    "phi": 70 * DEGREES,  # Maintain elevation
-                    "theta": -30 * DEGREES  # Maintain azimuth
-                },
-                run_time=2
-            ),
-            run_time=2
-        )
-
         ############################################################################
         # 3. 4D MINKOWSKI SPACETIME WIREFRAME + LIGHT CONE
         ############################################################################
