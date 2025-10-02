@@ -173,21 +173,21 @@ def main():
             success, stdout, stderr = test_render(file_path, scene_name, timeout)
 
             if success:
-                print(f"  ✓ SUCCESS: {scene_name}")
+                print(f"  [SUCCESS] {scene_name}")
                 results["success"].append({
                     "file": file_path,
                     "scene": scene_name,
                     "scenes": scenes
                 })
             elif "Timeout" in stderr:
-                print(f"  ⏱ TIMEOUT: {scene_name}")
+                print(f"  [TIMEOUT] {scene_name}")
                 results["timeout"].append({
                     "file": file_path,
                     "scene": scene_name,
                     "error": stderr
                 })
             else:
-                print(f"  ✗ FAILED: {scene_name}")
+                print(f"  [FAILED] {scene_name}")
                 # Print first 500 chars of error
                 error_preview = stderr[:500] if stderr else stdout[-500:]
                 print(f"  Error: {error_preview}")
@@ -203,9 +203,9 @@ def main():
     print("SUMMARY")
     print("=" * 80)
     print(f"Total scripts tested: {results['total_tested']}")
-    print(f"✓ Successful: {len(results['success'])}")
-    print(f"✗ Failed: {len(results['failed'])}")
-    print(f"⏱ Timeout: {len(results['timeout'])}")
+    print(f"[SUCCESS] Successful: {len(results['success'])}")
+    print(f"[FAILED] Failed: {len(results['failed'])}")
+    print(f"[TIMEOUT] Timeout: {len(results['timeout'])}")
     print()
 
     # Print successful renders
