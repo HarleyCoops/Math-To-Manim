@@ -18,7 +18,15 @@
 
 ![ProLIP Animation](media/videos/prolip/480p15/ProLIPScene_preview.gif)
 
-*Automatic visualization of contrastive learning, uncertainty quantification, and probabilistic embeddings - generated from a simple natural language prompt.*
+*Automatic visualization of contrastive learning, uncertainty quantification, and probabilistic embeddings - generated from a single natural language prompt.*
+
+---
+
+**GRPO: Group Relative Policy Optimization**
+
+![GRPO Animation](media/videos/GRPO2/480p15/GRPOArtisticExplanationOnly_ManimCE_v0.19.0.gif)
+
+*A complete visualization of Group Relative Policy Optimization for reinforcement learning - showing policy updates, reward shaping, and gradient flow through neural networks. Generated from a single prompt with zero manual editing.*
 
 </div>
 
