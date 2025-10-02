@@ -10,6 +10,18 @@
 
 [![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date)](https://star-history.com/#HarleyCoops/Math-To-Manim&Date)
 
+## See It In Action
+
+<div align="center">
+
+**ProLIP: Probabilistic Vision-Language Model**
+
+![ProLIP Animation](media/videos/prolip/480p15/ProLIPScene_ManimCE_v0.19.0.gif)
+
+*Automatic visualization of contrastive learning, uncertainty quantification, and probabilistic embeddings - generated from a simple natural language prompt.*
+
+</div>
+
 ---
 
 ## What This Does

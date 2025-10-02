@@ -52,18 +52,16 @@ class QEDJourney(ThreeDScene):
         self.play(FadeIn(main_title, run_time=3))  # Fade in the title
         self.wait(2)  # Pause to let the title settle
 
-        # Zoom in slightly and move title to center, then shrink and position in upper-left
+        # Move title to center and scale up
         self.play(
-            main_title.animate.move_to(ORIGIN).scale(1.2),  # Scale up slightly for emphasis during zoom
-            self.camera.animate.set_zoom(2.5),  # Incorrect—replaced below with MoveCamera
+            main_title.animate.move_to(ORIGIN).scale(1.2),  # Scale up slightly for emphasis
             run_time=3
         )
         self.wait(1)  # Brief pause before final positioning
 
-        # Shrink and move to upper-left with rotation correction, zooming out camera slightly
+        # Shrink and move to upper-left
         self.play(
             main_title.animate.scale(0.5).rotate(0 * DEGREES, axis=OUT).to_corner(UL, buff=0.5),
-            self.camera.animate.set_zoom(2.0),  # Incorrect—replaced below with MoveCamera
             run_time=2
         )
         self.wait(1)

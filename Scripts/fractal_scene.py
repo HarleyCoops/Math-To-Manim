@@ -1,31 +1,27 @@
 from manim import *
 import numpy as np
 
-config.renderer = "opengl"
-config.frame_size = (1200, 800)
-
 class FractalQuantumTransition(ThreeDScene):
     def construct(self):
         # Generate Mandelbrot fractal programmatically
         mandelbrot = self.create_mandelbrot()
         equation1 = MathTex(r"z_{n+1} = z_n^2 + c", font_size=36).to_edge(UL)
-        
+
         # Add initial objects
         self.add_fixed_in_frame_mobjects(equation1)
         self.play(FadeIn(mandelbrot), Write(equation1), run_time=2)
-        
+
         # Animate fractal zoom
-        self.camera.frame.save_state()
         self.play(
-            self.camera.frame.animate.set_width(2).move_to(mandelbrot.get_center()),
+            mandelbrot.animate.scale(2).shift(UP*0.5),
             rate_func=rate_functions.ease_in_out_cubic,
             run_time=3
         )
-        
-        # Transform to quantum orbital
+
+        # Fade out mandelbrot and show orbital
         orbital = self.create_orbital()
-        self.play(Transform(mandelbrot, orbital), run_time=3)
-        
+        self.play(FadeOut(mandelbrot), FadeIn(orbital), run_time=3)
+
         # Create collapse particles
         particles = self.create_collapse_particles(50)
         self.play(Create(particles), run_time=2)
@@ -73,7 +69,7 @@ class FractalQuantumTransition(ThreeDScene):
 
     def create_orbital(self):
         # Simple 2p_z orbital visualization
-        return Surface(
+        orbital = Surface(
             lambda u, v: np.array([
                 np.sin(PI*v) * np.cos(TAU*u),
                 np.sin(PI*v) * np.sin(TAU*u),
@@ -81,17 +77,16 @@ class FractalQuantumTransition(ThreeDScene):
             ]),
             u_range=[0, 1],
             v_range=[0, 1],
-            color=BLUE_B,
-            opacity=0.5,
-            gloss=0.2
+            fill_color=BLUE_B,
+            fill_opacity=0.5
         )
+        return orbital
 
     def create_collapse_particles(self, count):
-        return DotCloud(
-            points=[np.random.uniform(-3,3,3) for _ in range(count)],
-            color=YELLOW,
-            radius=0.05,
-            glow_factor=2.0
-        )
+        particles = VGroup(*[
+            Dot(point=np.random.uniform(-3,3,3) * np.array([1,1,0.5]), color=YELLOW, radius=0.05)
+            for _ in range(count)
+        ])
+        return particles
 
 # Render with: manim -pql --renderer=opengl fractal_scene.py FractalQuantumTransition
