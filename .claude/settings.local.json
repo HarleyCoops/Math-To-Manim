@@ -4,7 +4,8 @@
       "Bash(gh pr diff:*)",
       "Bash(gh pr view:*)",
       "Bash(manim:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git lfs:*)"
     ],
     "deny": []
   }
