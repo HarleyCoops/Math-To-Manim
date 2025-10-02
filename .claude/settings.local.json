@@ -5,7 +5,9 @@
       "Bash(gh pr view:*)",
       "Bash(manim:*)",
       "Bash(cat:*)",
-      "Bash(git lfs:*)"
+      "Bash(git lfs:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }
