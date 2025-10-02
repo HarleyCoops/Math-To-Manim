@@ -368,22 +368,6 @@ The knowledge tree approach automatically adjusts depth based on the target conc
 
 ---
 
-## Real-World Applications
-
-### Academic Research
-I help visualize complex mathematical proofs and theories. Researchers use these animations in papers and presentations.
-
-### Education
-Teachers create engaging STEM materials. My animations break down advanced concepts into digestible visual sequences.
-
-### Scientific Communication
-I bridge the gap between abstract mathematics and visual understanding. Perfect for conferences and public outreach.
-
-### Content Creation
-YouTubers and educators use these animations for videos explaining physics, math, and computer science.
-
----
-
 ## Common Pitfalls (And How I Solve Them)
 
 ### Problem 1: LaTeX Rendering Errors
