@@ -16,7 +16,7 @@
 
 **ProLIP: Probabilistic Vision-Language Model**
 
-![ProLIP Animation](media/videos/prolip/480p15/ProLIPScene_ManimCE_v0.19.0.gif)
+![ProLIP Animation](media/videos/prolip/480p15/ProLIPScene_preview.gif)
 
 *Automatic visualization of contrastive learning, uncertainty quantification, and probabilistic embeddings - generated from a simple natural language prompt.*
 

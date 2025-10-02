@@ -43,6 +43,7 @@ Thumbs.db
 # Manim output
 media/
 media/videos/
+!media/videos/prolip/480p15/ProLIPScene_preview.gif
 *.mp4
 
 # Ignore GIFs except in SpatialReasoningTest
