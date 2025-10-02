@@ -1,23 +1,25 @@
-# Math-To-Manim Examples
+# Math-To-Manim Examples Catalog
 
-This document showcases the various mathematical animations available in the Math-To-Manim repository. Each example demonstrates the capability of AI models to generate complex mathematical visualizations.
+This document provides a comprehensive catalog of all animation examples in the repository, organized by topic and difficulty level.
 
-## Quantum Field Theory
+**Note**: The repository has been reorganized for better navigation. Examples are now organized in the [examples/](../examples/) directory by topic.
 
-### QED Journey
-**Files:**
-- `Scripts/QED.py`
-- `Scripts/Verbose_QED.py`
-- `Scripts/rotated_QED.py`
-- `Scripts/rotated_QED2.py`
-- `Hunyuan-T1QED.py`
-- `QEDGemini25.py`
-- `QwenMaxQED/qwenQED.py`
-- `Scripts/Gemini2.5ProQED.py`
-- `Scripts/grok_quantum2.py`
+## Quick Navigation
 
-These files contain animations that visualize Quantum Electrodynamics (QED), the quantum field theory of the electromagnetic interaction. They include visualizations of:
+- [Physics](#physics) - Quantum mechanics, gravity, particle physics
+- [Mathematics](#mathematics) - Geometry, analysis, statistics
+- [Computer Science](#computer-science) - ML, algorithms, spatial reasoning
+- [Cosmology](#cosmology) - Cosmic evolution and probability
+- [Finance](#finance) - Option pricing
+- [Legacy Structure Reference](#legacy-structure-reference)
 
+## Physics
+
+### Quantum Mechanics and QED
+
+**Location**: [examples/physics/quantum/](../examples/physics/quantum/)
+
+Animations visualizing Quantum Electrodynamics (QED), the quantum field theory of the electromagnetic interaction. Topics include:
 - Minkowski spacetime
 - Electric and magnetic fields
 - Maxwell's equations in tensor form
@@ -26,233 +28,255 @@ These files contain animations that visualize Quantum Electrodynamics (QED), the
 - Fine structure constant
 - Renormalization group flow
 
-**Example Usage:**
-```bash
-python -m manim -qh Scripts/QED.py QEDJourney
-```
-
-### Spacetime QED Scene
-**File:** `SpacetimeQEDScene.py`
-
-A specialized visualization of QED concepts in spacetime, with emphasis on the relativistic aspects of the theory.
+**Key Examples:**
+- `QED.py` - Comprehensive QED journey
+- `SpacetimeQEDScene.py` - Relativistic QED visualization
+- `quantum_field_theory.py` - QFT fundamentals
+- Various model implementations (Gemini, Grok, Qwen, etc.)
 
 **Example Usage:**
 ```bash
-python -m manim -qh SpacetimeQEDScene.py SpacetimeQEDScene
+manim -pql examples/physics/quantum/QED.py QEDJourney
 ```
 
-## Optimal Transport Theory
+### Gravity and General Relativity
 
-### Benamou-Brenier-Wasserstein
-**Files:**
-- `Benamou-Brenier/Google_Thinking_one_shot.py`
-- `RevisedBenamou-Brenier/scene1.py`
-- `Scripts/diffusion_optimal_transport.py`
-- `Scripts/diffusion_ot.py`
+**Location**: [examples/physics/gravity/](../examples/physics/gravity/)
 
-These animations visualize the Benamou-Brenier formulation of the Wasserstein distance and optimal transport theory. They demonstrate:
-
-- Fluid dynamics interpretation of optimal transport
-- Geodesics in the space of probability measures
-- Connections to diffusion processes
-
-**Example Usage:**
-```bash
-python -m manim -qh Benamou-Brenier/Google_Thinking_one_shot.py BenamouBrenierScene
-```
-
-## Physics Simulations
-
-### Gravitational Waves
-**Files:**
-- `GravityWavesDiscovery/gravitational_wave.py`
-- `GravityWavesDiscovery/Mistral_gravity_wave.py`
-
-Animations depicting the discovery and properties of gravitational waves, including:
-
+Animations depicting gravitational waves and general relativity:
 - Spacetime distortion
 - LIGO detection method
 - Binary black hole mergers
 
 **Example Usage:**
 ```bash
-python -m manim -qh GravityWavesDiscovery/gravitational_wave.py GravitationalWaveScene
+manim -pql examples/physics/gravity/gravitational_wave.py GravitationalWaveScene
 ```
 
-### Electroweak Symmetry
-**File:** `Scripts/ElectroweakSymmetryScene.py`
+### Nuclear Physics
 
-Visualization of electroweak symmetry breaking and the Higgs mechanism.
+**Location**: [examples/physics/nuclear/](../examples/physics/nuclear/)
+
+Visualizations of atomic structure and radioactive decay.
 
 **Example Usage:**
 ```bash
-python -m manim -qh Scripts/ElectroweakSymmetryScene.py ElectroweakSymmetryScene
+manim -pql examples/physics/nuclear/radium_atom.py RadiumAtomScene
 ```
 
-## Mathematical Concepts
+### Particle Physics
 
-### Information Geometry
-**Files:**
-- `Scripts/information_geometry.py`
-- `Scripts/information_geometry2.py`
+**Location**: [examples/physics/particle_physics/](../examples/physics/particle_physics/)
 
-Animations exploring the geometric structure of probability distributions and statistical manifolds.
+Advanced particle physics concepts including electroweak symmetry breaking.
 
 **Example Usage:**
 ```bash
-python -m manim -qh Scripts/information_geometry.py InformationGeometryScene
+manim -pql examples/physics/particle_physics/ElectroweakSymmetryScene.py ElectroweakSymmetryScene
 ```
 
-### Fractal Geometry
-**File:** `Scripts/fractal_scene.py`
+## Mathematics
 
-Visualization of fractal patterns and their mathematical properties.
+### Geometry
+
+**Location**: [examples/mathematics/geometry/](../examples/mathematics/geometry/)
+
+Geometric visualizations and proofs:
+- `pythagorean.py` - Visual proof of Pythagorean theorem
+- `bouncing_balls.py` - Physics simulation
+- `rhombicosidodecahedron_*.py` - Complex 3D polyhedron animations
 
 **Example Usage:**
 ```bash
-python -m manim -qh Scripts/fractal_scene.py FractalScene
+manim -pql examples/mathematics/geometry/pythagorean.py PythagoreanScene
 ```
 
-### Pythagorean Theorem
-**File:** `Scripts/pythagorean.py`
+### Mathematical Analysis
 
-A visual proof of the Pythagorean theorem.
+**Location**: [examples/mathematics/analysis/](../examples/mathematics/analysis/)
+
+Advanced analysis topics:
+- Optimal transport theory
+- Benamou-Brenier formulation
+- Wasserstein distance
+- Diffusion processes
 
 **Example Usage:**
 ```bash
-python -m manim -qh Scripts/pythagorean.py PythagoreanScene
+manim -pql examples/mathematics/analysis/diffusion_optimal_transport.py
 ```
 
-## Algorithm Visualizations
+### Fractals
 
-### Gale-Shapley Algorithm
-**File:** `Scripts/gale-shaply.py`
+**Location**: [examples/mathematics/fractals/](../examples/mathematics/fractals/)
 
-Animation of the Gale-Shapley algorithm for the stable matching problem.
+Fractal patterns and self-similarity visualizations.
 
 **Example Usage:**
 ```bash
-python -m manim -qh Scripts/gale-shaply.py GaleShapleyScene
+manim -pql examples/mathematics/fractals/fractal_scene.py FractalScene
 ```
 
-### Regularization in Machine Learning
-**File:** `Scripts/regularization.py`
+### Statistics and Probability
 
-Visualization of regularization techniques in machine learning.
+**Location**: [examples/mathematics/statistics/](../examples/mathematics/statistics/)
+
+Statistical concepts and information geometry:
+- Brownian motion
+- Information geometry
+- Statistical manifolds
 
 **Example Usage:**
 ```bash
-python -m manim -qh Scripts/regularization.py RegularizationScene
+manim -pql examples/mathematics/statistics/information_geometry.py InformationGeometryScene
 ```
 
-## Physics Simulations
+### Trigonometry
 
-### Bouncing Balls
-**Files:**
-- `3BouncingBalls/bouncing_balls.py`
-- `Rhombicosidodecahedron/bouncing.py`
-- `Rhombicosidodecahedron/flythroughbouncing.py`
+**Location**: [examples/mathematics/trigonometry/](../examples/mathematics/trigonometry/)
 
-Simulations of bouncing balls with various physical properties.
+Trigonometric identities and proofs.
 
 **Example Usage:**
 ```bash
-python -m manim -qh 3BouncingBalls/bouncing_balls.py BouncingBallsScene
+manim -pql examples/mathematics/trigonometry/TrigInference.py
 ```
 
-### Radium Atom
-**File:** `Scripts/radium_atom.py`
+## Computer Science
 
-Visualization of the radium atom and its radioactive decay.
+### Machine Learning
+
+**Location**: [examples/computer_science/machine_learning/](../examples/computer_science/machine_learning/)
+
+Neural network architectures and ML concepts:
+- `AlexNet.py` - CNN architecture
+- `NativeSparseAttention.py` - Transformer attention mechanisms
+- `GRPO.py` - Optimization algorithms
+- `regularization.py` - Regularization techniques
 
 **Example Usage:**
 ```bash
-python -m manim -qh Scripts/radium_atom.py RadiumAtomScene
+manim -pql examples/computer_science/machine_learning/AlexNet.py AlexNetScene
 ```
 
-## Neural Networks
+### Algorithms
 
-### AlexNet
-**File:** `AlexNet.py`
+**Location**: [examples/computer_science/algorithms/](../examples/computer_science/algorithms/)
 
-Visualization of the AlexNet convolutional neural network architecture.
+Classic algorithm visualizations:
+- `gale_shaply.py` - Stable matching problem
 
 **Example Usage:**
 ```bash
-python -m manim -qh AlexNet.py AlexNetScene
+manim -pql examples/computer_science/algorithms/gale_shaply.py GaleShapleyScene
 ```
 
-### Native Sparse Attention
-**Files:**
-- `Scripts/NativeSparseAttention.py`
-- `Scripts/NativeSparseAttention2.py`
+### Spatial Reasoning
 
-Animations explaining sparse attention mechanisms in transformer models.
+**Location**: [examples/computer_science/spatial_reasoning/](../examples/computer_science/spatial_reasoning/)
+
+3D spatial reasoning tests with L-shaped objects.
 
 **Example Usage:**
 ```bash
-python -m manim -qh Scripts/NativeSparseAttention.py SparseAttentionScene
+manim -pql examples/computer_science/spatial_reasoning/DeepSeek_LShape3D.py LShape3DScene
 ```
 
-## Financial Mathematics
+## Cosmology
 
-### Option Skew
-**File:** `optionskew.py`
+**Location**: [examples/cosmology/](../examples/cosmology/)
 
-Visualization of option price skew in financial markets.
+Cosmic evolution and probability visualizations:
+- `Claude37Cosmic.py` - Cosmic evolution
+- `CosmicProbabilityScene.py` - Probability in cosmic context
 
 **Example Usage:**
 ```bash
-python -m manim -qh optionskew.py OptionSkewScene
+manim -pql examples/cosmology/Claude37Cosmic.py
 ```
 
-## Spatial Reasoning Tests
+## Finance
 
-### L-Shape 3D Rotation
-**Files:**
-- `SpatialReasoningTest/DeepSeek_LShape3D.py`
-- `SpatialReasoningTest/OpenAIPro_LShape3D.py`
+**Location**: [examples/finance/](../examples/finance/)
 
-Animations testing spatial reasoning abilities with 3D rotations of L-shaped objects.
+Financial mathematics visualizations:
+- `optionskew.py` - Option price skew
 
 **Example Usage:**
 ```bash
-python -m manim -qh SpatialReasoningTest/DeepSeek_LShape3D.py LShape3DScene
+manim -pql examples/finance/optionskew.py OptionSkewScene
 ```
 
 ## Miscellaneous
 
-### Cosmic Probability Scene
-**File:** `Scripts/CosmicProbabilityScene.py`
+**Location**: [examples/misc/](../examples/misc/)
 
-A visualization of probability concepts in a cosmic setting.
-
-**Example Usage:**
-```bash
-python -m manim -qh Scripts/CosmicProbabilityScene.py CosmicProbabilityScene
-```
-
-### Stickman Animation
-**File:** `Scripts/stickman.py`
-
-A simple stickman animation demonstrating basic Manim capabilities.
+Experimental and demo animations:
+- `stickman.py` - Basic animation demo
+- `GrokLogo.py` - Logo animation
+- `generated_scene.py` - Generic test scenes
 
 **Example Usage:**
 ```bash
-python -m manim -qh Scripts/stickman.py StickmanScene
+manim -pql examples/misc/stickman.py StickmanScene
 ```
 
-## Running Multiple Scenes
+## How to Run Examples
 
-To run all scenes in a presentation format:
+All examples can be run using the standard Manim command:
 
 ```bash
-python run_presentation.py h
+manim [flags] <file_path> <SceneName>
 ```
 
-Where the parameter can be:
-- `l` for low quality (fast)
-- `m` for medium quality
-- `h` for high quality
-- `k` for 4K quality (very slow)
+Common flags:
+- `-p` - Preview after rendering
+- `-q` - Quality: `l` (low), `m` (medium), `h` (high), `k` (4K)
+- `--format` - Output format (mp4, gif, png, etc.)
+
+Examples:
+```bash
+# Quick preview (low quality)
+manim -pql examples/physics/quantum/QED.py QEDScene
+
+# High quality render
+manim -qh examples/mathematics/geometry/pythagorean.py PythagoreanScene
+
+# 4K production quality
+manim -qk examples/physics/gravity/gravitational_wave.py GravitationalWaveScene
+```
+
+## Legacy Structure Reference
+
+For backward compatibility, the old directory structure is preserved. Here's the mapping:
+
+**Old Location** → **New Location**
+- `Scripts/*.py` → `examples/<category>/<subcategory>/*.py`
+- `app.py` → `src/app.py`
+- `app_claude.py` → `src/app_claude.py`
+- `prerequisite_explorer.py` → `src/agents/prerequisite_explorer.py`
+
+See [REORGANIZATION_PLAN.md](../REORGANIZATION_PLAN.md) for complete mapping.
+
+## Difficulty Levels
+
+Examples are categorized by difficulty:
+- **Beginner**: Basic concepts, suitable for learning Manim
+- **Intermediate**: More complex visualizations
+- **Advanced**: Sophisticated animations of advanced concepts
+
+## Contributing Examples
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines on adding new examples.
+
+## Model Attribution
+
+Examples generated by various AI models:
+- DeepSeek R1
+- Claude Sonnet 4.5
+- Gemini 2.5 Pro
+- Grok 3
+- Qwen Max
+- Mistral Large
+- OpenAI GPT-4
 

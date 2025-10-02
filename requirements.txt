@@ -3,13 +3,11 @@ manim>=0.19.0  # For mathematical animations
 numpy>=1.22.0  # Required by Manim
 scipy>=1.7.0
 matplotlib>=3.5.0
-openai>=1.0.0
+anthropic>=0.40.0  # Anthropic SDK for Claude API
+claude-agent-sdk>=0.1.0  # Claude Agent SDK for autonomous agents
 gradio>=3.50.0  # For the web interface
 python-dotenv>=1.0.0  # For environment variables
-transformers>=4.34.0
-torch>=2.0.0
-accelerate>=0.24.0
-bitsandbytes>=0.39.0
+anyio>=4.0.0  # Required for async operations in Claude SDK
 sentry-sdk>=1.40.0  # For error logging
 
 # Text and LaTeX rendering
@@ -27,9 +25,8 @@ pytest>=7.0.0  # For testing
 black>=22.0.0  # For code formatting
 pyyaml>=6.0
 
-# smolagents will be added when available
-# Prompt expansion via SmolAgents
-git+https://github.com/huggingface/smolagents.git@main#egg=smolagents
+# Claude Agent SDK provides all agent capabilities
+# No additional agent frameworks needed
 
 # Additional System Requirements:
 # FFmpeg - Required for video rendering with Manim
@@ -41,3 +38,7 @@ git+https://github.com/huggingface/smolagents.git@main#egg=smolagents
 #    - Windows (Chocolatey): choco install ffmpeg
 #    - Linux: apt-get install ffmpeg
 #    - macOS: brew install ffmpeg
+#
+# Node.js - Required for Claude Agent SDK
+# Installation: https://nodejs.org/
+# After Node.js: npm install -g @anthropic-ai/claude-code
