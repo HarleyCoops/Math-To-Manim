@@ -20,61 +20,22 @@
 
 *A comprehensive 4-minute, one-shot visualization of Quantum Electrodynamics generated entirely from a single text prompt with zero manual editing or intervention. This unedited journey spans 11 interconnected scenes covering the complete theoretical framework of the electromagnetic interaction:*
 
-</div>
-
 **Complete Conceptual Map:**
+- **Scene 1 - Cosmic Opening**: Establishing the universal scale with a static starfield backdrop (150 celestial objects), setting the stage for fundamental physics
+- **Scene 2 - Spacetime Foundations**: Introducing Minkowski spacetime geometry with the relativistic metric $ds^2 = -c^2 dt^2 + dx^2 + dy^2 + dz^2$, visualizing light cone structures that define causality
+- **Scene 3 - Quantum Field Emergence**: Transitioning from classical concepts to quantum field theory foundations, establishing the field-theoretic framework
+- **Scene 4 - Maxwell's Transformation**: Evolving classical electromagnetic waves ($\vec{E}$ and $\vec{B}$ fields oscillating perpendicular to propagation direction $\vec{k}$) through the wave equation $\nabla^2 \vec{E} - \frac{1}{c^2}\frac{\partial^2 \vec{E}}{\partial t^2} = 0$, demonstrating Maxwell's four equations in differential form, and culminating in the relativistic electromagnetic field strength tensor $F^{\mu\nu}$ formulation $\partial_\mu F^{\mu\nu} = \mu_0 J^\nu$
+- **Scene 5 - QED Lagrangian Heart**: Presenting the complete QED Lagrangian density with color-coded term-by-term breakdown:
 
-### Scene 1 - Cosmic Opening
-Establishing the universal scale with a static starfield backdrop (150 celestial objects), setting the stage for fundamental physics.
+  $$\mathcal{L}_{\text{QED}} = \bar{\psi}(i\gamma^\mu D_\mu - m)\psi - \frac{1}{4}F_{\mu\nu}F^{\mu\nu}$$
 
-### Scene 2 - Spacetime Foundations
-Introducing Minkowski spacetime geometry with the relativistic metric describing light-cone causality.
-
-\[
- ds^2 = -c^2 dt^2 + dx^2 + dy^2 + dz^2
-\]
-
-### Scene 3 - Quantum Field Emergence
-Transitioning from classical concepts to quantum field theory foundations, establishing the field-theoretic framework.
-
-### Scene 4 - Maxwell's Transformation
-Evolving classical electromagnetic waves with electric and magnetic fields oscillating perpendicular to the propagation direction, then lifting Maxwell's equations into relativistic tensor form.
-
-\[
-\begin{aligned}
- \nabla^2 \vec{E} - \frac{1}{c^2}\frac{\partial^2 \vec{E}}{\partial t^2} &= 0, \\
- \partial_\mu F^{\mu\nu} &= \mu_0 J^\nu
-\end{aligned}
-\]
-
-### Scene 5 - QED Lagrangian Heart
-Presenting the complete QED Lagrangian density with term-by-term interpretation.
-
-\[
- \mathcal{L}_{\text{QED}} = \bar{\psi}(i\gamma^\mu D_\mu - m)\psi - \frac{1}{4}F_{\mu\nu}F^{\mu\nu}
-\]
-
-**Components:** Dirac spinor \(\psi\) (fermion fields), gamma matrices \(\gamma^\mu\) (Dirac algebra), covariant derivative \(D_\mu\) (gauge coupling), mass term \(m\), field strength \(F_{\mu\nu}\) (photon dynamics).
-
-### Scene 6 - Feynman Diagram Gallery
-Visualizing three fundamental QED processes through spacetime diagrams: electron-electron scattering (single photon exchange), electron-positron annihilation (matter to photons), and pair creation (photons to matter-antimatter).
-
-### Scene 7 - Fine Structure Constant
-Deep dive into nature's dimensionless coupling constant \(\alpha \approx \frac{1}{137.036}\), the fundamental parameter governing electromagnetic interaction strength.
-
-### Scene 8 - Running Coupling
-Demonstrating quantum corrections and renormalization through the momentum-transfer dependent coupling \(\alpha(Q^2)\), showing how interaction strength varies with energy scale.
-
-### Scene 9 - Vacuum Polarization
-Revealing virtual particle loops and quantum vacuum structure, where "empty" space seethes with ephemeral electron-positron pairs affecting photon propagation.
-
-### Scene 10 - Grand Synthesis
-Integrating all previous concepts into a unified theoretical framework, connecting spacetime geometry, gauge theory, and quantum mechanics.
-
-### Scene 11 - Cosmic Finale
-Returning to the universal scale, demonstrating how QED emerges as the quantum field theory describing all electromagnetic phenomena throughout the cosmos.
-
-
+  Components: Dirac spinor $\psi$ (fermion fields), gamma matrices $\gamma^\mu$ (Dirac algebra), covariant derivative $D_\mu$ (gauge coupling), mass term $m$, and field strength $F_{\mu\nu}$ (photon dynamics)
+- **Scene 6 - Feynman Diagram Gallery**: Visualizing three fundamental QED processes through spacetime diagrams: electron-electron scattering (single photon exchange), electron-positron annihilation (matter to photons), and pair creation (photons to matter-antimatter)
+- **Scene 7 - Fine Structure Constant**: Deep dive into nature's dimensionless coupling constant $\alpha \approx \frac{1}{137.036}$, the fundamental parameter governing electromagnetic interaction strength
+- **Scene 8 - Running Coupling**: Demonstrating quantum corrections and renormalization through energy-dependent coupling $\alpha(Q^2)$, showing how interaction strength varies with momentum transfer
+- **Scene 9 - Vacuum Polarization**: Revealing virtual particle loops and quantum vacuum structure, where "empty" space seethes with ephemeral electron-positron pairs affecting photon propagation
+- **Scene 10 - Grand Synthesis**: Integrating all previous concepts into a unified theoretical framework, connecting spacetime geometry, gauge theory, and quantum mechanics
+- **Scene 11 - Cosmic Finale**: Returning to the universal scale, demonstrating how QED emerges as the quantum field theory describing all electromagnetic phenomena throughout the cosmos
 
 *Note: Some text overlap occurs during transitions between dense mathematical content - this is characteristic of unedited one-shot generation maintaining continuous narrative flow without post-production cleanup. The complete mathematical journey from relativistic spacetime through gauge field theory to renormalization demonstrates the power of single-prompt comprehensive visualization.*
 
@@ -82,19 +43,13 @@ Returning to the universal scale, demonstrating how QED emerges as the quantum f
 
 ---
 
-<div align="center">
-
 **ProLIP: Probabilistic Vision-Language Model**
 
 ![ProLIP Animation](media/videos/prolip/480p15/ProLIPScene_preview.gif)
 
 *Automatic visualization of contrastive learning, uncertainty quantification, and probabilistic embeddings - generated from a single natural language prompt.*
 
-</div>
-
 ---
-
-<div align="center">
 
 **GRPO: Group Relative Policy Optimization**
 
