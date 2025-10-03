@@ -16,9 +16,9 @@
 
 ---
 
-# 🌀 **RECURSIVE FRACTAL GEOMETRY: The Rhombicosidodecahedron**
+# **RECURSIVE FRACTAL GEOMETRY: The Rhombicosidodecahedron**
 
-![Rhombicosidodecahedron Fractal](media/videos/bouncing/1080p60/ArtisticRhombicosidodecahedron_ManimCE_v0.19.0.gif)
+<img src="media/videos/bouncing/1080p60/ArtisticRhombicosidodecahedron_ManimCE_v0.19.0.gif" alt="Rhombicosidodecahedron Fractal" width="100%">
 
 ### *Generated from a Single Text Prompt*
 
