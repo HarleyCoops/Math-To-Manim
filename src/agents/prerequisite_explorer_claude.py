@@ -9,10 +9,15 @@ No training data required - uses Claude's reasoning to build knowledge trees.
 import os
 import json
 import asyncio
-from typing import List, Dict, Optional
-from dataclasses import dataclass, asdict
-from dotenv import load_dotenv
+from dataclasses import dataclass
+from functools import partial
+from typing import Dict, List, Optional
+
 from anthropic import Anthropic
+from anthropic import NotFoundError
+from dotenv import load_dotenv
+
+from .claude_agent_runtime import run_query_via_sdk
 try:
     from .nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError
 except ImportError:  # pragma: no cover - optional dependency
@@ -22,11 +27,20 @@ except ImportError:  # pragma: no cover - optional dependency
 
 load_dotenv()
 
-# Initialize Anthropic client for Claude Sonnet 4.5
-client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+CLI_CLIENT: Optional[Anthropic] = None
 
-# Model configuration
-CLAUDE_MODEL = "claude-sonnet-4.5-20251022"  # Latest Sonnet 4.5
+
+def _ensure_client() -> Anthropic:
+    global CLI_CLIENT
+    if CLI_CLIENT is None:
+        api_key = os.getenv("ANTHROPIC_API_KEY")
+        if not api_key:
+            raise RuntimeError("ANTHROPIC_API_KEY environment variable not set.")
+        CLI_CLIENT = Anthropic(api_key=api_key)
+    return CLI_CLIENT
+
+
+CLAUDE_MODEL = "claude-sonnet-4.5-20251022"
 
 
 @dataclass
@@ -95,53 +109,21 @@ class PrerequisiteExplorer:
 
         self.atlas_client = client
 
-    def explore(self, concept: str, depth: int = 0) -> KnowledgeNode:
-        """
-        Recursively explore prerequisites for a concept.
-
-        Args:
-            concept: The concept to explore
-            depth: Current recursion depth (0 = target concept)
-
-        Returns:
-            KnowledgeNode with complete prerequisite tree
-        """
+    async def explore_async(self, concept: str, depth: int = 0) -> KnowledgeNode:
         print(f"{'  ' * depth}Exploring: {concept} (depth {depth})")
 
-        # Base case: check if foundation or max depth reached
-        if depth >= self.max_depth or self.is_foundation(concept):
+        if depth >= self.max_depth or await self.is_foundation_async(concept):
             print(f"{'  ' * depth}  → Foundation concept")
-            return KnowledgeNode(
-                concept=concept,
-                depth=depth,
-                is_foundation=True,
-                prerequisites=[]
-            )
+            return KnowledgeNode(concept=concept, depth=depth, is_foundation=True, prerequisites=[])
 
-        cached_prereqs = self.lookup_prerequisites(concept)
+        prerequisites = await self.lookup_prerequisites_async(concept)
+        nodes = []
+        for prereq in prerequisites:
+            nodes.append(await self.explore_async(prereq, depth + 1))
 
-        # Recurse on each prerequisite
-        prerequisite_nodes = []
-        for prereq in cached_prereqs:
-            node = self.explore(prereq, depth + 1)
-            prerequisite_nodes.append(node)
+        return KnowledgeNode(concept=concept, depth=depth, is_foundation=False, prerequisites=nodes)
 
-        return KnowledgeNode(
-            concept=concept,
-            depth=depth,
-            is_foundation=False,
-            prerequisites=prerequisite_nodes
-        )
-
-    def is_foundation(self, concept: str) -> bool:
-        """
-        Determine if a concept is foundational (no further decomposition needed).
-
-        A concept is foundational if a typical high school graduate would
-        understand it without further explanation.
-
-        Uses Claude Sonnet 4.5's superior reasoning to make this determination.
-        """
+    async def is_foundation_async(self, concept: str) -> bool:
         system_prompt = """You are an expert educator analyzing whether a concept is foundational.
 
 A concept is foundational if a typical high school graduate would understand it
@@ -165,47 +147,52 @@ Examples of non-foundational concepts:
 
         user_prompt = f'Is "{concept}" a foundational concept?\n\nAnswer with ONLY "yes" or "no".'
 
-        response = client.messages.create(
-            model=self.model,
-            max_tokens=10,
-            temperature=0,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_prompt}]
-        )
+        try:
+            response = _ensure_client().messages.create(
+                model=self.model,
+                max_tokens=10,
+                temperature=0,
+                system=system_prompt,
+                messages=[{"role": "user", "content": user_prompt}],
+            )
+            answer = response.content[0].text
+        except NotFoundError:
+            answer = run_query_via_sdk(
+                user_prompt,
+                system_prompt=system_prompt,
+                temperature=0,
+                max_tokens=10,
+            )
 
-        answer = response.content[0].text.strip().lower()
-        return answer.startswith('yes')
+        return answer.strip().lower().startswith('yes')
 
-    def lookup_prerequisites(self, concept: str) -> List[str]:
-        """Lookup prerequisites via cache, Atlas, or LLM fallback."""
-
+    async def lookup_prerequisites_async(self, concept: str) -> List[str]:
         if concept in self.cache:
             print(f"  → Using in-memory cache for {concept}")
             return self.cache[concept]
 
         if self.atlas_client is not None:
-            atlas_results = self._atlas_fetch_prerequisites(concept)
+            loop = asyncio.get_running_loop()
+            atlas_results = await loop.run_in_executor(
+                None, partial(self._atlas_fetch_prerequisites, concept)
+            )
             if atlas_results:
                 print(f"  → Loaded {len(atlas_results)} prerequisites from Atlas")
                 self.cache[concept] = atlas_results
                 return atlas_results
 
-        prerequisites = self.discover_prerequisites(concept)
+        prerequisites = await self.discover_prerequisites_async(concept)
         self.cache[concept] = prerequisites
 
         if self.atlas_client is not None and AtlasConcept is not None:
-            self._atlas_store_prerequisites(concept, prerequisites)
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(
+                None, partial(self._atlas_store_prerequisites, concept, prerequisites)
+            )
 
         return prerequisites
 
-    def discover_prerequisites(self, concept: str) -> List[str]:
-        """
-        Ask Claude: "To understand [concept], what must I know first?"
-
-        Returns list of 3-5 essential prerequisite concepts.
-
-        Uses Claude Sonnet 4.5's extended thinking for thorough prerequisite analysis.
-        """
+    async def discover_prerequisites_async(self, concept: str) -> List[str]:
         system_prompt = """You are an expert educator and curriculum designer.
 
 Your task is to identify the ESSENTIAL prerequisite concepts someone must
@@ -225,37 +212,56 @@ Return ONLY a JSON array of concept names, nothing else."""
 
 Return format: ["concept1", "concept2", "concept3"]'''
 
-        response = client.messages.create(
-            model=self.model,
-            max_tokens=500,
-            temperature=0.3,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_prompt}]
-        )
-
-        content = response.content[0].text.strip()
-
-        # Extract JSON array from response
         try:
-            # Try to parse directly
+            response = _ensure_client().messages.create(
+                model=self.model,
+                max_tokens=500,
+                temperature=0.3,
+                system=system_prompt,
+                messages=[{"role": "user", "content": user_prompt}],
+            )
+            content = response.content[0].text
+        except NotFoundError:
+            content = run_query_via_sdk(
+                user_prompt,
+                system_prompt=system_prompt,
+                temperature=0.3,
+                max_tokens=500,
+            )
+
+        try:
             prerequisites = json.loads(content)
         except json.JSONDecodeError:
-            # Try to extract JSON from markdown code blocks
             if "```" in content:
-                content = content.split("```")[1]
-                if content.startswith("json"):
-                    content = content[4:]
-                prerequisites = json.loads(content.strip())
+                section = content.split("```")[1]
+                if section.startswith("json"):
+                    section = section[4:]
+                prerequisites = json.loads(section.strip())
             else:
-                # Fallback: extract anything that looks like a JSON array
                 import re
-                match = re.search(r'\[.*?\]', content, re.DOTALL)
+
+                match = re.search(r"\[.*?\]", content, re.DOTALL)
                 if match:
                     prerequisites = json.loads(match.group(0))
                 else:
                     raise ValueError(f"Could not parse prerequisites from: {content}")
 
-        return prerequisites[:5]  # Limit to 5 to avoid explosion
+        return prerequisites[:5]
+
+    # ------------------------------------------------------------------
+    # Backwards-compatible sync wrappers
+    # ------------------------------------------------------------------
+    def explore(self, concept: str, depth: int = 0) -> KnowledgeNode:
+        return asyncio.run(self.explore_async(concept, depth))
+
+    def is_foundation(self, concept: str) -> bool:
+        return asyncio.run(self.is_foundation_async(concept))
+
+    def lookup_prerequisites(self, concept: str) -> List[str]:
+        return asyncio.run(self.lookup_prerequisites_async(concept))
+
+    def discover_prerequisites(self, concept: str) -> List[str]:
+        return asyncio.run(self.discover_prerequisites_async(concept))
 
     # ------------------------------------------------------------------
     # Atlas helpers

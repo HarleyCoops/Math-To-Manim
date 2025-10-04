@@ -44,3 +44,50 @@ Thumbs.db
 media/**/partial_movie_files/
 media/Tex/
 media/texts/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+coverage.xml
+*.cover
+.cache
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.bbl
+*.blg
+
+# Logs
+*.log
+logs/
+pip-log.txt
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*~
+
+# Documentation builds
+docs/_build/
+site/
