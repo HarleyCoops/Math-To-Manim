@@ -3,12 +3,17 @@ manim>=0.19.0  # For mathematical animations
 numpy>=1.22.0  # Required by Manim
 scipy>=1.7.0
 matplotlib>=3.5.0
-anthropic>=0.40.0  # Anthropic SDK for Claude API
-claude-agent-sdk>=0.1.0  # Claude Agent SDK for autonomous agents
+
+# Claude/Anthropic AI
+anthropic>=0.40.0  # Anthropic SDK for Claude API (basic client)
+claude-agent-sdk>=0.1.0  # Claude Agent SDK for advanced agentic capabilities (optional)
+
+# Web interface
 gradio>=3.50.0  # For the web interface
 python-dotenv>=1.0.0  # For environment variables
-anyio>=4.0.0  # Required for async operations in Claude SDK
-sentry-sdk>=1.40.0  # For error logging
+
+# Semantic knowledge graphs (optional - for future Nomic Atlas integration)
+nomic>=3.0.0  # Nomic Atlas SDK
 
 # Text and LaTeX rendering
 manimpango>=0.5.0  # For text rendering in Manim
@@ -25,10 +30,8 @@ pytest>=7.0.0  # For testing
 black>=22.0.0  # For code formatting
 pyyaml>=6.0
 
-# Claude Agent SDK provides all agent capabilities
-# No additional agent frameworks needed
-
-# Additional System Requirements:
+# Additional System Requirements (not installable via pip):
+#
 # FFmpeg - Required for video rendering with Manim
 # Installation options:
 # 1. Windows: Download from https://www.gyan.dev/ffmpeg/builds/
@@ -38,7 +41,10 @@ pyyaml>=6.0
 #    - Windows (Chocolatey): choco install ffmpeg
 #    - Linux: apt-get install ffmpeg
 #    - macOS: brew install ffmpeg
-#
-# Node.js - Required for Claude Agent SDK
-# Installation: https://nodejs.org/
-# After Node.js: npm install -g @anthropic-ai/claude-code
+
+# Note about claude-agent-sdk:
+# - Currently using basic anthropic SDK (simple API client)
+# - claude-agent-sdk adds: tool calling, context management, error handling
+# - Python package: pip install claude-agent-sdk
+# - Requires Python 3.10+
+# - For TypeScript/Node.js: npm install @anthropic-ai/claude-agent-sdk

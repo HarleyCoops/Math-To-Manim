@@ -13,6 +13,12 @@ from typing import List, Dict, Optional
 from dataclasses import dataclass, asdict
 from dotenv import load_dotenv
 from anthropic import Anthropic
+try:
+    from .nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError
+except ImportError:  # pragma: no cover - optional dependency
+    AtlasClient = None  # type: ignore[assignment]
+    AtlasConcept = None  # type: ignore[assignment]
+    NomicNotInstalledError = RuntimeError  # type: ignore[assignment]
 
 load_dotenv()
 
@@ -71,6 +77,23 @@ class PrerequisiteExplorer:
         self.model = model
         self.max_depth = max_depth
         self.cache = {}  # Cache prerequisite queries to avoid redundant API calls
+        self.atlas_client: Optional[AtlasClient] = None
+
+    def enable_atlas_integration(self, dataset_name: str) -> None:
+        """Enable Nomic Atlas integration for caching and search."""
+
+        if AtlasClient is None:
+            print("Nomic Atlas client not available. Skipping integration.")
+            return
+
+        try:
+            client = AtlasClient(dataset_name)  # type: ignore[call-arg]
+            client.ensure_dataset()
+        except NomicNotInstalledError:
+            print("Nomic Atlas client not available. Skipping integration.")
+            return
+
+        self.atlas_client = client
 
     def explore(self, concept: str, depth: int = 0) -> KnowledgeNode:
         """
@@ -95,14 +118,7 @@ class PrerequisiteExplorer:
                 prerequisites=[]
             )
 
-        # Check cache
-        if concept in self.cache:
-            print(f"{'  ' * depth}  → Using cached prerequisites")
-            cached_prereqs = self.cache[concept]
-        else:
-            # Discover prerequisites
-            cached_prereqs = self.discover_prerequisites(concept)
-            self.cache[concept] = cached_prereqs
+        cached_prereqs = self.lookup_prerequisites(concept)
 
         # Recurse on each prerequisite
         prerequisite_nodes = []
@@ -159,6 +175,28 @@ Examples of non-foundational concepts:
 
         answer = response.content[0].text.strip().lower()
         return answer.startswith('yes')
+
+    def lookup_prerequisites(self, concept: str) -> List[str]:
+        """Lookup prerequisites via cache, Atlas, or LLM fallback."""
+
+        if concept in self.cache:
+            print(f"  → Using in-memory cache for {concept}")
+            return self.cache[concept]
+
+        if self.atlas_client is not None:
+            atlas_results = self._atlas_fetch_prerequisites(concept)
+            if atlas_results:
+                print(f"  → Loaded {len(atlas_results)} prerequisites from Atlas")
+                self.cache[concept] = atlas_results
+                return atlas_results
+
+        prerequisites = self.discover_prerequisites(concept)
+        self.cache[concept] = prerequisites
+
+        if self.atlas_client is not None and AtlasConcept is not None:
+            self._atlas_store_prerequisites(concept, prerequisites)
+
+        return prerequisites
 
     def discover_prerequisites(self, concept: str) -> List[str]:
         """
@@ -218,6 +256,47 @@ Return format: ["concept1", "concept2", "concept3"]'''
                     raise ValueError(f"Could not parse prerequisites from: {content}")
 
         return prerequisites[:5]  # Limit to 5 to avoid explosion
+
+    # ------------------------------------------------------------------
+    # Atlas helpers
+    # ------------------------------------------------------------------
+    def _atlas_fetch_prerequisites(self, concept: str) -> List[str]:
+        if self.atlas_client is None:
+            return []
+
+        try:
+            results = self.atlas_client.search_similar(
+                concept,
+                k=5,
+                fields=["concept", "prerequisites"],
+            )
+        except Exception as exc:  # noqa: BLE001
+            print(f"Atlas fetch failed: {exc}")
+            return []
+
+        for result in results:
+            metadata = result.get("data") or result
+            if metadata.get("concept") == concept:
+                prereqs = metadata.get("prerequisites")
+                if isinstance(prereqs, list):
+                    return prereqs
+        return []
+
+    def _atlas_store_prerequisites(self, concept: str, prerequisites: List[str]) -> None:
+        if self.atlas_client is None or AtlasConcept is None:
+            return
+
+        try:
+            self.atlas_client.upsert_concepts(
+                [
+                    AtlasConcept(
+                        concept=concept,
+                        metadata={"prerequisites": prerequisites},
+                    )
+                ]
+            )
+        except Exception as exc:  # noqa: BLE001
+            print(f"Atlas store failed: {exc}")
 
 
 class ConceptAnalyzer:

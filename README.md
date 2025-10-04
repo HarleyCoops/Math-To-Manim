@@ -116,6 +116,16 @@ Build animation from foundation → target
 
 **Result**: Every animation builds conceptual understanding layer by layer, naturally creating the verbose prompts that actually work.
 
+### Future: Semantic Knowledge Graphs
+
+**Coming Soon**: Integration with [Nomic Atlas](https://atlas.nomic.ai/) to create a semantic knowledge graph:
+- **10x faster** prerequisite discovery (cached graph instead of recursive Claude calls)
+- **Interactive visualization** of entire learning paths (algebra → quantum field theory)
+- **Community knowledge** - everyone contributes to shared concept database
+- **Automatic discovery** of prerequisite relationships via embeddings
+
+See [docs/NOMIC_ATLAS_INTEGRATION.md](docs/NOMIC_ATLAS_INTEGRATION.md) for the complete vision.
+
 Read the full technical explanation: [REVERSE_KNOWLEDGE_TREE.md](REVERSE_KNOWLEDGE_TREE.md)
 
 ---
@@ -348,11 +358,23 @@ If the LLM generates broken code, I can pass it back with the error and ask for 
 - Testing architecture designed
 
 ### Next Steps
+
+**Short Term (1-2 months)**:
 1. **Complete Agent Pipeline**: Finalize the core 6 agents and bring the VideoReview step online
 2. **Testing Suite**: Comprehensive unit/integration/e2e tests
 3. **Knowledge Tree Visualization**: Web UI showing the prerequisite graph
-4. **Fine-Tuning Experiments**: RL on successful verbose prompts (future goal)
-5. **Community Contributions**: Make it easy for others to add examples
+
+**Medium Term (3-6 months)**:
+4. **Nomic Atlas Integration**: Semantic knowledge graph for instant prerequisite discovery ⭐ NEW
+   - Cache all prerequisite relationships in a shared knowledge graph
+   - 10x faster prerequisite discovery with semantic search
+   - Interactive visualization of learning paths
+   - Community-contributed concept database
+   - See [docs/NOMIC_ATLAS_INTEGRATION.md](docs/NOMIC_ATLAS_INTEGRATION.md) for full vision
+
+**Long Term (6-12 months)**:
+5. **Community Platform**: Public knowledge graph, animation gallery, learning path sharing
+6. **Fine-Tuning Experiments**: RL on successful verbose prompts
 
 ---
 
