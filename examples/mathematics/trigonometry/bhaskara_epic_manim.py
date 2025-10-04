@@ -55,7 +55,8 @@ class BhaskaraTitle(Scene):
     """Scene 1: A luminous title card for the formula."""
     def construct(self):
         # Set a gradient background for a premium feel
-        self.camera.background_color = ["#1E1E2A", "#10101A"]
+        # Manim background expects a single color; use the primary hue to avoid render errors
+        self.camera.background_color = "#1E1E2A"
 
         # Create the title card using the helper function
         formula_mob = get_title_card(FORMULA_IMG_PATH)
@@ -146,9 +147,19 @@ class CompareGraphs(Scene):
             x_length=10,
             y_length=6,
             axis_config={"color": GRAY_A},
-            x_axis_config={"numbers_to_include": [PI / 2, PI], "numbers_with_elongated_ticks": [PI/2, PI]},
+            x_axis_config={
+                "numbers_to_include": [PI / 2, PI],
+                "numbers_with_elongated_ticks": [PI / 2, PI],
+                "include_numbers": False,
+            },
             y_axis_config={"numbers_to_include": [0.5, 1]},
-        ).add_coordinates({PI/2: r"\frac{\pi}{2}", PI: r"\pi", 0.5: "0.5", 1: "1"})
+        )
+
+        ax.add_coordinates({
+            PI / 2: MathTex(r"\frac{\pi}{2}"),
+            PI: MathTex(r"\pi"),
+        })
+        ax.x_axis.numbers.set_opacity(0)
 
         # Labels for axes
         y_label = ax.get_y_axis_label("y", edge=UP, direction=UP, buff=0.4)
@@ -160,8 +171,16 @@ class CompareGraphs(Scene):
         bhaskara_graph = ax.plot(bhaskara_approx, color=TEAL, x_range=[0, PI])
 
         # Create labels for the graphs
-        sin_label = MathTex(r"\sin(x)", color=YELLOW).next_to(ax.c2p(2.5, np.sin(2.5)), UP)
-        bhaskara_label = MathTex(r"\text{Bhāskara}(x)", color=TEAL).next_to(ax.c2p(0.5, bhaskara_approx(0.5)), UP)
+        sin_label = (
+            MathTex(r"\sin(x)", color=YELLOW)
+            .move_to(ax.c2p(2.6, np.sin(2.6)))
+            .shift(0.4 * UP + 0.2 * RIGHT)
+        )
+        bhaskara_label = (
+            MathTex(r"\text{Bhāskara}(x)", color=TEAL)
+            .move_to(ax.c2p(1.0, bhaskara_approx(1.0)))
+            .shift(0.4 * LEFT + 0.3 * UP)
+        )
 
         # Highlight key touchpoints
         p1 = Dot(ax.c2p(PI / 2, 1), color=RED)
@@ -195,9 +214,15 @@ class ErrorBand(Scene):
             x_length=10,
             y_length=6,
             axis_config={"color": GRAY_A},
-            x_axis_config={"numbers_to_include": [PI / 2, PI]},
+            x_axis_config={
+                "numbers_to_include": [PI / 2, PI],
+                "include_numbers": False,
+            },
             y_axis_config={"decimal_number_config": {"num_decimal_places": 3}},
-        ).add_coordinates({PI/2: r"\frac{\pi}{2}", PI: r"\pi"})
+        )
+
+        ax.add_coordinates({PI / 2: MathTex(r"\frac{\pi}{2}"), PI: MathTex(r"\pi")})
+        ax.x_axis.numbers.set_opacity(0)
 
         title = Title("Error:  e(x) = Bhāskara(x) - sin(x)")
         self.play(Write(title))

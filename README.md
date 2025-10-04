@@ -122,7 +122,7 @@ Read the full technical explanation: [REVERSE_KNOWLEDGE_TREE.md](REVERSE_KNOWLED
 
 ## How It Works: The Agent Pipeline
 
-I've built a 6-agent system powered by Claude Sonnet 4.5:
+I've built a 6-agent system powered by Claude Sonnet 4.5 (with a 7th VideoReview agent underway):
 
 ### 1. ConceptAnalyzer
 - Parses your casual prompt
@@ -154,6 +154,11 @@ I've built a 6-agent system powered by Claude Sonnet 4.5:
 - Translates verbose prompt → Manim code
 - Handles LaTeX rendering correctly
 - Produces working Python scenes
+
+### 7. VideoReview *(Planned)*
+- Automates post-render QA for the generated MP4
+- Uses the video review toolkit to extract frames and build a web player
+- Prepares review artifacts (metadata, frame set, HTML player) for fast iteration
 
 **Technology**: Claude Agent SDK with automatic context management, built-in tools, and MCP integration.
 
@@ -343,7 +348,7 @@ If the LLM generates broken code, I can pass it back with the error and ask for 
 - Testing architecture designed
 
 ### Next Steps
-1. **Complete Agent Pipeline**: Finish implementing all 6 agents
+1. **Complete Agent Pipeline**: Finalize the core 6 agents and bring the VideoReview step online
 2. **Testing Suite**: Comprehensive unit/integration/e2e tests
 3. **Knowledge Tree Visualization**: Web UI showing the prerequisite graph
 4. **Fine-Tuning Experiments**: RL on successful verbose prompts (future goal)

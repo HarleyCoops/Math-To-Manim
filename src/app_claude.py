@@ -4,9 +4,23 @@ Powered by Claude Sonnet 4.5 and the Claude Agent SDK
 """
 
 import os
+from pathlib import Path
+from typing import Optional
+
 from dotenv import load_dotenv
 import gradio as gr
 from anthropic import Anthropic
+
+# Local agent imports (support both package and script execution)
+try:  # pragma: no cover - import shim
+    from .agents import VideoReviewAgent, VideoReviewResult  # type: ignore[attr-defined]
+except ImportError:  # pragma: no cover - fallback when running as `python src/app_claude.py`
+    import sys
+
+    SRC_DIR = Path(__file__).resolve().parent
+    if str(SRC_DIR) not in sys.path:
+        sys.path.append(str(SRC_DIR))
+    from agents import VideoReviewAgent, VideoReviewResult  # type: ignore[import]
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,6 +30,9 @@ client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 # Model configuration
 CLAUDE_MODEL = "claude-sonnet-4.5-20251022"  # Latest Sonnet 4.5
+
+# Optional video review agent (used once we have generated output)
+video_review_agent: Optional[VideoReviewAgent] = None
 
 # Verify API key is present
 if not os.getenv("ANTHROPIC_API_KEY"):
@@ -83,6 +100,26 @@ The output should be detailed enough for an AI to generate working Manim Communi
         return format_latex(response.content[0].text)
     except Exception as e:
         return f"Error: {str(e)}"
+
+
+def run_video_review(video_path: str) -> str:
+    """Invoke the prototype VideoReview agent on a rendered video."""
+
+    global video_review_agent  # noqa: PLW0603
+
+    if video_review_agent is None:
+        video_review_agent = VideoReviewAgent()
+
+    try:
+        result: VideoReviewResult = video_review_agent.review(Path(video_path))
+        return (
+            "Video review completed.\n\n"
+            f"Frames directory: {result.frames_dir}\n"
+            f"Web player: {result.web_player_path}\n"
+            f"Metadata: {result.metadata}\n"
+        )
+    except Exception as exc:  # noqa: BLE001
+        return f"Video review failed: {exc}"
 
 
 def chat_with_claude(message, history):
@@ -226,6 +263,30 @@ with gr.Blocks(theme="soft", title="Math-To-Manim - Claude Sonnet 4.5") as iface
             label="Knowledge Tree Visualization (Coming Soon)",
             interactive=False
         )
+
+    with gr.Tab("Video Review (Prototype)"):
+        gr.Markdown("""
+        ### Automate Post-Render QA (Prototype)
+
+        Once your animation is rendered to MP4, you can point the VideoReview agent at it.
+
+        The agent will:
+        - extract frames into `media/review_frames/<scene>/`
+        - generate an HTML5 review player
+        - collect video metadata from ffprobe
+
+        This tab currently calls the agent directly; soon it will run automatically at the end of the pipeline.
+        """)
+
+        review_input = gr.Textbox(
+            label="Path to rendered MP4",
+            placeholder="media/videos/bhaskara_epic_manim/480p15/BhaskaraEpic.mp4",
+            lines=1,
+        )
+        review_button = gr.Button("Run Video Review", variant="primary")
+        review_output = gr.Textbox(label="Agent Output", lines=6)
+
+        review_button.click(fn=run_video_review, inputs=review_input, outputs=review_output)
 
     with gr.Tab("About"):
         gr.Markdown("""
