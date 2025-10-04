@@ -128,10 +128,10 @@ answer = response.content[0].text
 ```
 
 ### Key Differences
-1. **Model name**: `deepseek-reasoner` → `claude-sonnet-4.5-20251022`
-2. **API style**: OpenAI-compatible → Native Anthropic
-3. **Response format**: `.choices[0].message.content` → `.content[0].text`
-4. **System prompts**: Passed in messages → Dedicated `system` parameter
+1. **Model name**: `deepseek-reasoner` -> `claude-sonnet-4.5-20251022`
+2. **API style**: OpenAI-compatible -> Native Anthropic
+3. **Response format**: `.choices[0].message.content` -> `.content[0].text`
+4. **System prompts**: Passed in messages -> Dedicated `system` parameter
 5. **Max tokens**: Must be specified explicitly in Claude
 
 ---
@@ -164,12 +164,12 @@ python app_claude.py
 ### Conceptual (No Code Changes Needed)
 
 The reverse knowledge tree algorithm remains **identical**:
-1. Analyze user input → extract core concept
+1. Analyze user input -> extract core concept
 2. Recursively ask "What must I understand BEFORE X?"
-3. Build tree from foundation → target
+3. Build tree from foundation -> target
 4. Enrich nodes with math, visuals, narrative
 5. Generate 2000+ token verbose prompt
-6. Feed to AI → Manim code
+6. Feed to AI -> Manim code
 
 ### Implementation (Major Changes)
 

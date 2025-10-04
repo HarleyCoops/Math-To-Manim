@@ -17,13 +17,25 @@ from anthropic import Anthropic
 from anthropic import NotFoundError
 from dotenv import load_dotenv
 
-from .claude_agent_runtime import run_query_via_sdk
+# Import from same package using absolute imports
 try:
-    from .nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError
+    from src.agents.claude_agent_runtime import run_query_via_sdk
+except ImportError:
+    # Fallback for direct execution
+    try:
+        from claude_agent_runtime import run_query_via_sdk
+    except ImportError:
+        run_query_via_sdk = None  # type: ignore[assignment]
+
+try:
+    from src.agents.nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError
 except ImportError:  # pragma: no cover - optional dependency
-    AtlasClient = None  # type: ignore[assignment]
-    AtlasConcept = None  # type: ignore[assignment]
-    NomicNotInstalledError = RuntimeError  # type: ignore[assignment]
+    try:
+        from nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError
+    except ImportError:
+        AtlasClient = None  # type: ignore[assignment]
+        AtlasConcept = None  # type: ignore[assignment]
+        NomicNotInstalledError = RuntimeError  # type: ignore[assignment]
 
 load_dotenv()
 
@@ -40,7 +52,7 @@ def _ensure_client() -> Anthropic:
     return CLI_CLIENT
 
 
-CLAUDE_MODEL = "claude-sonnet-4.5-20251022"
+CLAUDE_MODEL = "claude-sonnet-4-5"  # Claude Sonnet 4.5
 
 
 @dataclass
@@ -113,7 +125,7 @@ class PrerequisiteExplorer:
         print(f"{'  ' * depth}Exploring: {concept} (depth {depth})")
 
         if depth >= self.max_depth or await self.is_foundation_async(concept):
-            print(f"{'  ' * depth}  → Foundation concept")
+            print(f"{'  ' * depth}  -> Foundation concept")
             return KnowledgeNode(concept=concept, depth=depth, is_foundation=True, prerequisites=[])
 
         prerequisites = await self.lookup_prerequisites_async(concept)
@@ -168,7 +180,7 @@ Examples of non-foundational concepts:
 
     async def lookup_prerequisites_async(self, concept: str) -> List[str]:
         if concept in self.cache:
-            print(f"  → Using in-memory cache for {concept}")
+            print(f"  -> Using in-memory cache for {concept}")
             return self.cache[concept]
 
         if self.atlas_client is not None:
@@ -177,7 +189,7 @@ Examples of non-foundational concepts:
                 None, partial(self._atlas_fetch_prerequisites, concept)
             )
             if atlas_results:
-                print(f"  → Loaded {len(atlas_results)} prerequisites from Atlas")
+                print(f"  -> Loaded {len(atlas_results)} prerequisites from Atlas")
                 self.cache[concept] = atlas_results
                 return atlas_results
 
@@ -349,6 +361,7 @@ Example:
   "goal": "Understand how entangled particles maintain correlation across distances"
 }}'''
 
+        client = _ensure_client()
         response = client.messages.create(
             model=self.model,
             max_tokens=500,
@@ -433,7 +446,7 @@ def demo():
             print(f"\n[4] Saved tree to: {output_file}")
 
         except Exception as e:
-            print(f"\n❌ Error: {e}")
+            print(f"\n[FAIL] Error: {e}")
             import traceback
             traceback.print_exc()
 
@@ -444,7 +457,7 @@ def demo():
 if __name__ == "__main__":
     # Verify API key is set
     if not os.getenv("ANTHROPIC_API_KEY"):
-        print("❌ Error: ANTHROPIC_API_KEY environment variable not set.")
+        print("[FAIL] Error: ANTHROPIC_API_KEY environment variable not set.")
         print("\nPlease set your Claude API key:")
         print("  1. Create a .env file in the project root")
         print("  2. Add: ANTHROPIC_API_KEY=your_key_here")

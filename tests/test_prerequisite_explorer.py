@@ -456,7 +456,7 @@ class TestIntegration:
         reason="ANTHROPIC_API_KEY not set"
     )
     def test_full_pipeline_simple_concept(self):
-        """Test complete flow: analyze → explore → verify"""
+        """Test complete flow: analyze -> explore -> verify"""
         # Step 1: Analyze concept
         analyzer = ConceptAnalyzer()
         analysis = analyzer.analyze("Explain basic calculus")

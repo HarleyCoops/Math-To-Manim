@@ -89,7 +89,7 @@ python tests/live_test_runner.py --suite all
 Running: ConceptAnalyzer.test_analyze_physics_concept
 ================================================================================
 
-✅ PASS: ConceptAnalyzer.test_analyze_physics_concept
+[DONE] PASS: ConceptAnalyzer.test_analyze_physics_concept
    Duration: 1234.56ms
    Message: Successfully analyzed physics concept
    Details: {
@@ -101,10 +101,10 @@ Running: ConceptAnalyzer.test_analyze_physics_concept
 ```
 
 **Status Indicators**:
-- ✅ PASS - Test succeeded
-- ❌ FAIL - Test failed (logic error)
-- 💥 ERROR - Exception thrown
-- ⏭️ SKIP - Test skipped (e.g., no API key)
+- [DONE] PASS - Test succeeded
+- [FAIL] FAIL - Test failed (logic error)
+- [ERROR] ERROR - Exception thrown
+- [SKIP] SKIP - Test skipped (e.g., no API key)
 
 ### JSON Output Example
 
@@ -173,7 +173,7 @@ def check_depth(node):
         check_depth(p)
 
 check_depth(tree)
-print("✓ Depth limit respected!")
+print("[OK] Depth limit respected!")
 ```
 
 ---
@@ -271,6 +271,6 @@ def test_my_feature():
 
 ---
 
-**Happy Testing!** 🧪
+**Happy Testing!** [TEST]
 
 **Last Updated**: 2025-10-04

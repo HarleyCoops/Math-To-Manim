@@ -49,9 +49,9 @@ python scripts/render_examples_as_gifs.py --max-scenes 1
 ```
 
 **Quality Recommendations:**
-- **Low (`-q l`)**: 480p, 15fps - Fast, small files (~500KB-2MB) ✅ Recommended for previews
+- **Low (`-q l`)**: 480p, 15fps - Fast, small files (~500KB-2MB) [DONE] Recommended for previews
 - **Medium (`-q m`)**: 720p, 30fps - Balanced (~2-5MB)
-- **High (`-q h`)**: 1080p, 60fps - Large files (>5MB) ⚠️ Not recommended for GitHub
+- **High (`-q h`)**: 1080p, 60fps - Large files (>5MB) [WARNING] Not recommended for GitHub
 
 ### 2. Verify GIF Placement
 

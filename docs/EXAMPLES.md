@@ -250,11 +250,11 @@ manim -qk examples/physics/gravity/gravitational_wave.py GravitationalWaveScene
 
 For backward compatibility, the old directory structure is preserved. Here's the mapping:
 
-**Old Location** → **New Location**
-- `Scripts/*.py` → `examples/<category>/<subcategory>/*.py`
-- `app.py` → `src/app.py`
-- `app_claude.py` → `src/app_claude.py`
-- `prerequisite_explorer.py` → `src/agents/prerequisite_explorer.py`
+**Old Location** -> **New Location**
+- `Scripts/*.py` -> `examples/<category>/<subcategory>/*.py`
+- `app.py` -> `src/app.py`
+- `app_claude.py` -> `src/app_claude.py`
+- `prerequisite_explorer.py` -> `src/agents/prerequisite_explorer.py`
 
 See [REORGANIZATION_PLAN.md](../REORGANIZATION_PLAN.md) for complete mapping.
 

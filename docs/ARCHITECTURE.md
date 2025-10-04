@@ -7,7 +7,7 @@ This document outlines the architecture of the Math-To-Manim system, including t
 The current Math-To-Manim system follows a simple workflow:
 
 ```
-User Prompt (LaTeX-rich) → DeepSeek/Gemini/Grok3 → Manim Code → Rendering → Animation
+User Prompt (LaTeX-rich) -> DeepSeek/Gemini/Grok3 -> Manim Code -> Rendering -> Animation
 ```
 
 ### Components
@@ -41,7 +41,7 @@ User Prompt (LaTeX-rich) → DeepSeek/Gemini/Grok3 → Manim Code → Rendering 
 The planned smolagents integration will enhance the system with a more sophisticated workflow:
 
 ```
-User Prompt (Simple) → Smolagent → Detailed LaTeX-rich Prompt → DeepSeek/Gemini/Grok3 → Manim Code → Rendering → Animation
+User Prompt (Simple) -> Smolagent -> Detailed LaTeX-rich Prompt -> DeepSeek/Gemini/Grok3 -> Manim Code -> Rendering -> Animation
 ```
 
 ### New Components

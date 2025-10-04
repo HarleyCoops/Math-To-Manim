@@ -3,7 +3,7 @@
 
 **Powered by**: Claude Sonnet 4.5 + Claude Agent SDK
 
-**Core Insight**: Don't train on examples. Instead, build a knowledge tree by asking "What do I need to understand BEFORE this?" recursively until reaching foundational concepts, then animate from foundation → target.
+**Core Insight**: Don't train on examples. Instead, build a knowledge tree by asking "What do I need to understand BEFORE this?" recursively until reaching foundational concepts, then animate from foundation -> target.
 
 **Technology**: Uses Claude Sonnet 4.5's superior reasoning capabilities via the Claude Agent SDK - no training data required!
 
@@ -11,7 +11,7 @@
 
 ## The Problem with Training Data Approach
 
-**Wrong**: "Learn patterns from simple → verbose prompt pairs"
+**Wrong**: "Learn patterns from simple -> verbose prompt pairs"
 - Requires massive training datasets
 - Limited to what we've seen before
 - Doesn't generalize to new topics
@@ -32,9 +32,9 @@
 User: "Explain cosmology to me"
 
 Concept Agent asks:
-1. What is the core concept? → "cosmology"
-2. What domain? → "physics/astronomy"
-3. What level? → "beginner" (inferred from casual language)
+1. What is the core concept? -> "cosmology"
+2. What domain? -> "physics/astronomy"
+3. What level? -> "beginner" (inferred from casual language)
 ```
 
 ### Step 2: Prerequisite Discovery (Recursive)
@@ -50,14 +50,14 @@ Answer (from Research Agent):
 
 For EACH prerequisite, ask again:
 "To understand General Relativity, what must I know first?"
-  → Special Relativity
-  → Differential Geometry (simplified)
-  → Gravitational Fields
+  -> Special Relativity
+  -> Differential Geometry (simplified)
+  -> Gravitational Fields
 
 "To understand Special Relativity, what must I know first?"
-  → Galilean Relativity
-  → Speed of light constancy
-  → Lorentz Transformations
+  -> Galilean Relativity
+  -> Speed of light constancy
+  -> Lorentz Transformations
 
 ... continue until hitting FOUNDATION concepts that need no prerequisites
 ```
@@ -119,7 +119,7 @@ cosmology
     └── galaxy_rotation [FOUNDATION]
 ```
 
-### Step 5: Enrichment Walk (Foundation → Target)
+### Step 5: Enrichment Walk (Foundation -> Target)
 ```
 Now traverse the tree FROM the leaves UP:
 
@@ -138,7 +138,7 @@ Now traverse the tree FROM the leaves UP:
 
 3. Repeat until reaching target concept
 
-Result: Complete narrative arc from basics → cosmology
+Result: Complete narrative arc from basics -> cosmology
 ```
 
 ---
@@ -301,7 +301,7 @@ def design_visuals(enriched_node: EnrichedNode) -> VisualSpec:
     4. How to connect to what came before visually
     5. Estimated duration (3-30 seconds)
 
-    Remember: This is part of a larger animation building from simple → complex.
+    Remember: This is part of a larger animation building from simple -> complex.
     """
 
     return VisualSpec(
@@ -319,7 +319,7 @@ def design_visuals(enriched_node: EnrichedNode) -> VisualSpec:
 ```python
 def compose_narrative(knowledge_tree: KnowledgeNode) -> Narrative:
     """
-    Walk the tree from foundation → target, creating a coherent story.
+    Walk the tree from foundation -> target, creating a coherent story.
     This generates the VERBOSE PROMPT.
     """
 
@@ -357,7 +357,7 @@ def compose_narrative(knowledge_tree: KnowledgeNode) -> Narrative:
         "## Scene Overview",
         f"This animation builds {knowledge_tree.concept} from first principles.",
         f"Total concepts: {len(ordered_concepts)}",
-        f"Progression: {' → '.join([c.concept for c in ordered_concepts])}",
+        f"Progression: {' -> '.join([c.concept for c in ordered_concepts])}",
         "",
         "## Animation Sequence",
         *narrative_parts
@@ -410,24 +410,24 @@ def generate_manim_code(narrative: Narrative) -> str:
   "domain": "physics/astronomy",
   "level": "beginner",
   "visual_potential": "excellent",
-  "goal": "Big Bang → present day universe"
+  "goal": "Big Bang -> present day universe"
 }
 ```
 
 #### 2. Prerequisite Explorer (Recursive)
 ```
 Depth 0: "To understand cosmology, what must I know?"
-  → General Relativity, Hubble's Law, Redshift, CMB
+  -> General Relativity, Hubble's Law, Redshift, CMB
 
 Depth 1: "To understand General Relativity, what must I know?"
-  → Special Relativity, Curved Spacetime, Gravity
+  -> Special Relativity, Curved Spacetime, Gravity
 
 Depth 2: "To understand Special Relativity, what must I know?"
-  → Galilean Relativity, Speed of Light, Reference Frames
+  -> Galilean Relativity, Speed of Light, Reference Frames
 
 Depth 3: Foundation reached
-  → All concepts here are understandable to high school graduate
-  → STOP recursion
+  -> All concepts here are understandable to high school graduate
+  -> STOP recursion
 ```
 
 **Resulting Tree**:
@@ -481,7 +481,7 @@ For each concept, specifies how to animate:
   },
   'redshift': {
     'elements': ['wave', 'stretching_space', 'color_gradient'],
-    'colors': 'gradient from BLUE → RED',
+    'colors': 'gradient from BLUE -> RED',
     'animation': 'Wave stretches as space expands, color shifts',
     'duration': 20
   },
@@ -534,7 +534,7 @@ Animate the scale factor $a(t)$ growing from 0 to present day...
 **Total**: ~2400 tokens of rich, detailed prompt
 
 #### 6. Code Generator
-Feed verbose prompt to DeepSeek R1 → produces working Manim code (your existing strength!)
+Feed verbose prompt to DeepSeek R1 -> produces working Manim code (your existing strength!)
 
 ---
 
@@ -569,8 +569,8 @@ Feed verbose prompt to DeepSeek R1 → produces working Manim code (your existin
 ```python
 # Start simple - implement these 3 first:
 1. Concept Analyzer (parse user intent)
-2. Prerequisite Explorer (recursive tree builder) ⭐ KEY AGENT
-3. Narrative Composer (tree → verbose prompt)
+2. Prerequisite Explorer (recursive tree builder) [*] KEY AGENT
+3. Narrative Composer (tree -> verbose prompt)
 
 # Test on 5 diverse topics:
 - Pythagorean theorem (simple)
@@ -588,7 +588,7 @@ Feed verbose prompt to DeepSeek R1 → produces working Manim code (your existin
 
 ### Phase 3: Polish & Integrate (Weeks 5-6)
 ```python
-6. Code Generator (verbose prompt → Manim code)
+6. Code Generator (verbose prompt -> Manim code)
    - Use your existing DeepSeek pipeline
    - Add validation/retry logic
 7. Quality checks
@@ -669,7 +669,7 @@ class ReverseKnowledgeTreeOrchestrator:
         # Step 4: Design visuals for each node
         visual_tree = self.visual_designer.design_tree(enriched_tree)
 
-        # Step 5: Compose narrative (foundation → target)
+        # Step 5: Compose narrative (foundation -> target)
         narrative = self.narrative_composer.compose(visual_tree)
 
         # Step 6: Generate Manim code

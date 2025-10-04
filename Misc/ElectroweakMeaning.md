@@ -62,7 +62,7 @@ UpdateFromAlphaFunc(...)  # Expands radius from 0.1 to 5
 ```
 - **Purple Sphere** = Higgs field permeating space
 - **Opacity Pulse**:
-  - 0.3 → 0.3 = Constant visibility
+  - 0.3 -> 0.3 = Constant visibility
   - Expansion = Cosmological inflation analogy
   - There-and-back motion = False vacuum fluctuations
 

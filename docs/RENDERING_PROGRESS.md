@@ -5,7 +5,7 @@
 
 ## Current Status
 
-### ✅ Successfully Rendered
+### [DONE] Successfully Rendered
 
 1. **pythagorean.py** - EnhancedPythagorean
    - Status: SUCCESS
@@ -34,7 +34,7 @@
    - Status: RENDERING
    - Note: Many animations (13+), taking several minutes
 
-### ❌ Known Issues
+### [FAIL] Known Issues
 
 5. **Batch Testing Script**
    - Status: FAILED
@@ -111,8 +111,8 @@
 
 ## File Size Guidelines
 
-- ✅ **Acceptable**: < 10MB (GitHub will render inline)
-- ⚠️  **Large**: 10-100MB (GitHub will store but won't render)
-- ❌ **Too Large**: > 100MB (Exceeds GitHub file size limit)
+- [DONE] **Acceptable**: < 10MB (GitHub will render inline)
+- [WARNING]  **Large**: 10-100MB (GitHub will store but won't render)
+- [FAIL] **Too Large**: > 100MB (Exceeds GitHub file size limit)
 
 **Recommendation**: For animations > 30 seconds or with complex 3D, stick with MP4 format.

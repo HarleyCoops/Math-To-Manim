@@ -10,7 +10,7 @@
 ### 1. Strategic Documentation
 
 #### [ROADMAP.md](ROADMAP.md) - 12-Month Development Plan
-- 5-phase rollout (Foundation → Agents → Orchestration → Intelligence → Community)
+- 5-phase rollout (Foundation -> Agents -> Orchestration -> Intelligence -> Community)
 - Multi-agent system architecture
 - Timeline, metrics, and resource requirements
 - **Updated** to reflect reverse knowledge tree approach (no training data!)
@@ -26,17 +26,17 @@
 3. For EACH prerequisite, ask again: "To understand General Relativity, what first?"
    - Answer: Special Relativity, Curved Spacetime, Gravity
 4. Continue until hitting foundation concepts (high school level)
-5. Build knowledge tree from leaves (foundation) → root (target concept)
+5. Build knowledge tree from leaves (foundation) -> root (target concept)
 6. Walk tree upward, enriching each node with math, visuals, narrative
 7. Generate 2000+ token verbose prompt from the enriched tree
-8. Feed to your existing Code Agent → working Manim animation!
+8. Feed to your existing Code Agent -> working Manim animation!
 
 **Why this is brilliant**:
-- ✅ No training data required
-- ✅ Works on ANY topic (not limited to seen examples)
-- ✅ Self-improving as base LLMs improve
-- ✅ Discovers connections dynamically
-- ✅ Complete conceptual understanding guaranteed
+- [DONE] No training data required
+- [DONE] Works on ANY topic (not limited to seen examples)
+- [DONE] Self-improving as base LLMs improve
+- [DONE] Discovers connections dynamically
+- [DONE] Complete conceptual understanding guaranteed
 
 #### [AGENT_ARCHITECTURE.md](AGENT_ARCHITECTURE.md) - Technical Deep Dive
 Detailed specifications for the 6 core agents (kept for reference, but superseded by reverse tree approach)
@@ -50,26 +50,26 @@ Professional Python project layout for when you're ready to refactor
 
 ### OLD Approach (What We Moved Away From)
 ```
-Simple prompt → [Train ML model on examples] → Verbose prompt → Code
+Simple prompt -> [Train ML model on examples] -> Verbose prompt -> Code
 Problems: Needs datasets, limited to seen patterns, doesn't generalize
 ```
 
 ### NEW Approach (Reverse Knowledge Tree)
 ```
 "Explain X"
-  ↓
+  v
 Concept Analyzer: Parse intent
-  ↓
-Prerequisite Explorer: Build tree recursively ⭐ KEY INNOVATION
-  ↓
+  v
+Prerequisite Explorer: Build tree recursively [*] KEY INNOVATION
+  v
 Mathematical Enricher: Add equations to each node
-  ↓
+  v
 Visual Designer: Specify animations for each concept
-  ↓
+  v
 Narrative Composer: Walk tree, stitch into 2000+ token prompt
-  ↓
-Code Generator: Feed to DeepSeek R1 → Manim code
-  ↓
+  v
+Code Generator: Feed to DeepSeek R1 -> Manim code
+  v
 Render animation!
 ```
 
@@ -82,7 +82,7 @@ Render animation!
 
 1. **ConceptAnalyzer**: Parses user input
    ```python
-   "Explain cosmology" → {
+   "Explain cosmology" -> {
        'core_concept': 'cosmology',
        'domain': 'physics/astronomy',
        'level': 'beginner',
@@ -92,7 +92,7 @@ Render animation!
 
 2. **PrerequisiteExplorer**: Recursively builds knowledge tree
    ```python
-   explore("cosmology") →
+   explore("cosmology") ->
      ├─ general_relativity
      │  ├─ special_relativity
      │  │  ├─ galilean_relativity [FOUNDATION]
@@ -171,7 +171,7 @@ It will demo building knowledge trees for:
 ### Week 2: Narrative Composition
 4. **Implement Narrative Composer**
    ```python
-   # Walk tree from foundation → target
+   # Walk tree from foundation -> target
    # Stitch into 2000+ token prompt
    - Logical flow
    - Visual continuity
@@ -262,7 +262,7 @@ It will demo building knowledge trees for:
 - [ ] Knowledge trees average 3-4 levels deep
 - [ ] Foundation detection accuracy >90%
 - [ ] Verbose prompts average 2000+ tokens
-- [ ] End-to-end: "Explain X" → working animation in <5 min
+- [ ] End-to-end: "Explain X" -> working animation in <5 min
 
 ### Phase 2 (Months 2-3)
 - [ ] 80%+ success rate (animations render without errors)
@@ -327,7 +327,7 @@ Math-To-Manim/
 ## What Makes This Special
 
 ### Not Just Another AI Tool
-This isn't "prompt in → code out" magic. It's:
+This isn't "prompt in -> code out" magic. It's:
 
 1. **Pedagogically sound**: Builds from foundations
 2. **Transparent**: Users see the knowledge tree

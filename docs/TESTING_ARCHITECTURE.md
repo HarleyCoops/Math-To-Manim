@@ -9,7 +9,7 @@
 
 ### What We're Testing
 1. **Agent Reasoning Quality**: Does Claude correctly identify prerequisites?
-2. **Knowledge Tree Structure**: Are trees logically sound foundation → target?
+2. **Knowledge Tree Structure**: Are trees logically sound foundation -> target?
 3. **Prompt Quality**: Do generated prompts produce working Manim code?
 4. **Code Generation**: Does the final Manim code compile and render?
 5. **Mathematical Accuracy**: Are formulas and concepts correct?

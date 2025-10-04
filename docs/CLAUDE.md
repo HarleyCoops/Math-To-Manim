@@ -16,13 +16,13 @@ Math-To-Manim transforms simple prompts like "explain cosmology" into profession
 **Pipeline Flow**:
 ```
 "Explain cosmology"
-  → ConceptAnalyzer (parse intent via Claude)
-  → PrerequisiteExplorer (build tree recursively) ⭐ KEY INNOVATION
-  → MathematicalEnricher (add equations to nodes)
-  → VisualDesigner (specify animations)
-  → NarrativeComposer (tree → 2000+ token verbose prompt)
-  → CodeGenerator (verbose prompt → Manim code via Claude Sonnet 4.5)
-  → Render animation
+  -> ConceptAnalyzer (parse intent via Claude)
+  -> PrerequisiteExplorer (build tree recursively) [*] KEY INNOVATION
+  -> MathematicalEnricher (add equations to nodes)
+  -> VisualDesigner (specify animations)
+  -> NarrativeComposer (tree -> 2000+ token verbose prompt)
+  -> CodeGenerator (verbose prompt -> Manim code via Claude Sonnet 4.5)
+  -> Render animation
 ```
 
 The **PrerequisiteExplorer** is the critical component that recursively asks "To understand X, what must I know first?" until reaching foundation concepts (high school level), then builds up from there.
@@ -140,15 +140,15 @@ Math-To-Manim/
 
 ### Current Status
 
-✅ **Implemented**:
-1. **ConceptAnalyzer** - Parses user input → core concept, domain, level
+[DONE] **Implemented**:
+1. **ConceptAnalyzer** - Parses user input -> core concept, domain, level
 2. **PrerequisiteExplorer** - Recursively builds knowledge tree (CORE INNOVATION)
-3. **CodeGenerator** - Verbose prompt → Manim code (in app_claude.py)
+3. **CodeGenerator** - Verbose prompt -> Manim code (in app_claude.py)
 
-🚧 **Planned**:
+[WIP] **Planned**:
 4. **MathematicalEnricher** - Add equations/derivations to tree nodes
 5. **VisualDesigner** - Specify colors, camera movements, animations
-6. **NarrativeComposer** - Tree → 2000+ token verbose prompt
+6. **NarrativeComposer** - Tree -> 2000+ token verbose prompt
 
 ### Data Structures
 
@@ -257,20 +257,20 @@ manim -pql examples/physics/quantum/my_animation.py SceneName
 ## Development Status
 
 **Working**:
-- ✅ PrerequisiteExplorer + ConceptAnalyzer (recursive tree building)
-- ✅ Verbose prompt → Manim code (Claude Sonnet 4.5)
-- ✅ 55+ example animations across domains
-- ✅ Web interface (app_claude.py)
+- [DONE] PrerequisiteExplorer + ConceptAnalyzer (recursive tree building)
+- [DONE] Verbose prompt -> Manim code (Claude Sonnet 4.5)
+- [DONE] 55+ example animations across domains
+- [DONE] Web interface (app_claude.py)
 
 **In Progress**:
-- 🚧 MathematicalEnricher (equations for tree nodes)
-- 🚧 VisualDesigner (animation specifications)
-- 🚧 NarrativeComposer (tree → verbose prompt)
+- [WIP] MathematicalEnricher (equations for tree nodes)
+- [WIP] VisualDesigner (animation specifications)
+- [WIP] NarrativeComposer (tree -> verbose prompt)
 
 **Planned**:
-- 📋 Full agent orchestration
-- 📋 Knowledge tree web visualization
-- 📋 Comprehensive testing suite
+- [TODO] Full agent orchestration
+- [TODO] Knowledge tree web visualization
+- [TODO] Comprehensive testing suite
 
 See [ROADMAP.md](ROADMAP.md) for complete 12-month development plan.
 

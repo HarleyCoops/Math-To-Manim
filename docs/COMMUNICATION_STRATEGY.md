@@ -37,7 +37,7 @@ When people hear "Math-To-Manim," they might think:
 
 **Proof Points**:
 - Recursive prerequisite discovery (show the tree)
-- Foundation-first building (high school → PhD)
+- Foundation-first building (high school -> PhD)
 - Works on ANY topic (not limited to training data)
 
 ### 2. Reverse Knowledge Trees (The Innovation)
@@ -85,7 +85,7 @@ Quantum Field Theory
 
 > **"What if AI could think like a teacher, not a pattern matcher?"**
 
-Transform "explain cosmology" → complete knowledge tree → professional Manim animation.
+Transform "explain cosmology" -> complete knowledge tree -> professional Manim animation.
 No training data. Just recursive reasoning.
 ```
 
@@ -98,7 +98,7 @@ After "The Innovation" section, add:
 
 [Interactive diagram showing the full tree from "algebra" to "cosmology"]
 
-Click to explore → See how every concept builds on foundations
+Click to explore -> See how every concept builds on foundations
 ```
 
 ### 3. One Killer Demo Video
@@ -130,7 +130,7 @@ Click to explore → See how every concept builds on foundations
 
 **Message**: "Automatically generate pedagogically correct learning paths"
 
-**Hook**: Show a tree for a complex topic (QFT) → demonstrate it builds from high school physics
+**Hook**: Show a tree for a complex topic (QFT) -> demonstrate it builds from high school physics
 
 **CTA**: "Use this to design your curriculum"
 
@@ -182,7 +182,7 @@ Then: "What before general relativity?"
 Recursively building a complete knowledge tree.
 
 **Tweet 3**:
-The result? Animations that teach from foundations → advanced topics.
+The result? Animations that teach from foundations -> advanced topics.
 
 No training data needed.
 Just Claude Sonnet 4.5's reasoning.
@@ -193,13 +193,13 @@ Just Claude Sonnet 4.5's reasoning.
 Coming soon: Semantic knowledge graphs with @nomicai Atlas
 
 Instead of asking Claude every time:
-→ Query a shared graph
-→ 10x faster
-→ Everyone contributes
+-> Query a shared graph
+-> 10x faster
+-> Everyone contributes
 
 Open source. MIT license.
 
-⭐ github.com/HarleyCoops/Math-To-Manim
+[*] github.com/HarleyCoops/Math-To-Manim
 
 ### LinkedIn Post
 
@@ -213,10 +213,10 @@ Math-To-Manim takes a different approach: **pedagogical reasoning**.
 Instead of pattern matching, it recursively asks "What must someone understand BEFORE X?" to build complete knowledge trees. Then it generates Manim animations that teach concepts in the correct order.
 
 Example: "Explain cosmology"
-→ Discovers: Need general relativity
-→ Discovers: Need special relativity first
-→ Discovers: Need Galilean relativity before that
-→ Builds from high school physics → cosmology
+-> Discovers: Need general relativity
+-> Discovers: Need special relativity first
+-> Discovers: Need Galilean relativity before that
+-> Builds from high school physics -> cosmology
 
 The innovation: No training data required. Just Claude Sonnet 4.5's reasoning + semantic knowledge graphs (via Nomic Atlas).
 
@@ -252,7 +252,7 @@ A: Instead of asking Claude "what before X?" every time (slow, costly), we're bu
 
 ### Immediate (This Week)
 
-1. **Create knowledge tree diagram** - Visual showing cosmology → foundations
+1. **Create knowledge tree diagram** - Visual showing cosmology -> foundations
 2. **Take screenshots** of prerequisite_explorer_claude.py output
 3. **Update hero section** of README with visual + better pitch
 
@@ -305,14 +305,14 @@ A: Instead of asking Claude "what before X?" every time (slow, costly), we're bu
 
 **Examples**:
 
-✅ "Recursive prerequisite discovery using Claude Sonnet 4.5's reasoning"
-❌ "Revolutionary AI breakthrough"
+[DONE] "Recursive prerequisite discovery using Claude Sonnet 4.5's reasoning"
+[FAIL] "Revolutionary AI breakthrough"
 
-✅ "Build knowledge trees from foundations to advanced topics"
-❌ "Next-generation learning platform"
+[DONE] "Build knowledge trees from foundations to advanced topics"
+[FAIL] "Next-generation learning platform"
 
-✅ "55+ working examples, all open source"
-❌ "Comprehensive solution for all your animation needs"
+[DONE] "55+ working examples, all open source"
+[FAIL] "Comprehensive solution for all your animation needs"
 
 ---
 

@@ -79,7 +79,7 @@ python tests/live_test_runner.py --suite performance
 - Depth limit enforcement
 
 ### 3. Integration Tests
-- Full pipeline (analyze → explore)
+- Full pipeline (analyze -> explore)
 - Tree validation
 - Error handling
 - Edge cases

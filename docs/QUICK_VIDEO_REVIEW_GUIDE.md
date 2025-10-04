@@ -2,7 +2,7 @@
 
 **Get started reviewing your Manim animations in under 2 minutes!**
 
-## 🚀 Quick Start
+## [LAUNCH] Quick Start
 
 ### Option 1: Web Player (Recommended)
 
@@ -54,7 +54,7 @@ python tools/frame_viewer.py media/review_frames/<video_name>
 python tools/video_review_toolkit.py play <path-to-video.mp4>
 ```
 
-## 📋 Common Commands
+## [TODO] Common Commands
 
 ```bash
 # Get video information (duration, resolution, FPS)
@@ -67,7 +67,7 @@ python tools/video_review_toolkit.py extract <video.mp4> --fps 1
 python tools/video_review_toolkit.py web <video.mp4> -o my_review.html
 ```
 
-## 🎯 Which Method Should I Use?
+## [TARGET] Which Method Should I Use?
 
 | Method | When to Use |
 |--------|-------------|
@@ -80,7 +80,7 @@ python tools/video_review_toolkit.py web <video.mp4> -o my_review.html
 
 ### Requirements
 
-- Python 3.8+ (already have ✓)
+- Python 3.8+ (already have [OK])
 - ffmpeg (for extraction/info)
 - matplotlib (for frame viewer)
 
@@ -98,14 +98,14 @@ Or download from: https://www.gyan.dev/ffmpeg/builds/
 pip install matplotlib
 ```
 
-## 💡 Tips
+## [TIP] Tips
 
 1. **Web player doesn't need ffmpeg** - works immediately for playback
 2. **Use `--every-nth` flag** when extracting frames to save disk space
 3. **Frame viewer requires matplotlib** - install if using this method
 4. **Web player has best UX** - frame-by-frame, speed control, scrubbing
 
-## 📚 Full Documentation
+## [DOCS] Full Documentation
 
 See `docs/VIDEO_REVIEW_TOOLKIT.md` for comprehensive documentation including:
 - MCP server integration options
@@ -130,15 +130,15 @@ python tools/frame_viewer.py media/review_frames/ULTRAQEDComplete
 python tools/video_review_toolkit.py info media/videos/ULTRAQED/480p15/ULTRAQEDComplete.mp4
 ```
 
-## ❓ Troubleshooting
+## [?] Troubleshooting
 
-**"ffmpeg not found"** → Install ffmpeg (see Setup section)
+**"ffmpeg not found"** -> Install ffmpeg (see Setup section)
 
-**Web player shows black screen** → Try different browser (Chrome/Edge)
+**Web player shows black screen** -> Try different browser (Chrome/Edge)
 
-**matplotlib not found** → Run `pip install matplotlib`
+**matplotlib not found** -> Run `pip install matplotlib`
 
-**Video file not found** → Check path with `ls media/videos/`
+**Video file not found** -> Check path with `ls media/videos/`
 
 ## 🔗 Related Tools
 

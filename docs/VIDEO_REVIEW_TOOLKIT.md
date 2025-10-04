@@ -64,7 +64,7 @@ python tools/frame_viewer.py media/review_frames/BhaskaraEpic --start 42
 
 | Key | Action |
 |-----|--------|
-| `→` / `Space` | Next frame |
+| `->` / `Space` | Next frame |
 | `←` | Previous frame |
 | `Home` | First frame |
 | `End` | Last frame |
@@ -268,7 +268,7 @@ pip install matplotlib  # For frame viewer
         │                   │                   │
         ▼                   ▼                   ▼
 ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-│ PNG Frames → │   │  Browser →   │   │  Interactive │
+│ PNG Frames -> │   │  Browser ->   │   │  Interactive │
 │  IDE Preview │   │  Playback    │   │  Stepping    │
 └──────────────┘   └──────────────┘   └──────────────┘
 ```

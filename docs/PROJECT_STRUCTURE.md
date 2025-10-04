@@ -29,8 +29,8 @@ Math-To-Manim/
 │   │   │   ├── base_agent.py        # Abstract base class
 │   │   │   ├── concept_agent.py     # Extract concepts from prompts
 │   │   │   ├── research_agent.py    # Gather mathematical content
-│   │   │   ├── prompt_agent.py      # Simple → verbose transformation
-│   │   │   ├── code_agent.py        # Verbose → Manim code
+│   │   │   ├── prompt_agent.py      # Simple -> verbose transformation
+│   │   │   ├── code_agent.py        # Verbose -> Manim code
 │   │   │   ├── docs_agent.py        # Generate study notes
 │   │   │   └── quality_agent.py     # Validation & QA
 │   │   │
@@ -119,7 +119,7 @@ Math-To-Manim/
 │
 ├── training/                         # ML training & fine-tuning
 │   ├── datasets/
-│   │   ├── prompt_pairs.jsonl       # Simple → verbose examples
+│   │   ├── prompt_pairs.jsonl       # Simple -> verbose examples
 │   │   ├── successful_generations/   # Working code examples
 │   │   └── feedback_logs/           # User feedback data
 │   │
@@ -223,7 +223,7 @@ Math-To-Manim/
 3. Update documentation links
 
 ### Phase 3: Refactor Core Code (Breaking Changes)
-1. Move `app.py` → `src/web/app.py`
+1. Move `app.py` -> `src/web/app.py`
 2. Create agent modules
 3. Update imports throughout
 4. Update CI/CD

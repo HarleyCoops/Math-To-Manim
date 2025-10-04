@@ -33,31 +33,31 @@ Instead of manually asking Claude "What must I know before X?" for every concept
 ### Current Approach (Manual Recursion)
 ```
 User: "Explain cosmology"
-  ↓
+  v
 Claude: "Prerequisites: GR, Hubble's Law, Redshift..."
-  ↓
+  v
 Claude: "For GR, prerequisites: SR, diff geometry..."
-  ↓
+  v
 Claude: "For SR, prerequisites: Galilean relativity..."
-  ↓
+  v
 [3-4 API calls, ~30-60 seconds]
 ```
 
 ### With Nomic Atlas (Semantic Graph)
 ```
 User: "Explain cosmology"
-  ↓
-Atlas: Query "cosmology" embedding → retrieve cached prerequisite tree
-  ↓
+  v
+Atlas: Query "cosmology" embedding -> retrieve cached prerequisite tree
+  v
 [Instant response, pre-computed graph]
 ```
 
 **Benefits**:
-- ⚡ **Instant prerequisite lookup** (no repeated Claude calls)
-- 🌐 **Shared knowledge graph** (everyone benefits from improvements)
-- 🔍 **Discover unexpected connections** (e.g., "topology prerequisite for QFT")
-- 📊 **Visualize learning paths** (show users their progress)
-- 💰 **Massive cost savings** (cache all prerequisite queries)
+- [FAST] **Instant prerequisite lookup** (no repeated Claude calls)
+- [WEB] **Shared knowledge graph** (everyone benefits from improvements)
+- [SEARCH] **Discover unexpected connections** (e.g., "topology prerequisite for QFT")
+- [STATS] **Visualize learning paths** (show users their progress)
+- [COST] **Massive cost savings** (cache all prerequisite queries)
 
 ---
 
@@ -114,7 +114,7 @@ results = dataset.vector_search(
 )
 
 # Results might include: general relativity, hubble's law, redshift
-# These are semantically close → likely prerequisites or related concepts
+# These are semantically close -> likely prerequisites or related concepts
 ```
 
 **Hybrid Approach** (Best of Both Worlds):
@@ -149,14 +149,14 @@ This could automatically organize concepts into:
 ```python
 # Create a map filtered to specific learning path
 physics_path = dataset.create_index(
-    name="Physics Learning Path: Basics → QFT",
+    name="Physics Learning Path: Basics -> QFT",
     colorable_fields=["domain", "depth"],
     id_field="concept"
 )
 
 # Users can explore this interactively in their browser
-# Click on "quantum mechanics" → see all prerequisites highlighted
-# See the entire path from "basic algebra" → "quantum field theory"
+# Click on "quantum mechanics" -> see all prerequisites highlighted
+# See the entire path from "basic algebra" -> "quantum field theory"
 ```
 
 ---
@@ -299,7 +299,7 @@ Find semantically similar items
 **Solution**: Query Atlas first, use Claude only for novel concepts
 
 ### 2. Learning Path Visualization
-**Problem**: Users can't see the full journey (algebra → QFT)
+**Problem**: Users can't see the full journey (algebra -> QFT)
 **Solution**: Interactive map showing all prerequisite chains
 
 ### 3. Concept Discovery

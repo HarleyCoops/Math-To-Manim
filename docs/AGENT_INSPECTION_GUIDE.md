@@ -47,11 +47,11 @@ def discover_prerequisites(self, concept: str) -> List[str]:
 ```
 
 **Characteristics**:
-- ✅ Simple, predictable
-- ✅ Easy to debug
-- ❌ Single turn (no follow-up questions)
-- ❌ No tool access
-- ❌ Manual context management
+- [DONE] Simple, predictable
+- [DONE] Easy to debug
+- [FAIL] Single turn (no follow-up questions)
+- [FAIL] No tool access
+- [FAIL] Manual context management
 
 ### Agent Framework (Future)
 
@@ -77,11 +77,11 @@ result = agent.run(
 ```
 
 **Characteristics**:
-- ✅ Multi-turn reasoning
-- ✅ Tool access (web, files, code)
-- ✅ Automatic context management
-- ⚠️ More complex to debug
-- ⚠️ Non-deterministic behavior
+- [DONE] Multi-turn reasoning
+- [DONE] Tool access (web, files, code)
+- [DONE] Automatic context management
+- [WARNING] More complex to debug
+- [WARNING] Non-deterministic behavior
 
 ---
 
@@ -621,7 +621,7 @@ if __name__ == "__main__":
 # tests/test_full_pipeline.py
 
 def test_full_pipeline():
-    """Test the complete flow: analyze → explore → build tree"""
+    """Test the complete flow: analyze -> explore -> build tree"""
 
     # Step 1: Analyze concept
     analyzer = ConceptAnalyzer()

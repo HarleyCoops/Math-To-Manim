@@ -79,7 +79,7 @@ Most systems try to learn patterns from examples. I do the opposite.
 
 Traditional approach:
 ```
-Simple prompt → Pattern matching → Hope for the best
+Simple prompt -> Pattern matching -> Hope for the best
 ```
 
 Problems:
@@ -92,26 +92,26 @@ Problems:
 
 ```
 "Explain cosmology"
-    ↓
+    v
 What must I understand BEFORE cosmology?
-    → General Relativity
-    → Hubble's Law
-    → Redshift
-    → CMB radiation
-    ↓
+    -> General Relativity
+    -> Hubble's Law
+    -> Redshift
+    -> CMB radiation
+    v
 What must I understand BEFORE General Relativity?
-    → Special Relativity
-    → Differential Geometry
-    → Gravitational Fields
-    ↓
+    -> Special Relativity
+    -> Differential Geometry
+    -> Gravitational Fields
+    v
 What must I understand BEFORE Special Relativity?
-    → Galilean Relativity
-    → Speed of light
-    → Lorentz Transformations
-    ↓
+    -> Galilean Relativity
+    -> Speed of light
+    -> Lorentz Transformations
+    v
 [Continue until hitting high school physics...]
-    ↓
-Build animation from foundation → target
+    v
+Build animation from foundation -> target
 ```
 
 **Result**: Every animation builds conceptual understanding layer by layer, naturally creating the verbose prompts that actually work.
@@ -120,7 +120,7 @@ Build animation from foundation → target
 
 **Coming Soon**: Integration with [Nomic Atlas](https://atlas.nomic.ai/) to create a semantic knowledge graph:
 - **10x faster** prerequisite discovery (cached graph instead of recursive Claude calls)
-- **Interactive visualization** of entire learning paths (algebra → quantum field theory)
+- **Interactive visualization** of entire learning paths (algebra -> quantum field theory)
 - **Community knowledge** - everyone contributes to shared concept database
 - **Automatic discovery** of prerequisite relationships via embeddings
 
@@ -156,12 +156,12 @@ I've built a 6-agent system powered by Claude Sonnet 4.5 (with a 7th VideoReview
 - Designs scene transitions
 
 ### 5. NarrativeComposer
-- Walks the tree from foundation → target
+- Walks the tree from foundation -> target
 - Generates 2000+ token verbose prompt
 - Weaves narrative arc through concepts
 
 ### 6. CodeGenerator
-- Translates verbose prompt → Manim code
+- Translates verbose prompt -> Manim code
 - Handles LaTeX rendering correctly
 - Produces working Python scenes
 
@@ -331,7 +331,7 @@ Result: Perfect animations with correct LaTeX, camera movements, colors, and tim
 
 ## Why This Works: The Technical Insight
 
-### 1. Foundation → Target Building
+### 1. Foundation -> Target Building
 By starting with high school concepts and building up, the animations naturally explain prerequisites before advanced topics. This creates coherent narrative flow.
 
 ### 2. LaTeX Forces Precision
@@ -365,7 +365,7 @@ If the LLM generates broken code, I can pass it back with the error and ask for 
 3. **Knowledge Tree Visualization**: Web UI showing the prerequisite graph
 
 **Medium Term (3-6 months)**:
-4. **Nomic Atlas Integration**: Semantic knowledge graph for instant prerequisite discovery ⭐ NEW
+4. **Nomic Atlas Integration**: Semantic knowledge graph for instant prerequisite discovery [*] NEW
    - Cache all prerequisite relationships in a shared knowledge graph
    - 10x faster prerequisite discovery with semantic search
    - Interactive visualization of learning paths
@@ -436,7 +436,7 @@ The knowledge tree approach automatically adjusts depth based on the target conc
 - **[Reverse Knowledge Tree](REVERSE_KNOWLEDGE_TREE.md)** - Core innovation explained
 - **[Architecture](docs/ARCHITECTURE.md)** - Agent system design
 - **[Examples Catalog](docs/EXAMPLES.md)** - All 55+ animations by topic
-- **[Migration Guide](docs/MIGRATION_TO_CLAUDE.md)** - DeepSeek → Claude transition
+- **[Migration Guide](docs/MIGRATION_TO_CLAUDE.md)** - DeepSeek -> Claude transition
 - **[Testing Strategy](docs/TESTING_ARCHITECTURE.md)** - Comprehensive testing approach
 - **[Quick Start Guide](QUICK_START_GUIDE.md)** - User-friendly tutorial
 - **[Reorganization Plan](REORGANIZATION_PLAN.md)** - New structure details

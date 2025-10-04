@@ -90,7 +90,7 @@ def chat_with_deepseek(message, history, use_smolagent=False):
         answer = format_latex(response.choices[0].message.content)
         
         # Return both, separated by a clear delimiter
-        return f"🤔 Reasoning:\n{reasoning}\n\n📝 Answer:\n{answer}"
+        return f"🤔 Reasoning:\n{reasoning}\n\n[NOTE] Answer:\n{answer}"
     except Exception as e:
         return f"Error: {str(e)}"
 

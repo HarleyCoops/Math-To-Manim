@@ -85,7 +85,7 @@ class VideoReviewToolkit:
         try:
             subprocess.run(cmd, check=True, capture_output=True)
             frames = sorted(output_dir.glob("frame_*.png"))
-            print(f"✓ Extracted {len(frames)} frames")
+            print(f"[OK] Extracted {len(frames)} frames")
             return output_dir
         except subprocess.CalledProcessError as e:
             print(f"Error extracting frames: {e.stderr.decode()}")
@@ -302,9 +302,9 @@ class VideoReviewToolkit:
             <div class="control-group">
                 <label>Playback Controls</label>
                 <div class="button-row">
-                    <button id="playPause">▶️ Play / Pause</button>
+                    <button id="playPause">>️ Play / Pause</button>
                     <button id="stepBack" class="secondary">⏮️ -1 Frame</button>
-                    <button id="stepForward" class="secondary">⏭️ +1 Frame</button>
+                    <button id="stepForward" class="secondary">[SKIP] +1 Frame</button>
                     <button id="restart" class="secondary">🔄 Restart</button>
                 </div>
             </div>
@@ -349,9 +349,9 @@ class VideoReviewToolkit:
             <h2>⌨️ Keyboard Shortcuts</h2>
             <ul>
                 <li><span class="shortcut-key">Space</span> Play / Pause</li>
-                <li><span class="shortcut-key">← →</span> Step backward / forward (1 frame)</li>
+                <li><span class="shortcut-key">← -></span> Step backward / forward (1 frame)</li>
                 <li><span class="shortcut-key">Shift + ←</span> Jump back 5 seconds</li>
-                <li><span class="shortcut-key">Shift + →</span> Jump forward 5 seconds</li>
+                <li><span class="shortcut-key">Shift + -></span> Jump forward 5 seconds</li>
                 <li><span class="shortcut-key">0-9</span> Jump to 0%-90% of video</li>
                 <li><span class="shortcut-key">Home</span> Jump to start</li>
                 <li><span class="shortcut-key">End</span> Jump to end</li>
@@ -491,7 +491,7 @@ class VideoReviewToolkit:
         
         output_path = Path(output_html)
         output_path.write_text(html_content, encoding='utf-8')
-        print(f"✓ Created web player: {output_path.resolve()}")
+        print(f"[OK] Created web player: {output_path.resolve()}")
         return output_path
     
     def launch_ffplay(self, video_path: str):
@@ -508,7 +508,7 @@ class VideoReviewToolkit:
         try:
             print(f"Launching ffplay for: {video_path}")
             subprocess.Popen(["ffplay", "-autoexit", str(video_path)])
-            print("✓ ffplay launched (separate window)")
+            print("[OK] ffplay launched (separate window)")
         except FileNotFoundError:
             print("✗ ffplay not found. Install ffmpeg with: choco install ffmpeg")
             raise
@@ -573,7 +573,7 @@ def cli():
         
         elif args.command == 'web':
             toolkit.create_web_player(args.video, args.output)
-            print(f"\n💡 Open in browser: file:///{Path(args.output).resolve()}")
+            print(f"\n[TIP] Open in browser: file:///{Path(args.output).resolve()}")
         
         elif args.command == 'play':
             toolkit.launch_ffplay(args.video)

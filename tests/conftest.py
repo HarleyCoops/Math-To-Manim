@@ -13,10 +13,10 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Add parent directory and src/agents to path
+# Add project root to path so we can import from src
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, project_root)
-sys.path.insert(0, os.path.join(project_root, 'src', 'agents'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 
 def pytest_configure(config):

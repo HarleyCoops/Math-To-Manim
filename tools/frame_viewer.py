@@ -52,7 +52,7 @@ def view_frames(frames_dir: str, start_frame: int = 0):
     
     print(f"📁 Found {len(frames)} frames in {frames_dir}")
     print("\nControls:")
-    print("  → / Space    : Next frame")
+    print("  -> / Space    : Next frame")
     print("  ←            : Previous frame")
     print("  Home         : First frame")
     print("  End          : Last frame")

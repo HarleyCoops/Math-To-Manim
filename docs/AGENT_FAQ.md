@@ -36,11 +36,11 @@ answer = response.content[0].text  # Done!
 ```
 
 **Characteristics**:
-- ✅ Simple, predictable
-- ✅ Easy to debug
-- ❌ Single turn only
-- ❌ No tools
-- ❌ You handle all logic
+- [DONE] Simple, predictable
+- [DONE] Easy to debug
+- [FAIL] Single turn only
+- [FAIL] No tools
+- [FAIL] You handle all logic
 
 ### What Claude Agent SDK Adds
 
@@ -63,11 +63,11 @@ result = agent.run("Find prerequisites for cosmology and validate against MIT's 
 ```
 
 **Characteristics**:
-- ✅ Multi-step reasoning
-- ✅ Tool access
-- ✅ Automatic error handling
-- ⚠️ More complex
-- ⚠️ Less predictable
+- [DONE] Multi-step reasoning
+- [DONE] Tool access
+- [DONE] Automatic error handling
+- [WARNING] More complex
+- [WARNING] Less predictable
 
 ---
 
@@ -107,11 +107,11 @@ This will show you:
 # In prerequisite_explorer_claude.py
 
 def discover_prerequisites(self, concept: str):
-    print(f"\n🔍 Discovering prerequisites for: {concept}")
+    print(f"\n[SEARCH] Discovering prerequisites for: {concept}")
 
     response = client.messages.create(...)
 
-    print(f"✅ Found: {response.content[0].text}")
+    print(f"[DONE] Found: {response.content[0].text}")
 
     return prerequisites
 ```
@@ -257,11 +257,11 @@ tree = explorer.explore("cosmology")
 problems = validate_tree(tree)
 
 if problems:
-    print("⚠️ ISSUES FOUND:")
+    print("[WARNING] ISSUES FOUND:")
     for problem in problems:
         print(f"  - {problem}")
 else:
-    print("✅ Tree is valid!")
+    print("[DONE] Tree is valid!")
 ```
 
 ---

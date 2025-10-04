@@ -109,7 +109,7 @@ class PrerequisiteExplorer:
 
         # Base case: check if foundation or max depth reached
         if depth >= self.max_depth or self.is_foundation(concept):
-            print(f"{'  ' * depth}  → Foundation concept")
+            print(f"{'  ' * depth}  -> Foundation concept")
             return KnowledgeNode(
                 concept=concept,
                 depth=depth,
@@ -172,14 +172,14 @@ Answer with ONLY "yes" or "no"."""
 
         # Local cache
         if concept in self.cache:
-            print(f"  → Using in-memory cache for {concept}")
+            print(f"  -> Using in-memory cache for {concept}")
             return self.cache[concept]
 
         # Atlas cache
         if self.atlas_client is not None:
             atlas_results = self._atlas_fetch_prerequisites(concept)
             if atlas_results:
-                print(f"  → Loaded {len(atlas_results)} prerequisites from Atlas")
+                print(f"  -> Loaded {len(atlas_results)} prerequisites from Atlas")
                 self.cache[concept] = atlas_results
                 return atlas_results
 

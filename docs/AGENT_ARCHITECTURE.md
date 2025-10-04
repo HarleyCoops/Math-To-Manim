@@ -1,7 +1,7 @@
 # Multi-Agent Architecture Design
 ## Math-To-Manim v2.0
 
-**Goal**: Transform `"explain cosmology"` → professional Manim animation + study notes
+**Goal**: Transform `"explain cosmology"` -> professional Manim animation + study notes
 
 ---
 
@@ -29,22 +29,22 @@ result = orchestrator.process(user_input)
 # Behind the scenes:
 """
 1. Concept Agent parses intent
-   → Output: {concepts: ["big bang", "expansion", "CMB"], level: "beginner"}
+   -> Output: {concepts: ["big bang", "expansion", "CMB"], level: "beginner"}
 
 2. Research Agent gathers content
-   → Output: {formulas: [...], definitions: {...}, context: "..."}
+   -> Output: {formulas: [...], definitions: {...}, context: "..."}
 
-3. Prompt Agent builds verbose prompt ⭐ CRITICAL STEP
-   → Output: 2000+ token LaTeX-rich prompt (this is what we're good at!)
+3. Prompt Agent builds verbose prompt [*] CRITICAL STEP
+   -> Output: 2000+ token LaTeX-rich prompt (this is what we're good at!)
 
 4. Code Agent generates Manim
-   → Output: Python code using Manim Community Edition
+   -> Output: Python code using Manim Community Edition
 
 5. Docs Agent creates study notes
-   → Output: LaTeX → PDF
+   -> Output: LaTeX -> PDF
 
 6. Quality Agent validates
-   → Output: Pass/Fail + suggestions
+   -> Output: Pass/Fail + suggestions
 
 7. If pass: Render animation
    If fail: Loop back with improvements
@@ -156,8 +156,8 @@ Output as JSON.
 
 ---
 
-### 3. Prompt Agent ⭐
-**Model**: Fine-tuned DeepSeek R1 (trained on simple→verbose pairs)
+### 3. Prompt Agent [*]
+**Model**: Fine-tuned DeepSeek R1 (trained on simple->verbose pairs)
 
 **Input**:
 - Concept Agent output (concepts)
@@ -205,7 +205,7 @@ training_examples = [
 ```
 
 **Fine-tuning Strategy**:
-1. **Phase 1**: Supervised learning on successful (simple → verbose) pairs
+1. **Phase 1**: Supervised learning on successful (simple -> verbose) pairs
 2. **Phase 2**: RLHF using render success as reward signal
 3. **Phase 3**: Iterative improvement from user feedback
 
@@ -257,7 +257,7 @@ class CosmologyExplainer(Scene):
         ...
 ```
 
-**Current Status**: ✅ **Already works well!** This is our strong point.
+**Current Status**: [DONE] **Already works well!** This is our strong point.
 
 **Enhancements Needed**:
 - Better error handling
@@ -282,7 +282,7 @@ class CosmologyExplainer(Scene):
 - Generated Manim code
 - Rendered animation (video file)
 
-**Output**: LaTeX document → PDF
+**Output**: LaTeX document -> PDF
 ```latex
 \documentclass{article}
 \usepackage{amsmath, graphicx, hyperref}
@@ -447,7 +447,7 @@ class AgentOrchestrator:
             knowledge = self.agents['research'].gather(concepts)
             self.context['knowledge'] = knowledge
 
-            # 3. Prompt generation ⭐
+            # 3. Prompt generation [*]
             self.state = PipelineState.PROMPT_GENERATION
             verbose_prompt = self.agents['prompt'].expand(
                 concepts=concepts,

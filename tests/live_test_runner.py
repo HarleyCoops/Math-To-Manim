@@ -137,15 +137,16 @@ class LiveTestRunner:
 
     def _print_result(self, result: TestResult):
         """Pretty print a test result"""
-        status_emoji = {
-            'PASS': '✅',
-            'FAIL': '❌',
-            'SKIP': '⏭️',
-            'ERROR': '💥'
+        # Use simple text symbols for Windows compatibility
+        status_symbol = {
+            'PASS': '[PASS]',
+            'FAIL': '[FAIL]',
+            'SKIP': '[SKIP]',
+            'ERROR': '[ERROR]'
         }
 
-        emoji = status_emoji.get(result.status, '❓')
-        print(f"\n{emoji} {result.status}: {result.test_name}")
+        symbol = status_symbol.get(result.status, '[?]')
+        print(f"\n{symbol} {result.test_name}")
         print(f"   Duration: {result.duration_ms:.2f}ms")
         print(f"   Message: {result.message}")
 
@@ -168,11 +169,11 @@ class LiveTestRunner:
         print("TEST SUMMARY")
         print("="*80)
         print(f"Total Tests: {len(self.results)}")
-        print(f"✅ Passed:  {passed}")
-        print(f"❌ Failed:  {failed}")
-        print(f"⏭️  Skipped: {skipped}")
-        print(f"💥 Errors:  {errors}")
-        print(f"⏱️  Total Time: {total_time:.2f}ms ({total_time/1000:.2f}s)")
+        print(f"Passed:  {passed}")
+        print(f"Failed:  {failed}")
+        print(f"Skipped: {skipped}")
+        print(f"Errors:  {errors}")
+        print(f"Total Time: {total_time:.2f}ms ({total_time/1000:.2f}s)")
         print("="*80)
 
         # List failures/errors
@@ -475,23 +476,23 @@ def run_all_suites():
     suites = []
 
     # Run ConceptAnalyzer tests
-    print("\n" + "▶"*40)
+    print("\n" + ">"*40)
     print("SUITE 1: ConceptAnalyzer Tests")
-    print("▶"*40)
+    print(">"*40)
     suite1 = run_test_suite("ConceptAnalyzer", ConceptAnalyzerTests)
     suites.append(suite1)
 
     # Run PrerequisiteExplorer tests
-    print("\n" + "▶"*40)
+    print("\n" + ">"*40)
     print("SUITE 2: PrerequisiteExplorer Tests")
-    print("▶"*40)
+    print(">"*40)
     suite2 = run_test_suite("PrerequisiteExplorer", PrerequisiteExplorerTests)
     suites.append(suite2)
 
     # Run Performance tests
-    print("\n" + "▶"*40)
+    print("\n" + ">"*40)
     print("SUITE 3: Performance Tests")
-    print("▶"*40)
+    print(">"*40)
     suite3 = run_test_suite("Performance", PerformanceTests)
     suites.append(suite3)
 
@@ -507,9 +508,9 @@ def run_all_suites():
 
     print(f"Total Suites: {len(suites)}")
     print(f"Total Tests: {total_tests}")
-    print(f"✅ Passed: {total_passed}")
-    print(f"❌ Failed: {total_failed}")
-    print(f"💥 Errors: {total_errors}")
+    print(f"[DONE] Passed: {total_passed}")
+    print(f"[FAIL] Failed: {total_failed}")
+    print(f"[ERROR] Errors: {total_errors}")
 
     # Save results
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -518,7 +519,7 @@ def run_all_suites():
     with open(output_file, 'w') as f:
         json.dump([asdict(s) for s in suites], f, indent=2)
 
-    print(f"\n✓ Results saved to: {output_file}")
+    print(f"\n[OK] Results saved to: {output_file}")
     print("="*80)
 
     return suites
@@ -562,7 +563,7 @@ def test_specific_concept(concept: str):
 if __name__ == "__main__":
     # Check API key
     if not os.getenv("ANTHROPIC_API_KEY"):
-        print("❌ Error: ANTHROPIC_API_KEY not set")
+        print("[FAIL] Error: ANTHROPIC_API_KEY not set")
         print("\nSet your API key in .env file:")
         print("  ANTHROPIC_API_KEY=your_key_here")
         sys.exit(1)

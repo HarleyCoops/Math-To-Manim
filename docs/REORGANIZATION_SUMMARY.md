@@ -68,35 +68,35 @@ Math-To-Manim/
 ## Files Reorganized
 
 ### Core Application (5 files)
-- app.py → src/app.py
-- app_claude.py → src/app_claude.py
-- prerequisite_explorer.py → src/agents/prerequisite_explorer.py
-- prerequisite_explorer_claude.py → src/agents/prerequisite_explorer_claude.py
-- smolagent_prototype.py → scripts/smolagent_prototype.py
+- app.py -> src/app.py
+- app_claude.py -> src/app_claude.py
+- prerequisite_explorer.py -> src/agents/prerequisite_explorer.py
+- prerequisite_explorer_claude.py -> src/agents/prerequisite_explorer_claude.py
+- smolagent_prototype.py -> scripts/smolagent_prototype.py
 
 ### Physics Examples (19 files)
-- 13 quantum mechanics files → examples/physics/quantum/
-- 2 gravity files → examples/physics/gravity/
-- 1 nuclear file → examples/physics/nuclear/
-- 3 particle physics files → examples/physics/particle_physics/
+- 13 quantum mechanics files -> examples/physics/quantum/
+- 2 gravity files -> examples/physics/gravity/
+- 1 nuclear file -> examples/physics/nuclear/
+- 3 particle physics files -> examples/physics/particle_physics/
 
 ### Mathematics Examples (13 files)
-- 4 geometry files → examples/mathematics/geometry/
-- 4 analysis files → examples/mathematics/analysis/
-- 1 fractal file → examples/mathematics/fractals/
-- 3 statistics files → examples/mathematics/statistics/
-- 1 trigonometry file → examples/mathematics/trigonometry/
+- 4 geometry files -> examples/mathematics/geometry/
+- 4 analysis files -> examples/mathematics/analysis/
+- 1 fractal file -> examples/mathematics/fractals/
+- 3 statistics files -> examples/mathematics/statistics/
+- 1 trigonometry file -> examples/mathematics/trigonometry/
 
 ### Computer Science Examples (11 files)
-- 7 ML files → examples/computer_science/machine_learning/
-- 2 algorithm files → examples/computer_science/algorithms/
-- 2 spatial reasoning files → examples/computer_science/spatial_reasoning/
+- 7 ML files -> examples/computer_science/machine_learning/
+- 2 algorithm files -> examples/computer_science/algorithms/
+- 2 spatial reasoning files -> examples/computer_science/spatial_reasoning/
 
 ### Other Examples (7 files)
-- 2 cosmology files → examples/cosmology/
-- 1 finance file → examples/finance/
-- 3 misc files → examples/misc/
-- 1 presentation script → scripts/
+- 2 cosmology files -> examples/cosmology/
+- 1 finance file -> examples/finance/
+- 3 misc files -> examples/misc/
+- 1 presentation script -> scripts/
 
 ## Benefits
 

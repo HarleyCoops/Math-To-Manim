@@ -120,23 +120,23 @@ Math-To-Manim/
 
 ### 1. Markdown Files Consolidated to docs/
 All markdown documentation files have been moved from the root directory to `docs/`:
-- AGENT_ARCHITECTURE.md → docs/
-- CLAUDE.md → docs/
-- COMMUNICATION_STRATEGY.md → docs/
-- GIF_WORKFLOW.md → docs/
-- MCP_Troubleshooting_Guide.md → docs/
-- MCPPostMortem.md → docs/
-- PROJECT_STRUCTURE.md → docs/
-- QUICK_START_GUIDE.md → docs/
-- QUICK_VIDEO_REVIEW_GUIDE.md → docs/
-- REFACTOR_SUMMARY.md → docs/
-- RENDERING_PROGRESS.md → docs/
-- REORGANIZATION_PLAN.md → docs/
-- REORGANIZATION_SUMMARY.md → docs/
-- REVERSE_KNOWLEDGE_TREE.md → docs/
-- ROADMAP.md → docs/
-- SUMMARY.md → docs/
-- readme2.md → docs/
+- AGENT_ARCHITECTURE.md -> docs/
+- CLAUDE.md -> docs/
+- COMMUNICATION_STRATEGY.md -> docs/
+- GIF_WORKFLOW.md -> docs/
+- MCP_Troubleshooting_Guide.md -> docs/
+- MCPPostMortem.md -> docs/
+- PROJECT_STRUCTURE.md -> docs/
+- QUICK_START_GUIDE.md -> docs/
+- QUICK_VIDEO_REVIEW_GUIDE.md -> docs/
+- REFACTOR_SUMMARY.md -> docs/
+- RENDERING_PROGRESS.md -> docs/
+- REORGANIZATION_PLAN.md -> docs/
+- REORGANIZATION_SUMMARY.md -> docs/
+- REVERSE_KNOWLEDGE_TREE.md -> docs/
+- ROADMAP.md -> docs/
+- SUMMARY.md -> docs/
+- readme2.md -> docs/
 
 ### 2. Duplicate Python Files Removed
 Removed duplicate files that existed in both root/Scripts/ and examples/:
@@ -151,7 +151,7 @@ Removed duplicate files that existed in both root/Scripts/ and examples/:
 
 ### 3. Scripts Organized
 All utility scripts moved to new lowercase `scripts/` directory:
-- Scripts/ → scripts/ (directory renamed for Python conventions)
+- Scripts/ -> scripts/ (directory renamed for Python conventions)
 - Utility scripts moved: add_gif_previews.py, batch_test_and_render.py, etc.
 - PowerShell scripts: render_all.ps1
 
@@ -162,10 +162,10 @@ Application core files remain in src/:
 - src/agents/ (agent implementations)
 
 ### 5. Miscellaneous Files Relocated
-- ULTRAQED.py → examples/misc/
-- ultraqed_player.html → media/
-- Strassler.pdf → docs/
-- radiumatom.jpg → media/images/
+- ULTRAQED.py -> examples/misc/
+- ultraqed_player.html -> media/
+- Strassler.pdf -> docs/
+- radiumatom.jpg -> media/images/
 
 ### 6. Temporary Files Removed
 - filelist.txt (removed)
@@ -236,14 +236,14 @@ python scripts/add_gif_previews.py
 ## Next Steps
 
 The following legacy directories should be migrated in future updates:
-- `3BouncingBalls/` → Move content to appropriate examples/ subdirectory
-- `Benamou-Brenier/` → Consolidate with examples/mathematics/analysis/
-- `GravityWavesDiscovery/` → Already migrated to examples/physics/gravity/
-- `QwenMaxQED/` → Already migrated to examples/physics/quantum/
-- `RevisedBenamou-Brenier/` → Consolidate with examples/mathematics/analysis/
-- `Rhombicosidodecahedron/` → Already migrated to examples/mathematics/geometry/
-- `SpatialReasoningTest/` → Already migrated to examples/computer_science/spatial_reasoning/
-- `Misc/` → Review and categorize contents
+- `3BouncingBalls/` -> Move content to appropriate examples/ subdirectory
+- `Benamou-Brenier/` -> Consolidate with examples/mathematics/analysis/
+- `GravityWavesDiscovery/` -> Already migrated to examples/physics/gravity/
+- `QwenMaxQED/` -> Already migrated to examples/physics/quantum/
+- `RevisedBenamou-Brenier/` -> Consolidate with examples/mathematics/analysis/
+- `Rhombicosidodecahedron/` -> Already migrated to examples/mathematics/geometry/
+- `SpatialReasoningTest/` -> Already migrated to examples/computer_science/spatial_reasoning/
+- `Misc/` -> Review and categorize contents
 
 ## Benefits of New Organization
 
