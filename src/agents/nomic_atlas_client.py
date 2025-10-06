@@ -175,3 +175,4 @@ class AtlasClient:
 
 __all__ = ["AtlasClient", "AtlasConcept", "NomicNotInstalledError"]
 
+
