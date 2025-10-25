@@ -1,0 +1,318 @@
+{
+  "concept": "quantum mechanics",
+  "depth": 0,
+  "is_foundation": false,
+  "prerequisites": [
+    {
+      "concept": "wave-particle duality",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "electromagnetic waves",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "photons and quantization of light",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "electromagnetic waves and the electromagnetic spectrum",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "wave-particle duality",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "energy and frequency relationship (E=hf)",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "photoelectric effect",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "interference and diffraction patterns",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "wave properties (wavelength, frequency, amplitude)",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "principle of superposition",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Huygens' principle",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "classical particle mechanics",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "vectors and vector operations",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "calculus (derivatives and integrals)",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Newton's laws of motion",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "kinematics (position, velocity, acceleration)",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        }
+      ],
+      "equations": null,
+      "definitions": null,
+      "visual_spec": null,
+      "narrative": null
+    },
+    {
+      "concept": "probability and statistics",
+      "depth": 1,
+      "is_foundation": true,
+      "prerequisites": [],
+      "equations": null,
+      "definitions": null,
+      "visual_spec": null,
+      "narrative": null
+    },
+    {
+      "concept": "classical mechanics",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "vectors and vector operations",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "calculus (derivatives and integrals)",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "functions and their graphs",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "limits and continuity",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "algebra and equation manipulation",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "coordinate geometry and slopes",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "Newton's laws of motion",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "kinematics",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "vectors and vector operations",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "derivatives and rates of change",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "coordinate systems and graphing",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        }
+      ],
+      "equations": null,
+      "definitions": null,
+      "visual_spec": null,
+      "narrative": null
+    },
+    {
+      "concept": "electromagnetic waves",
+      "depth": 1,
+      "is_foundation": true,
+      "prerequisites": [],
+      "equations": null,
+      "definitions": null,
+      "visual_spec": null,
+      "narrative": null
+    }
+  ],
+  "equations": null,
+  "definitions": null,
+  "visual_spec": null,
+  "narrative": null
+}
