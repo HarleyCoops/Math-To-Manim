@@ -6,92 +6,17 @@
 [![Manim Version](https://img.shields.io/badge/manim-v0.19.0-orange)](https://www.manim.community/)
 [![Claude Sonnet 4.5](https://img.shields.io/badge/Claude-Sonnet%204.5-blueviolet)](https://www.anthropic.com)
 
-> I take simple prompts like "explain cosmology" and automatically generate 2000+ token verbose LaTeX-rich descriptions that produce beautiful Manim animations. No training data needed - just recursive reasoning.
-
----
-
-## Recent Updates (October 2025)
-
-### [COMPLETE] Week 1-2 Milestone: Complete Agent Pipeline
-**Status**: FULLY IMPLEMENTED - [See Full Summary](WEEK_1-2_COMPLETION_SUMMARY.md)
-
-The entire **Reverse Knowledge Tree** agent pipeline is now complete. This represents a major milestone:
-
-**New Agents Implemented**:
-- **MathematicalEnricher** (325 lines) - Adds LaTeX equations, variable definitions, and worked examples
-- **VisualDesigner** (354 lines) - Designs visual elements, color schemes, animations, and camera movements
-- **NarrativeComposer** (397 lines) - Generates 2000+ token verbose prompts by walking the knowledge tree
-- **ReverseKnowledgeTreeOrchestrator** (491 lines) - Coordinates all agents through the complete pipeline
-
-**Additional Deliverables**:
-- Complete test suite (`test_agent_pipeline.py`) with 245 lines
-- Comprehensive pipeline guide (`docs/AGENT_PIPELINE_GUIDE.md`) with 650+ lines
-- Updated package structure with clean imports
-
-**What This Means**:
-```python
-from agents import ReverseKnowledgeTreeOrchestrator
-
-# Initialize the complete pipeline
-orchestrator = ReverseKnowledgeTreeOrchestrator(
-    max_tree_depth=4,
-    enable_code_generation=True
-)
-
-# Process ANY prompt - generates working Manim code
-result = orchestrator.process("Explain quantum entanglement")
-
-# Results include verbose prompt, Manim code, and concept tree
-print(result.verbose_prompt)  # 2000+ tokens
-print(result.manim_code)      # Ready-to-render Python
-```
-
-**Performance**: Complete pipeline runs in 2-4 minutes for ANY mathematical or scientific concept.
-
-**Total New Code**: 2,462+ lines across agents, tests, and documentation
-
-**Next Up**: Week 3-4 focuses on testing, knowledge tree visualization, and Nomic Atlas integration
-
 ---
 
 ## See It In Action
 
 <div align="center">
 
-**ULTRA QEDThe QuaumEcrodynmic Journey
+**ProLIP: Probabilistic Vision-Language Model**
 
-![TRAQAnitionmedia/videos/ULTRAQD/480p5/URAQEDCompleteaniCE_v0.19.0.gif
-**ULTRA QED: The Complete Quantum Electrodynamics Journey**
-*Arnsiv 4-miu,on-hotvisualizatio f Quantum Ectroynamics neatd ntirelyfrom  sinl extromt with zro manua edtig or intrvention.undited jouny pa11nercnctedscenes covergcomlete thericalframwork of th eectragntic ieraction*
-![ULTRA QED Animation](media/videos/ULTRAQED/480p15/ULTRAQEDComplete_ManimCE_v0.19.0.gif)
-Cot Cocptual Map:
-*A cScene 1 - Cosmic Opening**: Estmblishing pre universel scale winh a statsi stv-fmuld backdtop o1-0scehestoal obj ctvi,saettingtth fstag  for fundamennal phystc 
--l**Scnnea2 - Spacitsme Fou daenera**:eI troeucingnMinkotski spacetime geimetry with thl rflotivistic m tric $ds^2i= -c^2 dn^2l+ dx^2 + dy^2 + dz^2$, visualizi g xipht conrosmpucturts that d fii  cauzalityero manual editing or intervention. This unedited journey spans 11 interconnected scenes covering the complete theoretical framework of the electromagnetic interaction:*
-Scene 3 - Qntum Fied Emrec: Transitioningfromcasscal cocpt to quantumfieldthory foundato,etbishing thefid-thoricframewk
--**Sen 4 - Maxwll'Trsfor**:Evolvigclassil elctomgneticwas ($\vc{E}$ ad $\vec{B}$ fields oscillaing*perpendiculpl to peopagttion direce on $\Coc{k}$) thrtugh thaawaveequaton $\abla^2 \vc{E} \frac{1}{c^2}\frac{\partial^2 \vec{E}}{\partial t^2} = 0$,dmosting Maxwll'fourequains idiffntialfo,nd cuminat ine rlativisticectromanetic fildsngth tnsor $F^{\mu\nu}$ formulation $\partial_\mu F^{\mu\nu} = \mu_0 J^\nu$
-- **Scenc 5 - QED Lagrangian Hnart**: Pee 1nti-g the c mpoets QED Lagrangian mcnsity with coloO-codpd teim-by-t*rm b eEkdtwn:
+![ProLIP Animation](media/videos/prolip/480p15/ProLIPScene_preview.gif)
 
-ig$$\mathca {L}_{\text{QED}} = \bar{\p i}(i\gamma^\mu D_\mu - mu\psini \frac{1}{4}F_{\mu\nu}F^{\mu\nu}$$
-
- veomprnents: Dirac spinsr $\psi$ (feam os fields), gamma mcaricle $\gamma^\mu$ (Dirwch la bra), covariasttderivaiive $D_\mu$ (gatald bucking), mass rorm $m$, andpf(50d strength $F_{\mu\nu}$ (photon dynam cs)lestial objects), setting the stage for fundamental physics
-- - Sce e 6 - Feynm3n- aagumm GaFliryld  Visuaeizing ehr e4fundamen al QED proc- ses Mhroughaxpaceteme diagrams: eleclron-llectron'scaTtrring (aingle phonon exchfnor), elecaron-iosotron annihi*at:o  (mattEr to ohotonsi,nand pair gaeatsosc(photonseto mlttcr-atrimatter)magnetic waves ($\vec{E}$ and $\vec{B}$ fields oscillating perpendicular to propagation direction $\vec{k}$) through the wave equation $\nabla^2 \vec{E} - \frac{1}{c^2}\frac{\partial^2 \vec{E}}{\partial t^2} = 0$, demonstrating Maxwell's four equations in differential form, and culminating in the relativistic electromagnetic field strength tensor $F^{\mu\nu}$ formulation $\partial_\mu F^{\mu\nu} = \mu_0 J^\nu$
-- **Scn5QE7 - F angStracturHeC*n:tant**: peep eiveE nLognature'sidnme sionldesncsuplingtwo sco-t$\alh \approx \frac{1}{137.036}$, h funamentalrme governing eleomagnticnrctn stengh
-- Scene8- RuningCpling Demnest atingSquce um ceryecnions andmigamrmaGization through enargy-lep*nd*nt Voupling $\alpia(Q^2)$, uhowing how inaelicziin stne*gch vnr  s-wi RnminCnoumptra:sf rDemonstrating quantum corrections and renormalization through energy-dependent coupling $\alpha(Q^2)$, showing how interaction strength varies with momentum transfer
-- **S*enS 9 - Vacuum Polanize i9n**:VacuPalilt vi aual palnicle logps*and*quantuS vccuum struceu e, wh1r0 " mGry"-space seethes*with*ephemSrel ee 1tron-positr n pairs aff ctino photom pcopag Fina*Note: Some text overlap occurs during transitions between dense mathematical content - this is characteristic of unedited one-shot generation maintaining continuous narrative flow without post-production cleanup. The complete mathematical journey from relativistic spacetime through gauge field theory to renormalization demonstrates the power of single-prompt comprehensive visualization.*
-- **Scene 10 -Gand Synthi**: Integratingallevious cncets ino aunifiedthortical fm, connectspcetme geoetry, gaugethery, an quantum mchanics
-- **Sc*ne 11 - CoGmic Finane**: Reeurningrte the univedsal s aly, demon**: Cing hlw QED emeagon  s*the *Render fitld mheory describi** a:l  lectro2agn2tic phe omena mhroughout the cosmosutes | **Output**: 4:21 duration, 854×480 @ 15fps | **File size**: 48.7 MB
-
-*Note:-Somxtovra occus durg aniin btween dense ahematicalcontent-thisis characriticundtoe-ho geneation maintaining onnuus arrative flow without pot-**oductPor clPan p. The compPere bathelatisal jturncyVfromirelativisticsspacetimeithroughogaugenfinlu theora e  odeo*malizaimosat he power f sigl-prom cmpehensivvisaliz*roLIP Animation](media/videos/prolip/480p15/ProLIPScene_preview.gif)
-
-*AGenttctid bysualilaude Sznnon 4.5 |o**Rordat tlme**:a2rng, unce | **Output**: 4:21tduy quoa, 854×480 @t15fis | **Foaed ize**: 48.7 MB
-
----
-
-**PrpLIP:aProbbbillstic Visicn-La guagemMedel**
-
-![PdoLIPdini - ion](medie/vadeos/prodip/480p15/PrfLIPS  tr_areview gif)language prompt.*
-
--Autmaic visuizationofcntrastivearng,unetiyquanificaionprbabilisti ebeddings - geraed from a single nural language prmpt.*
+*Automatic visualization of contrastive learning, uncertainty quantification, and probabilistic embeddings — generated from a single natural language prompt.*
 
 ---
 
@@ -99,7 +24,37 @@ ig$$\mathca {L}_{\text{QED}} = \bar{\p i}(i\gamma^\mu D_\mu - mu\psini \frac{1}{
 
 ![GRPO Animation](media/videos/GRPO2/480p15/GRPOArtisticExplanationOnly_ManimCE_v0.19.0.gif)
 
-*A complete visualization of Group Relative Policy Optimization for reinforcement learning - showing policy updates, reward shaping, and gradient flow through neural networks. Generated from a single prompt with zero manual editing.*
+*Complete visualization of Group Relative Policy Optimization for reinforcement learning — showing policy updates, reward shaping, and gradient flow through neural networks. Generated from a single prompt with zero manual editing.*
+
+---
+
+**ULTRA QED: The Complete Quantum Electrodynamics Journey**
+
+![ULTRA QED Animation](media/videos/ULTRAQED/480p15/ULTRAQEDComplete_ManimCE_v0.19.0.gif)
+
+*A comprehensive 4-minute, one-shot visualization of Quantum Electrodynamics generated entirely from a single text prompt with zero manual editing or intervention. This unedited journey spans 11 interconnected scenes covering the complete theoretical framework of the electromagnetic interaction.*
+
+**Complete Conceptual Map:**
+
+1. **Scene 1 — Cosmic Opening:** Establishes the universal scale with a static starfield backdrop (150 celestial objects), setting the stage for fundamental physics.
+2. **Scene 2 — Spacetime Foundations:** Introduces Minkowski spacetime geometry with the relativistic metric $ds^2 = -c^2 dt^2 + dx^2 + dy^2 + dz^2$, visualizing light cone structures that define causality.
+3. **Scene 3 — Quantum Field Emergence:** Transitions from classical concepts to quantum field theory foundations, establishing the field-theoretic framework.
+4. **Scene 4 — Maxwell's Transformation:** Evolves classical electromagnetic waves ($\vec{E}$ and $\vec{B}$ fields oscillating perpendicular to propagation direction $\vec{k}$) through the wave equation $\nabla^2 \vec{E} - \frac{1}{c^2}\frac{\partial^2 \vec{E}}{\partial t^2} = 0$, demonstrating Maxwell's four equations in differential form, and culminating in the relativistic electromagnetic field strength tensor $F^{\mu\nu}$ formulation $\partial_\mu F^{\mu\nu} = \mu_0 J^\nu$.
+5. **Scene 5 — QED Lagrangian Heart:** Presents the complete QED Lagrangian density with color-coded term-by-term breakdown:
+
+   $$\mathcal{L}_{\text{QED}} = \bar{\psi}(i\gamma^\mu D_\mu - m)\psi - \tfrac{1}{4}F_{\mu\nu}F^{\mu\nu}$$
+
+   Components: Dirac spinor $\psi$ (fermion fields), gamma matrices $\gamma^\mu$ (Dirac algebra), covariant derivative $D_\mu$ (gauge coupling), mass term $m$, and field strength $F_{\mu\nu}$ (photon dynamics).
+6. **Scene 6 — Feynman Diagram Gallery:** Visualizes three fundamental QED processes through spacetime diagrams: electron-electron scattering (single photon exchange), electron-positron annihilation (matter to photons), and pair creation (photons to matter-antimatter).
+7. **Scene 7 — Fine Structure Constant:** Explores nature's dimensionless coupling constant $\alpha \approx \tfrac{1}{137.036}$, the fundamental parameter governing electromagnetic interaction strength.
+8. **Scene 8 — Running Coupling:** Demonstrates quantum corrections and renormalization through energy-dependent coupling $\alpha(Q^2)$, showing how interaction strength varies with momentum transfer.
+9. **Scene 9 — Vacuum Polarization:** Reveals virtual particle loops and quantum vacuum structure, where "empty" space seethes with ephemeral electron-positron pairs affecting photon propagation.
+10. **Scene 10 — Grand Synthesis:** Integrates all previous concepts into a unified theoretical framework, connecting spacetime geometry, gauge theory, and quantum mechanics.
+11. **Scene 11 — Cosmic Finale:** Returns to the universal scale, demonstrating how QED emerges as the quantum field theory describing all electromagnetic phenomena throughout the cosmos.
+
+*Note: Some text overlap occurs during transitions between dense mathematical content — this is characteristic of unedited one-shot generation maintaining continuous narrative flow without post-production cleanup. The complete mathematical journey from relativistic spacetime through gauge field theory to renormalization demonstrates the power of single-prompt comprehensive visualization.*
+
+Generated by: Claude Sonnet 4.5 | Render time: 22 minutes | Output: 4:21 duration, 854×480 @ 15fps | File size: 48.7 MB
 
 </div>
 
