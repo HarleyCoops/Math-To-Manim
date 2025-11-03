@@ -49,7 +49,7 @@ class PromptLatentSpaceMapping(Scene):
         x, x_prime, delta = self.introduce_prompts(prompt_space)
         
         # Scene 5: The LLM Mapping (Forward Pass)
-        z, z_prime, epsilon = self.show_llm_mapping(
+        z, z_prime, epsilon, llm_arrows = self.show_llm_mapping(
             prompt_space, latent_space, x, x_prime, delta
         )
         
@@ -148,7 +148,7 @@ class PromptLatentSpaceMapping(Scene):
             grid_lines.add(curve)
         
         # Label for Prompt Space
-        prompt_space_label = Tex(
+        prompt_space_label = Text(
             "PROMPT SPACE",
             font_size=36,
             color=DARK_BLUE,
@@ -210,7 +210,8 @@ class PromptLatentSpaceMapping(Scene):
                 "stroke_color": LIGHT_GRAY,
                 "stroke_width": 2
             },
-            tip_shape=StealthTip
+            x_axis_config={"label_direction": DOWN},
+            y_axis_config={"label_direction": LEFT}
         ).shift(RIGHT * 3.5)
         
         # Add axis labels
@@ -240,7 +241,7 @@ class PromptLatentSpaceMapping(Scene):
         ).shift(RIGHT * 3.5)
         
         # Label for Latent Space
-        latent_space_label = Tex(
+        latent_space_label = Text(
             "LATENT SPACE",
             font_size=36,
             color=DARK_BLUE,
@@ -288,10 +289,10 @@ class PromptLatentSpaceMapping(Scene):
         x_prime_dot = Dot(point=x_prime_pos, color=BLACK, radius=0.12)
         
         # Labels
-        x_label = MathTex("x", font_size=32, color=BLACK, weight=BOLD).next_to(
+        x_label = MathTex(r"\mathbf{x}", font_size=32, color=BLACK).next_to(
             x_dot, UR, buff=0.15
         )
-        x_prime_label = MathTex("x'", font_size=32, color=BLACK, weight=BOLD).next_to(
+        x_prime_label = MathTex(r"\mathbf{x}'", font_size=32, color=BLACK).next_to(
             x_prime_dot, DL, buff=0.15
         )
         
@@ -362,14 +363,14 @@ class PromptLatentSpaceMapping(Scene):
         # Map x to z
         z_pos = axes.c2p(-1.5, 1.2)
         z_dot = Dot(point=z_pos, color=BLACK, radius=0.12)
-        z_label = MathTex("z", font_size=32, color=BLACK, weight=BOLD).next_to(
+        z_label = MathTex(r"\mathbf{z}", font_size=32, color=BLACK).next_to(
             z_dot, UR, buff=0.15
         )
         
         # Map x' to z'
         z_prime_pos = axes.c2p(1.2, -0.8)
         z_prime_dot = Dot(point=z_prime_pos, color=BLACK, radius=0.12)
-        z_prime_label = MathTex("z'", font_size=32, color=BLACK, weight=BOLD).next_to(
+        z_prime_label = MathTex(r"\mathbf{z}'", font_size=32, color=BLACK).next_to(
             z_prime_dot, DL, buff=0.15
         )
         
@@ -401,7 +402,7 @@ class PromptLatentSpaceMapping(Scene):
         )
         
         # LLM label
-        llm_label = Tex(
+        llm_label = Text(
             "LLM",
             font_size=32,
             color=BLUE,
@@ -509,7 +510,7 @@ class PromptLatentSpaceMapping(Scene):
         
         # Explanation text
         explanation = VGroup(
-            Tex(
+            Text(
                 "Injective Property:",
                 font_size=32,
                 color=GREEN,
@@ -586,7 +587,7 @@ class PromptLatentSpaceMapping(Scene):
         )
         
         # SiPIT label
-        sipit_label = Tex(
+        sipit_label = Text(
             "SiPIT",
             font_size=32,
             color=PURPLE,
@@ -601,7 +602,7 @@ class PromptLatentSpaceMapping(Scene):
         
         # Explanation
         explanation = VGroup(
-            Tex(
+            Text(
                 "The Challenge: Can we reverse this process?",
                 font_size=28,
                 color=PURPLE,
@@ -693,7 +694,7 @@ class PromptLatentSpaceMapping(Scene):
         
         # Summary points
         summary = VGroup(
-            Tex(
+            Text(
                 "Summary:",
                 font_size=32,
                 color=BLUE,
