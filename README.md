@@ -6,7 +6,6 @@
 [![Manim Version](https://img.shields.io/badge/manim-v0.19.0-orange)](https://www.manim.community/)
 [![Claude Sonnet 4.5](https://img.shields.io/badge/Claude-Sonnet%204.5-blueviolet)](https://www.anthropic.com)
 
-## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=date&legend=top-left)](https://www.star-history.com/#HarleyCoops/Math-To-Manim&type=date&legend=top-left)
 
@@ -600,3 +599,4 @@ MIT License - See [LICENSE](LICENSE)
 ---
 
 **Built with recursive reasoning, not training data. Powered by Claude Sonnet 4.5.**
+
