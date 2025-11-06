@@ -51,6 +51,29 @@ I give you back: **A complete Manim animation** showing Minkowski spacetime, QED
 
 ---
 
+## NEW: Kimi K2 Implementation (November 6, 2025)
+
+**Full Kimi K2 pipeline now available!** See `KimiK2Thinking/` folder for complete implementation.
+
+We've built an alternative pipeline using **Kimi K2 thinking model** from Moonshot AI with:
+- **OpenAI-compatible API** - Easier integration
+- **Tool-calling interface** - Structured data extraction via function calling  
+- **Complete enrichment chain** - Math, visual, and narrative agents
+- **LaTeX-focused** - Focuses on exact math rendering, lets Manim handle visuals
+
+**Quick Start:**
+```bash
+# Set API key
+echo "MOONSHOT_API_KEY=your_key_here" >> .env
+
+# Run full pipeline
+python KimiK2Thinking/examples/run_enrichment_pipeline.py tree.json
+```
+
+**Full docs**: [KimiK2Thinking/README.md](KimiK2Thinking/README.md)
+
+---
+
 ## The Innovation: Reverse Knowledge Tree
 
 Most systems try to learn patterns from examples. I do the opposite.
