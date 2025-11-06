@@ -7,7 +7,10 @@ through an MCP server and ClaudeSDKClient.
 
 import asyncio
 import json
-from claude_sdk_tools import ALL_TOOLS, _PREREQUISITE_CACHE
+try:
+    from src.agents.claude_sdk_tools import ALL_TOOLS, _PREREQUISITE_CACHE
+except ImportError:
+    from claude_sdk_tools import ALL_TOOLS, _PREREQUISITE_CACHE
 
 
 async def test_tools_metadata():
