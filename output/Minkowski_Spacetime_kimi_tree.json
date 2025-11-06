@@ -1,0 +1,1102 @@
+{
+  "concept": "Minkowski Spacetime",
+  "depth": 0,
+  "is_foundation": false,
+  "prerequisites": [
+    {
+      "concept": "Special Relativity",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "Newtonian mechanics",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "Maxwell's equations",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "vector calculus",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "vectors",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "calculus",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "multivariable calculus",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "partial derivatives",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "electrostatics",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "magnetostatics",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "electromagnetism",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "magnetic fields",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "vector calculus",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Maxwell's equations",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Faraday's law of induction",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "Magnetic fields",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Electric fields",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Electromotive force",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Maxwell's equations",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "Speed of light",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        }
+      ],
+      "equations": null,
+      "definitions": null,
+      "visual_spec": null,
+      "narrative": null
+    },
+    {
+      "concept": "Lorentz Transformations",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "Special Relativity",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "Newtonian mechanics",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Maxwell's equations",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "vector calculus",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "electrostatics",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "magnetostatics",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Faraday's law of induction",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Speed of light",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "Four-Vector",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "vectors",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "special relativity",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "Classical Mechanics",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Electromagnetism",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Lorentz Transformations",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "tensors",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "vector spaces",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "linear algebra",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "matrix multiplication",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "multi-dimensional arrays",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "Minkowski Spacetime",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "Special Relativity",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "Newtonian mechanics",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Maxwell's equations",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Speed of light",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Lorentz Transformations",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "Special Relativity",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Four-Vector",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Minkowski Spacetime",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Spacetime Interval",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "Minkowski spacetime",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Lorentz transformation",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Special relativity",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Four-Dimensional Vectors",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "vectors",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "coordinate systems",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "linear algebra",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        }
+      ],
+      "equations": null,
+      "definitions": null,
+      "visual_spec": null,
+      "narrative": null
+    },
+    {
+      "concept": "Spacetime Interval",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "Minkowski spacetime",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "special relativity",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "Classical Mechanics",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Electromagnetism",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Lorentz Transformations",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Lorentz transformations",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "special relativity",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "four-vector",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Minkowski spacetime",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "four-dimensional space",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "three-dimensional space",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "vectors",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "linear algebra",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "Lorentz transformation",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "Special relativity",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "Classical mechanics",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Maxwell's equations",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Lorentz transformations",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Spacetime",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "special relativity",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "general relativity",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "four-dimensional space",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Four-vectors",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "vectors",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "tensors",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "special relativity",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "Special relativity",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "Classical mechanics",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "Newton's laws of motion",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "vectors",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "calculus",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "kinematics",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Maxwell's equations",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "vector calculus",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "electrostatics",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "magnetostatics",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Faraday's law of induction",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "Lorentz transformations",
+              "depth": 3,
+              "is_foundation": false,
+              "prerequisites": [
+                {
+                  "concept": "special relativity",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "four-vector",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                },
+                {
+                  "concept": "Minkowski spacetime",
+                  "depth": 4,
+                  "is_foundation": true,
+                  "prerequisites": [],
+                  "equations": null,
+                  "definitions": null,
+                  "visual_spec": null,
+                  "narrative": null
+                }
+              ],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        }
+      ],
+      "equations": null,
+      "definitions": null,
+      "visual_spec": null,
+      "narrative": null
+    },
+    {
+      "concept": "Four-Dimensional Vectors",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "vectors",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "coordinate systems",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        },
+        {
+          "concept": "linear algebra",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "vectors",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "matrices",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            },
+            {
+              "concept": "systems of linear equations",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": null,
+              "definitions": null,
+              "visual_spec": null,
+              "narrative": null
+            }
+          ],
+          "equations": null,
+          "definitions": null,
+          "visual_spec": null,
+          "narrative": null
+        }
+      ],
+      "equations": null,
+      "definitions": null,
+      "visual_spec": null,
+      "narrative": null
+    }
+  ],
+  "equations": null,
+  "definitions": null,
+  "visual_spec": null,
+  "narrative": null
+}

@@ -1,0 +1,73 @@
+**Narrative Prompt for Manim Animation: Minkowski Spacetime**
+
+**Scene 1: Introduction to Newtonian Mechanics (00:00 - 00:30)**
+- **Narration:** "In the heart of our understanding of physics, there lies a fundamental framework known as Newtonian mechanics. This is where our journey begins."
+- **Visuals:** Show a simple pendulum oscillating, with the word "Newtonian Mechanics" appearing in bold letters.
+- **Manim Instructions:** `pendulum = Pendulum().animate(pendulum.swing)`, `Title("Newtonian Mechanics").next_to(pendulum, UP)`.
+- **Timing:** 30 seconds.
+
+**Scene 2: Maxwell's Equations (00:30 - 00:45)**
+- **Narration:** "From the laws of motion, we leap into the realm of electromagnetism, governed by Maxwell's equations."
+- **Visuals:** Display Maxwell's equations in LaTeX format: 
+  \[
+  \begin{align*}
+  \nabla \cdot \mathbf{E} &= \frac{\rho}{\epsilon_0}, \\
+  \nabla \cdot \mathbf{B} &= 0, \\
+  \nabla \times \mathbf{E} &= -\frac{\partial \mathbf{B}}{\partial t}, \\
+  \nabla \times \mathbf{B} &= \mu_0 \mathbf{J} + \mu_0 \epsilon_0 \frac{\partial \mathbf{E}}{\partial t}.
+  \end{align*}
+  \]
+- **Manim Instructions:** Use `Tex()` to render the equations and animate them appearing one by one.
+- **Timing:** 15 seconds.
+
+**Scene 3: Speed of Light (00:45 - 01:00)**
+- **Narration:** "A constant that unites these laws is the speed of light, `c`, a symbol of universality and constancy."
+- **Visuals:** Show a beam of light traveling through space, with the equation `c = \sqrt{1/(\mu_0 \epsilon_0)}` appearing next to it.
+- **Manim Instructions:** `LightBeam().animate(light_beam.travel)`, `Tex("c = \sqrt{1/(\mu_0 \epsilon_0)}").next_to(light_beam, RIGHT)`.
+- **Timing:** 15 seconds.
+
+**Scene 4: Special Relativity (01:00 - 02:00)**
+- **Narration:** "As we move into the 20th century, Einstein's special relativity challenges our classical views, with the postulate that the laws of physics are the same for all observers in uniform motion relative to one another."
+- **Visuals:** Show two trains moving at different speeds, with a thought bubble over Einstein's head.
+- **Manim Instructions:** `Train1().animate(train1.move)`, `Train2().animate(train2.move)`, `ThoughtBubble("Einstein's Special Relativity").next_to(einstein, UP)`.
+- **Timing:** 60 seconds.
+
+**Scene 5: Lorentz Transformations (02:00 - 03:30)**
+- **Narration:** "Central to special relativity are Lorentz transformations, which describe how space and time coordinates change between inertial frames."
+- **Visuals:** Show a grid representing spacetime, with two frames overlapping and transforming.
+- **Manim Instructions:** `SpacetimeGrid()`, `LorentzTransformation()`.animate(lorentz_transform.apply).
+- **Timing:** 90 seconds.
+
+**Scene 6: Four-Vector (03:30 - 04:00)**
+- **Narration:** "To understand these transformations, we introduce the concept of four-vectors, which combine space and time into a single mathematical object."
+- **Visuals:** Show a four-dimensional vector with components `(t, x, y, z)`.
+- **Manim Instructions:** `FourVector()`.animate(four_vector.grow).
+- **Timing:** 30 seconds.
+
+**Scene 7: Minkowski Spacetime (04:00 - 05:30)**
+- **Narration:** "With these tools, we can now construct Minkowski spacetime, a four-dimensional framework where space and time are unified."
+- **Visuals:** Transition from the four-vector scene to a 3D representation of spacetime with a time axis.
+- **Manim Instructions:** `Spacetime3D()`.animate(spacetime_3d.grow), `TimeAxis()`.next_to(spacetime_3d, UP).
+- **Timing:** 90 seconds.
+
+**Scene 8: Spacetime Interval (05:30 - 06:00)**
+- **Narration:** "In Minkowski spacetime, the concept of distance is replaced by the spacetime interval, which remains invariant under Lorentz transformations."
+- **Visuals:** Show two events in spacetime and the calculation of the spacetime interval `ds^2 = c^2dt^2 - dx^2 - dy^2 - dz^2`.
+- **Manim Instructions:** `SpacetimeInterval()`.animate(interval_calculate), `Tex("ds^2 = c^2dt^2 - dx^2 - dy^2 - dz^2").next_to(interval_calculate, RIGHT).
+- **Timing:** 30 seconds.
+
+**Scene 9: Four-Dimensional Vectors (06:00 - 07:00)**
+- **Narration:** "Minkowski spacetime is built upon four-dimensional vectors, which extend our understanding of vectors from three dimensions."
+- **Visuals:** Show a comparison between a 3D vector and a 4D vector, with the 4D vector including a time component.
+- **Manim Instructions:** `Vector3D()`.next_to(Vector4D(), LEFT), `Vector4D()`.animate(vector_4d.grow).
+- **Timing:** 60 seconds.
+
+**Scene 10: Conclusion (07:00 - 07:30)**
+- **Narration:** "Minkowski spacetime revolutionized our concept of space and time, providing a unified framework for special relativity and setting the stage for general relativity and modern physics."
+- **Visuals:** Show a final image of Minkowski spacetime with key equations and concepts highlighted.
+- **Manim Instructions:** `FinalSpacetime()`.animate(final_spacetime.highlight), `Tex("ds^2 = c^2dt^2 - dx^2 - dy^2 - dz^2").next_to(final_spacetime, RIGHT).
+- **Timing:** 30 seconds.
+
+**End of Animation**
+
+This narrative prompt provides a comprehensive guide for creating a Manim animation that explains Minkowski spacetime, starting from the foundational concepts of Newtonian mechanics and building up to the target concept. Each scene includes detailed instructions for animations, visual elements, and transitions, ensuring a smooth progression from simple to complex concepts.
