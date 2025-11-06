@@ -1,0 +1,1241 @@
+{
+  "concept": "quantum field theory",
+  "depth": 0,
+  "is_foundation": false,
+  "prerequisites": [
+    {
+      "concept": "quantum mechanics",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "wave-particle duality",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "quantum mechanics",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "i\\hbar\\frac{\\partial}{\\partial t}\\Psi = \\hat{H}\\Psi",
+                "\\hat{H} = -\\frac{\\hbar^2}{2m}\\nabla^2 + V",
+                "\\Psi^*\\Psi = \\left|\\Psi\\right|^2"
+              ],
+              "definitions": {
+                "i": "\\text{Imaginary unit}",
+                "\\hbar": "\\text{Reduced Planck constant}",
+                "\\frac{\\partial}{\\partial t}": "\\text{Partial derivative with respect to time}",
+                "\\Psi": "\\text{Wave function}",
+                "\\hat{H}": "\\text{Hamiltonian operator}",
+                "m": "\\text{Mass of the particle}",
+                "\\nabla^2": "\\text{Laplacian operator}",
+                "V": "\\text{Potential energy function}",
+                "\\Psi^*": "\\text{Complex conjugate of the wave function}",
+                "\\left|\\Psi\\right|^2": "\\text{Probability density}"
+              },
+              "visual_spec": {
+                "interpretation": "Quantum mechanics is a fundamental theory in physics that describes the physical properties of nature at the scale of atoms and subatomic particles. It departs from classical mechanics by introducing wave-particle duality and probabilistic interpretations. The Schr\u00f6dinger equation, represented here, is a central equation in quantum mechanics that describes how the quantum state of a physical system changes with time. The Hamiltonian operator, which includes kinetic and potential energy terms, governs this evolution. The wave function, denoted by \\(\\Psi\\), is a complex-valued probability amplitude, and the probability density, given by \\(\\left|\\Psi\\right|^2\\), provides the likelihood of finding a particle in a particular region of space.",
+                "examples": [
+                  "Consider a free particle in one dimension with no potential energy (V=0). The time-independent Schr\u00f6dinger equation simplifies to: \n\\[ -\\frac{\\hbar^2}{2m}\\frac{d^2\\Psi}{dx^2} = E\\Psi \n\\] where E is the energy of the particle. Solutions to this equation are plane waves, indicating that the particle can exist in a superposition of states with different momenta."
+                ],
+                "typical_values": {
+                  "\\hbar": "1.0545718 \\times 10^{-34} \\, \\text{J s}"
+                },
+                "concept": "quantum mechanics",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "photoelectric effect",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "E_{photon} = h\\nu",
+                "E_{kinetic} = \\frac{1}{2}mv^2",
+                "E_{photon} = E_{kinetic} + \\phi"
+              ],
+              "definitions": {
+                "E_{photon}": "Energy of the photon",
+                "h": "Planck's constant",
+                "\\nu": "Frequency of the photon",
+                "E_{kinetic}": "Kinetic energy of the ejected electron",
+                "m": "Mass of the electron",
+                "v": "Velocity of the ejected electron",
+                "\\phi": "Work function of the metal"
+              },
+              "visual_spec": {
+                "interpretation": "The photoelectric effect demonstrates the particle nature of light, where light can be thought of as consisting of discrete packets of energy called photons. When the energy of a photon (E_photon) is equal to or greater than the work function (phi) of a metal, electrons can be ejected from the metal's surface. The energy of the photon is given by Planck's equation E_photon = h*nu, where h is Planck's constant and nu is the frequency of the photon. The kinetic energy of the ejected electron can be calculated using the formula E_kinetic = 1/2*m*v^2, where m is the mass of the electron and v is its velocity. The relationship between the photon's energy, the electron's kinetic energy, and the work function is given by E_photon = E_kinetic + phi.",
+                "examples": [
+                  "Suppose a metal has a work function of 2 eV and a photon with a frequency of 3 x 10^15 Hz strikes the metal. Using Planck's constant (h = 6.626 x 10^-34 Js), calculate the energy of the photon and determine if the photon has enough energy to eject an electron."
+                ],
+                "typical_values": {
+                  "h": "6.626 x 10^-34 Js",
+                  "\\phi": "2 eV"
+                },
+                "concept": "photoelectric effect",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "wave mechanics",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [],
+              "definitions": {},
+              "visual_spec": {
+                "interpretation": "",
+                "examples": [],
+                "typical_values": {},
+                "concept": "wave mechanics",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            }
+          ],
+          "equations": [],
+          "definitions": {},
+          "visual_spec": {
+            "interpretation": "",
+            "examples": [],
+            "typical_values": {},
+            "concept": "wave-particle duality",
+            "elements": [],
+            "colors": {},
+            "animations": [],
+            "transitions": [],
+            "camera_movement": "",
+            "duration": 15,
+            "layout": ""
+          },
+          "narrative": null
+        },
+        {
+          "concept": "Maxwell's equations",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "vector calculus",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "\\nabla \u00b7 \u03a3 = \u03a3 \u00b7 \\nabla + \\nabla \u00b7 \u03a3",
+                "\\nabla \u00b7 (f \u03c3) = f \\nabla \u00b7 \u03c3 + \u03c3 \\nabla f",
+                "\\nabla \u00b7 (f \u03c0) = f \\nabla \u00b7 \u03c0 + \u03c0 \\nabla f",
+                "\\nabla \u00b7 (f \u03c0) = f \\nabla \u00b7 \u03c0 + \u03c0 \\nabla f"
+              ],
+              "definitions": {
+                "\\nabla": "nabla operator",
+                "\u03a3": "vector field",
+                "\u03c3": "vector",
+                "f": "scalar function",
+                "\u03c0": "vector function"
+              },
+              "visual_spec": {
+                "interpretation": "Vector calculus is a branch of mathematics that deals with differentiation and integration of vector fields, functions of several variables. It is used in physics and engineering to solve problems involving fields such as gravitational, electric, and fluid flow. The nabla operator, represented by \\nabla, is a vector differential operator that can take the gradient, divergence, or curl of a scalar or vector field. The equations above illustrate the product rule for the nabla operator, which is essential for understanding how vector calculus operations interact with scalar and vector fields.",
+                "examples": [
+                  "Calculate the divergence of a vector field \u03a3 = (x^2, y^2, z^2) using \\nabla \u00b7 \u03a3 = \u03a3 \u00b7 \\nabla."
+                ],
+                "typical_values": {},
+                "concept": "vector calculus",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "electromagnetism",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [],
+              "definitions": {},
+              "visual_spec": {
+                "interpretation": "",
+                "examples": [],
+                "typical_values": {},
+                "concept": "electromagnetism",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "calculus",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "\\int_a^b f(x)\\,dx",
+                "F(x) = \\int_a^x f(t)\\,dt",
+                "F'(x) = f(x)"
+              ],
+              "definitions": {
+                "a": "Lower limit of integration",
+                "b": "Upper limit of integration",
+                "f(x)": "Function to be integrated",
+                "dx": "Infinitesimal change in x",
+                "F(x)": "Antiderivative of f(x), also known as the indefinite integral",
+                "t": "Dummy variable of integration",
+                "F'(x)": "Derivative of F(x) with respect to x"
+              },
+              "visual_spec": {
+                "interpretation": "Calculus is a branch of mathematics that deals with the study of change and motion. It has two main branches: differential calculus and integral calculus. Differential calculus is concerned with the rates at which quantities change, while integral calculus deals with the accumulation of quantities over time. The Fundamental Theorem of Calculus connects these two branches by stating that differentiation and integration are inverse processes. This theorem has two parts: the first part states that if a function is continuous on the interval [a, b], then the definite integral of the function from a to b can be computed by finding an antiderivative of the function and evaluating it at the endpoints of the interval. The second part states that if a function has an antiderivative on an interval, then the derivative of that antiderivative is the original function.",
+                "examples": [
+                  "To find the area under the curve y = x^2 from x = 0 to x = 1, we compute the definite integral \\int_0^1 x^2\\,dx."
+                ],
+                "typical_values": {
+                  "a": "0",
+                  "b": "1"
+                },
+                "concept": "calculus",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            }
+          ],
+          "equations": [
+            "\"\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\epsilon_0}\"",
+            "\"\\nabla \\cdot \\mathbf{B} = 0\"",
+            "\"\\nabla \\times \\mathbf{E} = -\\frac{\\partial \\mathbf{B}}{\\partial t}\"",
+            "\"\\nabla \\times \\mathbf{B} = \\mu_0 \\mathbf{J} + \\mu_0 \\epsilon_0 \\frac{\\partial \\mathbf{E}}{\\partial t}\""
+          ],
+          "definitions": {
+            "\\mathbf{E}": "Electric field",
+            "\\mathbf{B}": "Magnetic field",
+            "\\rho": "Charge density",
+            "\\epsilon_0": "Electric constant (permittivity of free space)",
+            "\\mu_0": "Magnetic constant (permeability of free space)",
+            "\\mathbf{J}": "Current density",
+            "\\nabla \\cdot": "Divergence",
+            "\\nabla \\times": "Curl",
+            "\\frac{\\partial}{\\partial t}": "Partial derivative with respect to time"
+          },
+          "visual_spec": {
+            "interpretation": "Maxwell's equations are a set of four partial differential equations that describe the behavior of electric and magnetic fields. They are fundamental to the study of electromagnetism, optics, and many areas of physics. The first equation, Gauss's law for electricity, states that the electric flux through any closed surface is proportional to the total charge enclosed. The second equation, Gauss's law for magnetism, states that there are no magnetic monopoles, meaning the magnetic flux through any closed surface is zero. The third equation, Faraday's law of induction, describes how a time-varying magnetic field induces an electric field. The fourth equation, Amp\u00e8re's law with Maxwell's addition, describes how a time-varying electric field and a current density contribute to a magnetic field. These equations are essential for understanding the behavior of electromagnetic waves, including light, and are the basis for much of modern technology.",
+            "examples": [
+              "\"To illustrate Faraday's law, consider a solenoid with a time-varying current. The changing magnetic field inside the solenoid induces an electric field in the surrounding space.\"",
+              "\"Amp\u00e8re's law with Maxwell's addition can be used to derive the speed of light. By considering a circular loop with a constant current, the changing electric field inside the loop creates a magnetic field around it. Using the equations, one can show that the speed of the electromagnetic wave is \\sqrt{\\frac{1}{\\mu_0 \\epsilon_0}} = c, where c is the speed of light.\""
+            ],
+            "typical_values": {
+              "\\epsilon_0": "8.854 x 10^{-12} \\, \\text{F/m}",
+              "\\mu_0": "4\\pi x 10^{-7} \\, \\text{Tm/A}"
+            },
+            "concept": "Maxwell's equations",
+            "elements": [],
+            "colors": {},
+            "animations": [],
+            "transitions": [],
+            "camera_movement": "",
+            "duration": 15,
+            "layout": ""
+          },
+          "narrative": null
+        },
+        {
+          "concept": "probability theory",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": [
+            "P(A) = \\frac{\\text{Number of favorable outcomes}}{\\text{Total number of outcomes}}"
+          ],
+          "definitions": {
+            "P(A)": "Probability of event A",
+            "Number of favorable outcomes": "Number of outcomes that satisfy event A",
+            "Total number of outcomes": "Total number of possible outcomes"
+          },
+          "visual_spec": {
+            "interpretation": "Probability theory is a branch of mathematics that deals with the analysis of random phenomena. The probability of an event A is defined as the ratio of the number of favorable outcomes to the total number of outcomes. This concept is fundamental in statistics, finance, and many other fields.",
+            "examples": [
+              "Consider a fair six-sided die. The probability of rolling a 3 is P(3) = 1/6, since there is one favorable outcome (rolling a 3) and six total outcomes (rolling a 1, 2, 3, 4, 5, or 6)."
+            ],
+            "typical_values": {
+              "Probability of a fair coin flip": "0.5",
+              "Probability of drawing a specific card from a standard deck": "1/52"
+            },
+            "concept": "probability theory",
+            "elements": [],
+            "colors": {},
+            "animations": [],
+            "transitions": [],
+            "camera_movement": "",
+            "duration": 15,
+            "layout": ""
+          },
+          "narrative": null
+        }
+      ],
+      "equations": [
+        "i\\hbar\\frac{\\partial}{\\partial t}\\Psi = \\hat{H}\\Psi",
+        "\\hat{H} = -\\frac{\\hbar^2}{2m}\\nabla^2 + V",
+        "\\Psi^*\\Psi = \\left|\\Psi\\right|^2"
+      ],
+      "definitions": {
+        "i": "\\text{Imaginary unit}",
+        "\\hbar": "\\text{Reduced Planck constant}",
+        "\\frac{\\partial}{\\partial t}": "\\text{Partial derivative with respect to time}",
+        "\\Psi": "\\text{Wave function}",
+        "\\hat{H}": "\\text{Hamiltonian operator}",
+        "m": "\\text{Mass of the particle}",
+        "\\nabla^2": "\\text{Laplacian operator}",
+        "V": "\\text{Potential energy function}",
+        "\\Psi^*": "\\text{Complex conjugate of the wave function}",
+        "\\left|\\Psi\\right|^2": "\\text{Probability density}"
+      },
+      "visual_spec": {
+        "interpretation": "Quantum mechanics is a fundamental theory in physics that describes the physical properties of nature at the scale of atoms and subatomic particles. It departs from classical mechanics by introducing wave-particle duality and probabilistic behavior. The Schr\u00f6dinger equation, represented here, is a key equation in quantum mechanics that describes how the quantum state of a physical system changes with time. The Hamiltonian operator, which includes kinetic and potential energy, governs the dynamics of the system. The wave function, denoted by \\(\\Psi\\), is a complex-valued probability amplitude, and the probability density, given by \\(\\left|\\Psi\\right|^2\\), provides the likelihood of finding a particle in a particular region of space.",
+        "examples": [
+          "Consider a free particle in one dimension with no potential energy (V=0). The time-independent Schr\u00f6dinger equation simplifies to: \n\\[-\\frac{\\hbar^2}{2m}\\frac{d^2\\Psi}{dx^2} = E\\Psi\\]\nwhere E is the energy of the particle. Solutions to this equation are plane waves, indicating that the particle is delocalized and has a continuous range of possible momenta."
+        ],
+        "typical_values": {
+          "\\hbar": "1.0545718 \\times 10^{-34} \\, \\text{J s}"
+        },
+        "concept": "quantum mechanics",
+        "elements": [],
+        "colors": {},
+        "animations": [],
+        "transitions": [],
+        "camera_movement": "",
+        "duration": 15,
+        "layout": ""
+      },
+      "narrative": null
+    },
+    {
+      "concept": "classical field theory",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "vector calculus",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "multivariable calculus",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "\"\\frac{df}{dx} = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}\"",
+                "\"\\frac{df}{dx} = f'(x)\"",
+                "\"\\frac{df}{dx} = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h} = f'(x)\""
+              ],
+              "definitions": {
+                "f(x)": "A function of one variable x",
+                "f'(x)": "The derivative of the function f with respect to x",
+                "h": "A small increment in x",
+                "df": "The change in the function f",
+                "dx": "The change in the variable x"
+              },
+              "visual_spec": {
+                "interpretation": "Multivariable calculus extends the concepts of calculus to functions of several variables. It deals with the rates at which quantities change and the slopes of curves in higher-dimensional spaces. The derivative of a function of one variable measures the sensitivity of the function value (output value) to a change in its argument (input value). In multivariable calculus, partial derivatives are used to measure how much a function changes as one of its variables changes, while keeping the other variables constant.",
+                "examples": [
+                  "\"To find the derivative of f(x) = x^2, we use the limit definition: \\frac{df}{dx} = \\lim_{h \\to 0} \\frac{(x+h)^2 - x^2}{h} = \\lim_{h \\to 0} \\frac{x^2 + 2xh + h^2 - x^2}{h} = \\lim_{h \\to 0} \\frac{2xh + h^2}{h} = \\lim_{h \\to 0} (2x + h) = 2x.\""
+                ],
+                "typical_values": {
+                  "f'(x)": "The slope of the tangent line to the curve y = f(x) at a given point x"
+                },
+                "concept": "multivariable calculus",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "linear algebra",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [],
+              "definitions": {},
+              "visual_spec": {
+                "interpretation": "",
+                "examples": [],
+                "typical_values": {},
+                "concept": "linear algebra",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "vector spaces",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [],
+              "definitions": {},
+              "visual_spec": {
+                "interpretation": "",
+                "examples": [],
+                "typical_values": {},
+                "concept": "vector spaces",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            }
+          ],
+          "equations": [
+            "\\nabla \\cdot \\mathbf{F} = \\frac{d}{dV} \\int_V \\mathbf{F} \\cdot d\\mathbf{S}",
+            "\\nabla \\times \\mathbf{F} = \\frac{d}{dS} \\int_S \\mathbf{F} \\cdot d\\mathbf{S}",
+            "\\nabla \\phi = \\mathbf{F}"
+          ],
+          "definitions": {
+            "\\nabla": "Del operator",
+            "\\mathbf{F}": "Vector field",
+            "\\cdot": "Dot product",
+            "d\\mathbf{S}": "Differential surface element",
+            "V": "Volume",
+            "S": "Surface",
+            "dV": "Differential volume",
+            "dS": "Differential surface",
+            "\\phi": "Scalar potential"
+          },
+          "visual_spec": {
+            "interpretation": "Vector calculus is a branch of mathematics that deals with vector fields and operations on them. It is widely used in physics and engineering to describe quantities that have both magnitude and direction. The divergence of a vector field, represented by \\nabla \\cdot \\mathbf{F}, measures the magnitude of a vector field's source or sink at a given point. The curl, \\nabla \\times \\mathbf{F}, describes the infinitesimal rotation of the vector field. The gradient, \\nabla \\phi, represents the rate of change of a scalar field, indicating the direction of the steepest ascent.",
+            "examples": [
+              "Calculate the divergence of a vector field \\mathbf{F} = (x^2, y^2, z^2) in Cartesian coordinates."
+            ],
+            "typical_values": {
+              "\\nabla \\cdot \\mathbf{F}": "0 for irrotational fields",
+              "\\nabla \\times \\mathbf{F}": "0 for solenoidal fields"
+            },
+            "concept": "vector calculus",
+            "elements": [],
+            "colors": {},
+            "animations": [],
+            "transitions": [],
+            "camera_movement": "",
+            "duration": 15,
+            "layout": ""
+          },
+          "narrative": null
+        },
+        {
+          "concept": "special relativity",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "classical mechanics",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "F = ma",
+                "E = \\frac{1}{2}mv^2",
+                "p = mv"
+              ],
+              "definitions": {
+                "F": "Force",
+                "m": "Mass",
+                "a": "Acceleration",
+                "E": "Energy",
+                "v": "Velocity",
+                "p": "Momentum"
+              },
+              "visual_spec": {
+                "interpretation": "Classical mechanics is the study of the motion of objects under the influence of forces. It is based on Newton's laws of motion, which describe how objects move when acted upon by forces. The first equation, F = ma, states that force is equal to mass times acceleration. This means that the acceleration of an object is directly proportional to the net force acting on it and inversely proportional to its mass. The second equation, E = 1/2mv^2, represents the kinetic energy of an object, which is the energy it possesses due to its motion. It shows that kinetic energy is directly proportional to the mass of the object and the square of its velocity. The third equation, p = mv, defines momentum, which is a measure of the motion of an object. It states that momentum is equal to the product of an object's mass and its velocity.",
+                "examples": [
+                  "If a 2 kg object is moving at a velocity of 3 m/s, its momentum is 2 kg * 3 m/s = 6 kg m/s."
+                ],
+                "typical_values": {
+                  "g": "9.8 m/s^2 (acceleration due to gravity)"
+                },
+                "concept": "classical mechanics",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": " Galilean transformation",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [],
+              "definitions": {},
+              "visual_spec": {
+                "interpretation": "",
+                "examples": [],
+                "typical_values": {},
+                "concept": " Galilean transformation",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": " Maxwell's equations",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [],
+              "definitions": {},
+              "visual_spec": {
+                "interpretation": "",
+                "examples": [],
+                "typical_values": {},
+                "concept": " Maxwell's equations",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            }
+          ],
+          "equations": [
+            "E = mc^2",
+            "\\Delta s^2 = c^2 \\Delta t^2 - \\Delta x^2 - \\Delta y^2 - \\Delta z^2",
+            "\\gamma = \\frac{1}{\\sqrt{1 - \\frac{v^2}{c^2}}}"
+          ],
+          "definitions": {
+            "E": "Total energy",
+            "m": "rest mass",
+            "c": "speed of light",
+            "s": "spacetime interval",
+            "t": "time",
+            "x": "x-coordinate",
+            "y": "y-coordinate",
+            "z": "z-coordinate",
+            "v": "velocity",
+            "\\gamma": "Lorentz factor"
+          },
+          "visual_spec": {
+            "interpretation": "Special relativity is a theory of physics that deals with the behavior of objects moving at high speeds, close to the speed of light. It was introduced by Albert Einstein in 1905. The theory is based on two postulates: the laws of physics are the same in all inertial frames of reference, and the speed of light in a vacuum is the same for all observers, regardless of their relative motion or the motion of the light source. The first equation, E=mc^2, shows that energy (E) and mass (m) are interchangeable, with c being the speed of light. This equation is famous for showing that a small amount of mass can be converted into a large amount of energy. The second equation, \u0394s^2 = c^2\u0394t^2 - \u0394x^2 - \u0394y^2 - \u0394z^2, is the spacetime interval, which remains constant for all observers in different inertial frames. This equation shows that time and space are not absolute but relative, depending on the observer's motion. The third equation, \u03b3 = 1/\u221a(1 - v^2/c^2), is the Lorentz factor, which describes how time dilation and length contraction occur for objects moving at high speeds. As the velocity (v) approaches the speed of light (c), the Lorentz factor (\u03b3) increases, causing time to slow down and lengths to contract.",
+            "examples": [
+              "Consider a particle with rest mass m = 1 kg. If it is converted entirely into energy, using E=mc^2, the energy released would be E = (1 kg)(3x10^8 m/s)^2 = 9x10^16 Joules."
+            ],
+            "typical_values": {
+              "c": "3x10^8 m/s"
+            },
+            "concept": "special relativity",
+            "elements": [],
+            "colors": {},
+            "animations": [],
+            "transitions": [],
+            "camera_movement": "",
+            "duration": 15,
+            "layout": ""
+          },
+          "narrative": null
+        },
+        {
+          "concept": "differential equations",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "calculus",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "\\int_{a}^{b} f(x) \\, dx",
+                "F(x) = \\int f(x) \\, dx",
+                "F'(x) = f(x)",
+                "\\frac{d}{dx} \\left( \\int_{a}^{x} f(t) \\, dt \\right) = f(x)"
+              ],
+              "definitions": {
+                "a": "Lower limit of integration",
+                "b": "Upper limit of integration",
+                "f(x)": "Integrand, a function of x",
+                "dx": "An infinitesimally small change in x",
+                "F(x)": "Antiderivative of f(x), also known as indefinite integral",
+                "F'(x)": "Derivative of F(x) with respect to x",
+                "d/dx": "Symbol for differentiation with respect to x",
+                "t": "Dummy variable of integration"
+              },
+              "visual_spec": {
+                "interpretation": "Calculus is a branch of mathematics that deals with the study of change and motion. It has two main branches: differential calculus, which involves the concept of derivatives, and integral calculus, which involves the concept of integrals. Derivatives describe the rate at which a function is changing at any given point, while integrals describe the accumulation of quantities over a given interval. The Fundamental Theorem of Calculus connects these two concepts by stating that differentiation and integration are inverse processes. This theorem has two parts: the first part states that if a function is continuous on the interval [a, b], then the definite integral of the function from a to b is equal to the difference in the values of an antiderivative of the function evaluated at the endpoints of the interval. The second part states that if a function has an antiderivative on an interval, then the derivative of the integral of the function with respect to the upper limit of integration is equal to the function itself.",
+                "examples": [
+                  "To find the area under the curve of f(x) = x^2 from x = 0 to x = 1, we compute the definite integral \\int_{0}^{1} x^2 \\, dx."
+                ],
+                "typical_values": {
+                  "a": "0",
+                  "b": "1"
+                },
+                "concept": "calculus",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "limits",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "\\lim_{{x \\to a}} f(x) = L",
+                "\\lim_{{x \\to a}} f(x) = \\lim_{{x \\to a}} g(x) \\quad \\text{if} \\quad f(x) = g(x) \\quad \\forall x \\text{in some open interval containing} \\quad a \\quad \\text{except possibly at} \\quad a",
+                "\\lim_{{x \\to a}} [f(x) + g(x)] = \\lim_{{x \\to a}} f(x) + \\lim_{{x \\to a}} g(x)",
+                "\\lim_{{x \\to a}} [f(x) \\cdot g(x)] = \\left(\\lim_{{x \\to a}} f(x)\\right) \\cdot \\left(\\lim_{{x \\to a}} g(x)\\right)",
+                "\\lim_{{x \\to a}} \\frac{f(x)}{g(x)} = \\frac{\\lim_{{x \\to a}} f(x)}{\\lim_{{x \\to a}} g(x)} \\quad \\text{if} \\quad \\lim_{{x \\to a}} g(x) \\neq 0"
+              ],
+              "definitions": {
+                "a": "The point at which the limit is being evaluated",
+                "f(x)": "A function",
+                "g(x)": "Another function",
+                "L": "The limit of the function f(x) as x approaches a",
+                "x": "The variable approaching the point a"
+              },
+              "visual_spec": {
+                "interpretation": "Limits are a fundamental concept in calculus that describe the behavior of a function as its input approaches a certain value. The limit of a function f(x) as x approaches a is the value that f(x) gets arbitrarily close to as x gets closer and closer to a, but not necessarily equal to a. Limits are used to define continuity, derivatives, and integrals.",
+                "examples": [
+                  "\\lim_{{x \\to 2}} (3x - 4) = 2"
+                ],
+                "typical_values": {
+                  "e": "The base of the natural logarithm, approximately equal to 2.71828",
+                  "pi": "The ratio of a circle's circumference to its diameter, approximately equal to 3.14159"
+                },
+                "concept": "limits",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "linear algebra",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "\text{A} \\mathbf{x} = \\mathbf{b}",
+                "\\text{det}(\\text{A}) = 0",
+                "\\text{A}^{-1} \\mathbf{b} = \\mathbf{x}"
+              ],
+              "definitions": {
+                "A": "A matrix representing a linear transformation",
+                "x": "A column vector of variables",
+                "b": "A column vector representing the result of the transformation",
+                "det": "Determinant of a matrix",
+                "A^-1": "Inverse of a matrix"
+              },
+              "visual_spec": {
+                "interpretation": "Linear algebra is a branch of mathematics that deals with vectors, scalars, and operations on these entities. It is fundamental in many areas of science and engineering. The equation A\\mathbf{x} = \\mathbf{b} represents a system of linear equations, where A is a matrix of coefficients, \\mathbf{x} is a column vector of variables, and \\mathbf{b} is a column vector of constants. The determinant of a matrix, det(A), is a scalar value that can be computed from the elements of a square matrix and reflects certain properties of the matrix. If det(A) = 0, the matrix A is singular and does not have an inverse. The equation A^{-1} \\mathbf{b} = \\mathbf{x} shows how to solve for \\mathbf{x} when A is invertible.",
+                "examples": [
+                  "Solving a system of equations: 2x + 3y = 5, x - y = 1."
+                ],
+                "typical_values": {
+                  "det(A)": "Non-zero for invertible matrices"
+                },
+                "concept": "linear algebra",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            }
+          ],
+          "equations": [],
+          "definitions": {},
+          "visual_spec": {
+            "interpretation": "",
+            "examples": [],
+            "typical_values": {},
+            "concept": "differential equations",
+            "elements": [],
+            "colors": {},
+            "animations": [],
+            "transitions": [],
+            "camera_movement": "",
+            "duration": 15,
+            "layout": ""
+          },
+          "narrative": null
+        },
+        {
+          "concept": "variational calculus",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "multivariable calculus",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "\"\\nabla f = \\left( \\frac{\\partial f}{\\partial x_1}, \\frac{\\partial f}{\\partial x_2}, \\ldots, \\frac{\\partial f}{\\partial x_n} \\right)\""
+              ],
+              "definitions": {
+                "f": "A scalar function of multiple variables",
+                "x_1, x_2, ..., x_n": "The variables of the function",
+                "\\nabla": "The gradient operator",
+                "\\nabla f": "The gradient of the function f"
+              },
+              "visual_spec": {
+                "interpretation": "Multivariable calculus is an extension of single-variable calculus. It deals with functions that have more than one variable. The gradient is a vector that points in the direction of the greatest rate of increase of the function and its magnitude is the slope of the function in that direction. This concept is fundamental in optimization problems and in understanding the behavior of functions of several variables.",
+                "examples": [
+                  "\"To find the gradient of the function f(x, y) = x^2 + y^2, we compute the partial derivatives with respect to x and y: \\nabla f = (2x, 2y)\""
+                ],
+                "typical_values": {
+                  "\\nabla f": "The gradient vector varies depending on the function and the point in space."
+                },
+                "concept": "multivariable calculus",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "optimization",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "f(x) = ax^2 + bx + c",
+                "f'(x) = 2ax + b",
+                "x = -\\frac{b}{2a}"
+              ],
+              "definitions": {
+                "f(x)": "A quadratic function",
+                "a": "The coefficient of the quadratic term",
+                "b": "The coefficient of the linear term",
+                "c": "The constant term",
+                "f'(x)": "The derivative of the function",
+                "x": "The value of x that maximizes or minimizes the function"
+              },
+              "visual_spec": {
+                "interpretation": "Optimization is the process of finding the maximum or minimum value of a function. In the case of a quadratic function, the vertex represents the maximum or minimum point. The derivative of the function is used to find the critical points, which are potential maximum or minimum points. By setting the derivative equal to zero and solving for x, we can find the value of x that maximizes or minimizes the function.",
+                "examples": [
+                  "For the function f(x) = 2x^2 - 4x + 1, the derivative is f'(x) = 4x - 4. Setting f'(x) = 0 and solving for x gives x = 1, which is the value that minimizes the function."
+                ],
+                "typical_values": {
+                  "a": "Positive for a parabola that opens upwards, negative for a parabola that opens downwards"
+                },
+                "concept": "optimization",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "calculus of variations",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "\\int_{a}^{b} f(x, y, y') \\, dx",
+                "E[y(x)] = \\int_{a}^{b} L(x, y, y') \\, dx",
+                "\\frac{\\partial L}{\\partial y} - \\frac{d}{dx} \\left( \\frac{\\partial L}{\\partial y'} \\right) = 0"
+              ],
+              "definitions": {
+                "a": "Lower limit of integration",
+                "b": "Upper limit of integration",
+                "f(x, y, y')": "A function of x, y, and the derivative of y with respect to x",
+                "E[y(x)]": "The functional E of the function y(x)",
+                "L(x, y, y')": "The Lagrangian, a function of x, y, and the derivative of y with respect to x",
+                "y(x)": "A function of x",
+                "y'": "The derivative of y with respect to x"
+              },
+              "visual_spec": {
+                "interpretation": "The calculus of variations is a field of mathematical analysis that deals with maximizing or minimizing functionals, which are mappings from a set of functions to the real numbers. In the context of physics, it is often used to find the path, curve, or surface that minimizes or maximizes a certain quantity, such as the time taken for a particle to travel between two points or the energy of a system. The Euler-Lagrange equation is a fundamental equation in the calculus of variations that provides a necessary condition for a function to be an extremum of a functional.",
+                "examples": [
+                  "To find the path of a particle that minimizes the time taken to travel between two points under the influence of gravity, we can use the calculus of variations to derive the equation of motion for the particle."
+                ],
+                "typical_values": {
+                  "g": "9.81 m/s^2, the acceleration due to gravity"
+                },
+                "concept": "calculus of variations",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            }
+          ],
+          "equations": [],
+          "definitions": {},
+          "visual_spec": {
+            "interpretation": "",
+            "examples": [],
+            "typical_values": {},
+            "concept": "variational calculus",
+            "elements": [],
+            "colors": {},
+            "animations": [],
+            "transitions": [],
+            "camera_movement": "",
+            "duration": 15,
+            "layout": ""
+          },
+          "narrative": null
+        }
+      ],
+      "equations": [],
+      "definitions": {},
+      "visual_spec": {
+        "interpretation": "",
+        "examples": [],
+        "typical_values": {},
+        "concept": "classical field theory",
+        "elements": [],
+        "colors": {},
+        "animations": [],
+        "transitions": [],
+        "camera_movement": "",
+        "duration": 15,
+        "layout": ""
+      },
+      "narrative": null
+    },
+    {
+      "concept": "special relativity",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "classical mechanics",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": [
+            "F = ma",
+            "E = \\frac{1}{2}mv^2",
+            "p = mv",
+            "W = Fd\\cos(\\theta)"
+          ],
+          "definitions": {
+            "F": "Force",
+            "m": "Mass",
+            "a": "Acceleration",
+            "E": "Energy",
+            "v": "Velocity",
+            "p": "Momentum",
+            "W": "Work",
+            "d": "Distance",
+            "\\theta": "Angle between force and displacement"
+          },
+          "visual_spec": {
+            "interpretation": "Classical mechanics is the study of the motion of objects under the influence of forces. It is based on Newton's laws of motion, which describe how objects respond to forces. The equations provided are fundamental to understanding the behavior of objects in motion. The first equation, F = ma, is Newton's second law, which states that force equals mass times acceleration. This equation is crucial for calculating the force needed to change an object's motion. The second equation, E = 1/2mv^2, represents the kinetic energy of an object, which is the energy of motion. It shows that kinetic energy is dependent on the object's mass and the square of its velocity. The third equation, p = mv, defines momentum, which is a measure of an object's motion. Momentum is conserved in closed systems, meaning that the total momentum before and after a collision remains the same. The fourth equation, W = Fd\\cos(\\theta), calculates the work done by a force, which is the energy transferred to an object when it is moved in the direction of the force. Work is a measure of energy transfer and is dependent on the force applied and the distance over which it acts.",
+            "examples": [
+              "A 5 kg object is pushed with a force of 10 N. What is its acceleration? Using F = ma, we find a = F/m = 10 N / 5 kg = 2 m/s^2.",
+              "A car with a mass of 1000 kg is moving at 20 m/s. What is its kinetic energy? Using E = 1/2mv^2, we find E = 1/2 * 1000 kg * (20 m/s)^2 = 200,000 J.",
+              "A 10 kg object is moving at 5 m/s. What is its momentum? Using p = mv, we find p = 10 kg * 5 m/s = 50 kg m/s.",
+              "A force of 20 N is applied to move an object 10 m in the direction of the force. What is the work done? Using W = Fd\\cos(\\theta), and assuming the force is in the direction of the displacement (\\theta = 0), we find W = 20 N * 10 m * cos(0) = 200 J."
+            ],
+            "typical_values": {
+              "g": "9.81 m/s^2 (acceleration due to gravity)"
+            },
+            "concept": "classical mechanics",
+            "elements": [],
+            "colors": {},
+            "animations": [],
+            "transitions": [],
+            "camera_movement": "",
+            "duration": 15,
+            "layout": ""
+          },
+          "narrative": null
+        },
+        {
+          "concept": " Galilean transformation",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "classical mechanics",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "F = ma",
+                "E = \\frac{1}{2}mv^2",
+                "p = mv"
+              ],
+              "definitions": {
+                "F": "Force",
+                "m": "Mass",
+                "a": "Acceleration",
+                "E": "Energy",
+                "v": "Velocity",
+                "p": "Momentum"
+              },
+              "visual_spec": {
+                "interpretation": "Classical mechanics is the branch of physics that deals with the motion of macroscopic objects under the influence of forces. It is based on Newton's laws of motion, which describe the relationship between the motion of an object and the forces acting upon it. The equations provided represent fundamental principles: Newton's second law (F=ma), the kinetic energy equation (E=1/2mv^2), and the definition of momentum (p=mv). These equations are essential for understanding how forces affect motion and energy.",
+                "examples": [
+                  "If a 2 kg mass is\u52a0\u901f by a force of 10 N, what is its acceleration? Using F=ma, we find a = F/m = 10 N / 2 kg = 5 m/s^2."
+                ],
+                "typical_values": {
+                  "g": "9.81 m/s^2 (acceleration due to gravity)"
+                },
+                "concept": "classical mechanics",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "vector addition",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [],
+              "definitions": {},
+              "visual_spec": {
+                "interpretation": "",
+                "examples": [],
+                "typical_values": {},
+                "concept": "vector addition",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "inertial reference frames",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [],
+              "definitions": {},
+              "visual_spec": {
+                "interpretation": "",
+                "examples": [],
+                "typical_values": {},
+                "concept": "inertial reference frames",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            }
+          ],
+          "equations": [],
+          "definitions": {},
+          "visual_spec": {
+            "interpretation": "",
+            "examples": [],
+            "typical_values": {},
+            "concept": " Galilean transformation",
+            "elements": [],
+            "colors": {},
+            "animations": [],
+            "transitions": [],
+            "camera_movement": "",
+            "duration": 15,
+            "layout": ""
+          },
+          "narrative": null
+        },
+        {
+          "concept": " Maxwell's equations",
+          "depth": 2,
+          "is_foundation": false,
+          "prerequisites": [
+            {
+              "concept": "Vector calculus",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "\\nabla \\cdot \\mathbf{F} = \\frac{d}{dV} \\int_V \\mathbf{F} \\cdot d\\mathbf{A}",
+                "\\nabla \\times \\mathbf{F} = \\frac{d}{dS} \\oint_S \\mathbf{F} \\cdot d\\mathbf{r}",
+                "\\nabla \\phi = \\mathbf{F}"
+              ],
+              "definitions": {
+                "\\nabla": "Del operator",
+                "\\mathbf{F}": "Vector field",
+                "\\cdot": "Dot product",
+                "d\\mathbf{A}": "Infinitesimal area element",
+                "d\\mathbf{r}": "Infinitesimal path element",
+                "\\phi": "Scalar potential"
+              },
+              "visual_spec": {
+                "interpretation": "Vector calculus is a branch of mathematics that deals with vector fields and operations on them. It is widely used in physics and engineering to describe quantities that have both magnitude and direction. The divergence of a vector field, represented by \\nabla \\cdot \\mathbf{F}, measures the magnitude of a vector field's source or sink at a given point. The curl, \\nabla \\times \\mathbf{F}, describes the infinitesimal rotation of a vector field. The gradient, \\nabla \\phi, represents the rate of change of a scalar field and can be thought of as a vector field that points in the direction of the steepest ascent.",
+                "examples": [
+                  "Consider a vector field \\mathbf{F} = (x^2, y^2). The divergence is \\nabla \\cdot \\mathbf{F} = 2x + 2y, indicating the field expands outwards from the origin."
+                ],
+                "typical_values": {
+                  "\\nabla \\cdot \\mathbf{F}": "Positive for sources, negative for sinks",
+                  "\\nabla \\times \\mathbf{F}": "Zero for irrotational fields"
+                },
+                "concept": "Vector calculus",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "Electromagnetism",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [
+                "F = \\frac{1}{4\\pi\\epsilon_0} \\frac{q_1 q_2}{r^2} \\hat{r}",
+                "E = \\frac{1}{4\\pi\\epsilon_0} \\frac{q}{r^2}",
+                "B = \\frac{\\mu_0}{4\\pi} \\frac{I}{2\\pi r} \\hat{\\phi}",
+                "\\nabla \\cdot E = \\frac{\\rho}{\\epsilon_0}",
+                "\\nabla \\times E = -\\frac{\\partial B}{\\partial t}"
+              ],
+              "definitions": {
+                "F": "Electromagnetic force",
+                "q_1": "Charge of the first object",
+                "q_2": "Charge of the second object",
+                "r": "Distance between charges",
+                "E": "Electric field",
+                "\\epsilon_0": "Permittivity of free space",
+                "B": "Magnetic field",
+                "\\mu_0": "Permeability of free space",
+                "I": "Current",
+                "\\hat{r}": "Unit vector in the direction from q_1 to q_2",
+                "\\hat{\\phi}": "Unit vector in the azimuthal direction",
+                "\\rho": "Charge density",
+                "t": "Time"
+              },
+              "visual_spec": {
+                "interpretation": "Electromagnetism is a branch of physics that studies the electromagnetic force, one of the four fundamental forces of nature. It occurs between electrically charged particles and is responsible for electromagnetic phenomena such as electric fields, magnetic fields, and their interactions. The equations provided describe the fundamental relationships in electromagnetism, including Coulomb's law for electric force, the electric field due to a point charge, the magnetic field due to a current-carrying wire, Gauss's law for electric fields, and Faraday's law of induction.",
+                "examples": [
+                  "To find the electric force between two charges, q_1 = 2 \\mu C and q_2 = -3 \\mu C, separated by a distance of 5 m, use the first equation. The force is F = \\frac{1}{4\\pi\\epsilon_0} \\frac{(2 \\times 10^{-6})(-3 \\times 10^{-6})}{5^2} \\hat{r} = -3.6 \\times 10^{-23} N \\hat{r}."
+                ],
+                "typical_values": {
+                  "\\epsilon_0": "8.854 \\times 10^{-12} F/m",
+                  "\\mu_0": "4\\pi \\times 10^{-7} Tm/A"
+                },
+                "concept": "Electromagnetism",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            },
+            {
+              "concept": "Differential equations",
+              "depth": 3,
+              "is_foundation": true,
+              "prerequisites": [],
+              "equations": [],
+              "definitions": {},
+              "visual_spec": {
+                "interpretation": "",
+                "examples": [],
+                "typical_values": {},
+                "concept": "Differential equations",
+                "elements": [],
+                "colors": {},
+                "animations": [],
+                "transitions": [],
+                "camera_movement": "",
+                "duration": 15,
+                "layout": ""
+              },
+              "narrative": null
+            }
+          ],
+          "equations": [
+            "\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}",
+            "\\nabla \\cdot \\mathbf{B} = 0",
+            "\\nabla \\times \\mathbf{E} = -\\frac{\\partial \\mathbf{B}}{\\partial t}",
+            "\\nabla \\times \\mathbf{B} = \\mu_0 \\mathbf{J} + \\mu_0 \\varepsilon_0 \\frac{\\partial \\mathbf{E}}{\\partial t}"
+          ],
+          "definitions": {
+            "\\mathbf{E}": "Electric field",
+            "\\mathbf{B}": "Magnetic field",
+            "\\rho": "Charge density",
+            "\\varepsilon_0": "Electric constant (permittivity of free space)",
+            "\\mu_0": "Magnetic constant (permeability of free space)",
+            "\\mathbf{J}": "Current density",
+            "\\nabla \\cdot": "Divergence",
+            "\\nabla \\times": "Curl",
+            "\\frac{\\partial}{\\partial t}": "Partial derivative with respect to time"
+          },
+          "visual_spec": {
+            "interpretation": "Maxwell's equations are a set of four partial differential equations that describe the behavior of electric and magnetic fields. They are fundamental to the study of electromagnetism, predicting the behavior of these fields under various conditions. The first equation, Gauss's law for electricity, states that the electric flux through any closed surface is proportional to the total charge enclosed. The second equation, Gauss's law for magnetism, asserts that there are no magnetic monopoles, meaning the magnetic flux through any closed surface is zero. The third equation, Faraday's law of induction, describes how a time-varying magnetic field induces an electric field. The fourth equation, Amp\u00e8re's law with Maxwell's addition, shows how a time-varying electric field or a current density can induce a magnetic field.",
+            "examples": [
+              "Consider a point charge q at rest. The electric field is radially symmetric and can be described by E = kq/r^2, where k is Coulomb's constant. The divergence of this field is zero everywhere except at the point charge, where it is infinite, consistent with Gauss's law."
+            ],
+            "typical_values": {
+              "\\varepsilon_0": "8.854 x 10^{-12} \\, \\text{F/m}",
+              "\\mu_0": "4\\pi x 10^{-7} \\, \\text{Tm/A}"
+            },
+            "concept": " Maxwell's equations",
+            "elements": [],
+            "colors": {},
+            "animations": [],
+            "transitions": [],
+            "camera_movement": "",
+            "duration": 15,
+            "layout": ""
+          },
+          "narrative": null
+        }
+      ],
+      "equations": [],
+      "definitions": {},
+      "visual_spec": {
+        "interpretation": "",
+        "examples": [],
+        "typical_values": {},
+        "concept": "special relativity",
+        "elements": [],
+        "colors": {},
+        "animations": [],
+        "transitions": [],
+        "camera_movement": "",
+        "duration": 15,
+        "layout": ""
+      },
+      "narrative": null
+    }
+  ],
+  "equations": [
+    "Z = \\int \\mathcal{D}\\phi \\, e^{iS(\\phi)}",
+    "S(\\phi) = \\int d^4x \\, \\mathcal{L}(\\phi, \\partial_\\mu \\phi)",
+    "\\mathcal{L} = \\frac{1}{2}(\\partial_\\mu \\phi)(\\partial^\\u2009\\mu \\phi) - \\frac{1}{2}m^2\\phi^2 - \\frac{1}{4}g\\phi^4"
+  ],
+  "definitions": {
+    "Z": "Partition function",
+    "\\mathcal{D}\\phi": "Functional measure",
+    "S(\\phi)": "Action",
+    "d^4x": "Integration over spacetime",
+    "\\mathcal{L}": "Lagrangian density",
+    "\\phi": "Scalar field",
+    "\\partial_\\mu": "Partial derivative with respect to spacetime coordinate",
+    "m": "Mass of the scalar field",
+    "g": "Coupling constant"
+  },
+  "visual_spec": {
+    "interpretation": "Quantum field theory (QFT) is a theoretical framework that combines classical field theory, special relativity, and quantum mechanics. It describes the behavior of particles and fields at the quantum level. The partition function Z, which is the central object in QFT, is defined as a functional integral over all possible field configurations weighted by the exponential of the action S. The action S is an integral over spacetime of the Lagrangian density, which is a function of the field and its derivatives. The Lagrangian density for a scalar field theory typically includes kinetic and potential terms, as well as interactions. In this example, we have a simple scalar field theory with a quartic interaction term.",
+    "examples": [
+      "To compute the propagator, one would calculate the two-point correlation function from the partition function."
+    ],
+    "typical_values": {
+      "m": "mass of the Higgs boson",
+      "g": "coupling constant for the Higgs self-interaction"
+    },
+    "concept": "quantum field theory",
+    "elements": [],
+    "colors": {},
+    "animations": [],
+    "transitions": [],
+    "camera_movement": "",
+    "duration": 15,
+    "layout": ""
+  },
+  "narrative": "Our journey begins with the photoelectric effect, a phenomenon that puzzled scientists at the turn of the 20th century. This effect, where light shining on a metal surface causes the emission of electrons, seemed to defy the classical wave theory of light. The equation that describes the energy of a photon, E_photon = h*nu, where h is Planck's constant and nu is the frequency of light, became a cornerstone in our understanding of light's particle nature. This equation, along with E_kinetic = 1/2*mv^2 and E_photon = E_kinetic + phi, laid the groundwork for quantum mechanics.\n\nAs we delve into wave mechanics, we're introduced to the concept that particles can exhibit wave-like properties. This idea is further solidified with wave-particle duality, where particles like electrons can be described by wave functions. Moving to vector calculus, we encounter the divergence and curl operations, encapsulated in equations like nabla \u00b7 \u03a3 = \u03a3 \u00b7 nabla + nabla \u00b7 \u03a3, which are crucial for understanding fields in physics.\n\nElectromagnetism, with its intricate dance of electric and magnetic fields, is described by Maxwell's equations. These equations, although complex, are fundamental to our understanding of how light propagates and interacts with matter. Calculus, with its concepts of limits, derivatives, and integrals, provides the mathematical framework needed to describe changes and motions in the physical world.\n\nProbability theory offers a way to quantify uncertainty and randomness in quantum mechanics, where the outcome of a measurement is not always predictable. Quantum mechanics itself, with equations like i*hbar*partial/partial t*Psi = Hat*H*Psi, describes the behavior of particles at the smallest scales. Classical mechanics, with its laws like F = ma, provides a macroscopic counterpart to quantum mechanics, showing how the world behaves on larger scales.\n\nGalilean transformations and Maxwell's equations set the stage for special relativity, which revolutionized our understanding of space and time. Limits, a fundamental concept in calculus, allow us to describe the behavior of functions as they approach certain values. Linear algebra, with its matrices and vectors, provides a systematic way to solve systems of equations.\n\nDifferential equations describe how quantities change and are essential for modeling physical phenomena over time. Multivariable calculus extends our understanding of calculus to higher dimensions, allowing us to describe functions of multiple variables. Optimization, with its focus on finding maximum and minimum values, is crucial in many fields, including economics and engineering.\n\nCalculus of variations and variational calculus deal with finding functions that minimize or maximize certain quantities, which is central to understanding the behavior of physical systems. Classical field theory, which extends the principles of mechanics to fields like the electromagnetic field, paves the way for quantum field theory.\n\nFinally, quantum field theory, with its equations like Z = integral D*phi * e^(i*S(phi)), describes the behavior of particles and fields at the quantum level. It's a culmination of all the concepts we've explored, providing a unified framework for understanding the fundamental forces and particles in our universe.\n\nThis narrative is a rich tapestry of ideas, each building upon the last to create a comprehensive understanding of quantum field theory. It's a journey that starts with the photoelectric effect and ends with a deeper understanding of the fabric of reality. As we prepare to bring this story to life with Manim, we're reminded of the power of visualization in teaching complex concepts. Each scene, with its careful pacing and vivid animations, will help viewers grasp the intricate connections between these ideas.\n\nIn the next phase, we'll translate this narrative into Manim code, creating a series of scenes that will visually represent each concept. We'll use LaTeX for equations, carefully chosen colors to highlight key ideas, and smooth transitions to guide the viewer through the material. The result will be an engaging and educational experience that brings the beauty of physics to life.\n\nThe Final Answer is: $\\boxed{Our narrative is complete, ready to be transformed into a Manim masterpiece.}$"
+}

@@ -11,6 +11,7 @@ import os
 import sys
 import asyncio
 import json
+from typing import Optional
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -228,23 +229,37 @@ async def main():
         print(f"\nERROR: Failed to load knowledge tree: {e}")
         sys.exit(1)
     
-    # Step 2: Generate narrative
-    print("\n" + "=" * 70)
-    print("STEP 1: GENERATING NARRATIVE PROMPT (KIMI K2)")
-    print("=" * 70)
-    
+    # Prepare Kimi client for downstream steps
     try:
         kimi_client = KimiClient()
-        narrative = await generate_narrative_from_tree(tree, kimi_client)
-        
-        print(f"\n✓ Narrative generated: {len(narrative)} characters")
-        print(f"Preview:\n{narrative[:500]}...")
-        
     except Exception as e:
-        print(f"\nERROR: Failed to generate narrative: {e}")
-        import traceback
-        traceback.print_exc()
+        print(f"\nERROR: Failed to initialize Kimi client: {e}")
         sys.exit(1)
+
+    # Step 2: Generate or reuse narrative
+    print("\n" + "=" * 70)
+    print("STEP 1: PREPARING NARRATIVE PROMPT (KIMI K2)")
+    print("=" * 70)
+
+    narrative: Optional[str] = None
+    if tree.narrative and tree.narrative.strip():
+        narrative = tree.narrative
+        print(f"\n✓ Using narrative stored on the tree: {len(narrative)} characters")
+        print(f"Preview:\n{narrative[:500]}...")
+    else:
+        print("\nNo stored narrative found. Generating a fresh narrative with Kimi K2...")
+        try:
+            narrative = await generate_narrative_from_tree(tree, kimi_client)
+            print(f"\n✓ Narrative generated: {len(narrative)} characters")
+            print(f"Preview:\n{narrative[:500]}...")
+        except Exception as e:
+            print(f"\nERROR: Failed to generate narrative: {e}")
+            import traceback
+            traceback.print_exc()
+            sys.exit(1)
+
+    # Ensure the tree carries the narrative for downstream use
+    tree.narrative = narrative
     
     # Step 3: Generate Manim code
     print("\n" + "=" * 70)

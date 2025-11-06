@@ -154,12 +154,26 @@ class KimiMathematicalEnricher:
 
     def __init__(self, client: Optional[KimiClient] = None):
         self.client = client or get_kimi_client()
+        self.cache: Dict[str, MathematicalContent] = {}
 
     async def enrich_tree(self, root: KnowledgeNode) -> KnowledgeNode:
         await self._enrich_node(root)
         return root
 
     async def _enrich_node(self, node: KnowledgeNode) -> None:
+        if node.concept in self.cache:
+            cached = self.cache[node.concept]
+            node.equations = cached.equations
+            node.definitions = cached.definitions
+            if node.visual_spec is None:
+                node.visual_spec = {}
+            node.visual_spec.setdefault("interpretation", cached.interpretation)
+            node.visual_spec.setdefault("examples", cached.examples)
+            node.visual_spec.setdefault("typical_values", cached.typical_values)
+            for prereq in node.prerequisites:
+                await self._enrich_node(prereq)
+            return
+
         complexity = "high school level" if node.is_foundation else "upper-undergraduate level"
 
         system_prompt = (
@@ -192,6 +206,7 @@ class KimiMathematicalEnricher:
             payload = _parse_json_fallback(self.client.get_text_content(response)) or {}
 
         math_content = MathematicalContent.from_payload(payload)
+        self.cache[node.concept] = math_content
 
         node.equations = math_content.equations
         node.definitions = math_content.definitions
@@ -216,35 +231,43 @@ VISUAL_DESIGN_TOOL = {
     "function": {
         "name": "design_visual_plan",
         "description": (
-            "Draft the Manim visual plan for a concept, including objects, "
-            "colors, animations, transitions, camera moves, and duration."
+            "Describe the visual presentation for a concept. Focus on what should "
+            "be shown visually, not specific Manim implementation details. Manim "
+            "will handle the rendering automatically."
         ),
         "parameters": {
             "type": "object",
             "properties": {
-                "elements": {
-                    "type": "array",
-                    "items": {"type": "string"},
-                    "description": "Specific Manim objects or constructs to create.",
+                "visual_description": {
+                    "type": "string",
+                    "description": (
+                        "Detailed description of what should appear visually: what objects, "
+                        "shapes, or elements should be shown. Describe the visual content, "
+                        "not the Manim classes. For example: 'rotating wireframe of 4D spacetime', "
+                        "'undulating plane waves', 'Feynman diagram with electron and photon lines'."
+                    ),
                 },
-                "colors": {
-                    "type": "object",
-                    "additionalProperties": {"type": "string"},
-                    "description": "Mapping from element names to Manim color constants.",
+                "color_scheme": {
+                    "type": "string",
+                    "description": (
+                        "Color palette description (e.g., 'red and blue for electric and magnetic fields', "
+                        "'gold for field strength tensor'). Use descriptive color names."
+                    ),
                 },
-                "animations": {
-                    "type": "array",
-                    "items": {"type": "string"},
-                    "description": "Animation primitives or sequences.",
+                "animation_description": {
+                    "type": "string",
+                    "description": (
+                        "How elements should animate or move: 'slowly rotate', 'fade in', "
+                        "'zoom into', 'morph from X to Y'. Describe the visual effect."
+                    ),
                 },
                 "transitions": {
-                    "type": "array",
-                    "items": {"type": "string"},
-                    "description": "How to connect this scene with prerequisites.",
+                    "type": "string",
+                    "description": "How to transition from previous concept to this one.",
                 },
                 "camera_movement": {
                     "type": "string",
-                    "description": "Camera framing or movement guidance.",
+                    "description": "Camera framing or movement (e.g., 'zoom into origin', 'pan over', 'pull away').",
                 },
                 "duration": {
                     "type": "integer",
@@ -252,10 +275,10 @@ VISUAL_DESIGN_TOOL = {
                 },
                 "layout": {
                     "type": "string",
-                    "description": "Spatial arrangement notes.",
+                    "description": "Spatial arrangement or positioning notes.",
                 },
             },
-            "required": ["elements", "animations", "duration"],
+            "required": ["visual_description", "animation_description", "duration"],
         },
     },
 }
@@ -264,10 +287,10 @@ VISUAL_DESIGN_TOOL = {
 @dataclass
 class VisualSpec:
     concept: str
-    elements: List[str] = field(default_factory=list)
-    colors: Dict[str, str] = field(default_factory=dict)
-    animations: List[str] = field(default_factory=list)
-    transitions: List[str] = field(default_factory=list)
+    visual_description: str = ""
+    color_scheme: str = ""
+    animation_description: str = ""
+    transitions: str = ""
     camera_movement: str = ""
     duration: int = 15
     layout: str = ""
@@ -276,10 +299,10 @@ class VisualSpec:
     def from_payload(cls, concept: str, payload: Dict[str, Any]) -> "VisualSpec":
         return cls(
             concept=concept,
-            elements=payload.get("elements", []),
-            colors=payload.get("colors", {}),
-            animations=payload.get("animations", []),
-            transitions=payload.get("transitions", []),
+            visual_description=payload.get("visual_description", ""),
+            color_scheme=payload.get("color_scheme", ""),
+            animation_description=payload.get("animation_description", ""),
+            transitions=payload.get("transitions", ""),
             camera_movement=payload.get("camera_movement", ""),
             duration=payload.get("duration", 15),
             layout=payload.get("layout", ""),
@@ -288,9 +311,9 @@ class VisualSpec:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "concept": self.concept,
-            "elements": self.elements,
-            "colors": self.colors,
-            "animations": self.animations,
+            "visual_description": self.visual_description,
+            "color_scheme": self.color_scheme,
+            "animation_description": self.animation_description,
             "transitions": self.transitions,
             "camera_movement": self.camera_movement,
             "duration": self.duration,
@@ -303,6 +326,7 @@ class KimiVisualDesigner:
 
     def __init__(self, client: Optional[KimiClient] = None):
         self.client = client or get_kimi_client()
+        self.cache: Dict[str, VisualSpec] = {}
 
     async def design_tree(self, root: KnowledgeNode) -> KnowledgeNode:
         await self._design_node(root, parent_spec=None)
@@ -313,17 +337,27 @@ class KimiVisualDesigner:
         node: KnowledgeNode,
         parent_spec: Optional[VisualSpec],
     ) -> VisualSpec:
+        if node.concept in self.cache:
+            cached_spec = self.cache[node.concept]
+            if node.visual_spec is None:
+                node.visual_spec = {}
+            node.visual_spec.update(cached_spec.to_dict())
+            for prereq in node.prerequisites:
+                await self._design_node(prereq, cached_spec)
+            return cached_spec
+
         previous_info = ""
         if parent_spec:
             previous_info = (
                 f"Previous concept: {parent_spec.concept}\n"
-                f"Previous elements: {', '.join(parent_spec.elements)}\n"
-                f"Previous colors: {json.dumps(parent_spec.colors)}\n"
+                f"Previous visual: {parent_spec.visual_description}\n"
+                f"Previous colors: {parent_spec.color_scheme}\n"
             )
 
         system_prompt = (
-            "You are a senior Manim animator. Plan the visuals for the current "
-            "concept, keeping continuity with prior scenes. Respond by calling "
+            "You are a visual designer describing what should appear in an animation. "
+            "Focus on describing the visual content and effects, not specific implementation "
+            "details. Manim will handle the rendering automatically. Respond by calling "
             "the 'design_visual_plan' tool."
         )
 
@@ -334,10 +368,11 @@ class KimiVisualDesigner:
             f"Equations to feature: {node.equations or 'None provided'}\n"
             f"Prerequisites: {[p.concept for p in node.prerequisites]}\n"
             f"{previous_info}\n"
-            "Propose specific Manim elements (MathTex, VGroup, Axes, etc.), "
-            "give a tight color palette (using Manim color constants), outline "
-            "key animation beats, camera moves, and how to transition from the "
-            "previous concept. Estimate duration in seconds."
+            "Describe what should appear visually: what objects, shapes, or elements should be shown. "
+            "Describe colors in natural language (e.g., 'red and blue', 'gold'). "
+            "Describe animations as visual effects (e.g., 'slowly rotate', 'fade in', 'zoom into'). "
+            "Do NOT specify Manim classes like MathTex or VGroup - just describe what should be visible. "
+            "Estimate duration in seconds."
         )
 
         response = self.client.chat_completion(
@@ -358,6 +393,8 @@ class KimiVisualDesigner:
         if node.visual_spec is None:
             node.visual_spec = {}
         node.visual_spec.update(visual_spec.to_dict())
+
+        self.cache[node.concept] = visual_spec
 
         for prereq in node.prerequisites:
             await self._design_node(prereq, visual_spec)
@@ -437,6 +474,16 @@ class KimiNarrativeComposer:
         concept_order = [node.concept for node in ordered_nodes]
         total_duration = self._estimate_total_duration(ordered_nodes)
 
+        # Expand context for larger models when available
+        client = self.client
+        try:
+            model_name = getattr(self.client, "model", "")
+            if "8k" in model_name:
+                client = KimiClient(model=model_name.replace("8k", "32k"))
+        except Exception:
+            # Fall back to existing client if reinitialization fails
+            client = self.client
+
         system_prompt = (
             "You are an expert STEM storyteller writing verbose prompts for "
             "Manim. Walk through each concept in order, connecting math and "
@@ -446,20 +493,26 @@ class KimiNarrativeComposer:
         context = "\n".join(
             self._format_node_context(idx + 1, node) for idx, node in enumerate(ordered_nodes)
         )
+        # Avoid exceeding context window if tree is very large
+        max_context_chars = 18000
+        if len(context) > max_context_chars:
+            context = context[:max_context_chars] + "\n...[context truncated]..."
 
         user_prompt = (
             f"Target concept: {root.concept}\n"
             f"Concept progression:\n{context}\n\n"
             "Compose a single continuous narrative (aim for ~2000 words) that:\n"
             "- Introduces foundational ideas before advanced ones.\n"
-            "- References the provided LaTeX equations (use raw string form r\"...\" when quoting).\n"
-            "- Integrates the visual plans (elements, color themes, transitions).\n"
+            "- References the provided LaTeX equations exactly as written (use raw string form r\"...\" when quoting).\n"
+            "- Describes the visual content naturally (what appears, not how Manim implements it).\n"
+            "- Integrates color schemes, animation descriptions, and transitions.\n"
             "- Provides pacing/timing suggestions per scene.\n"
+            "- Focuses on LaTeX equations for exact math rendering - let Manim handle visual elements.\n"
             "- Ends with a summary that prepares for Manim code generation.\n"
             "Return your work by calling the tool."
         )
 
-        response = self.client.chat_completion(
+        response = client.chat_completion(
             messages=[{"role": "user", "content": user_prompt}],
             system=system_prompt,
             tools=[NARRATIVE_TOOL],
@@ -514,16 +567,17 @@ class KimiNarrativeComposer:
     def _format_node_context(position: int, node: KnowledgeNode) -> str:
         equations = node.equations or []
         visual_spec = node.visual_spec or {}
-        animations = visual_spec.get("animations", [])
-        colors = visual_spec.get("colors", {})
-        transitions = visual_spec.get("transitions", [])
+        visual_desc = visual_spec.get("visual_description", "")
+        animation_desc = visual_spec.get("animation_description", "")
+        color_scheme = visual_spec.get("color_scheme", "")
+        transitions = visual_spec.get("transitions", "")
         return (
             f"{position}. Concept: {node.concept}\n"
             f"   Depth: {node.depth}, Foundation: {node.is_foundation}\n"
             f"   Equations: {equations}\n"
-            f"   Visual elements: {visual_spec.get('elements', [])}\n"
-            f"   Animations: {animations}\n"
-            f"   Colors: {colors}\n"
+            f"   Visual description: {visual_desc}\n"
+            f"   Animation: {animation_desc}\n"
+            f"   Colors: {color_scheme}\n"
             f"   Transitions: {transitions}\n"
         )
 

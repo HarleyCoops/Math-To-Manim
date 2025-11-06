@@ -1,81 +1,86 @@
 from manim import *
 
-class MinkowskiSpacetime(Scene):
+class JourneyThroughSpacetime(Scene):
     def construct(self):
-        # Scene 1: Introduction to Newtonian Mechanics
-        self.play(Write(Title("Newtonian Mechanics", color=WHITE).to_edge(UP)), 
-                  Pendulum().animate(pendulum.swing), 
-                  run_time=3)
+        # Newtonian mechanics
+        newtonian_mechanics = Text("Newtonian Mechanics", color=BLUE).to_edge(UP)
+        self.play(Write(newtonian_mechanics))
+        self.wait(2)
+
+        # Transition to 2D representation
+        arrow_2d = Arrow(LEFT, RIGHT).next_to(newtonian_mechanics, DOWN)
+        self.play(Write(arrow_2d))
         self.wait(1)
 
-        # Scene 2: Maxwell's Equations
-        maxwell_eq = [
-            Tex(r"\nabla \cdot \mathbf{E} = \frac{\rho}{\epsilon_0}"),
-            Tex(r"\nabla \cdot \mathbf{B} = 0"),
-            Tex(r"\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}"),
-            Tex(r"\nabla \times \mathbf{B} = \mu_0 \mathbf{J} + \mu_0 \epsilon_0 \frac{\partial \mathbf{E}}{\partial t}")
-        ]
-        for eq in maxwell_eq:
-            self.play(Write(eq), run_time=1.5)
-            self.wait(1)
+        # Transition to 3D space
+        arrow_3d = Arrow(LEFT, RIGHT).next_to(arrow_2d, DOWN)
+        self.play(Transform(arrow_2d, arrow_3d))
+        self.wait(1)
+
+        # Vectors, calculus, multivariable calculus
+        vectors_calculus = VGroup(
+            Text("Vectors", color=RED),
+            Text("Calculus", color=GREEN),
+            Text("Multivariable Calculus", color=YELLOW)
+        ).arrange(DOWN, aligned_edge=LEFT).next_to(arrow_3d, DOWN)
+        self.play(Write(vectors_calculus))
+        self.wait(2)
+
+        # Partial derivatives and vector calculus
+        partial_derivatives = Text("Partial Derivatives", color=PURPLE).next_to(vectors_calculus, DOWN)
+        vector_calculus = Text("Vector Calculus", color=ORANGE).next_to(partial_derivatives, DOWN)
+        self.play(Write(partial_derivatives), Write(vector_calculus))
+        self.wait(2)
+
+        # Electrostatics, magnetic fields, magnetostatics
+        electrostatics = Text("Electrostatics", color=RED).next_to(partial_derivatives, DOWN)
+        magnetic_fields = Text("Magnetic Fields", color=GREEN).next_to(electrostatics, DOWN)
+        magnetostatics = Text("MagnetoStatics", color=BLUE).next_to(magnetic_fields, DOWN)
+        self.play(Write(electrostatics), Write(magnetic_fields), Write(magnetostatics))
+        self.wait(2)
+
+        # Induced electromotive force and Faraday's law of induction
+        induced_emf = Text("Induced Electromotive Force", color=PURPLE).next_to(magnetostatics, DOWN)
+        faraday_law = Text("Faraday's Law of Induction", color=ORANGE).next_to(induced_emf, DOWN)
+        self.play(Write(induced_emf), Write(faraday_law))
+        self.wait(2)
+
+        # Maxwell's equations and speed of light
+        maxwell_equations = Text("Maxwell's Equations", color=RED).next_to(faraday_law, DOWN)
+        speed_of_light = Text("Speed of Light", color=GREEN).next_to(maxwell_equations, DOWN)
+        self.play(Write(maxwell_equations), Write(speed_of_light))
+        self.wait(2)
+
+        # Special Relativity
+        special_relativity = Text("Special Relativity", color=BLUE).next_to(speed_of_light, DOWN)
+        self.play(Write(special_relativity))
+        self.wait(2)
+
+        # Classical mechanics and electromagnetism
+        classical_mechanics = Text("Classical Mechanics", color=PURPLE).next_to(special_relativity, DOWN)
+        electromagnetism = Text("Electromagnetism", color=ORANGE).next_to(classical_mechanics, DOWN)
+        self.play(Write(classical_mechanics), Write(electromagnetism))
+        self.wait(2)
+
+        # Vector spaces, linear algebra, matrix multiplication
+        vector_spaces = Text("Vector Spaces", color=RED).next_to(electromagnetism, DOWN)
+        linear_algebra = Text("Linear Algebra", color=GREEN).next_to(vector_spaces, DOWN)
+        matrix_multiplication = Text("Matrix Multiplication", color=BLUE).next_to(linear_algebra, DOWN)
+        self.play(Write(vector_spaces), Write(linear_algebra), Write(matrix_multiplication))
+        self.wait(2)
+
+        # Multi-dimensional arrays and tensors
+        multi_dimensional_arrays = Text("Multi-Dimensional Arrays", color=PURPLE).next_to(matrix_multiplication, DOWN)
+        tensors = Text("Tensors", color=ORANGE).next_to(multi_dimensional_arrays, DOWN)
+        self.play(Write(multi_dimensional_arrays), Write(tensors))
+        self.wait(2)
+
+        # Minkowski Spacetime
+        minkowski_spacetime = Text("Minkowski Spacetime", color=RED).to_edge(DOWN)
+        self.play(Write(minkowski_spacetime))
         self.wait(3)
 
-        # Scene 3: Speed of Light
-        light_beam = Line(LEFT, RIGHT).set_color(WHITE)
-        self.play(Create(light_beam), 
-                  Write(Tex(r"c = \sqrt{1/(\mu_0 \epsilon_0)}").next_to(light_beam, RIGHT)), 
-                  run_time=3)
-        self.wait(1)
-
-        # Scene 4: Special Relativity
-        einstein = Circle(color=BLUE).move_to(UP)
-        train1 = Line(LEFT, RIGHT).set_color(RED).next_to(einstein, LEFT)
-        train2 = Line(LEFT, RIGHT).set_color(GREEN).next_to(einstein, RIGHT)
-        self.play(Create(train1), 
-                  Create(train2), 
-                  Write(ThoughtBubble("Einstein's Special Relativity").next_to(einstein, UP)), 
-                  run_time=6)
+        # Final summary
+        final_summary = Text("Final Summary", color=GREEN).to_edge(DOWN)
+        self.play(Transform(minkowski_spacetime, final_summary))
         self.wait(2)
-
-        # Scene 5: Lorentz Transformations
-        spacetime_grid = NumberPlane()
-        lorentz_transform = spacetime_grid.copy()
-        self.play(Create(spacetime_grid), 
-                  Transform(spacetime_grid, lorentz_transform), 
-                  run_time=9)
-        self.wait(2)
-
-        # Scene 6: Four-Vector
-        four_vector = Arrow(LEFT, RIGHT).set_color(YELLOW)
-        self.play(Create(four_vector), 
-                  run_time=3)
-        self.wait(1)
-
-        # Scene 7: Minkowski Spacetime
-        spacetime_3d = Cube()
-        time_axis = Line(DOWN, UP).set_color(WHITE).next_to(spacetime_3d, UP)
-        self.play(Create(spacetime_3d), 
-                  Create(time_axis), 
-                  run_time=9)
-        self.wait(2)
-
-        # Scene 8: Spacetime Interval
-        interval_calculate = Tex(r"ds^2 = c^2dt^2 - dx^2 - dy^2 - dz^2").set_color(WHITE)
-        self.play(Create(interval_calculate), 
-                  run_time=3)
-        self.wait(1)
-
-        # Scene 9: Four-Dimensional Vectors
-        vector_3d = Arrow(LEFT, RIGHT).set_color(RED)
-        vector_4d = Arrow(LEFT, RIGHT).set_color(GREEN)
-        self.play(Create(vector_3d).next_to(vector_4d, LEFT), 
-                  Create(vector_4d), 
-                  run_time=6)
-        self.wait(2)
-
-        # Scene 10: Conclusion
-        final_spacetime = Cube()
-        self.play(Create(final_spacetime), 
-                  Write(Tex(r"ds^2 = c^2dt^2 - dx^2 - dy^2 - dz^2").next_to(final_spacetime, RIGHT)), 
-                  run_time=3)
-        self.wait(1)
