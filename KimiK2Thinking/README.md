@@ -33,6 +33,19 @@ The Kimi K2 model uses an OpenAI-compatible API format, making it easier to inte
   - Recursive tree exploration with depth limits
   - Same interface as Claude version for compatibility
 
+- **KimiEnrichmentPipeline** (`agents/enrichment_chain.py`): Complete enrichment chain
+  - **KimiMathematicalEnricher**: Adds equations, definitions, examples, and interpretations to each node
+  - **KimiVisualDesigner**: Plans Manim visual specifications (elements, colors, animations, transitions)
+  - **KimiNarrativeComposer**: Composes long-form narrative prompts (2000+ words) stitching all concepts together
+  - Uses Moonshot's tool-calling interface for structured data extraction
+  - Mirrors Claude pipeline stages while relying solely on OpenAI-compatible function calling
+
+- **Enrichment CLI** (`examples/run_enrichment_pipeline.py`): Command-line helper
+  - Loads existing knowledge tree JSON files
+  - Runs the full enrichment pipeline end-to-end
+  - Saves enriched tree with equations, visual specs, and narrative
+  - Exports narrative prompt as separate text file
+
 - **Configuration System** (`config.py`): Environment-based configuration
   - API key management
   - Model selection
@@ -85,9 +98,10 @@ KimiK2Thinking/
 ├── agents/                      # Refactored agents
 │   ├── __init__.py
 │   ├── prerequisite_explorer_kimi.py
-│   └── ... (other agents)
+│   └── enrichment_chain.py     # Mathematical, visual, and narrative enrichment
 ├── examples/                    # Example usage scripts
-│   └── test_kimi_integration.py
+│   ├── test_kimi_integration.py
+│   └── run_enrichment_pipeline.py  # CLI for running enrichment pipeline
 └── config.py                    # Configuration and constants
 ```
 
@@ -169,7 +183,52 @@ instructions = adapter.tools_to_instructions(tools)
 # Use instructions in your prompt
 ```
 
-See `examples/test_kimi_integration.py` for a complete example.
+### Enrichment Pipeline Usage
+
+Run the full enrichment chain on an existing knowledge tree:
+
+```python
+from KimiK2Thinking.agents.enrichment_chain import KimiEnrichmentPipeline
+from KimiK2Thinking.agents.prerequisite_explorer_kimi import KnowledgeNode
+import asyncio
+
+async def main():
+    # Load existing tree (or create one with PrerequisiteExplorer)
+    tree = KnowledgeNode(...)  # Your knowledge tree
+    
+    # Run enrichment pipeline
+    pipeline = KimiEnrichmentPipeline()
+    result = await pipeline.run_async(tree)
+    
+    # Access enriched data
+    print(f"Narrative: {result.narrative.verbose_prompt}")
+    print(f"Total duration: {result.narrative.total_duration}s")
+    
+    # Tree nodes now have equations, visual_spec, and narrative populated
+    for node in tree.prerequisites:
+        print(f"{node.concept}: {len(node.equations)} equations")
+
+asyncio.run(main())
+```
+
+### Command-Line Usage
+
+Run the enrichment pipeline from the command line:
+
+```bash
+# Run enrichment on an existing tree JSON file
+python KimiK2Thinking/examples/run_enrichment_pipeline.py path/to/tree.json
+
+# This will:
+# 1. Load the tree JSON
+# 2. Run mathematical enrichment (adds equations/definitions)
+# 3. Run visual design (adds Manim specs)
+# 4. Compose narrative (creates long-form prompt)
+# 5. Save enriched tree back to JSON
+# 6. Export narrative to _narrative.txt file
+```
+
+See `examples/test_kimi_integration.py` for basic API examples.
 
 ## How It Works
 
@@ -311,6 +370,44 @@ The main agent that builds knowledge trees:
 - Each node contains: concept name, depth, foundation flag, prerequisites list
 - Supports serialization to JSON for persistence
 
+#### 4. KimiEnrichmentPipeline (`agents/enrichment_chain.py`)
+
+The enrichment chain adds mathematical content, visual specifications, and narrative to knowledge trees:
+
+**MathematicalEnricher:**
+- Uses `write_mathematical_content` tool to extract structured data
+- Adds LaTeX equations (2-5 per concept, formatted for MathTex)
+- Provides symbol definitions dictionary
+- Includes interpretation, examples, and typical values
+- Adapts complexity based on foundation status (high school vs. upper-undergraduate)
+
+**VisualDesigner:**
+- Uses `design_visual_plan` tool for structured visual specifications
+- Plans Manim elements (MathTex, VGroup, Axes, etc.)
+- Defines color palettes using Manim color constants
+- Outlines animation sequences and transitions
+- Maintains continuity with previous scenes
+- Estimates duration per scene (10-40 seconds)
+
+**NarrativeComposer:**
+- Uses `compose_narrative` tool to generate long-form prompts
+- Orders concepts topologically (foundations first)
+- Integrates equations, visual specs, and transitions
+- Creates 2000+ word narrative prompt
+- Includes pacing and timing suggestions
+- Writes final narrative to root node
+
+**Tool Call Extraction:**
+- `_extract_tool_payload()`: Extracts JSON from tool call arguments
+- `_parse_json_fallback()`: Fallback parser for raw JSON responses
+- Handles both tool calls and plain JSON responses gracefully
+
+**Pipeline Flow:**
+1. Mathematical enrichment runs recursively through tree
+2. Visual design runs with parent context for continuity
+3. Narrative composition runs once on complete enriched tree
+4. All stages use Moonshot's tool-calling interface for structured data
+
 ### Error Handling
 
 The implementation includes comprehensive error handling:
@@ -326,6 +423,8 @@ The implementation includes comprehensive error handling:
 - **Caching**: Reduces redundant API calls for repeated concepts
 - **Async Support**: Uses async/await for concurrent operations
 - **Depth Limiting**: Prevents excessive API calls with depth limits
+- **Structured Tool Calls**: Tool-calling interface provides reliable JSON extraction without parsing
+- **Sequential Pipeline**: Enrichment stages run sequentially to maintain data dependencies
 
 ## Migration Notes
 
