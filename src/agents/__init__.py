@@ -1,23 +1,44 @@
 """Agent package exports and pipeline helpers."""
 
-# Use absolute imports
+from __future__ import annotations
+
+# Import core agents with graceful fallbacks so test environments without the
+# Claude Agent SDK still work.
 try:
     from src.agents.prerequisite_explorer_claude import ConceptAnalyzer, PrerequisiteExplorer, KnowledgeNode
+except ImportError:
+    from prerequisite_explorer_claude import ConceptAnalyzer, PrerequisiteExplorer, KnowledgeNode  # type: ignore
+
+try:
     from src.agents.mathematical_enricher import MathematicalEnricher, MathematicalContent
+except ImportError:
+    from mathematical_enricher import MathematicalEnricher, MathematicalContent  # type: ignore
+
+try:
     from src.agents.visual_designer import VisualDesigner, VisualSpec
+except ImportError:
+    from visual_designer import VisualDesigner, VisualSpec  # type: ignore
+
+try:
     from src.agents.narrative_composer import NarrativeComposer, Narrative
-    from src.agents.orchestrator import ReverseKnowledgeTreeOrchestrator, AnimationResult
+except ImportError:
+    from narrative_composer import NarrativeComposer, Narrative  # type: ignore
+
+try:
     from src.agents.video_review_agent import VideoReviewAgent, VideoReviewResult
+except ImportError:
+    from video_review_agent import VideoReviewAgent, VideoReviewResult  # type: ignore
+
+try:
     from src.agents.nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError
 except ImportError:
-    # Fallback for when running from src/agents directory
-    from prerequisite_explorer_claude import ConceptAnalyzer, PrerequisiteExplorer, KnowledgeNode
-    from mathematical_enricher import MathematicalEnricher, MathematicalContent
-    from visual_designer import VisualDesigner, VisualSpec
-    from narrative_composer import NarrativeComposer, Narrative
-    from orchestrator import ReverseKnowledgeTreeOrchestrator, AnimationResult
-    from video_review_agent import VideoReviewAgent, VideoReviewResult
-    from nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError
+    from nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError  # type: ignore
+
+try:
+    from src.agents.orchestrator import ReverseKnowledgeTreeOrchestrator, AnimationResult
+except ImportError:
+    ReverseKnowledgeTreeOrchestrator = None  # type: ignore[assignment]
+    AnimationResult = None  # type: ignore[assignment]
 
 __all__ = [
     # Core agents
@@ -27,7 +48,7 @@ __all__ = [
     "VisualDesigner",
     "NarrativeComposer",
 
-    # Orchestrator
+    # Orchestrator (optional)
     "ReverseKnowledgeTreeOrchestrator",
 
     # Data structures

@@ -21,14 +21,25 @@ from dotenv import load_dotenv
 # Import from same package
 try:
     from src.agents.claude_agent_runtime import run_query_via_sdk
-    from src.agents.prerequisite_explorer_claude import KnowledgeNode, CLAUDE_MODEL
 except ImportError:
     try:
         from claude_agent_runtime import run_query_via_sdk
-        from prerequisite_explorer_claude import KnowledgeNode, CLAUDE_MODEL
     except ImportError:
         run_query_via_sdk = None  # type: ignore[assignment]
-        CLAUDE_MODEL = "claude-sonnet-4-5"
+
+CLAUDE_MODEL = "claude-sonnet-4-5"
+try:
+    from src.agents.prerequisite_explorer_claude import KnowledgeNode, CLAUDE_MODEL as _CLAUDE_MODEL
+    CLAUDE_MODEL = _CLAUDE_MODEL
+except ImportError:
+    try:
+        from prerequisite_explorer_claude import KnowledgeNode, CLAUDE_MODEL as _CLAUDE_MODEL
+        CLAUDE_MODEL = _CLAUDE_MODEL
+    except ImportError as exc:
+        raise ImportError(
+            "Unable to import KnowledgeNode for NarrativeComposer. "
+            "Ensure the src package is on PYTHONPATH."
+        ) from exc
 
 load_dotenv()
 
