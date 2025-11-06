@@ -328,9 +328,56 @@ If the LLM generates broken code, I can pass it back with the error and ask for 
 
 ---
 
+## Recent Updates
+
+### November 6, 2025: Kimi K2 Thinking Model Integration
+
+**New**: Full Kimi K2 implementation now available in `KimiK2Thinking/` folder!
+
+We've built a complete alternative pipeline using **Kimi K2 thinking model** from Moonshot AI. This implementation:
+
+- **Uses OpenAI-compatible API** - Easier integration than Claude SDK
+- **Tool-calling interface** - Structured data extraction via function calling
+- **Complete enrichment chain** - Mathematical, visual, and narrative agents
+- **Focuses on LaTeX equations** - Let Manim handle visual elements automatically
+
+**Key Features:**
+- `KimiPrerequisiteExplorer` - Builds knowledge trees recursively
+- `KimiEnrichmentPipeline` - Three-stage enrichment (math → visuals → narrative)
+- Tool adapter system - Converts tools to verbose instructions when needed
+- CLI tools for running the full pipeline
+
+**How It Works:**
+1. **Prerequisite Exploration**: Recursively discovers what concepts must be understood before the target concept
+2. **Mathematical Enrichment**: Adds LaTeX equations, definitions, and examples to each node using tool calls
+3. **Visual Design**: Describes visual content (not Manim classes) - focuses on what should appear, not how to implement it
+4. **Narrative Composition**: Stitches everything into a 2000+ word verbose prompt with exact LaTeX rendering
+
+**Getting Started:**
+```bash
+# Set up Kimi API key
+echo "MOONSHOT_API_KEY=your_key_here" >> .env
+
+# Run prerequisite exploration
+python KimiK2Thinking/examples/test_kimi_integration.py
+
+# Run full enrichment pipeline on existing tree
+python KimiK2Thinking/examples/run_enrichment_pipeline.py path/to/tree.json
+```
+
+**Documentation**: See [KimiK2Thinking/README.md](KimiK2Thinking/README.md) for complete setup, usage, and architecture details.
+
+**Why Kimi K2?**
+- OpenAI-compatible API makes integration straightforward
+- Tool-calling interface provides structured data extraction
+- Thinking mode shows reasoning steps
+- Cost-effective alternative to Claude for many use cases
+
+---
+
 ## What I'm Working On
 
-### Current Status (October 2025)
+### Current Status (November 2025)
 - Refactored to Claude Sonnet 4.5 + Claude Agent SDK
 - 55+ working example animations
 - Reverse knowledge tree core algorithm implemented
@@ -384,7 +431,8 @@ See all examples: [docs/EXAMPLES.md](docs/EXAMPLES.md)
 
 ### Cross-Model Support
 I've used multiple AI models to generate examples:
-- **Claude Sonnet 4.5**: Primary agent system
+- **Claude Sonnet 4.5**: Primary agent system (Claude SDK)
+- **Kimi K2**: Alternative implementation with OpenAI-compatible API (see `KimiK2Thinking/`)
 - **DeepSeek R1**: Many quantum physics examples
 - **Gemini 2.5 Pro**: Alternative QED visualizations
 - **Grok 3**: Quantum mechanics approaches
