@@ -11,6 +11,29 @@
 
 ---
 
+## NEW: Kimi K2 Implementation (November 6, 2025)
+
+**Full Kimi K2 pipeline now available!** See `KimiK2Thinking/` folder for complete implementation.
+
+We've built an alternative pipeline using **Kimi K2 thinking model** from Moonshot AI with:
+- **OpenAI-compatible API** - Easier integration
+- **Tool-calling interface** - Structured data extraction via function calling  
+- **Complete enrichment chain** - Math, visual, and narrative agents
+- **LaTeX-focused** - Focuses on exact math rendering, lets Manim handle visuals
+
+**Quick Start:**
+```bash
+# Set API key
+echo "MOONSHOT_API_KEY=your_key_here" >> .env
+
+# Run full pipeline
+python KimiK2Thinking/examples/run_enrichment_pipeline.py tree.json
+```
+
+**Full docs**: [KimiK2Thinking/README.md](KimiK2Thinking/README.md)
+
+---
+
 ## See It In Action
 
 <div align="center">
@@ -48,29 +71,6 @@ You give me: **"explain quantum field theory"**
 I give you back: **A complete Manim animation** showing Minkowski spacetime, QED Lagrangians, Feynman diagrams, renormalization flow - with 2000+ tokens of LaTeX-rich instructions that actually render correctly.
 
 **The secret?** I don't use training data. I use a **Reverse Knowledge Tree** that asks "What must I understand BEFORE X?" recursively until hitting foundation concepts, then builds animations from the ground up.
-
----
-
-## NEW: Kimi K2 Implementation (November 6, 2025)
-
-**Full Kimi K2 pipeline now available!** See `KimiK2Thinking/` folder for complete implementation.
-
-We've built an alternative pipeline using **Kimi K2 thinking model** from Moonshot AI with:
-- **OpenAI-compatible API** - Easier integration
-- **Tool-calling interface** - Structured data extraction via function calling  
-- **Complete enrichment chain** - Math, visual, and narrative agents
-- **LaTeX-focused** - Focuses on exact math rendering, lets Manim handle visuals
-
-**Quick Start:**
-```bash
-# Set API key
-echo "MOONSHOT_API_KEY=your_key_here" >> .env
-
-# Run full pipeline
-python KimiK2Thinking/examples/run_enrichment_pipeline.py tree.json
-```
-
-**Full docs**: [KimiK2Thinking/README.md](KimiK2Thinking/README.md)
 
 ---
 
