@@ -50,6 +50,10 @@ media/texts/
 # Final output - generated file lists
 final_output/
 
+# Generated test outputs - large GIF files
+*_ManimCE_v*.gif
+*_ManimCE_v*.mp4
+
 # Jupyter Notebook
 .ipynb_checkpoints/
 *.ipynb_checkpoints
