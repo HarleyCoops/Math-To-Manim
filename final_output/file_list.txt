@@ -1,6 +1,0 @@
-file 'C:\Users\chris\Math-To-Manim\media\videos\QEDGemini25\480p15\Scene1_SpacetimeContext.mp4'
-file 'C:\Users\chris\Math-To-Manim\media\videos\QEDGemini25\480p15\Scene2_ClassicalEM_to_Relativistic.mp4'
-file 'C:\Users\chris\Math-To-Manim\media\videos\QEDGemini25\480p15\Scene3_QEDLagrangian.mp4'
-file 'C:\Users\chris\Math-To-Manim\media\videos\QEDGemini25\480p15\Scene4_FeynmanDiagram.mp4'
-file 'C:\Users\chris\Math-To-Manim\media\videos\QEDGemini25\480p15\Scene5_Renormalization.mp4'
-file 'C:\Users\chris\Math-To-Manim\media\videos\QEDGemini25\480p15\Scene6_Synthesis.mp4'
