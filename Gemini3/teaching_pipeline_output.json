@@ -1,0 +1,41 @@
+[
+  {
+    "agent": "ConceptAnalyzer",
+    "output": {
+      "core_concept": "Hopf Fibration Topology",
+      "target_audience": "Undergraduate Physics/Math",
+      "educational_goals": [
+        "Visualize the S3 to S2 mapping",
+        "Demonstrate that fibers are linked circles",
+        "Show the nested torus structure"
+      ]
+    }
+  },
+  {
+    "agent": "MathematicalEnricher",
+    "output": {
+      "definitions": [
+        "S^3 \\subset \\mathbb{C}^2",
+        "Hopf Map p(z_1, z_2) = (2z_1\\bar{z}_2, |z_1|^2 - |z_2|^2)"
+      ],
+      "key_insight": "Each point on S^2 lifts to a circle (fiber) in S^3."
+    }
+  },
+  {
+    "agent": "VisualDesigner",
+    "output": {
+      "storyboard": [
+        "1. Intro: The 'Epic' full bundle view (High Impact).",
+        "2. Deconstruction: Fade out most fibers. Isolate a single Torus.",
+        "3. Equation Overlay: Display the Hopf Map formula fixed to camera.",
+        "4. Linking Demo: Highlight two specific fibers (Red & Blue) to show they are linked.",
+        "5. Outro: Return to full bundle with camera rotation."
+      ],
+      "style": {
+        "background": "#F5F5F0",
+        "text_color": "#333333",
+        "fiber_colors": "Viridis/Spectral Gradient"
+      }
+    }
+  }
+]

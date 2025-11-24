@@ -11,6 +11,43 @@
 
 ---
 
+<div align="center">
+
+# The Hopf Fibration
+
+![Hopf Fibration](media/videos/teaching_hopf/1080p60/TeachingHopf.gif)
+
+*A visualization of the S3 to S2 mapping, showing how 4D hypersphere fibers map to linked circles in 3D space. Generated purely from a natural language prompt using the new Gemini 3 Agent Pipeline.*
+
+</div>
+
+---
+
+## NEW: Google Gemini 3 Agent Pipeline (November 24, 2025)
+
+**Full Google ADK Agent pipeline now available!** See `Gemini3/` folder for complete implementation.
+
+We've refactored the entire system to use the **Google Agent Development Kit (ADK)** and **Gemini 3** models:
+- **Six-Agent Swarm** - Concept Analyzer, Prerequisite Explorer, Math Enricher, Visual Designer, Narrative Composer, Code Generator
+- **Google ADK Integration** - Native agent orchestration
+- **Gemini 3 Reasoning** - State-of-the-art logic for complex topology and physics
+- **Full Pipeline Refactor** - Clean, modular agent architecture
+
+**Quick Start:**
+```bash
+# Set API key
+echo "GOOGLE_API_KEY=your_key_here" >> .env
+
+# Run full pipeline
+python Gemini3/run_pipeline.py "Explain the Hopf Fibration"
+```
+
+**Full docs**: [Gemini3/docs/GOOGLE_ADK_AGENTS.md](Gemini3/docs/GOOGLE_ADK_AGENTS.md)
+
+> **Note:** The original **Claude Sonnet 4.5**, **Kimi K2**, and **DeepSeek** pipelines all still work! Use the one that fits your API access and needs.
+
+---
+
 ## NEW: Kimi K2 Implementation (November 6, 2025)
 
 **Full Kimi K2 pipeline now available!** See `KimiK2Thinking/` folder for complete implementation.

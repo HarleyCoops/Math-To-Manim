@@ -1,90 +1,56 @@
-# Google ADK Agents with Gemini 3 Pro
+# Google Gemini 3 Agent Pipeline
 
-This document outlines the architecture and implementation details for the Agent Development Kit (ADK) pipeline powered by Google's Gemini 3 Pro model.
+This pipeline leverages the **Google Agent Development Kit (ADK)** and the reasoning capabilities of **Gemini 3** to generate Manim animations from natural language prompts.
 
-## 1. Core Technologies
+## Architecture
 
-### 1.1 Google ADK (Agent Development Kit)
-The `google-adk` Python library is a code-first toolkit for building, evaluating, and deploying AI agents.
-- **Key Components:**
-    - `Agent` / `LlmAgent`: The fundamental building block representing an autonomous entity.
-    - `Tool`: Functions or capabilities exposed to the agent (e.g., web search, code execution).
-    - `Model`: The underlying LLM (in our case, Gemini 3 Pro).
-    - `Orchestration`: Mechanisms for agents to communicate and hand off tasks.
+The system uses a **Six-Agent Swarm** architecture:
 
-### 1.2 Gemini 3 Pro
-Gemini 3 Pro is Google's most powerful agentic model, featuring:
-- **Thinking Mode:** Capable of reasoning through thoughts before responding.
-- **Multimodal Understanding:** Best-in-class handling of text, images, and code.
-- **1M Token Context:** Allows for massive context retention across the agent pipeline.
-- **Model Name:** `gemini-3.0-pro-preview` (or `gemini-experiment` as fallback).
+1.  **ConceptAnalyzer**: Deconstructs user prompts into core mathematical concepts, target audience, and difficulty levels.
+2.  **PrerequisiteExplorer**: Builds a directed acyclic graph (DAG) of knowledge dependencies ("What must be understood before X?").
+3.  **MathematicalEnricher**: Populates the knowledge tree with precise LaTeX definitions, equations, and theorems.
+4.  **VisualDesigner**: Translates abstract concepts into concrete visual metaphors (shapes, colors, camera movements).
+5.  **NarrativeComposer**: Weaves the visual elements into a cohesive educational narrative, generating a verbose 2000+ token prompt.
+6.  **CodeGenerator**: Converts the verbose narrative into executable Python code using the Manim library.
 
-## 2. Architecture: The Math-To-Manim Pipeline
+## Setup
 
-The pipeline consists of specialized agents working in a strictly defined sequence to transform a user prompt into a mathematical animation.
+1.  **Install Dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
+    Ensure you have `manim` installed (requires FFmpeg and LaTeX).
 
-### 2.1 Agent Roles
+2.  **API Key**:
+    Get a Google Cloud API Key with access to Gemini models.
+    ```bash
+    export GOOGLE_API_KEY="your_api_key_here"
+    # Or add to .env
+    echo "GOOGLE_API_KEY=your_key_here" >> .env
+    ```
 
-1.  **ConceptAnalyzer**
-    *   **Input:** User prompt (e.g., "Explain Quantum Gravity").
-    *   **Role:** Deconstructs the request, identifies the core mathematical domains, and determines the target audience and difficulty level.
-    *   **Output:** A structured analysis object (JSON).
+## Usage
 
-2.  **PrerequisiteExplorer**
-    *   **Input:** Concept analysis.
-    *   **Role:** Recursively asks "What must be understood before X?" to build a dependency tree of concepts.
-    *   **Tool:** Recursive graph builder.
-    *   **Output:** A Directed Acyclic Graph (DAG) of concepts.
+Run the pipeline with a simple text prompt:
 
-3.  **MathematicalEnricher**
-    *   **Input:** Concept tree.
-    *   **Role:** For each node in the tree, adds precise LaTeX definitions, equations, and theorems. Ensures mathematical rigor.
-    *   **Output:** Enriched Knowledge Tree (JSON).
-
-4.  **VisualDesigner**
-    *   **Input:** Enriched Knowledge Tree.
-    *   **Role:** Maps mathematical concepts to visual metaphors. Describes scenes, camera movements, colors (using Manim best practices), and transitions.
-    *   **Output:** Visual Storyboard.
-
-5.  **NarrativeComposer**
-    *   **Input:** Visual Storyboard + Enriched Tree.
-    *   **Role:** Weaves a narrative thread through the concepts. Generates the final verbose prompt that acts as the specification for the code generator.
-    *   **Output:** A 2000+ token verbose prompt (The "Golden Prompt").
-
-6.  **CodeGenerator**
-    *   **Input:** Verbose prompt.
-    *   **Role:** Translates the detailed specification into executable Manim Python code.
-    *   **Tool:** Python Code Execution / File Writing.
-    *   **Output:** `.py` file containing the animation script.
-
-## 3. Implementation Details
-
-### 3.1 Directory Structure (`Gemini3/`)
-```
-Gemini3/
-├── src/
-│   ├── core.py       # Configuration, Logging, Base Classes
-│   ├── agents.py     # Agent definitions
-│   └── pipeline.py   # Orchestration logic
-├── run_pipeline.py   # CLI Entry point
-└── docs/             # Documentation
+```bash
+python Gemini3/run_pipeline.py "Explain the concept of a Fourier Transform"
 ```
 
-### 3.2 Logging & Visibility
-- We use the `rich` library to provide a real-time TUI.
-- All agent "thoughts" (reasoning traces) and tool outputs are streamed to the console.
-- Handoffs between agents are clearly visualized.
+The pipeline will:
+1.  Display agent thoughts and progress in the terminal.
+2.  Generate a `output_scene.py` file (or similar, depending on configuration).
+3.  Provide the command to render the animation.
 
-### 3.3 Model Configuration
-All agents are initialized with:
-```python
-model_config = {
-    "model_name": "gemini-3.0-pro-preview",
-    "temperature": 0.7,  # Adjustable per agent
-    "safety_settings": ...
-}
-```
+## Comparison with Other Pipelines
 
-## 4. Future Extensibility
-- **Meta-Analysis:** The pipeline structure allows for a "Supervisor" agent to inspect the logs (captured by `core.py`) and generate a report on agent collaboration efficiency.
-- **Interoperability:** Trace data can be exported to OpenTelemetry or simple JSON logs for external analysis.
+| Feature | Gemini 3 (Google ADK) | Claude Sonnet 4.5 (Anthropic SDK) | Kimi K2 (Thinking Model) |
+| :--- | :--- | :--- | :--- |
+| **Framework** | Google ADK | Anthropic Agent SDK | OpenAI-compatible API |
+| **Strengths** | Complex Reasoning, Topology | Recursive Logic, Code Generation | Chain-of-Thought, structured tools |
+| **Best For** | Physics, Advanced Math | General Purpose, Reliable Code | LaTeX-heavy explanations |
+
+## Troubleshooting
+
+-   **LaTeX Errors**: If the animation fails to render due to LaTeX errors, usually the error message from Manim is sufficient to manually fix the `Tex` or `MathTex` string in the generated Python file.
+-   **Authentication**: Ensure `GOOGLE_API_KEY` is set correctly.

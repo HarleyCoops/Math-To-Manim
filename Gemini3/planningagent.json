@@ -1,0 +1,54 @@
+[
+    {
+      "meta": {
+        "pipeline": "HarleyCoops/Math-To-Manim",
+        "model_context": "Gemini 3 (DeepMind/Google) Agent",
+        "objective": "Design an epic, visually stunning 3D animation showcasing the Gemini pipeline's reasoning and coding prowess.",
+        "visual_theme": {
+          "style": "High-Key Modern",
+          "background": "Off-white (#F5F5F0) to varying light greys",
+          "floor": "Reflective 'Glossy' Plane (simulated via inverted opacity geometry)"
+        }
+      },
+      "research_findings": [
+        {
+          "algorithm": "Hopf Fibration",
+          "visual_impact": "Extreme. Visualizes complex 4-dimensional sphere mappings into stunning linked 3D circles (tori).",
+          "difficulty": "High (requires parametric curve mapping)",
+          "why_it_fits": "Perfectly utilizes 3D space. It creates a dense, colorful nested structure that 'fills' the void, allowing the camera to fly through.",
+          "lesson_angle": "Mapping the unseen: How complex numbers create structure in higher dimensions."
+        },
+        {
+          "algorithm": "Reaction-Diffusion (Gray-Scott Model)",
+          "visual_impact": "Organic/Biological. Patterns growing on 3D manifolds (e.g., a donut or sphere) resembling animal skin or coral.",
+          "difficulty": "High (requires partial differential equation simulation steps per frame)",
+          "why_it_fits": "Shows computational power. The organic textures contrast beautifully with the stark off-white sterile lab environment."
+        },
+        {
+          "algorithm": "Visualizing Quaternions via 3D Fractal Rotations",
+          "visual_impact": "Geometric/Chaotic. Generating a 'Julia Set' like fractal in 3D by iterating quaternion functions.",
+          "difficulty": "Very High (rendering volumetric data in Manim is tricky, requires point cloud hacks)",
+          "why_it_fits": "Pure math aesthetic. Demonstrates rotation prowess in 3D space."
+        }
+      ],
+      "selected_plan": {
+        "algorithm": "The Hopf Fibration",
+        "visual_concept": "The Fiber Bundle",
+        "educational_angle": "Teaching how a 4D hypersphere (S3) maps to a standard 3D sphere (S2) using 'fibers' of circles.",
+        "aesthetic_implementation": {
+          "background": "self.camera.background_color = \"#F7F7F7\"",
+          "lighting": "Ambient light + a moving PointLight to cast soft dynamic shadows.",
+          "reflection_trick": "For every ring (fiber) generated, render a duplicate: flipped Z-axis, Z-position at -2.0, opacity at 0.15, and color desaturated. This simulates a glossy white floor."
+        }
+      },
+      "gemini_prompt_strategy": {
+        "instruction": "Generate a Manim scene demonstrating the Hopf Fibration. Start with a single point on a 2D sphere (S2) at the bottom center. Show that this point lifts to a full circle (fiber) in 3D space using the Hopf map formulas. Iterate this process for points along latitude lines of the sphere, creating nested tori. Use a 'Viridis' or 'Spectral' colormap to distinguish fibers by their origin latitude. Enforce an off-white background with a reflective floor illusion by mirroring all geometry across the z=-1 plane with low opacity.",
+        "pipeline_flow": [
+          "**Phase 1: Setup:** Define the S3 to S2 Hopf map formula helper functions.",
+          "**Phase 2: Geometry Construction:** Create the S2 sphere wireframe for reference. Compute points for the fibers (circles linked through each other).",
+          "**Phase 3: Visual Design:** Apply the coloring gradient (color based on 'eta' parameter). Implement the floor reflection loop (invert Z coords for ghost objects).",
+          "**Phase 4: Camera:** Begin with a wide bird's eye view. Slowly rotate phi/theta to bring the camera to 'floor' level to appreciate the scale and the reflection."
+        ]
+      }
+    }
+  ]
