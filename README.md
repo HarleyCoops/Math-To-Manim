@@ -15,7 +15,7 @@
 
 # The Hopf Fibration
 
-![Hopf Fibration](media/videos/teaching_hopf/1080p60/TeachingHopf.gif)
+![Hopf Fibration](public/TeachingHopf.gif)
 
 *A visualization of the S3 to S2 mapping, showing how 4D hypersphere fibers map to linked circles in 3D space. Generated purely from a natural language prompt using the new Gemini 3 Agent Pipeline.*
 
