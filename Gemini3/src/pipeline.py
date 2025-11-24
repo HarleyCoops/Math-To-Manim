@@ -27,7 +27,7 @@ def run_agent_sync(agent: Agent, input_text: str) -> str:
         session_service = InMemorySessionService()
 
         # Create session using the service factory
-        session = await session_service.create_session(
+        session = session_service.create_session(
             app_name="Gemini3MathToManim",
             user_id="user_default",
             session_id=str(uuid.uuid4())

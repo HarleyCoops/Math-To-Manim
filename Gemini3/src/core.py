@@ -6,7 +6,7 @@ from rich.panel import Panel
 from rich.logging import RichHandler
 
 # Configuration
-DEFAULT_MODEL = "gemini-2.0-flash-exp" # Using flash-exp as a fallback/standard for now, can be swapped to gemini-3.0-pro-preview
+DEFAULT_MODEL = "gemini-3-pro-preview" 
 API_KEY_ENV_VAR = "GOOGLE_API_KEY"
 
 class RichLogger:
@@ -50,6 +50,10 @@ def get_model_config(model_name: str = DEFAULT_MODEL) -> Dict[str, Any]:
     """
     Returns the configuration dictionary for the Google ADK agents.
     """
+    # Check for GEMINI_API_KEY and map it to GOOGLE_API_KEY if needed
+    if not os.getenv("GOOGLE_API_KEY") and os.getenv("GEMINI_API_KEY"):
+        os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
+
     api_key = os.getenv(API_KEY_ENV_VAR)
     if not api_key:
         logger.console.print("[bold red]WARNING:[/bold red] GOOGLE_API_KEY environment variable not set.")

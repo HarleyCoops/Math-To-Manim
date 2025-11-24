@@ -1,0 +1,61 @@
+[
+  {
+    "agent": "ConceptAnalyzer",
+    "output": {
+      "core_concept": "Stochastic Processes & Diffusion",
+      "narrative_arc": "Brownian Motion -> Heat Equation -> Black-Scholes",
+      "difficulty": "Intermediate/Advanced",
+      "aesthetic": "Slate Grey, 3D, Reflective",
+      "constraints": ["1 minute duration", "Clean UI (remove unused text)", "3D Only"]
+    }
+  },
+  {
+    "agent": "PrerequisiteExplorer",
+    "output": {
+      "tree": [
+        "Random Walk (Discrete)",
+        "Brownian Motion (Continuous Limit)",
+        "Diffusion Equation (PDEs)",
+        "Geometric Brownian Motion (Log-normal)",
+        "Black-Scholes PDE (Financial Application)"
+      ]
+    }
+  },
+  {
+    "agent": "MathematicalEnricher",
+    "output": {
+      "key_equations": [
+        "\\frac{\\partial \\rho}{\\partial t} = D \\nabla^2 \\rho",
+        "dS_t = \\mu S_t dt + \\sigma S_t dW_t",
+        "\\frac{\\partial V}{\\partial t} + \\frac{1}{2}\\sigma^2 S^2 \\frac{\\partial^2 V}{\\partial S^2} + rS \\frac{\\partial V}{\\partial S} - rV = 0"
+      ]
+    }
+  },
+  {
+    "agent": "VisualDesigner",
+    "output": {
+      "scene_sequence": [
+        {
+          "phase": "Microscopic Chaos",
+          "visual": "A large 3D 'Pollen Grain' (Yellow Sphere) being buffeted by thousands of invisible/tiny water molecules (Blue Particles).",
+          "camera": "Zoomed in close, frantic movement."
+        },
+        {
+          "phase": "Macro Diffusion",
+          "visual": "Zoom out. The individual particles disappear, replaced by a smooth 3D density cloud spreading out (Gaussian).",
+          "overlay": "Einstein's Diffusion Equation."
+        },
+        {
+          "phase": "Financial abstraction",
+          "visual": "The bell curve cloud rotates and transforms into a 3D stock price path surface (Time vs Price vs Probability).",
+          "overlay": "Black-Scholes Equation."
+        }
+      ],
+      "style": {
+        "background": "#2F353B", # Slate Gray
+        "lighting": "Ambient + Spotlight for reflection",
+        "materials": "Glossy/Reflective"
+      }
+    }
+  }
+]
