@@ -18,53 +18,40 @@ from .agents import (
     create_code_generator
 )
 
+from google.genai import Client
+
 def run_agent_sync(agent: Agent, input_text: str) -> str:
     """
-    Helper to run an ADK agent synchronously with a text input.
-    Constructs the necessary InvocationContext and SessionService.
+    Directly uses google.genai.Client to bypass ADK potential serialization issues.
     """
-    async def _run():
-        session_service = InMemorySessionService()
+    try:
+        client = Client()
+        
+        logger.console.print(f"[DEBUG] Direct Client Call for agent: {agent.name}")
+        # logger.console.print(f"[DEBUG] Input text: {input_text[:100]}...")
 
-        # Create session using the service factory
-        session = session_service.create_session(
-            app_name="Gemini3MathToManim",
-            user_id="user_default",
-            session_id=str(uuid.uuid4())
+        # Construct contents. For Gemini 3, we can pass the string directly or as a list of parts.
+        # We include the agent's instruction as the system_instruction.
+        
+        response = client.models.generate_content(
+            model=agent.model,
+            contents=input_text,
+            config={
+                "system_instruction": agent.instruction,
+            }
         )
+        
+        if response.text:
+            logger.log_agent_thought(agent.name, response.text)
+            return response.text
+        else:
+            logger.error(f"Empty response from {agent.name}")
+            return ""
 
-        # Construct user content properly
-        user_content = Content(parts=[Part(text=input_text)])
-
-        # Construct RunConfig
-        run_config = RunConfig()
-
-        # Manually construct context
-        context = InvocationContext(
-            session_service=session_service,
-            invocation_id=str(uuid.uuid4()),
-            agent=agent,
-            session=session,
-            user_content=user_content,
-            run_config=run_config
-        )
-
-        output_text = []
-
-        # Run agent
-        try:
-            async for event in agent.run_async(context):
-                if hasattr(event, 'text') and event.text:
-                    output_text.append(event.text)
-                    logger.log_agent_thought(agent.name, event.text)
-
-        except Exception as e:
-            logger.error(f"Agent execution error: {e}")
-            raise e
-
-        return "".join(output_text)
-
-    return asyncio.run(_run())
+    except Exception as e:
+        logger.error(f"Agent execution error: {e}")
+        # Fallback to empty string or raise? Raising is better to stop pipeline.
+        raise e
 
 
 class Gemini3Pipeline:

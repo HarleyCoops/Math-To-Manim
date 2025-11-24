@@ -75,6 +75,14 @@ python KimiK2Thinking/examples/run_enrichment_pipeline.py tree.json
 
 <div align="center">
 
+**Brownian Motion: From Pollen to Portfolio**
+
+![Brownian Motion](public/BrownianFinance.gif)
+
+*A journey from Robert Brown's microscope to Einstein's heat equation, arriving at the Black-Scholes model for financial options pricing. Visualizes the connection between random walks, diffusion, and stochastic calculus.*
+
+---
+
 **ProLIP: Probabilistic Vision-Language Model**
 
 ![ProLIP Animation](media/videos/prolip/480p15/ProLIPScene_preview.gif)
