@@ -20,7 +20,7 @@ from .agents import (
 
 from google.genai import Client
 
-def run_agent_sync(agent: Agent, input_text: str) -> str:
+def run_agent_sync(agent: Agent, input_text: Any) -> str:
     """
     Directly uses google.genai.Client to bypass ADK potential serialization issues.
     """
@@ -68,7 +68,7 @@ class Gemini3Pipeline:
         self.code_generator = create_code_generator()
         logger.console.print("[bold green]Pipeline Initialized.[/bold green]")
 
-    def run(self, user_prompt: str) -> str:
+    def run(self, user_prompt: Any) -> str:
         """
         Executes the full pipeline from prompt to code.
         """

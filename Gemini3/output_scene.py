@@ -1,589 +1,556 @@
 from manim import *
-import numpy as np
 
-class BrownianFinance(MovingCameraScene):
-    def set_subtitle(self, text_str, wait_time=1):
-        new_sub = Text(text_str, font="Sans-serif", font_size=24, color=WHITE).to_edge(DOWN)
-        self.play(Transform(self.subtitle, new_sub))
-        self.wait(wait_time)
+# --- GLOBAL STYLES & ASSETS ---
+C_BACKGROUND = "#1e1e1e"
+C_BRASS = "#D4AF37"
+C_TEAL = "#008B8B"
+C_WHITE = "#F0F0F0"
+C_RED = "#FF4500"
+C_GREEN = "#32CD32"
+C_BLUE = "#569CD6"  # Code Blue
+C_PINK = "#C586C0"  # Code Pink
 
+config.background_color = C_BACKGROUND
+
+class MachinariumPuzzle(MovingCameraScene):
     def construct(self):
-        # Global Style
-        self.camera.background_color = "#1E1E1E" # DARK_SLATE_GREY
-        np.random.seed(42)
+        # Act 1: The Object of Study
+        self.scene_1_puzzle_modeling()
+        self.scene_2_math_foundations()
         
-        # Helper for Voiceover/Subtitles
-        self.subtitle = VGroup()
-        self.add(self.subtitle)
+        # Act 2: The Toolkit
+        self.scene_3_cycle_decomposition()
+        self.scene_4_parity_scanner()
+        
+        # Act 3: The Mathematical Strategy
+        self.scene_5_transitivity()
+        self.scene_6_primitivity()
+        self.scene_7_commutators()
+        self.scene_8_jordan_theorem()
+        
+        # Act 4: The Formal Proof
+        self.scene_9_type_theory()
+        self.scene_10_compilation()
 
-        # --- ACT 1: The Mathematical Toolkit ---
-        self.scene_01_calculus()
-        self.scene_02_probability()
-        self.scene_03_physics()
+    def scene_1_puzzle_modeling(self):
+        """Scene 1: The Machinarium Interface"""
+        # Visual Setup
+        clock_group = VGroup()
+        radius = 2.5
+        slots = VGroup()
+        labels = VGroup()
 
-        # --- ACT 2: From Discrete to Continuous ---
-        self.scene_04_galton()
-        self.scene_05_random_walk()
-        self.scene_06_clt()
-
-        # --- ACT 3: The Physics of Diffusion ---
-        self.scene_07_heat_eq()
-        self.scene_08_einstein()
-
-        # --- ACT 4: Stochastic Calculus ---
-        self.scene_09_fractal()
-        self.scene_10_quad_variation()
-        self.scene_11_taylor()
-        self.scene_12_ito()
-
-        # --- ACT 5: Financial Engineering ---
-        self.scene_13_gbm()
-        self.scene_final_montage()
-
-    def scene_01_calculus(self):
-        self.set_subtitle( "In classical calculus, curves are predictable.")
-        
-        # Setup Axes and Curve
-        axes = Axes(x_range=[0, 4], y_range=[0, 4], x_length=7, y_length=5)
-        func = lambda x: 0.1*x**3 - 0.5*x**2 + x + 1
-        curve = axes.plot(func, color=BLUE_D)
-        label = axes.get_graph_label(curve, "f(x)")
-        
-        self.play(Create(axes), Create(curve), Write(label))
-        
-        # Secant to Tangent
-        self.set_subtitle( "Changes happen continuously.")
-        x1 = 1.0
-        x2_tracker = ValueTracker(3.0)
-        
-        dot1 = Dot(axes.c2p(x1, func(x1)), color=WHITE)
-        dot2 = always_redraw(lambda: Dot(axes.c2p(x2_tracker.get_value(), func(x2_tracker.get_value())), color=WHITE))
-        
-        line = always_redraw(lambda: Line(
-            start=axes.c2p(x1, func(x1)),
-            end=axes.c2p(x2_tracker.get_value(), func(x2_tracker.get_value())),
-            color=YELLOW, stroke_width=2
-        ).scale(1.5)) # Scale to look like a secant/tangent line extending
-        
-        self.play(FadeIn(dot1), FadeIn(dot2), Create(line))
-        
-        # Derivative Def
-        deriv_tex = MathTex(r"f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}").to_corner(UR)
-        self.play(Write(deriv_tex))
-        
-        self.play(x2_tracker.animate.set_value(1.01), run_time=3)
-        self.wait()
-        
-        # Integral
-        self.play(FadeOut(line), FadeOut(dot1), FadeOut(dot2), FadeOut(deriv_tex))
-        self.set_subtitle( "Accumulation becomes integration.")
-        
-        rects = axes.get_riemann_rectangles(curve, x_range=[0, 3.5], dx=0.8, color=TEAL, fill_opacity=0.5)
-        self.play(Create(rects))
-        
-        for dx_val in [0.2, 0.05]:
-            new_rects = axes.get_riemann_rectangles(curve, x_range=[0, 3.5], dx=dx_val, color=TEAL, fill_opacity=0.5)
-            self.play(Transform(rects, new_rects), run_time=1)
+        for i in range(1, 13):
+            # Position
+            angle = (15 - i) * 30 * DEGREES # 1 at 12 o'clockish, going clockwise
+            pos = np.array([radius * np.cos(angle), radius * np.sin(angle), 0])
             
-        integral_tex = MathTex(r"\int_a^b f(x) dx").to_corner(UR)
-        self.play(TransformMatchingShapes(deriv_tex, integral_tex)) # Re-instantiate just for transform if needed, but here just Write
-        self.play(Write(integral_tex))
-
-        # Zoom transition
-        self.play(
-            self.camera.frame.animate.scale(0.1).move_to(axes.c2p(2, func(2))),
-            FadeOut(rects), FadeOut(axes), FadeOut(curve), FadeOut(integral_tex),
-            run_time=2
-        )
-        self.play(FadeOut(self.subtitle))
-        self.camera.frame.scale(10).move_to(ORIGIN) # Reset camera
-        self.clear()
-
-    def scene_02_probability(self):
-        self.set_subtitle( "The real world trades certainty for Measure.")
-        
-        # Circle Omega
-        omega = Circle(radius=3, color=WHITE, stroke_width=2)
-        label = MathTex(r"\Omega").next_to(omega, UP)
-        self.play(Create(omega), Write(label))
-        
-        # Fracturing (Sectors)
-        n_shards = 8
-        angles = np.sort(np.random.rand(n_shards) * TAU)
-        angles = np.append(angles, angles[0] + TAU)
-        
-        shards = VGroup()
-        colors = [GREEN_A, GREEN_B, GREEN_C, GREEN_D, GREEN_E]
-        
-        for i in range(n_shards):
-            start_a = angles[i]
-            end_a = angles[i+1]
-            sector = AnnularSector(inner_radius=0, outer_radius=3, start_angle=start_a, angle=end_a-start_a, 
-                                   color=np.random.choice(colors), fill_opacity=0.7, stroke_color=WHITE, stroke_width=2)
-            shards.add(sector)
+            # Circle
+            circle = Circle(radius=0.35, color=C_BRASS, stroke_width=4)
+            circle.move_to(pos)
+            circle.set_fill(C_BACKGROUND, opacity=1)
             
-        self.play(FadeIn(shards))
-        self.remove(omega) # Replaced by shards
-        
-        # Explosion
-        self.play(shards.animate.arrange_in_grid(rows=3, buff=0.5), run_time=1.5)
-        self.wait(0.5)
-        self.play(
-            *[shard.animate.move_to(ORIGIN) for shard in shards], 
-            run_time=1.5
-        )
-        
-        # Expectation
-        center_dot = Dot(color=RED, radius=0.15).move_to(ORIGIN)
-        glow = Dot(color=RED, radius=0.4).set_opacity(0.3).move_to(ORIGIN)
-        exp_tex = MathTex(r"E[X] = \int_{\Omega} X(\omega) d\mathbb{P}(\omega)").move_to(DOWN*2)
-        
-        self.play(FadeIn(center_dot), FadeIn(glow))
-        self.play(Write(exp_tex))
-        self.wait(2)
-        self.clear()
-
-    def scene_03_physics(self):
-        self.set_subtitle( "In physics, uncertainty manifests as heat.")
-        
-        box = Square(side_length=6, color=WHITE)
-        self.play(Create(box))
-        
-        # Particles
-        particles = VGroup(*[Dot(radius=0.05, color=GOLD) for _ in range(50)])
-        velocities = (np.random.rand(50, 3) - 0.5) * 0.1
-        for p in particles:
-            p.move_to((np.random.rand(3) - 0.5) * 5)
-            p.set_z(0) # Ensure 2D
+            # Label
+            label = Text(str(i), font="Arial", color=C_WHITE).scale(0.6)
+            label.move_to(pos)
             
-        # Physics Update
-        def update_dots(group, dt):
-            for i, dot in enumerate(group):
-                pos = dot.get_center()
-                vel = velocities[i]
-                new_pos = pos + vel * dt * 60 # Speed factor
-                
-                # Wall collision
-                if abs(new_pos[0]) > 2.9:
-                    vel[0] *= -1
-                if abs(new_pos[1]) > 2.9:
-                    vel[1] *= -1
-                
-                velocities[i] = vel
-                dot.move_to(new_pos)
+            slots.add(circle)
+            labels.add(label)
+        
+        clock_group.add(slots, labels)
+        clock_group.move_to(ORIGIN)
 
-        particles.add_updater(update_dots)
-        self.add(particles)
-        
-        # Trails - using TracedPath on a few representativs to save performance
-        trails = VGroup()
-        for i in range(5):
-            t = TracedPath(particles[i].get_center, stroke_opacity=0.3, stroke_color=GOLD, stroke_width=2, dissipating_time=0.5)
-            trails.add(t)
-        self.add(trails)
+        # 1. Intro
+        self.play(FadeIn(clock_group))
+        self.play(slots.animate.set_stroke(opacity=0.5), run_time=0.5)
+        self.play(slots.animate.set_stroke(opacity=1), run_time=0.5)
 
-        temp_text = Tex(r"Temperature $\propto$ Average Kinetic Energy").next_to(box, DOWN)
-        self.play(Write(temp_text))
-        self.wait(3)
+        # 2. Action - Rotation
+        # Visualizing rotation arrow
+        rot_arrow = Arc(radius=radius + 0.6, start_angle=PI/2, angle=-2*PI + 0.1, color=C_TEAL)
+        rot_arrow.add_tip()
         
-        particles.remove_updater(update_dots)
-        self.clear()
-
-    def scene_04_galton(self):
-        self.set_subtitle( "Order emerges from chaos. The Bell Curve.")
+        rot_label = MathTex(r"r_{rot} = (1\, 2\, 3\, \dots \, 12)", color=C_WHITE).to_edge(DOWN)
         
-        # Histogram Logic
-        n_particles = 200
-        values = np.random.normal(0, 1, n_particles)
-        # Map values to screen coordinates
-        hist_data = np.histogram(values, bins=20, range=(-3,3))
-        counts = hist_data[0]
+        self.play(Create(rot_arrow), Write(rot_label))
         
-        # Create particles at top
-        dots = VGroup(*[Dot(radius=0.05, color=GOLD) for _ in range(n_particles)])
-        dots.move_to(UP * 3)
-        for dot in dots:
-            dot.shift(RIGHT * (np.random.rand() - 0.5) * 0.5) # Cluster at top
-            
-        self.add(dots)
+        # Rotate the labels (simulate the mechanism)
+        # We rotate positions clockwise
+        new_labels_pos = [labels[i].get_center() for i in range(12)]
+        # Shift list by 1 (Clockwise: 1 goes to 2's pos)
+        new_labels_pos = [new_labels_pos[-1]] + new_labels_pos[:-1]
         
-        # Fall animation to target positions
         anims = []
-        bin_width = 6.0 / 20
+        for i, label in enumerate(labels):
+            # Move along arc roughly
+            anims.append(label.animate.move_to(new_labels_pos[i]))
+            
+        self.play(*anims, run_time=1.5)
+        self.play(FadeOut(rot_arrow))
+
+        # 3. Action - Swap (1 and 2)
+        # Note: Indices in list are 0-11, corresponding to numbers 1-12
+        # Current state: Label 1 is at pos 2, Label 12 is at pos 1.
+        # Let's reset to simplify the visual explanation of "Swap (1 2)"
         
-        # Calculate target positions for each dot based on histogram bins
-        dot_index = 0
-        for bin_idx, count in enumerate(counts):
-            x_pos = -3 + bin_idx * bin_width + bin_width/2
-            for h in range(count):
-                if dot_index < len(dots):
-                    y_pos = -3 + h * 0.15 # Stack height
-                    target = np.array([x_pos, y_pos, 0])
-                    # Add randomness to path
-                    anims.append(dots[dot_index].animate.move_to(target).set_rate_func(rush_into))
-                    dot_index += 1
+        swap_arrow = DoubleArrow(slots[0].get_center(), slots[1].get_center(), color="#FFD700", buff=0.5)
+        swap_arrow.move_to((slots[0].get_center() + slots[1].get_center())/2 + OUT) # slightly forward
         
-        self.play(AnimationGroup(*anims, lag_ratio=0.01), run_time=3)
+        swap_label = MathTex(r"r_{swap} = (1\, 2)", color=C_WHITE).next_to(rot_label, DOWN)
         
-        # Bell Curve
-        axes = Axes(x_range=[-4, 4], y_range=[0, 1], x_length=8, y_length=5).move_to(UP*0.5) # invisible reference
-        gauss = lambda x: (1/(np.sqrt(2*np.pi))) * np.exp(-0.5 * x**2)
-        curve = axes.plot(gauss, color=PURE_RED).scale(1.5).shift(DOWN*3) # Manual adjustment to fit dots
+        self.play(Create(swap_arrow), Write(swap_label))
+        self.play(
+            Indicate(labels[0], color="#FFD700"),
+            Indicate(labels[1], color="#FFD700")
+        )
+        self.play(Swap(labels[0], labels[1]))
         
-        gauss_eqn = MathTex(r"f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{x-\mu}{\sigma})^2}").to_corner(UL).scale(0.7)
+        self.wait(1)
         
-        self.play(Create(curve), Write(gauss_eqn))
+        # Prepare for next scene: Keep generic structure but remove specific labels
+        self.clock_group = clock_group
+        self.clock_slots = slots
+        self.clock_labels = labels
+        self.play(FadeOut(rot_label), FadeOut(swap_label), FadeOut(swap_arrow))
+
+    def scene_2_math_foundations(self):
+        """Scene 2: From Mechanics to Algebra"""
+        # 1. Abstraction
+        # Turn circles into dots, fade numbers
+        dots = VGroup()
+        for slot in self.clock_slots:
+            d = Dot(color=C_WHITE).move_to(slot.get_center())
+            dots.add(d)
+            
+        self.play(
+            Transform(self.clock_slots, dots),
+            FadeOut(self.clock_labels)
+        )
         
-        # Sigma Lines
-        line_left = DashedLine(start=curve.point_from_proportion(0.35), end=curve.point_from_proportion(0.35)+DOWN*3, color=WHITE)
-        line_right = DashedLine(start=curve.point_from_proportion(0.65), end=curve.point_from_proportion(0.65)+DOWN*3, color=WHITE)
-        label_68 = Tex(r"68\%").next_to(curve, UP)
+        # 2. Group Container
+        group_blob = Circle(radius=3.5, color=C_BLUE, fill_opacity=0.1, stroke_width=2)
+        group_label = MathTex("G", color=C_BLUE).next_to(group_blob, UP, buff=0)
+        self.play(Create(group_blob), Write(group_label))
         
-        self.play(Create(line_left), Create(line_right), Write(label_68))
-        self.wait(2)
+        # 3. Axiom Visualization
+        dot_a = dots[0]
+        dot_b = dots[3]
+        
+        label_a = MathTex("a").next_to(dot_a, RIGHT, buff=0.1)
+        label_b = MathTex("b").next_to(dot_b, DOWN, buff=0.1)
+        
+        arrow_op = Arrow(dot_a.get_center(), dot_b.get_center(), buff=0.1, color=C_TEAL)
+        label_op = MathTex(r"\cdot").move_to(arrow_op.get_center()).shift(UP*0.2)
+        
+        self.play(Write(label_a), Write(label_b), GrowArrow(arrow_op), Write(label_op))
+        
+        # Inverse logic
+        arrow_inv = Arrow(dot_b.get_center(), dot_a.get_center(), buff=0.1, color=C_RED)
+        
+        axiom_eq = MathTex(r"a \cdot a^{-1} = e").move_to(ORIGIN)
+        
+        self.play(GrowArrow(arrow_inv))
+        self.play(Write(axiom_eq))
+        
+        # Identity Visual Cue
+        self.play(dots.animate.arrange_in_grid(rows=3, cols=4).scale(0.5), FadeOut(group_blob), FadeOut(arrow_op), FadeOut(arrow_inv), FadeOut(label_a), FadeOut(label_b), FadeOut(label_op))
+        self.play(dots.animate.set_color(YELLOW))
+        self.wait(0.5)
+        
+        # Clean up
+        self.play(FadeOut(Group(dots, axiom_eq, group_label, self.clock_slots)))
+
+    def scene_3_cycle_decomposition(self):
+        """Scene 3: Cycle Decomposition"""
+        # Visual Setup
+        left_col = VGroup(*[Dot(point=LEFT*3 + UP*(3 - i*0.5)) for i in range(12)])
+        right_col = VGroup(*[Dot(point=RIGHT*3 + UP*(3 - i*0.5)) for i in range(12)])
+        
+        # Numbering
+        nums_L = VGroup(*[Text(str(i+1), font_size=20).next_to(d, LEFT) for i, d in enumerate(left_col)])
+        nums_R = VGroup(*[Text(str(i+1), font_size=20).next_to(d, RIGHT) for i, d in enumerate(right_col)])
+        
+        self.play(FadeIn(left_col), FadeIn(right_col), FadeIn(nums_L), FadeIn(nums_R))
+        
+        # Define permutation: (1 5 2)(3 4 7 8)(6)... let's map explicitly
+        # 1->5, 5->2, 2->1
+        # 3->4, 4->7, 7->8, 8->3
+        # 6->6
+        # others identity for simplicity
+        perm_map = {0: 4, 4: 1, 1: 0, 2: 3, 3: 6, 6: 7, 7: 2, 5: 5}
+        # Fill rest as identity
+        for i in range(12):
+            if i not in perm_map: perm_map[i] = i
+            
+        lines = VGroup()
+        for i in range(12):
+            target = perm_map[i]
+            l = Line(left_col[i].get_center(), right_col[target].get_center(), color=GREY, stroke_opacity=0.5)
+            lines.add(l)
+            
+        self.play(Create(lines, lag_ratio=0.05))
+        
+        # Trace 1 -> 5 -> 2 -> 1
+        path_1 = Line(left_col[0].get_center(), right_col[4].get_center(), color=C_RED, stroke_width=4)
+        path_2 = Line(left_col[4].get_center(), right_col[1].get_center(), color=C_RED, stroke_width=4) # Visual representation tricky here, simplified to just showing the cycle
+        
+        # Untangling Transition
+        # Form loops in center
+        loop_1 = Triangle(color=C_RED).scale(1).shift(LEFT*3)
+        l1_lbl = MathTex(r"1, 5, 2", color=C_RED).next_to(loop_1, DOWN)
+        
+        loop_2 = Square(color=C_GREEN).scale(1).shift(RIGHT*3)
+        l2_lbl = MathTex(r"3, 4, 7, 8", color=C_GREEN).next_to(loop_2, DOWN)
+        
+        loop_3 = Circle(radius=0.2, color=C_BLUE)
+        l3_lbl = MathTex(r"6", color=C_BLUE).next_to(loop_3, DOWN)
+        
+        self.play(
+            TransformMatchingShapes(VGroup(lines, left_col, right_col, nums_L, nums_R), VGroup(loop_1, loop_2, loop_3)),
+            Write(l1_lbl), Write(l2_lbl), Write(l3_lbl)
+        )
+        
+        notation = MathTex(r"\sigma = (1\; 5\; 2)(3\; 4\; 7\; 8)", font_size=48).to_edge(UP)
+        self.play(Write(notation))
+        
+        # Pan Camera and reveal Universe
+        s12_box = Rectangle(width=6, height=8, color=WHITE).shift(RIGHT*14)
+        s12_label = MathTex("S_{12}").next_to(s12_box, UP)
+        divider = Line(s12_box.get_top(), s12_box.get_bottom())
+        
+        self.camera.frame.save_state()
+        self.play(self.camera.frame.animate.shift(RIGHT*14))
+        self.play(Create(s12_box), Write(s12_label), Create(divider))
+        self.wait(1)
+        
+        # Clean up by restoring cam and clearing
+        self.play(Restore(self.camera.frame))
         self.clear()
 
-    def scene_05_random_walk(self):
-        self.set_subtitle( "Tracing the path: The Random Walk.")
+    def scene_4_parity_scanner(self):
+        """Scene 4: The Parity Scanner"""
+        # Visuals
+        gate = Rectangle(width=4, height=3, color=C_TEAL, stroke_width=5)
+        gate_lbl = Text("PARITY GATE", font_size=24, color=C_TEAL).next_to(gate, UP)
         
-        axes = Axes(x_range=[0, 20, 1], y_range=[-5, 5, 1], x_length=10, y_length=6)
-        labels = axes.get_axis_labels(x_label="t", y_label="X_t")
-        self.play(Create(axes), Write(labels))
+        counter = Integer(0, font_size=60).move_to(gate.get_center() + UP*0.5)
+        result_text = Text("READY", font_size=36).move_to(gate.get_center() + DOWN*0.5)
         
-        # Coin
-        coin = Circle(radius=0.5, color=YELLOW, fill_opacity=1).to_corner(UR)
-        coin_txt = Text("H", color=BLACK).move_to(coin.get_center())
-        self.play(FadeIn(coin), Write(coin_txt))
+        target_lbl = MathTex(r"\text{Target: } ?").to_edge(DOWN)
         
-        # Path
-        path_points = [axes.c2p(0,0)]
-        curr_val = 0
-        curr_t = 0
+        self.play(Create(gate), Write(gate_lbl), Write(counter), Write(result_text), Write(target_lbl))
         
-        path_mob = VMobject(color=ORANGE, stroke_width=4)
-        path_mob.set_points_as_corners(path_points)
-        self.add(path_mob)
+        # 1. Pass 3-cycle (1 5 2)
+        cycle_obj = MathTex(r"(1\; 5\; 2)", color=C_RED).shift(LEFT*6)
+        self.play(cycle_obj.animate.move_to(gate.get_center()))
         
-        for i in range(20):
-            step = 1 if np.random.rand() > 0.5 else -1
-            curr_val += step
-            curr_t += 1
-            
-            # Flip Coin
-            new_txt = Text("H" if step > 0 else "T", color=BLACK).move_to(coin.get_center())
-            self.play(Transform(coin_txt, new_txt), run_time=0.1)
-            
-            # Extend Path
-            new_point = axes.c2p(curr_t, curr_val)
-            self.play(path_mob.animate.add_points_as_corners([new_point]), run_time=0.15, rate_func=linear)
-            
-        self.wait()
+        # Split
+        split_cyc = MathTex(r"(1\; 5)(5\; 2)", color=C_RED).move_to(gate.get_center())
+        self.play(Transform(cycle_obj, split_cyc))
+        
+        # Count
+        self.play(counter.animate.set_value(1), run_time=0.2)
+        self.play(counter.animate.set_value(2), run_time=0.2)
+        
+        self.play(
+            result_text.animate.become(Text("EVEN", color=C_GREEN, font_size=36).move_to(result_text.get_center()))
+        )
+        self.play(FadeOut(cycle_obj))
+        self.play(counter.animate.set_value(0), result_text.animate.become(Text("READY", font_size=36).move_to(result_text.get_center())))
+        
+        # 2. Pass Swap (1 2)
+        swap_obj = MathTex(r"(1\; 2)", color=C_BRASS).shift(LEFT*6)
+        self.play(swap_obj.animate.move_to(gate.get_center()))
+        
+        # Count
+        self.play(counter.animate.set_value(1), run_time=0.2)
+        self.play(
+            result_text.animate.become(Text("ODD", color=C_RED, font_size=36).move_to(result_text.get_center()))
+        )
+        self.play(Indicate(result_text, color=C_RED, scale_factor=1.5))
+        
+        # 3. Conclusion
+        final_target = MathTex(r"\text{Target: } S_{12}", color=C_GREEN).to_edge(DOWN)
+        self.play(Transform(target_lbl, final_target))
+        
+        self.wait(1)
         self.clear()
 
-    def scene_06_clt(self):
-        self.set_subtitle( "Simulating thousands of walks: Central Limit Theorem.")
+    def scene_5_transitivity(self):
+        """Scene 5: Transitivity Networks"""
+        # Visual Setup - Graph
+        # Using networkx logic visually
+        vertices = list(range(1, 13))
+        edges = []
+        # Ring edges
+        for i in range(12):
+            edges.append((vertices[i], vertices[(i+1)%12]))
+        # Swap edge (1,2)
+        edges.append((1, 2)) 
         
-        axes = Axes(x_range=[0, 100], y_range=[-30, 30], x_length=10, y_length=6)
-        self.add(axes)
+        layout = {v: [2.5*np.cos((15-v)*30*DEGREES), 2.5*np.sin((15-v)*30*DEGREES), 0] for v in vertices}
         
-        # Generate Many Paths
-        n_paths = 100
-        n_steps = 100
-        end_points = []
+        g = Graph(vertices, edges, layout=layout, 
+                  vertex_config={"fill_color": C_BACKGROUND, "stroke_color": C_BRASS, "stroke_width": 2},
+                  labels=True)
         
-        paths_vgroup = VGroup()
-        for _ in range(n_paths):
-            steps = np.random.choice([-1, 1], size=n_steps)
-            walk = np.cumsum(steps)
-            # Plot simplified
-            pts = [axes.c2p(t, w) for t, w in enumerate(np.insert(walk, 0, 0))]
-            path = VMobject(stroke_color=WHITE, stroke_opacity=0.05, stroke_width=1)
-            path.set_points_as_corners(pts)
-            paths_vgroup.add(path)
-            end_points.append(walk[-1])
-            
-        self.play(Create(paths_vgroup), run_time=3, lag_ratio=0.01)
+        title = Text("Connectivity Check").to_edge(UP)
+        self.play(Create(g), Write(title))
         
-        # The Slice
-        slice_line = Line(axes.c2p(100, -30), axes.c2p(100, 30), color=YELLOW)
-        self.play(Create(slice_line))
+        # 1. 1-Transitivity (Flood Fill)
+        start_node = g.vertices[1]
+        self.play(start_node.animate.set_fill(C_RED))
         
-        # Rotate end points to histogram on right
-        # Approximating visual effect with distribution curve
-        dist_axis = Axes(x_range=[-30, 30], y_range=[0, 0.1], x_length=6, y_length=2).rotate(PI/2)
-        dist_axis.move_to(axes.c2p(100, 0)).shift(RIGHT)
+        # Animate neighbors turning red sequentially
+        self.play(
+            g.vertices[2].animate.set_fill(C_RED),
+            g.vertices[12].animate.set_fill(C_RED),
+            run_time=0.5
+        )
+        # Flash rest
+        rest_anims = [g.vertices[i].animate.set_fill(C_RED) for i in range(3, 12)]
+        self.play(*rest_anims, run_time=1.0)
         
-        mu = 0
-        sigma = np.sqrt(100) # Variance ~ t
-        gauss_func = lambda x: (1/(sigma*np.sqrt(2*np.pi))) * np.exp(-0.5 * ((x-mu)/sigma)**2) * 150 # Scale up
+        check1 = Tex(r"Transitive $\checkmark$", color=C_GREEN).next_to(g, DOWN)
+        self.play(Write(check1))
         
-        dist_curve = dist_axis.plot(gauss_func, color=RED)
+        # Reset colors
+        self.play(*[v.animate.set_fill(C_BACKGROUND) for v in g.vertices.values()], FadeOut(check1))
         
-        self.play(Create(dist_curve))
+        # 2. 2-Transitivity
+        # Highlight pair (1,2)
+        pair_group = VGroup(g.vertices[1], g.vertices[2])
+        bond = Line(layout[1], layout[2], color=YELLOW, stroke_width=6)
+        self.play(pair_group.animate.set_fill(YELLOW), Create(bond))
         
-        var_text = MathTex(r"\text{Variance} \sim t").to_corner(DR)
-        self.play(Write(var_text))
-        self.wait(2)
+        # Move bond to (5, 9) - just abstract movement
+        target_bond = Line(layout[5], layout[9], color=YELLOW, stroke_width=6)
+        self.play(
+            bond.animate.become(target_bond),
+            g.vertices[1].animate.set_fill(C_BACKGROUND),
+            g.vertices[2].animate.set_fill(C_BACKGROUND),
+            g.vertices[5].animate.set_fill(YELLOW),
+            g.vertices[9].animate.set_fill(YELLOW),
+        )
+        
+        check2 = Tex(r"2-Transitive $\checkmark$", color=C_GREEN).next_to(g, DOWN)
+        self.play(Write(check2))
+        self.wait(1)
         self.clear()
 
-    def scene_07_heat_eq(self):
-        self.set_subtitle( "The probability density evolves via the Heat Equation.")
+    def scene_6_primitivity(self):
+        """Scene 6: Shattering Blocks"""
+        # Visuals: 12 dots in line or circle. Let's do line for blocks clarity.
+        dots = VGroup(*[Dot(color=C_WHITE) for _ in range(12)]).arrange(RIGHT, buff=0.5)
+        labels = VGroup(*[MathTex(str(i+1), font_size=24).next_to(d, UP) for i, d in enumerate(dots)])
+        self.play(Create(dots), Write(labels))
         
-        # 3D Setup
-        axes = ThreeDAxes(x_range=[-3, 3], y_range=[0, 3], z_range=[0, 2])
-        # self.move_camera(phi=75 * DEGREES, theta=-45 * DEGREES)
-        
-        # Spike (Initial)
-        # We represent the evolution as a surface or changing curve. 
-        # Let's use a sequence of curves on the 2D plane for clarity in Manim 
-        # simulating 3D evolution along Time (y-axis).
-        
-        curves = VGroup()
-        times = np.linspace(0.1, 3, 15)
-        for t in times:
-            sigma = np.sqrt(2*t) # Diffusion scaling
-            func = lambda x: (1/sigma) * np.exp(-x**2/(2*sigma**2))
-            # X is spatial, Y is Time, Z is Value (Height)
-            # We plot x vs z at specific y
-            curve = ParametricFunction(
-                lambda u: axes.c2p(u, t, func(u)), 
-                t_range=[-3, 3], color=interpolate_color(RED, BLUE, t/3)
-            )
-            curves.add(curve)
+        # Partition into blocks of 3: {1,2,3}, {4,5,6}...
+        boxes = VGroup()
+        for i in range(4):
+            # Group dots i*3 to i*3+2
+            sub_grp = dots[i*3 : i*3+3]
+            rect = SurroundingRectangle(sub_grp, color=C_PINK, buff=0.15)
+            boxes.add(rect)
             
-        self.play(Create(axes))
-        self.play(Create(curves), run_time=4, lag_ratio=0.1)
+        self.play(Create(boxes))
         
-        eqn = MathTex(r"\frac{\partial u}{\partial t} = D \nabla^2 u").to_corner(UL)
-        self.add(eqn)
-        self.play(Write(eqn))
-        self.wait(2)
+        # Attempt rotation (boxes shift right)
+        self.play(boxes.animate.shift(RIGHT * 0.5 * 3), run_time=1) # Shift by 3 dot positions
+        self.play(boxes.animate.shift(LEFT * 0.5 * 3), run_time=0.5) # Return
         
-        self.remove(eqn)
-        # self.move_camera(phi=0, theta=-90 * DEGREES) # Reset camera
+        # Attempt Swap (1 and 2). 1 and 2 are in box 0.
+        # Let's simulate a complex move where 2 leaves the block
+        # Element 2 moves to position 5 (breaking the block structure)
+        
+        dot_to_move = dots[1] # The "2"
+        target_pos = dots[4].get_center()
+        
+        self.play(dot_to_move.animate.move_to(target_pos), run_time=1)
+        
+        # Shatter
+        self.play(
+            *[Flash(box, color=C_RED, line_length=0.2) for box in boxes],
+            FadeOut(boxes)
+        )
+        
+        text = Text("PRIMITIVE", font="Arial", weight=BOLD, color=C_WHITE).scale(1.5)
+        self.play(Write(text))
+        self.wait(1)
         self.clear()
 
-    def scene_08_einstein(self):
-        self.set_subtitle( "Einstein linked spreading to physical bombardment.")
+    def scene_7_commutators(self):
+        """Scene 7: Commutators & The Laser Scalpel"""
+        eq = MathTex(r"[g, h] = g h g^{-1} h^{-1}").to_edge(UP)
+        self.play(Write(eq))
         
-        # Pollen Grain
-        pollen = Circle(radius=0.5, color=PURPLE, fill_opacity=0.8).move_to(ORIGIN)
+        # Visual Stack
+        # Represent permutations as arrows in a circle
+        c = Circle(radius=2, color=GREY)
+        self.play(Create(c))
         
-        # Gas Particles
-        gas = VGroup(*[Dot(radius=0.05, color=GOLD) for _ in range(50)])
-        for g in gas:
-            g.move_to((np.random.rand(3) - 0.5)*6)
-            
-        # Brownian Motion of Pollen (Random Walk logic)
-        path_points = [ORIGIN]
-        current_pos = np.array([0., 0., 0.])
+        # Abstract chaotic arrows
+        arrows_g = VGroup(*[Arrow(c.point_at_angle(i), c.point_at_angle(i+2), color=C_BLUE, stroke_width=2) for i in np.linspace(0, 6, 5)])
+        arrows_h = VGroup(*[Arrow(c.point_at_angle(i), c.point_at_angle(i-1), color=C_GREEN, stroke_width=2) for i in np.linspace(1, 5, 5)])
         
-        self.add(pollen, gas)
+        self.play(FadeIn(arrows_g), FadeIn(arrows_h))
         
-        # Equation
-        einstein_eq = MathTex(r"D = \frac{k_B T}{6 \pi \eta r}")
-        einstein_eq[0][0].set_color(GREEN) # D
-        einstein_eq[0][3].set_color(RED)   # T
-        einstein_eq.to_edge(UP)
-        self.play(Write(einstein_eq))
-
-        trace = VMobject(color=WHITE, stroke_width=2)
-        self.add(trace)
-
-        for _ in range(60): # Frames
-            # Jitter pollen
-            jitter = (np.random.rand(3) - 0.5) * 0.3
-            jitter[2] = 0
-            current_pos += jitter
-            
-            # Jitter gas violently
-            for g in gas:
-                g.shift((np.random.rand(3)-0.5)*0.5)
-            
-            self.play(
-                pollen.animate.move_to(current_pos),
-                run_time=0.05, rate_func=linear
-            )
-            path_points.append(current_pos)
-            trace.set_points_as_corners(path_points)
-            
-        self.wait()
+        # Cancellation effect
+        self.play(
+            arrows_g.animate.set_color(GREY).set_opacity(0.2),
+            arrows_h.animate.set_color(GREY).set_opacity(0.2)
+        )
+        
+        # The Survivor (3-cycle)
+        p1 = c.point_at_angle(PI/2)
+        p2 = c.point_at_angle(PI/2 - 2)
+        p3 = c.point_at_angle(PI/2 + 2)
+        
+        cycle_arrows = VGroup(
+            Arrow(p1, p2, color=C_RED, buff=0),
+            Arrow(p2, p3, color=C_RED, buff=0),
+            Arrow(p3, p1, color=C_RED, buff=0)
+        )
+        
+        self.play(GrowArrow(cycle_arrows[0]), GrowArrow(cycle_arrows[1]), GrowArrow(cycle_arrows[2]))
+        
+        lbl = Text("3-Cycle Generated", font_size=36, color=C_RED).next_to(c, DOWN)
+        self.play(Write(lbl))
+        
+        # Equation Transform
+        cycle_not = MathTex(r"(i\; j\; k)").move_to(eq)
+        self.play(Transform(eq, cycle_not))
+        self.wait(1)
         self.clear()
 
-    def scene_09_fractal(self):
-        self.set_subtitle( "The Wiener Process: Continuous everywhere, differentiable nowhere.")
+    def scene_8_jordan_theorem(self):
+        """Scene 8: Jordan's Bridge"""
+        # Architecture
+        ground = Line(LEFT*6, RIGHT*6, color=GREY)
+        self.play(Create(ground))
         
-        axes = Axes(x_range=[0, 1], y_range=[-2, 2], x_length=12, y_length=6)
+        pillar1 = Rectangle(width=1.5, height=4, color=GREY, fill_opacity=0.5).shift(LEFT*2 + UP*2)
+        p1_txt = Text("Primitive", font_size=20).move_to(pillar1).rotate(PI/2)
         
-        # Generate detailed Brownian path
-        n_points = 5000
-        dt = 1/n_points
-        dW = np.random.normal(0, np.sqrt(dt), n_points)
-        W = np.cumsum(dW)
-        W = np.insert(W, 0, 0)
-        t = np.linspace(0, 1, n_points+1)
+        pillar2 = Rectangle(width=1.5, height=4, color=GREY, fill_opacity=0.5).shift(RIGHT*2 + UP*2)
+        p2_txt = Text("3-Cycle", font_size=20).move_to(pillar2).rotate(PI/2)
         
-        points = [axes.c2p(ti, wi) for ti, wi in zip(t, W)]
-        path = VMobject(color=WHITE, stroke_width=1).set_points_as_corners(points)
+        self.play(GrowFromEdge(pillar1, DOWN), Write(p1_txt))
+        self.play(GrowFromEdge(pillar2, DOWN), Write(p2_txt))
         
-        self.play(Create(path), run_time=2)
+        keystone = Polygon([-1, 4, 0], [1, 4, 0], [0.8, 3, 0], [-0.8, 3, 0], color=C_BRASS, fill_opacity=1, fill_color=C_BRASS)
+        k_txt = Text("Jordan", font_size=16, color=BLACK).move_to(keystone)
         
-        # Zoom in
-        self.play(self.camera.frame.animate.scale(0.1).move_to(points[int(n_points/2)]), run_time=3)
+        self.play(FadeIn(keystone, shift=DOWN), Write(k_txt))
         
-        # Tangent Fail
-        center_pt = points[int(n_points/2)]
-        tangent = Line(start=LEFT, end=RIGHT, color=YELLOW).move_to(center_pt).scale(0.05)
+        # Activation
+        arch_area = VGroup(pillar1, pillar2, keystone)
+        self.play(arch_area.animate.set_color(C_TEAL))
         
-        self.play(FadeIn(tangent))
-        self.play(Rotate(tangent, angle=PI/2), run_time=0.2)
-        self.play(Rotate(tangent, angle=-PI/1.5), run_time=0.2)
-        self.play(Rotate(tangent, angle=PI/4), run_time=0.2)
+        a12 = MathTex("A_{12}", font_size=60).move_to(UP*1.5)
+        self.play(Write(a12))
         
-        fail_text = Text("Derivative Undefined", font_size=12, color=RED).next_to(tangent, UP)
-        self.play(Write(fail_text))
-        self.wait()
+        # Parity Extension
+        beam = Line(UP*4, UP*1.5, color=C_RED, stroke_width=5)
+        parity_txt = Text("Odd Parity", font_size=20, color=C_RED).next_to(beam, RIGHT)
+        self.play(Create(beam), Write(parity_txt))
         
-        self.camera.frame.scale(10).move_to(ORIGIN) # Reset
+        s12 = MathTex("S_{12}", font_size=80, color=C_GREEN).move_to(a12)
+        self.play(Transform(a12, s12))
+        
+        grand_text = MathTex("G = S_{12}").to_edge(UP)
+        self.play(Write(grand_text))
+        self.wait(1)
         self.clear()
 
-    def scene_10_quad_variation(self):
-        self.set_subtitle( "While derivative explodes, Quadratic Variation stabilizes.")
-        
+    def scene_9_type_theory(self):
+        """Scene 9: The Code Mirror"""
         # Split Screen
-        left_plane = NumberPlane(x_range=[0, 2], y_range=[0, 4], x_length=6, y_length=6).shift(LEFT*3.5)
-        right_plane = NumberPlane(x_range=[0, 2], y_range=[-2, 2], x_length=6, y_length=6).shift(RIGHT*3.5)
+        left_bg = Rectangle(width=7, height=8).shift(LEFT*3.5)
+        right_bg = Rectangle(width=7, height=8, fill_color="#1E1E1E", fill_opacity=1, stroke_width=0).shift(RIGHT*3.5)
+        divider = Line(UP*4, DOWN*4)
         
-        sq_graph = left_plane.plot(lambda x: x**2, color=BLUE)
+        self.add(right_bg, divider)
         
-        # Sim Brownian
-        pts = [right_plane.c2p(0,0)]
-        curr = 0
-        dt = 0.1
-        for i in np.arange(0, 2, dt):
-            curr += np.random.normal(0, np.sqrt(dt))
-            pts.append(right_plane.c2p(i+dt, curr))
-        brownian = VMobject(color=WHITE).set_points_as_corners(pts)
+        # Symbol Morph
+        math_sym = MathTex(r"\forall", font_size=60).shift(LEFT*3)
+        code_sym = Text("forall", font="Consolas", color=C_PINK).shift(RIGHT*3 + UP*3)
         
-        self.play(Create(left_plane), Create(right_plane))
-        self.play(Create(sq_graph), Create(brownian))
+        self.play(Write(math_sym))
+        self.play(Transform(math_sym, code_sym))
         
-        # Show Squares on Brownian
-        squares = VGroup()
-        for i in range(len(pts)-1):
-            p1 = pts[i]
-            p2 = pts[i+1]
-            dy = abs(p2[1] - p1[1])
-            # Draw square of side dy
-            sq = Square(side_length=dy, color=RED, fill_opacity=0.2, stroke_width=1).move_to(p1)
-            squares.add(sq)
+        # Code Typing
+        code_str = """theorem machinarium_solvable :
+  generated_subgroup {r_rot, r_swap} 
+  = symmetric_group 12 :=
+begin
+  apply jordan_theorem,
+  -- Step 1: Primitivity
+  apply check_primitivity,
+  -- Step 2: Commutator
+  use commutator_construct,
+end"""
+        
+        code_obj = Text(
+            code_str,
+            font="Monospace",
+            font_size=24
+        ).scale(0.6).shift(RIGHT*3.5)
+        
+        self.play(FadeIn(code_obj))
+        self.play(Write(code_obj), run_time=3)
+        
+        check = Text("Check!", color=C_GREEN).shift(LEFT*3.5)
+        self.play(FadeIn(check, scale=0.5))
+        self.play(FadeOut(check))
+        
+        self.wait(1)
+        self.clear()
+
+    def scene_10_compilation(self):
+        """Scene 10: Compilation & Q.E.D."""
+        # Tree
+        root = Dot(point=UP*3, color=C_BRASS)
+        l1 = [Dot(point=UP*1 + RIGHT*(i-1)*2) for i in range(3)]
+        l2 = [Dot(point=DOWN*1 + RIGHT*(i-2)) for i in range(5)]
+        
+        edges = []
+        for d in l1: edges.append(Line(root, d, color=GREY))
+        edges.append(Line(l1[1], l2[2], color=GREY)) # just random connections
+        
+        tree = VGroup(root, *l1, *l2, *edges)
+        self.play(Create(tree))
+        
+        # Progress Bar
+        bar_bg = Rectangle(width=6, height=0.5, color=WHITE).to_edge(DOWN, buff=1)
+        bar_fill = Rectangle(width=0, height=0.5, color=C_GREEN, fill_opacity=1, stroke_width=0).align_to(bar_bg, LEFT)
+        txt = Text("Compiling Proof...", font_size=24).next_to(bar_bg, UP)
+        
+        self.play(Create(bar_bg), Write(txt))
+        self.add(bar_fill)
+        self.play(bar_fill.animate.set_width(6), run_time=1.5)
+        
+        # QED
+        qed = Text("Q.E.D.", font="Georgia", weight=BOLD, font_size=96, color=C_BRASS)
+        self.play(FadeOut(tree), FadeOut(bar_bg), FadeOut(bar_fill), FadeOut(txt))
+        self.play(ScaleInPlace(qed, 1.2), rate_func=wiggle)
+        self.wait(1)
+        
+        # Resolution: Return to Clock
+        self.play(FadeOut(qed))
+        
+        # Recreate Clock sorted
+        radius = 2.5
+        final_slots = VGroup()
+        for i in range(1, 13):
+            angle = (15 - i) * 30 * DEGREES
+            pos = np.array([radius * np.cos(angle), radius * np.sin(angle), 0])
+            circle = Circle(radius=0.35, color=C_BRASS, stroke_width=4).move_to(pos)
+            label = Text(str(i), font="Arial", color=C_WHITE).scale(0.6).move_to(pos)
+            final_slots.add(VGroup(circle, label))
             
-        self.play(Create(squares), run_time=2)
+        self.play(FadeIn(final_slots))
+        self.play(Rotate(final_slots, angle=2*PI, run_time=2))
         
-        # Formula
-        qv_tex = MathTex(r"(dW_t)^2 = dt").scale(1.5).move_to(ORIGIN).set_color(YELLOW).add_background_rectangle()
-        self.play(Write(qv_tex))
-        self.wait(2)
-        self.clear()
-
-    def scene_11_taylor(self):
-        self.set_subtitle( "Stochastic Calculus: Second-order terms survive.")
-        
-        taylor = MathTex(r"df = f'(x)dx + \frac{1}{2}f''(x)(dx)^2 + \dots")
-        self.play(Write(taylor))
+        self.play(FadeOut(final_slots))
         self.wait(1)
-        
-        # Highlight dx^2
-        term = taylor[0][12:17] # Approximate index for (dx)^2
-        self.play(term.animate.set_color(RED))
-        
-        note = Text("Negligible in standard calculus", font_size=24).next_to(taylor, DOWN)
-        self.play(Write(note))
-        self.wait(1)
-        self.play(FadeOut(note), FadeOut(term)) # Fade out term for standard calc effect
-        self.wait(1)
-        self.clear()
-
-    def scene_12_ito(self):
-        self.set_subtitle( "Ito's Lemma: Convexity creates drift.")
-        
-        axes = Axes(x_range=[-2, 2], y_range=[0, 4], x_length=6, y_length=4)
-        parabola = axes.plot(lambda x: x**2, color=BLUE_C)
-        self.play(Create(axes), Create(parabola))
-        
-        dot = Dot(axes.c2p(0, 0), color=WHITE)
-        self.add(dot)
-        
-        # Jitter Animation
-        self.play(dot.animate.move_to(axes.c2p(0.5, 0.25)), run_time=0.2)
-        self.play(dot.animate.move_to(axes.c2p(-0.5, 0.25)), run_time=0.2)
-        self.play(dot.animate.move_to(axes.c2p(0.8, 0.64)), run_time=0.2)
-        self.play(dot.animate.move_to(axes.c2p(-0.2, 0.04)), run_time=0.2)
-        self.play(dot.animate.move_to(axes.c2p(0, 0)), run_time=0.2)
-        
-        # Drift Vector
-        arrow = Arrow(start=axes.c2p(0,0), end=axes.c2p(0, 1), color=RED, buff=0)
-        label = Text("Ito Drift", color=RED, font_size=24).next_to(arrow, RIGHT)
-        self.play(GrowArrow(arrow), Write(label))
-        
-        ito_eq = MathTex(r"df(W_t) = f'(W_t)dW_t + \frac{1}{2}f''(W_t)dt").to_edge(UP)
-        ito_eq[0][-9:].set_color(RED) # Highlight drift term roughly
-        self.play(Write(ito_eq))
-        self.wait(2)
-        self.clear()
-
-    def scene_13_gbm(self):
-        self.set_subtitle( "Geometric Brownian Motion models stock prices.")
-        
-        axes = Axes(x_range=[0, 5], y_range=[-2, 5], x_length=10, y_length=6)
-        
-        # Standard Brownian
-        t = np.linspace(0, 5, 500)
-        dt = t[1] - t[0]
-        W = np.cumsum(np.random.normal(0, np.sqrt(dt), len(t)))
-        W = np.insert(W, 0, 0)[:-1]
-        
-        bm_curve = axes.plot_line_graph(t, W, line_color=GREY, add_vertex_dots=False)
-        self.play(Create(bm_curve))
-        
-        # Transformation to GBM
-        # S_t = S_0 * exp((mu - 0.5*sigma^2)t + sigma*W_t)
-        S0 = 1
-        mu = 0.1
-        sigma = 0.3
-        drift = (mu - 0.5 * sigma**2) * t
-        S = S0 * np.exp(drift + sigma * W)
-        
-        gbm_curve = axes.plot_line_graph(t, S, line_color=GREEN, add_vertex_dots=False)
-        
-        eqn = MathTex(r"S_t = S_0 e^{(\mu - \frac{1}{2}\sigma^2)t + \sigma W_t}").to_corner(UL)
-        
-        self.play(Transform(bm_curve, gbm_curve), Write(eqn))
-        self.wait(2)
-        self.clear()
-
-    def scene_final_montage(self):
-        self.set_subtitle( "From the pollen grain to the portfolio.")
-        
-        # Quick Flashes (Text representations due to object cleanup)
-        t1 = Text("Probability", font_size=60, color=GREEN)
-        t2 = Text("Physics", font_size=60, color=GOLD)
-        t3 = Text("Diffusion", font_size=60, color=RED)
-        
-        self.play(FadeIn(t1, scale=0.5))
-        self.play(FadeOut(t1))
-        self.play(FadeIn(t2, scale=0.5))
-        self.play(FadeOut(t2))
-        self.play(FadeIn(t3, scale=0.5))
-        self.play(FadeOut(t3))
-        
-        # Black Scholes
-        bs_eq = MathTex(
-            r"\frac{\partial V}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2} + rS \frac{\partial V}{\partial S} - rV = 0"
-        ).scale(1.2)
-        self.play(Write(bs_eq))
-        self.wait(3)
-        
-        credit = Text("Narrative Composer", font_size=24, color=GREY).to_edge(DOWN)
-        self.play(FadeOut(bs_eq), FadeIn(credit))
-        self.wait(2)
