@@ -1,38 +1,37 @@
-Create a Manim animation script (using Manim Community Edition) that explains Cross-Validation Strategies in Machine Learning.
+Create a Manim animation script (using Manim Community Edition) that explains Regularization (L1, L2, Elastic Net) in Machine Learning.
 The animation should be approximately 2 minutes long and include the following scenes:
 
-1.  **The Problem with a Single Split**:
-    *   Show a dataset.
-    *   Split it into Train (80%) and Test (20%).
-    *   Show that if the "Test" set happens to be easy or hard by random chance, our evaluation is unreliable (High Variance in evaluation).
+1.  **The Problem: Unconstrained Optimization**:
+    *   Show a 3D contour plot representing a Loss Function (like a valley).
+    *   Show a "ball" (the parameters) rolling down to the absolute minimum (Global Minimum).
+    *   Explain that for complex models, this minimum often corresponds to Overfitting (large weights).
 
-2.  **K-Fold Cross-Validation (The Gold Standard)**:
-    *   Visualise the dataset as a horizontal bar.
-    *   Divide it into K=5 equal folds.
-    *   Animate the 5 iterations:
-        *   Iteration 1: Fold 1 is Validation (Color A), Folds 2-5 are Train (Color B).
-        *   Iteration 2: Fold 2 is Validation, others are Train.
-        *   ... and so on.
-    *   Show the "Average Performance" being calculated from the 5 scores.
+2.  **The Solution: Adding a Penalty**:
+    *   Show the Loss Equation: $J(\theta) = \text{MSE} + \lambda \cdot \text{Penalty}$.
+    *   Explain that $\lambda$ controls the strength of the penalty.
 
-3.  **Stratified K-Fold (For Imbalanced Data)**:
-    *   Show a dataset with two classes: Class A (90%, Blue dots) and Class B (10%, Red dots).
-    *   Show a bad random split where one fold gets zero Red dots.
-    *   Demonstrate Stratified Split: Each fold maintains the 9:1 ratio.
+3.  **L2 Regularization (Ridge)**:
+    *   Visualise the penalty as a **Circle** (Constraint Region) centered at the origin.
+    *   Show the optimization trying to minimize the Loss while staying near the circle.
+    *   Result: Weights are shrunk towards zero but rarely hit exactly zero.
 
-4.  **Time Series Split (Forward Chaining)**:
-    *   Show data ordered by time (left to right).
-    *   Demonstrate that we cannot use future data to train for the past.
-    *   Animate the expanding window:
-        *   Train: [1], Test: [2]
-        *   Train: [1, 2], Test: [3]
-        *   Train: [1, 2, 3], Test: [4]
+4.  **L1 Regularization (Lasso)**:
+    *   Visualise the penalty as a **Diamond** (Constraint Region).
+    *   Show that the Loss contours often hit the "corners" of the diamond first.
+    *   Result: Some weights become exactly zero (Feature Selection/Sparsity).
 
-5.  **Conclusion**: Summary of when to use which (K-Fold for general, Stratified for classification, Time Series for temporal data).
+5.  **Elastic Net**:
+    *   Show a shape that is a mix of Diamond and Circle (convex but with corners).
+    *   Explain it combines the benefits of both (grouping effect + sparsity).
+
+6.  **Conclusion**: Summary table.
+    *   L2: Good for collinearity, keeps all features.
+    *   L1: Good for sparse data, selects features.
+    *   Elastic Net: Best of both worlds.
 
 Use clear colors:
-*   TRAIN SET: Blue
-*   VALIDATION/TEST SET: Orange/Red
-*   DATA POINTS: White/Gray
+*   LOSS CONTOURS: Blue
+*   CONSTRAINT REGION (L1/L2): Red/Orange
+*   OPTIMAL POINT: Green Dot
 
-Ensure the code is complete, runnable, and uses `Scene`. Add voiceover text as comments.
+Ensure the code is complete, runnable, and uses `ThreeDScene`. Add voiceover text as comments.

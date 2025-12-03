@@ -61,7 +61,9 @@ Your task is to write the COMPLETE, working Python code for this animation.
 
 Guidelines:
 - Use `from manim import *`.
-- Create a single `Scene` class.
+- ALWAYS use `class MyScene(ThreeDScene):` and utilize the 3D space (z-axis) for depth, even for 2D concepts.
+- Use `ThreeDAxes` instead of `Axes` where possible.
+- Implement camera movements (`self.move_camera(...)`) to show different perspectives.
 - Ensure all LaTeX formulas use raw strings (r"...").
 - Handle complex camera moves if requested.
 - Output ONLY the python code, inside a markdown code block ```python ... ```.

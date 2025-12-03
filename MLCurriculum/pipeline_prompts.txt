@@ -1,0 +1,54 @@
+Gemini3 Pipeline Prompt Flow
+============================
+
+This document outlines the sequential prompt engineering strategy used to generate the ML Curriculum content.
+
+1. Initial User Input
+---------------------
+The process begins with a specific request for a Machine Learning topic (e.g., "Explain Bias-Variance Tradeoff").
+This input is passed to the **ConceptAnalyzer**.
+
+2. Agent Handoffs
+-----------------
+
+A. ConceptAnalyzer -> PrerequisiteExplorer
+   *   **Input**: The raw topic string.
+   *   **Task**: Deconstruct the topic into its fundamental components, identify the core problem it solves, and list key terminology.
+   *   **Output**: A structured JSON object containing the root concept, sub-concepts, and a brief summary.
+
+B. PrerequisiteExplorer -> MathematicalEnricher
+   *   **Input**: The structured concept list.
+   *   **Task**: Identify what prior knowledge is needed to understand these concepts. It builds a dependency tree (e.g., "To understand Regularization, one must first understand Overfitting and Loss Functions").
+   *   **Output**: An augmented tree structure with prerequisite links.
+
+C. MathematicalEnricher -> VisualDesigner
+   *   **Input**: The concept tree with prerequisites.
+   *   **Task**: Inject rigorous mathematical definitions, formulas, and LaTeX representations into the concept nodes. It ensures the content is scientifically accurate (e.g., adding the specific formula for L1 vs L2 norm).
+   *   **Output**: A "Mathematically Enriched" concept tree.
+
+D. VisualDesigner -> NarrativeComposer
+   *   **Input**: The enriched concept tree.
+   *   **Task**: Translate abstract math and logic into visual metaphors suitable for animation.
+       *   *Example*: "Represent Overfitting as a wiggly line trying too hard to hit every dot."
+       *   *Example*: "Represent L1 Regularization as a diamond shape constraint."
+   *   **Output**: A list of "Visual Scenes" with descriptions of objects, motions, and colors.
+
+E. NarrativeComposer -> CodeGenerator
+   *   **Input**: The list of visual scenes.
+   *   **Task**: Weave these scenes into a coherent 2-minute narrative script. It adds voiceover text, transitions, and pacing instructions.
+   *   **Output**: A detailed "Manim Script" (text format) describing the animation flow step-by-step.
+
+F. CodeGenerator -> Final Output (.py)
+   *   **Input**: The detailed Manim script.
+   *   **Task**: Write the actual Python code using the Manim Community library. It handles:
+       *   Class structure (`class MyScene(ThreeDScene):`) -> **CRITICAL**: Always use `ThreeDScene` and utilize the 3D space (z-axis) for depth, even for 2D concepts.
+       *   Object instantiation (`Circle()`, `Axes()`)
+       *   Animations (`self.play(Create(...))`)
+       *   Timing and synchronization.
+   *   **Output**: A fully runnable `.py` file.
+
+3. Final Artifacts
+------------------
+The pipeline results in two primary files for each topic:
+1.  `[topic]_scene.py`: The Python code for the animation.
+2.  `[topic]_notes.tex`: A PhD-level LaTeX document summarizing the mathematical theory (generated in parallel or as a secondary step).
