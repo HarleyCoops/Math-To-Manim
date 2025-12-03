@@ -1,22 +1,38 @@
-Create a Manim animation script (using Manim Community Edition) that explains the Bias-Variance Tradeoff in Machine Learning.
+Create a Manim animation script (using Manim Community Edition) that explains Cross-Validation Strategies in Machine Learning.
 The animation should be approximately 2 minutes long and include the following scenes:
-1.  **Introduction**: Define Bias and Variance visually.
-    *   Bias: Show a target (bullseye) and shots consistently missing the center but clustered together (High Bias).
-    *   Variance: Show shots scattered widely around the center (High Variance).
-    *   Low Bias & Low Variance: Shots hitting the center.
-2.  **Model Complexity vs Error**:
-    *   Draw a 2D graph with "Model Complexity" on the X-axis and "Error" on the Y-axis.
-    *   Plot the "Bias^2" curve (decreasing with complexity).
-    *   Plot the "Variance" curve (increasing with complexity).
-    *   Plot the "Total Error" curve (sum of Bias^2 + Variance + Irreducible Error).
-    *   Highlight the "Optimal Complexity" point (minimum total error).
-3.  **Underfitting vs Overfitting**:
-    *   Show a simple dataset (points with some noise following a curve).
-    *   Fit a straight line (Underfitting/High Bias).
-    *   Fit a highly wiggly polynomial passing through every point (Overfitting/High Variance).
-    *   Fit a smooth curve that captures the trend (Optimal).
-4.  **Conclusion**: Summarize the tradeoff.
 
-Use clear colors (e.g., BLUE for Bias, RED for Variance, GREEN for Total Error).
-Ensure the code is complete, runnable, and uses `Scene` or `MovingCameraScene`.
-Add voiceover text as comments in the code.
+1.  **The Problem with a Single Split**:
+    *   Show a dataset.
+    *   Split it into Train (80%) and Test (20%).
+    *   Show that if the "Test" set happens to be easy or hard by random chance, our evaluation is unreliable (High Variance in evaluation).
+
+2.  **K-Fold Cross-Validation (The Gold Standard)**:
+    *   Visualise the dataset as a horizontal bar.
+    *   Divide it into K=5 equal folds.
+    *   Animate the 5 iterations:
+        *   Iteration 1: Fold 1 is Validation (Color A), Folds 2-5 are Train (Color B).
+        *   Iteration 2: Fold 2 is Validation, others are Train.
+        *   ... and so on.
+    *   Show the "Average Performance" being calculated from the 5 scores.
+
+3.  **Stratified K-Fold (For Imbalanced Data)**:
+    *   Show a dataset with two classes: Class A (90%, Blue dots) and Class B (10%, Red dots).
+    *   Show a bad random split where one fold gets zero Red dots.
+    *   Demonstrate Stratified Split: Each fold maintains the 9:1 ratio.
+
+4.  **Time Series Split (Forward Chaining)**:
+    *   Show data ordered by time (left to right).
+    *   Demonstrate that we cannot use future data to train for the past.
+    *   Animate the expanding window:
+        *   Train: [1], Test: [2]
+        *   Train: [1, 2], Test: [3]
+        *   Train: [1, 2, 3], Test: [4]
+
+5.  **Conclusion**: Summary of when to use which (K-Fold for general, Stratified for classification, Time Series for temporal data).
+
+Use clear colors:
+*   TRAIN SET: Blue
+*   VALIDATION/TEST SET: Orange/Red
+*   DATA POINTS: White/Gray
+
+Ensure the code is complete, runnable, and uses `Scene`. Add voiceover text as comments.

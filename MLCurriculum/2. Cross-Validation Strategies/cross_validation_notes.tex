@@ -1,0 +1,91 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\geometry{a4paper, margin=1in}
+
+\title{Cross-Validation Strategies: Theory and Practice}
+\author{ML Curriculum Series}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Cross-validation is a statistical method used to estimate the skill of machine learning models. It is primarily used to estimate how accurately a predictive model will perform in practice. This document details the theoretical underpinnings of various cross-validation techniques, analyzes their bias-variance properties regarding error estimation, and provides guidelines for their application in different data scenarios.
+\end{abstract}
+
+\section{Introduction}
+The fundamental goal of machine learning is generalization: training a model on a finite dataset $\mathcal{D}$ such that it performs well on unseen data $\mathcal{D}_{new}$. A naive approach involves splitting $\mathcal{D}$ into a training set $\mathcal{D}_{train}$ and a testing set $\mathcal{D}_{test}$. However, this single split introduces significant variance in the evaluation metric depending on which data points end up in which set.
+
+Cross-validation (CV) mitigates this by averaging evaluations over multiple splits, providing a more robust estimate of the model's true generalization error.
+
+\section{K-Fold Cross-Validation}
+\subsection{Algorithm}
+In $K$-fold CV, the dataset $\mathcal{D}$ is randomly partitioned into $K$ equal-sized subsamples (folds) $\mathcal{F}_1, \mathcal{F}_2, \dots, \mathcal{F}_K$.
+For $k = 1, \dots, K$:
+\begin{enumerate}
+    \item The model is trained on $\mathcal{D} \setminus \mathcal{F}_k$.
+    \item The model is evaluated on $\mathcal{F}_k$, yielding performance metric $E_k$.
+\end{enumerate}
+The final estimate is the average of these $K$ metrics:
+\begin{equation}
+CV_{(K)} = \frac{1}{K} \sum_{k=1}^{K} E_k
+\end{equation}
+
+\subsection{Bias-Variance Analysis of $K$}
+The choice of $K$ involves a bias-variance tradeoff for the \textit{estimator} of the error (not the model itself):
+\begin{itemize}
+    \item \textbf{Low $K$ (e.g., $K=2$)}: High Bias. The training set size $|\mathcal{D}|(K-1)/K$ is significantly smaller than $|\mathcal{D}|$. Since learning curves are generally increasing with data size, the CV estimate will be pessimistically biased (overestimating error).
+    \item \textbf{High $K$ (e.g., $K=N$, LOOCV)}: Low Bias, High Variance. The training sets are almost identical (differing by only one sample). This high correlation between training sets leads to a high variance in the CV estimate itself.
+    \item \textbf{Standard ($K=5$ or $K=10$)}: Empirically shown to yield a good balance, providing an estimate with low bias and moderate variance.
+\end{itemize}
+
+\section{Stratified K-Fold}
+Standard random splitting can be problematic for classification tasks with imbalanced class distributions. If a minority class is missed in a training fold, the model fails to learn it. If it is missed in a validation fold, evaluation is misleading.
+
+\textbf{Stratification} ensures that the proportion of samples for each class $c$ in every fold matches the proportion in the complete dataset.
+Let $N_c$ be the count of class $c$ in $\mathcal{D}$. In each fold $\mathcal{F}_k$, we enforce:
+\begin{equation}
+\frac{|\{y \in \mathcal{F}_k : y = c\}|}{|\mathcal{F}_k|} \approx \frac{N_c}{N}
+\end{equation}
+
+\section{Leave-One-Out Cross-Validation (LOOCV)}
+LOOCV is the limit case where $K=N$.
+\begin{itemize}
+    \item \textbf{Pros}: Unbiased estimate of the true error on a dataset of size $N-1$. Deterministic (no random seed dependency).
+    \item \textbf{Cons}: Computationally expensive ($N$ training runs). High variance in the error estimate due to correlation between folds.
+\end{itemize}
+
+\section{Time Series Split (Forward Chaining)}
+For temporal data $\{(x_t, y_t)\}_{t=1}^T$, standard CV fails because it allows "peeking" into the future (training on $t+k$ to predict $t$).
+Instead, we use a rolling origin or expanding window approach. For $k$ splits:
+\begin{itemize}
+    \item Split 1: Train on $1 \dots t$, Test on $t+1$.
+    \item Split 2: Train on $1 \dots t+1$, Test on $t+2$.
+    \item ...
+\end{itemize}
+This respects the temporal causality constraint.
+
+\section{Nested Cross-Validation}
+When performing both hyperparameter tuning and model evaluation, using the same CV loop introduces \textit{data leakage} (optimism bias).
+\textbf{Nested CV} solves this with two loops:
+\begin{enumerate}
+    \item \textbf{Outer Loop}: Splits data into Train/Test for model evaluation.
+    \item \textbf{Inner Loop}: Splits the Outer Train into Train/Validation for hyperparameter tuning.
+\end{enumerate}
+
+\section{Conclusion}
+Selecting the appropriate cross-validation strategy is critical for reliable model assessment.
+\begin{itemize}
+    \item Use \textbf{Stratified K-Fold} for classification.
+    \item Use \textbf{Standard K-Fold} for regression.
+    \item Use \textbf{Time Series Split} for temporal data.
+    \item Use \textbf{Nested CV} when tuning hyperparameters to report unbiased performance.
+\end{itemize}
+
+\end{document}
