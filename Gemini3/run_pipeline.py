@@ -26,13 +26,8 @@ def main():
         text_prompt = f.read()
 
     # Define image paths
-    image_paths = [
-        "C:/Users/chris/.gemini/antigravity/brain/225a8a69-73d1-4099-a321-d2f93aa04e5e/uploaded_image_0_1764028477375.png",
-        "C:/Users/chris/.gemini/antigravity/brain/225a8a69-73d1-4099-a321-d2f93aa04e5e/uploaded_image_1_1764028477375.png",
-        "C:/Users/chris/.gemini/antigravity/brain/225a8a69-73d1-4099-a321-d2f93aa04e5e/uploaded_image_2_1764028477375.png",
-        "C:/Users/chris/.gemini/antigravity/brain/225a8a69-73d1-4099-a321-d2f93aa04e5e/uploaded_image_3_1764028477375.png",
-        "C:/Users/chris/.gemini/antigravity/brain/225a8a69-73d1-4099-a321-d2f93aa04e5e/machinarium_mockup_1764028669591.png"
-    ]
+    # Define image paths
+    image_paths = []
 
     parts = [text_prompt]
     
