@@ -1,0 +1,35 @@
+Create a Manim animation script (using Manim Community Edition) that explains Class Imbalance & Sampling Techniques in Machine Learning.
+The animation should be approximately 2 minutes long and include the following scenes:
+
+1.  **The Imbalance Problem**:
+    *   Show a 3D scatter plot with two classes: "Majority" (Blue spheres, 95%) and "Minority" (Red spheres, 5%).
+    *   Show a decision boundary (plane) that ignores the Minority class to maximize accuracy (The "Accuracy Paradox").
+    *   Explain that 95% accuracy is meaningless if we miss all the important cases (e.g., fraud, disease).
+
+2.  **Undersampling (Random)**:
+    *   Visualise the removal of Majority class points until the ratio is balanced (e.g., 50/50).
+    *   Show the dataset shrinking.
+    *   Pros: Faster training. Cons: Loss of information.
+
+3.  **Oversampling (Random)**:
+    *   Visualise the duplication of Minority class points.
+    *   Show the Red spheres "popping" into existence on top of existing ones.
+    *   Pros: No info loss. Cons: Overfitting (model memorizes duplicates).
+
+4.  **SMOTE (Synthetic Minority Over-sampling Technique)**:
+    *   Zoom in on the Minority class points in 3D space.
+    *   Draw lines between neighboring Red spheres (k-nearest neighbors).
+    *   Animate the creation of *new* synthetic Red spheres along these lines.
+    *   Explain this creates plausible new examples, not just duplicates.
+
+5.  **Conclusion**:
+    *   Summary of when to use which technique.
+    *   Undersampling for massive datasets.
+    *   SMOTE for most standard imbalance problems.
+
+Use clear colors:
+*   MAJORITY CLASS: Blue
+*   MINORITY CLASS: Red
+*   SYNTHETIC POINTS: Glowing Orange/Yellow
+
+Ensure the code is complete, runnable, and uses `ThreeDScene` and `ThreeDAxes` as requested. Add voiceover text as comments.

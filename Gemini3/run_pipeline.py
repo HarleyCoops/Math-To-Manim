@@ -17,7 +17,7 @@ def main():
     pipeline = Gemini3Pipeline()
 
     # Read the text prompt
-    text_path = Path("Gemini3/Machinarium.txt")
+    text_path = Path("Gemini3/curriculum_prompt.txt")
     if not text_path.exists():
         logger.console.print(f"[bold red]Error: {text_path} not found.[/bold red]")
         return

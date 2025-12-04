@@ -1,0 +1,66 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\title{Class Imbalance and Sampling Techniques}
+\author{ML Curriculum Series}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Class imbalance is a pervasive problem in machine learning where one class significantly outnumbers the others. This leads to biased models that favor the majority class, often achieving high accuracy but poor recall on the minority class. This document explores the theoretical implications of imbalance and details sampling strategies like Random Undersampling, Random Oversampling, and SMOTE to mitigate these effects.
+\end{abstract}
+
+\section{The Imbalance Problem}
+Consider a binary classification problem with classes $C_{maj}$ (majority) and $C_{min}$ (minority). Let $N_{maj}$ and $N_{min}$ be the number of samples, where $N_{maj} \gg N_{min}$.
+A standard classifier minimizes the expected error (accuracy). If $P(C_{maj}) = 0.99$, a trivial model predicting "Majority" for all inputs achieves 99\% accuracy but 0\% recall for the minority class. This is known as the \textbf{Accuracy Paradox}.
+
+\section{Random Undersampling}
+\subsection{Method}
+Randomly remove samples from $C_{maj}$ until $|C_{maj}| \approx |C_{min}|$.
+\subsection{Pros and Cons}
+\begin{itemize}
+    \item \textbf{Pros}: Reduces training time significantly. Can help clarify the decision boundary if the majority class has many redundant examples.
+    \item \textbf{Cons}: \textbf{Information Loss}. Potentially discards valuable data points that define the decision boundary.
+\end{itemize}
+
+\section{Random Oversampling}
+\subsection{Method}
+Randomly duplicate samples from $C_{min}$ until $|C_{min}| \approx |C_{maj}|$.
+\subsection{Pros and Cons}
+\begin{itemize}
+    \item \textbf{Pros}: No information loss.
+    \item \textbf{Cons}: \textbf{Overfitting}. The model "memorizes" the specific minority points because they appear multiple times, leading to poor generalization on unseen minority data.
+\end{itemize}
+
+\section{SMOTE (Synthetic Minority Over-sampling Technique)}
+SMOTE generates \textit{synthetic} samples rather than duplicates.
+\subsection{Algorithm}
+For each sample $x_i \in C_{min}$:
+\begin{enumerate}
+    \item Find the $k$-nearest neighbors of $x_i$ in $C_{min}$.
+    \item Choose one neighbor randomly, call it $x_{nn}$.
+    \item Generate a new sample $x_{new}$ on the line segment connecting $x_i$ and $x_{nn}$:
+    \begin{equation}
+    x_{new} = x_i + \lambda \cdot (x_{nn} - x_i)
+    \end{equation}
+    where $\lambda \sim \text{Uniform}(0, 1)$.
+\end{enumerate}
+
+\subsection{Geometric Interpretation}
+SMOTE effectively "fills in" the interior of the minority class clusters, creating a denser representation. This pushes the decision boundary away from the minority points, reducing bias.
+
+\section{Conclusion}
+\begin{itemize}
+    \item Use \textbf{Undersampling} when the dataset is massive (millions of rows) to save compute.
+    \item Use \textbf{SMOTE} for most standard imbalance problems to improve generalization.
+    \item Always evaluate using \textbf{Precision, Recall, and F1-Score}, never just Accuracy.
+\end{itemize}
+
+\end{document}
