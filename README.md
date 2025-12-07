@@ -48,29 +48,6 @@ python Gemini3/run_pipeline.py "Explain the Hopf Fibration"
 
 ---
 
-## NEW: Kimi K2 Implementation (November 6, 2025)
-
-**Full Kimi K2 pipeline now available!** See `KimiK2Thinking/` folder for complete implementation.
-
-We've built an alternative pipeline using **Kimi K2 thinking model** from Moonshot AI with:
-- **OpenAI-compatible API** - Easier integration
-- **Tool-calling interface** - Structured data extraction via function calling  
-- **Complete enrichment chain** - Math, visual, and narrative agents
-- **LaTeX-focused** - Focuses on exact math rendering, lets Manim handle visuals
-
-**Quick Start:**
-```bash
-# Set API key
-echo "MOONSHOT_API_KEY=your_key_here" >> .env
-
-# Run full pipeline
-python KimiK2Thinking/examples/run_enrichment_pipeline.py tree.json
-```
-
-**Full docs**: [KimiK2Thinking/README.md](KimiK2Thinking/README.md)
-
----
-
 ## See It In Action
 
 <div align="center">
@@ -291,12 +268,14 @@ Browse all examples: [docs/EXAMPLES.md](docs/EXAMPLES.md)
 Math-To-Manim/
 ├── src/                        # Core agent system
 │   ├── agents/
-│   │   ├── prerequisite_explorer_claude.py   # Reverse knowledge tree agent
-│   │   └── prerequisite_explorer.py          # Legacy implementation
+│   │   ├── prerequisite_explorer_claude.py   # Claude SDK agent (primary)
+│   │   ├── prerequisite_explorer.py          # Legacy DeepSeek implementation
+│   │   └── video_review_agent.py            # Video review tools
 │   ├── app_claude.py                         # Gradio UI (Claude SDK)
 │   └── app.py                                # Legacy UI
 │
-├── examples/                   # 55+ working animations
+│
+├── examples/                   # 55+ working animations organized by domain
 │   ├── physics/
 │   │   ├── quantum/           # 13 QED/QFT animations
 │   │   ├── gravity/           # Gravitational waves
@@ -314,18 +293,35 @@ Math-To-Manim/
 │   │   └── spatial_reasoning/ # 3D tests
 │   ├── cosmology/             # Cosmic evolution
 │   ├── finance/               # Option pricing
-│   └── misc/                  # Experimental
+│   └── misc/                  # Experimental & showcase animations
+│
+├── Gemini3/                    # Google Gemini 3 ADK pipeline
+│   ├── docs/                  # Gemini-specific documentation
+│   └── run_pipeline.py        # Gemini pipeline entry point
+│
+├── KimiK2Thinking/            # Kimi K2 thinking model pipeline
+│   ├── agents/                # Kimi-specific agents
+│   ├── examples/              # Kimi usage examples
+│   └── README.md              # Complete Kimi documentation
 │
 ├── docs/                       # Documentation
-│   ├── EXAMPLES.md            # Complete catalog
-│   ├── ARCHITECTURE.md        # System design
-│   ├── MIGRATION_TO_CLAUDE.md # Claude SDK migration
-│   └── TESTING_ARCHITECTURE.md
+│   ├── EXAMPLES.md            # Complete animation catalog
+│   ├── ARCHITECTURE.md        # System design & agent overview
+│   ├── AGENT_PIPELINE_GUIDE.md # Agent usage guide
+│   ├── REVERSE_KNOWLEDGE_TREE.md # Core innovation explained
+│   ├── MIGRATION_TO_CLAUDE.md # DeepSeek → Claude migration
+│   ├── TESTING_ARCHITECTURE.md # Testing strategy
+│   └── VIDEO_REVIEW_TOOLKIT.md # Video review tools
 │
-└── tests/                      # Testing infrastructure
-    ├── unit/
-    ├── integration/
-    └── e2e/
+├── tests/                      # Testing infrastructure
+│   ├── unit/                  # Unit tests
+│   ├── integration/           # Integration tests
+│   └── e2e/                   # End-to-end tests
+│
+└── tools/                      # Utility scripts
+    ├── scripts/               # Helper scripts
+    ├── video_review_toolkit.py # Video frame extraction
+    └── frame_viewer.py        # Interactive frame viewer
 ```
 
 ---
