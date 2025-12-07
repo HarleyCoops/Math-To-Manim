@@ -1,5 +1,7 @@
 # Math-To-Manim
 
+<div align="center">
+
 <!-- Core Requirements -->
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -20,6 +22,8 @@
 [![Google ADK](https://img.shields.io/badge/Google-ADK-34A853?logo=google&logoColor=white)](https://google.github.io/adk-docs/)
 [![Gradio](https://img.shields.io/badge/Gradio-UI-F97316?logo=gradio&logoColor=white)](https://gradio.app/)
 [![LaTeX](https://img.shields.io/badge/LaTeX-Rendering-008080?logo=latex&logoColor=white)](https://www.latex-project.org/)
+
+</div>
 
 
 [![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=date&legend=top-left)](https://www.star-history.com/#HarleyCoops/Math-To-Manim&type=date&legend=top-left)
