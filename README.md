@@ -20,7 +20,7 @@
 
 [![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=date&legend=top-left)](https://www.star-history.com/#HarleyCoops/Math-To-Manim&type=date&legend=top-left)
 
----
+
 
 <div align="center">
 
@@ -30,13 +30,7 @@
 
 </div>
 
----
 
-## The Core Innovation: Reverse Knowledge Tree
-
-Most AI animation systems try to learn patterns from examples. **Math-To-Manim does the opposite.**
-
-Instead of pattern matching, we use **Recursive Prerequisite Discovery**:
 
 ```
 "Explain cosmology"
@@ -88,34 +82,7 @@ The Gemini pipeline uses the **Google Agent Development Kit** with a six-agent s
 
 ### How It Works
 
-```mermaid
-graph TD
-    UserPrompt[User Prompt] --> CA
-    
-    CA["<b>1. ConceptAnalyzer</b><br/>Deconstructs prompt into:<br/>- Core concept<br/>- Target audience<br/>- Difficulty level<br/>- Mathematical domain"]
-    
-    CA --> PE
-    PE["<b>2. PrerequisiteExplorer</b><br/>Builds knowledge DAG:<br/>'What must be understood BEFORE X?'<br/>Recursively discovers dependencies"]
-    
-    PE --> ME
-    ME["<b>3. MathematicalEnricher</b><br/>Adds to each node:<br/>- LaTeX definitions<br/>- Key equations<br/>- Theorems/physical laws"]
-    
-    ME --> VD
-    VD["<b>4. VisualDesigner</b><br/>Designs using Manim primitives:<br/>- Visual metaphors (sphere = particle)<br/>- Camera movements<br/>- Color palette (hex codes)<br/>- Transitions"]
-    
-    VD --> NC
-    NC["<b>5. NarrativeComposer</b><br/>Weaves 2000+ token verbose prompt:<br/>- Exact LaTeX strings<br/>- Animation timing<br/>- Scene-by-scene description"]
-    
-    NC --> CG
-    CG["<b>6. CodeGenerator</b><br/>Produces executable Manim code:<br/>- ThreeDScene with camera movements<br/>- Correct LaTeX rendering<br/>- No external assets required"]
-
-    style CA fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:black,align:left
-    style PE fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:black,align:left
-    style ME fill:#e0f2f1,stroke:#00695c,stroke-width:2px,color:black,align:left
-    style VD fill:#f3e5f5,stroke:#880e4f,stroke-width:2px,color:black,align:left
-    style NC fill:#ffebee,stroke:#b71c1c,stroke-width:2px,color:black,align:left
-    style CG fill:#f1f8e9,stroke:#33691e,stroke-width:2px,color:black,align:left
-```
+![Gemini Pipeline Architecture](https://mermaid.ink/img/Z3JhcGggVEQKICAgIFVzZXJQcm9tcHRbVXNlciBQcm9tcHRdIC0tPiBDQQogICAgCiAgICBDQVsiPGI+MS4gQ29uY2VwdEFuYWx5emVyPC9iPjxici8+RGVjb25zdHJ1Y3RzIHByb21wdCBpbnRvOjxici8+LSBDb3JlIGNvbmNlcHQ8YnIvPi0gVGFyZ2V0IGF1ZGllbmNlPGJyLz4tIERpZmZpY3VsdHkgbGV2ZWw8YnIvPi0gTWF0aGVtYXRpY2FsIGRvbWFpbiJdCiAgICAKICAgIENBIC0tPiBQRQogICAgUEVbIjxiPjIuIFByZXJlcXVpc2l0ZUV4cGxvcmVyPC9iPjxici8+QnVpbGRzIGtub3dsZWRnZSBEQUc6PGJyLz4nV2hhdCBtdXN0IGJlIHVuZGVyc3Rvb2QgQkVGT1JFIFg/Jzxici8+UmVjdXJzaXZlbHkgZGlzY292ZXJzIGRlcGVuZGVuY2llcyJdCiAgICAKICAgIFBFIC0tPiBNRQogICAgTUVbIjxiPjMuIE1hdGhlbWF0aWNhbEVucmljaGVyPC9iPjxici8+QWRkcyB0byBlYWNoIG5vZGU6PGJyLz4tIExhVGVYIGRlZmluaXRpb25zPGJyLz4tIEtleSBlcXVhdGlvbnM8YnIvPi0gVGhlb3JlbXMvcGh5c2ljYWwgbGF3cyJdCiAgICAKICAgIE1FIC0tPiBWRAogICAgVkRbIjxiPjQuIFZpc3VhbERlc2lnbmVyPC9iPjxici8+RGVzaWducyB1c2luZyBNYW5pbSBwcmltaXRpdmVzOjxici8+LSBWaXN1YWwgbWV0YXBob3JzIChzcGhlcmUgPSBwYXJ0aWNsZSk8YnIvPi0gQ2FtZXJhIG1vdmVtZW50czxici8+LSBDb2xvciBwYWxldHRlIChoZXggY29kZXMpPGJyLz4tIFRyYW5zaXRpb25zIl0KICAgIAogICAgVkQgLS0+IE5DCiAgICBOQ1siPGI+NS4gTmFycmF0aXZlQ29tcG9zZXI8L2I+PGJyLz5XZWF2ZXMgMjAwMCsgdG9rZW4gdmVyYm9zZSBwcm9tcHQ6PGJyLz4tIEV4YWN0IExhVGVYIHN0cmluZ3M8YnIvPi0gQW5pbWF0aW9uIHRpbWluZzxici8+LSBTY2VuZS1ieS1zY2VuZSBkZXNjcmlwdGlvbiJdCiAgICAKICAgIE5DIC0tPiBDRwogICAgQ0dbIjxiPjYuIENvZGVHZW5lcmF0b3I8L2I+PGJyLz5Qcm9kdWNlcyBleGVjdXRhYmxlIE1hbmltIGNvZGU6PGJyLz4tIFRocmVlRFNjZW5lIHdpdGggY2FtZXJhIG1vdmVtZW50czxici8+LSBDb3JyZWN0IExhVGVYIHJlbmRlcmluZzxici8+LSBObyBleHRlcm5hbCBhc3NldHMgcmVxdWlyZWQiXQoKICAgIHN0eWxlIENBIGZpbGw6I2UxZjVmZSxzdHJva2U6IzAxNTc5YixzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIFBFIGZpbGw6I2ZmZjljNCxzdHJva2U6I2ZiYzAyZCxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIE1FIGZpbGw6I2UwZjJmMSxzdHJva2U6IzAwNjk1YyxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIFZEIGZpbGw6I2YzZTVmNSxzdHJva2U6Izg4MGU0ZixzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIE5DIGZpbGw6I2ZmZWJlZSxzdHJva2U6I2I3MWMxYyxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIENHIGZpbGw6I2YxZjhlOSxzdHJva2U6IzMzNjkxZSxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQK)
 
 ### Quick Start
 
@@ -144,34 +111,7 @@ The Claude pipeline uses the **Anthropic Agent SDK** with automatic context mana
 
 ### How It Works
 
-```mermaid
-graph TD
-    UserPrompt[User Prompt] --> CA
-    
-    CA["<b>1. ConceptAnalyzer</b><br/>Parses prompt, identifies:<br/>- Core concept<br/>- Domain (physics, math, CS)<br/>- Visualization approach"]
-    
-    CA --> PE
-    PE["<b>2. PrerequisiteExplorer</b><br/>THE KEY INNOVATION:<br/>Recursively asks 'What before X?'<br/>Builds complete knowledge tree<br/>Identifies foundation concepts"]
-    
-    PE --> ME
-    ME["<b>3. MathematicalEnricher</b><br/>Ensures mathematical rigor:<br/>- LaTeX for every equation<br/>- Consistent notation<br/>- Links formulas to visuals"]
-    
-    ME --> VD
-    VD["<b>4. VisualDesigner</b><br/>Specifies exact cinematography:<br/>- Camera angles and movements<br/>- Color schemes with meaning<br/>- Timing and transitions"]
-    
-    VD --> NC
-    NC["<b>5. NarrativeComposer</b><br/>Walks tree from foundation->target:<br/>- 2000+ token verbose prompt<br/>- Narrative arc through concepts"]
-    
-    NC --> CG
-    CG["<b>6. CodeGenerator</b><br/>Translates to Manim:<br/>- Working Python scenes<br/>- Handles LaTeX rendering<br/>- 3D camera movements"]
-
-    style CA fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:black,align:left
-    style PE fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:black,align:left
-    style ME fill:#e0f2f1,stroke:#00695c,stroke-width:2px,color:black,align:left
-    style VD fill:#f3e5f5,stroke:#880e4f,stroke-width:2px,color:black,align:left
-    style NC fill:#ffebee,stroke:#b71c1c,stroke-width:2px,color:black,align:left
-    style CG fill:#f1f8e9,stroke:#33691e,stroke-width:2px,color:black,align:left
-```
+![Claude Pipeline Architecture](https://mermaid.ink/img/Z3JhcGggVEQKICAgIFVzZXJQcm9tcHRbVXNlciBQcm9tcHRdIC0tPiBDQQogICAgCiAgICBDQVsiPGI+MS4gQ29uY2VwdEFuYWx5emVyPC9iPjxici8+UGFyc2VzIHByb21wdCwgaWRlbnRpZmllczo8YnIvPi0gQ29yZSBjb25jZXB0PGJyLz4tIERvbWFpbiAocGh5c2ljcywgbWF0aCwgQ1MpPGJyLz4tIFZpc3VhbGl6YXRpb24gYXBwcm9hY2giXQogICAgCiAgICBDQSAtLT4gUEUKICAgIFBFWyI8Yj4yLiBQcmVyZXF1aXNpdGVFeHBsb3JlcjwvYj48YnIvPlRIRSBLRVkgSU5OT1ZBVElPTjo8YnIvPlJlY3Vyc2l2ZWx5IGFza3MgJ1doYXQgYmVmb3JlIFg/Jzxici8+QnVpbGRzIGNvbXBsZXRlIGtub3dsZWRnZSB0cmVlPGJyLz5JZGVudGlmaWVzIGZvdW5kYXRpb24gY29uY2VwdHMiXQogICAgCiAgICBQRSAtLT4gTUUKICAgIE1FWyI8Yj4zLiBNYXRoZW1hdGljYWxFbnJpY2hlcjwvYj48YnIvPkVuc3VyZXMgbWF0aGVtYXRpY2FsIHJpZ29yOjxici8+LSBMYVRlWCBmb3IgZXZlcnkgZXF1YXRpb248YnIvPi0gQ29uc2lzdGVudCBub3RhdGlvbjxici8+LSBMaW5rcyBmb3JtdWxhcyB0byB2aXN1YWxzIl0KICAgIAogICAgTUUgLS0+IFZECiAgICBWRFsiPGI+NC4gVmlzdWFsRGVzaWduZXI8L2I+PGJyLz5TcGVjaWZpZXMgZXhhY3QgY2luZW1hdG9ncmFwaHk6PGJyLz4tIENhbWVyYSBhbmdsZXMgYW5kIG1vdmVtZW50czxici8+LSBDb2xvciBzY2hlbWVzIHdpdGggbWVhbmluZzxici8+LSBUaW1pbmcgYW5kIHRyYW5zaXRpb25zIl0KICAgIAogICAgVkQgLS0+IE5DCiAgICBOQ1siPGI+NS4gTmFycmF0aXZlQ29tcG9zZXI8L2I+PGJyLz5XYWxrcyB0cmVlIGZyb20gZm91bmRhdGlvbi0+dGFyZ2V0Ojxici8+LSAyMDAwKyB0b2tlbiB2ZXJib3NlIHByb21wdDxici8+LSBOYXJyYXRpdmUgYXJjIHRocm91Z2ggY29uY2VwdHMiXQogICAgCiAgICBOQyAtLT4gQ0cKICAgIENHWyI8Yj42LiBDb2RlR2VuZXJhdG9yPC9iPjxici8VHJhbnNsYXRlcyB0byBNYW5pbTo8YnIvPi0gV29ya2luZyBQeXRob24gc2NlbmVzPGJyLz4tIEhhbmRsZXMgTGFUZVggcmVuZGVyaW5nPGJyLz4tIDNEIGNhbWVyYSBtb3ZlbWVudHMiXQoKICAgIHN0eWxlIENBIGZpbGw6I2UxZjVmZSxzdHJva2U6IzAxNTc5YixzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIFBFIGZpbGw6I2ZmZjljNCxzdHJva2U6I2ZiYzAyZCxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIE1FIGZpbGw6I2UwZjJmMSxzdHJva2U6IzAwNjk1YyxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIFZEIGZpbGw6I2YzZTVmNSxzdHJva2U6Izg4MGU0ZixzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIE5DIGZpbGw6I2ZmZWJlZSxzdHJva2U6I2I3MWMxYyxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIENHIGZpbGw6I2YxZjhlOSxzdHJva2U6IzMzNjkxZSxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQK)
 
 
 ### Key Files
@@ -190,22 +130,7 @@ The Kimi pipeline uses Moonshot AI's **K2 thinking model** with an OpenAI-compat
 
 ### How It Works
 
-```mermaid
-graph TD
-    UserPrompt[User Prompt] --> KPE
-    
-    KPE["<b>1. KimiPrerequisiteExplorer</b><br/>Builds knowledge tree:<br/>- Tool-calling for structured output<br/>- Thinking mode shows reasoning<br/>- Recursive dependency discovery"]
-    
-    KPE --> ME
-    ME["<b>2. MathematicalEnrichment</b><br/>Three-stage enrichment:<br/>- Math Enricher: LaTeX equations, definitions<br/>- Visual Designer: Descriptions (not Manim classes)<br/>- Narrative Composer: Connects everything"]
-    
-    ME --> CG
-    CG["<b>3. CodeGeneration</b><br/>Final Manim code:<br/>- Focuses on LaTeX rendering<br/>- Lets Manim handle visuals<br/>- Tool adapter for verbose instructions"]
-
-    style KPE fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:black,align:left
-    style ME fill:#e0f2f1,stroke:#00695c,stroke-width:2px,color:black,align:left
-    style CG fill:#f1f8e9,stroke:#33691e,stroke-width:2px,color:black,align:left
-```
+![Kimi Pipeline Architecture](https://mermaid.ink/img/Z3JhcGggVEQKICAgIFVzZXJQcm9tcHRbVXNlciBQcm9tcHRdIC0tPiBLUEUKICAgIAogICAgS1BFWyI8Yj4xLiBLaW1pUHJlcmVxdWlzaXRlRXhwbG9yZXI8L2I+PGJyLz5CdWlsZHMga25vd2xlZGdlIHRyZWU6PGJyLz4tIFRvb2wtY2FsbGluZyBmb3Igc3RydWN0dXJlZCBvdXRwdXQ8YnIvPi0gVGhpbmtpbmcgbW9kZSBzaG93cyByZWFzb25pbmc8YnIvPi0gUmVjdXJzaXZlIGRlcGVuZGVuY3kgZGlzY292ZXJ5Il0KICAgIAogICAgS1BFIC0tPiBNRQogICAgTUVbIjxiPjIuIE1hdGhlbWF0aWNhbEVucmljaG1lbnQ8L2I+PGJyLz5UaHJlZS1zdGFnZSBlbnJpY2htZW50Ojxici8+LSBNYXRoIEVucmljaGVyOiBMYVRlWCBlcXVhdGlvbnMsIGRlZmluaXRpb25zPGJyLz4tIFZpc3VhbCBEZXNpZ25lcjogRGVzY3JpcHRpb25zIChub3QgTWFuaW0gY2xhc3Nlcyk8YnIvPi0gTmFycmF0aXZlIENvbXBvc2VyOiBDb25uZWN0cyBldmVyeXRoaW5nIl0KICAgIAogICAgTUUgLS0+IENHCiAgICBDR1siPGI+My4gQ29kZUdlbmVyYXRpb248L2I+PGJyLz5GaW5hbCBNYW5pbSBjb2RlOjxici8+LSBGb2N1c2VzIG9uIExhVGVYIHJlbmRlcmluZzxici8+LSBMZXRzIE1hbmltIGhhbmRsZSB2aXN1YWxzPGJyLz4tIFRvb2wgYWRhcHRlciBmb3IgdmVyYm9zZSBpbnN0cnVjdGlvbnMiXQoKICAgIHN0eWxlIEtQRSBmaWxsOiNmZmY5YzQsc3Ryb2tlOiNmYmMwMmQsc3Ryb2tlLXdpZHRoOjJweCxjb2xvcjpibGFjayxhbGlnbjpsZWZ0CiAgICBzdHlsZSBNRSBmaWxsOiNlMGYyZjEsc3Ryb2tlOiMwMDY5NWMsc3Ryb2tlLXdpZHRoOjJweCxjb2xvcjpibGFjayxhbGlnbjpsZWZ0CiAgICBzdHlsZSBDRyBmaWxsOiNmMWY4ZTksc3Ryb2tlOiMzMzY5MWUsc3Ryb2tlLXdpZHRoOjJweCxjb2xvcjpibGFjayxhbGlnbjpsZWZ0Cg==)
 
 ### Quick Start
 
