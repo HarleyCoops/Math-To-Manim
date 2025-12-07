@@ -151,15 +151,22 @@ def velocity_to_color(velocity, v_min, v_max):
     t = (velocity - v_min) / (v_max - v_min + 1e-6)
     t = np.clip(t, 0, 1)
     
+    # Convert hex strings to ManimColor objects
+    slow = ManimColor(SLOW_COLOR)
+    mid_slow = ManimColor(MID_SLOW_COLOR)
+    mid = ManimColor(MID_COLOR)
+    mid_fast = ManimColor(MID_FAST_COLOR)
+    fast = ManimColor(FAST_COLOR)
+    
     # Create gradient: cyan -> blue -> white -> orange -> red
     if t < 0.25:
-        return interpolate_color(SLOW_COLOR, MID_SLOW_COLOR, t / 0.25)
+        return interpolate_color(slow, mid_slow, t / 0.25)
     elif t < 0.5:
-        return interpolate_color(MID_SLOW_COLOR, MID_COLOR, (t - 0.25) / 0.25)
+        return interpolate_color(mid_slow, mid, (t - 0.25) / 0.25)
     elif t < 0.75:
-        return interpolate_color(MID_COLOR, MID_FAST_COLOR, (t - 0.5) / 0.25)
+        return interpolate_color(mid, mid_fast, (t - 0.5) / 0.25)
     else:
-        return interpolate_color(MID_FAST_COLOR, FAST_COLOR, (t - 0.75) / 0.25)
+        return interpolate_color(mid_fast, fast, (t - 0.75) / 0.25)
 
 
 def create_velocity_colored_curve(trajectory, velocities, scale=ATTRACTOR_SCALE, 
