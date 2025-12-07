@@ -1,0 +1,9 @@
+Create a Manim animation illustrating the topological concept of a Klein Bottle and its relation to a Möbius Strip.
+The animation should:
+1. Start by visualizing a 2D Möbius Strip being formed from a rectangular strip.
+2. Evolve into a 3D visualization of a Klein Bottle, showing its "impossible" self-intersection in 3D space.
+3. Use a grid or parametric surface to clearly show the curvature and single-sided nature.
+4. Animate a small particle traversing the surface to demonstrate that it can visit both "sides" without crossing an edge (non-orientability).
+5. Include mathematical annotations for the parametric equations of the Klein Bottle.
+6. Use a color scheme that highlights the geometry (e.g., semi-transparent surface with wireframe).
+7. End with the object rotating to show all angles.
