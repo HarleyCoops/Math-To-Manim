@@ -1,10 +1,25 @@
 # Math-To-Manim
 
+<!-- Core Requirements -->
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![FFmpeg Required](https://img.shields.io/badge/FFmpeg-required-red)](https://ffmpeg.org/)
 [![Manim Version](https://img.shields.io/badge/manim-v0.19.0-orange)](https://www.manim.community/)
+
+<!-- AI Models / LLMs -->
 [![Claude Sonnet 4.5](https://img.shields.io/badge/Claude-Sonnet%204.5-blueviolet)](https://www.anthropic.com)
+[![Gemini 3](https://img.shields.io/badge/Gemini-3-4285F4?logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
+[![Kimi K2](https://img.shields.io/badge/Kimi-K2-00D4AA)](https://kimi.moonshot.cn/)
+[![DeepSeek R1](https://img.shields.io/badge/DeepSeek-R1-536DFE)](https://www.deepseek.com/)
+[![Grok 3](https://img.shields.io/badge/Grok-3-000000)](https://x.ai/)
+[![Qwen Max](https://img.shields.io/badge/Qwen-Max-6366F1)](https://qwen.aliyun.com/)
+[![Mistral Large](https://img.shields.io/badge/Mistral-Large-FF7000)](https://mistral.ai/)
+
+<!-- Frameworks & SDKs -->
+[![Claude SDK](https://img.shields.io/badge/Claude-Agent%20SDK-D97706)](https://docs.anthropic.com/en/docs/agents-and-tools/claude-agent-sdk)
+[![Google ADK](https://img.shields.io/badge/Google-ADK-34A853?logo=google&logoColor=white)](https://google.github.io/adk-docs/)
+[![Gradio](https://img.shields.io/badge/Gradio-UI-F97316?logo=gradio&logoColor=white)](https://gradio.app/)
+[![LaTeX](https://img.shields.io/badge/LaTeX-Rendering-008080?logo=latex&logoColor=white)](https://www.latex-project.org/)
 
 
 [![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=date&legend=top-left)](https://www.star-history.com/#HarleyCoops/Math-To-Manim&type=date&legend=top-left)
@@ -689,4 +704,3 @@ MIT License - See [LICENSE](LICENSE)
 ---
 
 **Built with recursive reasoning, not training data. Powered by Claude Sonnet 4.5.**
-
