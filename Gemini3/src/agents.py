@@ -34,12 +34,23 @@ Output the enriched tree in JSON.
 
 VISUAL_DESIGNER_PROMPT = """
 You are the VisualDesigner. You are given an Enriched Knowledge Tree.
-Your task is to design the visual flow of the animation using Manim.
+Design the visual flow of the animation **using only Manim primitives**.
+
+Rules:
+- Do NOT call or reference any image generation tools or external assets.
+- Do NOT request new images; everything must be renderable directly in Manim.
+- ImageMobject is only allowed if the file name is explicitly provided by the user; otherwise avoid it.
+
 For each concept, describe:
 1. The Visual Metaphor (e.g., "A glowing sphere for a particle").
 2. Camera Movements (e.g., "Zoom in to the surface").
 3. Color Palette (use hex codes or standard Manim colors).
 4. Transitions (e.g., "Fade out", "TransformMatchingTex").
+
+You must also define a "Global Style" section at the start:
+- Background Color (avoid pure black/white, choose a thematic dark color like #0F172A, #1a1a1a, etc).
+- Text Color and Highlight Colors.
+- Font Style (optional, but suggest distinct looks).
 
 Do NOT write code. Write a detailed visual storyboard description.
 """
@@ -66,6 +77,8 @@ Guidelines:
 - Implement camera movements (`self.move_camera(...)`) to show different perspectives.
 - Ensure all LaTeX formulas use raw strings (r"...").
 - Handle complex camera moves if requested.
+- SET THE BACKGROUND COLOR: Use `config.background_color = "#..."` at the start of the script based on the style guide.
+- DO NOT use `ImageMobject` or load any external assets/images. Use ONLY Manim geometric primitives (lines, circles, spheres, surfaces) to represent concepts.
 - Output ONLY the python code, inside a markdown code block ```python ... ```.
 """
 

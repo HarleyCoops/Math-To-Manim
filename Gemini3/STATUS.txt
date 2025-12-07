@@ -1,0 +1,205 @@
+Script started.
+Imports successful.
+Initializing pipeline...
+Pipeline object created.
+Prompt read. Length: 380
+Calling pipeline.run()...
+pipeline.run() crashed: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'Function call is missing a thought_signature in functionCall parts. This is required for tools to work correctly, and missing thought_signature may lead to degraded model performance. Additional data, function call `default_api:generate_concept_image` , position 2. Please refer to https://ai.google.dev/gemini-api/docs/thought-signatures for more details.', 'status': 'INVALID_ARGUMENT'}}
+Traceback (most recent call last):
+  File "C:\Users\chris\Math-To-Manim\Gemini3\run_pipeline.py", line 53, in main
+    result = pipeline.run(parts)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 164, in run
+    storyboard = run_agent_sync(self.visual_designer, f"Create a visual storyboard for this enriched tree: {enriched_tree}")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 118, in run_agent_sync
+    raise e
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 54, in run_agent_sync
+    response = chat.send_message(input_text)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\chats.py", line 258, in send_message
+    response = self._modules.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\models.py", line 4959, in generate_content
+    response = self._generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\models.py", line 3935, in _generate_content
+    response_dict = self._api_client.request(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\_api_client.py", line 674, in request
+    response = self._request(http_request, stream=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\_api_client.py", line 603, in _request
+    errors.APIError.raise_for_response(response)
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\errors.py", line 101, in raise_for_response
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'Function call is missing a thought_signature in functionCall parts. This is required for tools to work correctly, and missing thought_signature may lead to degraded model performance. Additional data, function call `default_api:generate_concept_image` , position 2. Please refer to https://ai.google.dev/gemini-api/docs/thought-signatures for more details.', 'status': 'INVALID_ARGUMENT'}}
+Script started.
+Imports successful.
+Initializing pipeline...
+Pipeline object created.
+Prompt read. Length: 380
+Calling pipeline.run()...
+pipeline.run() crashed: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'Function call is missing a thought_signature in functionCall parts. This is required for tools to work correctly, and missing thought_signature may lead to degraded model performance. Additional data, function call `default_api:generate_concept_image` , position 2. Please refer to https://ai.google.dev/gemini-api/docs/thought-signatures for more details.', 'status': 'INVALID_ARGUMENT'}}
+Traceback (most recent call last):
+  File "C:\Users\chris\Math-To-Manim\Gemini3\run_pipeline.py", line 53, in main
+    result = pipeline.run(parts)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 125, in run
+    storyboard = run_agent_sync(self.visual_designer, f"Create a visual storyboard for this enriched tree: {enriched_tree}")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 79, in run_agent_sync
+    raise e
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 63, in run_agent_sync
+    response = chat.send_message(input_text)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\chats.py", line 258, in send_message
+    response = self._modules.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\models.py", line 4959, in generate_content
+    response = self._generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\models.py", line 3935, in _generate_content
+    response_dict = self._api_client.request(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\_api_client.py", line 674, in request
+    response = self._request(http_request, stream=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\_api_client.py", line 603, in _request
+    errors.APIError.raise_for_response(response)
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\errors.py", line 101, in raise_for_response
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'Function call is missing a thought_signature in functionCall parts. This is required for tools to work correctly, and missing thought_signature may lead to degraded model performance. Additional data, function call `default_api:generate_concept_image` , position 2. Please refer to https://ai.google.dev/gemini-api/docs/thought-signatures for more details.', 'status': 'INVALID_ARGUMENT'}}
+Script started.
+Imports successful.
+Initializing pipeline...
+Pipeline object created.
+Prompt read. Length: 380
+Calling pipeline.run()...
+pipeline.run() crashed: [Errno 22] Invalid argument
+Traceback (most recent call last):
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 67, in run_agent_sync
+    logger.log_agent_thought(agent.name, response.text)
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\core.py", line 33, in log_agent_thought
+    self.console.print(f"[bold magenta]{agent_name} (Thought):[/bold magenta] {thought}")
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\console.py", line 1697, in print
+    with self:
+         ^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\console.py", line 870, in __exit__
+    self._exit_buffer()
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\console.py", line 826, in _exit_buffer
+    self._check_buffer()
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\console.py", line 2038, in _check_buffer
+    self._write_buffer()
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\console.py", line 2074, in _write_buffer
+    legacy_windows_render(buffer, LegacyWindowsTerm(self.file))
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\_windows_renderer.py", line 17, in legacy_windows_render
+    term.write_styled(text, style)
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\_win32_console.py", line 441, in write_styled
+    self.write_text(text)
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\_win32_console.py", line 403, in write_text
+    self.flush()
+OSError: [Errno 22] Invalid argument
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\chris\Math-To-Manim\Gemini3\run_pipeline.py", line 53, in main
+    result = pipeline.run(parts)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 120, in run
+    enriched_tree = run_agent_sync(self.math_enricher, f"Enrich this knowledge tree with physics/math details: {tree_result}")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 75, in run_agent_sync
+    logger.error(f"Agent execution error: {e}")
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\core.py", line 44, in error
+    self.console.print(f"[bold red]ERROR:[/bold red] {message}")
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\console.py", line 1697, in print
+    with self:
+         ^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\console.py", line 870, in __exit__
+    self._exit_buffer()
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\console.py", line 826, in _exit_buffer
+    self._check_buffer()
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\console.py", line 2038, in _check_buffer
+    self._write_buffer()
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\console.py", line 2074, in _write_buffer
+    legacy_windows_render(buffer, LegacyWindowsTerm(self.file))
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\_windows_renderer.py", line 17, in legacy_windows_render
+    term.write_styled(text, style)
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\_win32_console.py", line 441, in write_styled
+    self.write_text(text)
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\rich\_win32_console.py", line 403, in write_text
+    self.flush()
+OSError: [Errno 22] Invalid argument
+Script started.
+Imports successful.
+Initializing pipeline...
+Pipeline object created.
+Prompt read. Length: 380
+Calling pipeline.run()...
+pipeline.run() crashed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}
+Traceback (most recent call last):
+  File "C:\Users\chris\Math-To-Manim\Gemini3\run_pipeline.py", line 53, in main
+    log_status("Calling pipeline.run()...")
+                 ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 119, in run
+    enriched_tree = run_agent_sync(self.math_enricher, f"Enrich this knowledge tree with physics/math details: {tree_result}")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 78, in run_agent_sync
+    raise e
+  File "C:\Users\chris\Math-To-Manim\Gemini3\src\pipeline.py", line 62, in run_agent_sync
+    response = chat.send_message(input_text)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\chats.py", line 254, in send_message
+    response = self._modules.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\models.py", line 5218, in generate_content
+    response = self._generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\models.py", line 4000, in _generate_content
+    response = self._api_client.request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\_api_client.py", line 1388, in request
+    response = self._request(http_request, http_options, stream=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\_api_client.py", line 1224, in _request
+    return self._retry(self._request_once, http_request, stream)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\tenacity\__init__.py", line 475, in __call__
+    do = self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\tenacity\__init__.py", line 376, in iter
+    result = action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\tenacity\__init__.py", line 418, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\tenacity\__init__.py", line 185, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\tenacity\__init__.py", line 478, in __call__
+    result = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\_api_client.py", line 1201, in _request_once
+    errors.APIError.raise_for_response(response)
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\errors.py", line 106, in raise_for_response
+    cls.raise_error(response.status_code, response_json, response)
+  File "C:\Users\chris\AppData\Roaming\Python\Python312\site-packages\google\genai\errors.py", line 133, in raise_error
+    raise ServerError(status_code, response_json, response)
+google.genai.errors.ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}
+Script started.
+Core module loaded from: C:\Users\chris\Math-To-Manim\Gemini3\src\core.py
+Imports successful.
+Initializing pipeline...
+Pipeline object created.
+Prompt read. Length: 380
+Calling pipeline.run()...
+pipeline.run() returned.
+Result length: 14816
+SUCCESS! Animation code saved to Gemini3/output_scene.py

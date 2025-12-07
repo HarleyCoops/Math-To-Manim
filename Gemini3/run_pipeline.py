@@ -31,24 +31,10 @@ def main():
 
     parts = [text_prompt]
     
-    for img_path_str in image_paths:
-        img_path = Path(img_path_str)
-        if img_path.exists():
-            try:
-                with open(img_path, "rb") as f:
-                    img_bytes = f.read()
-                # Create Part from bytes. Assuming PNG for now based on extension.
-                # google.genai.types.Part.from_bytes(data, mime_type)
-                part = Part.from_bytes(img_bytes, "image/png")
-                parts.append(part)
-                logger.console.print(f"[green]Loaded image: {img_path.name}[/green]")
-            except Exception as e:
-                logger.console.print(f"[red]Failed to load image {img_path}: {e}[/red]")
-        else:
-            logger.console.print(f"[yellow]Image not found: {img_path}[/yellow]")
+    # Image loading block removed as requested
 
     try:
-        logger.console.print("[bold blue]Running pipeline with multi-modal input...[/bold blue]")
+        logger.console.print("[bold blue]Running pipeline with input...[/bold blue]")
         result = pipeline.run(parts)
 
         # Extract code block
