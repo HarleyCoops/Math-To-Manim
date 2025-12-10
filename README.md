@@ -20,15 +20,37 @@
 
 [![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=date&legend=top-left)](https://www.star-history.com/#HarleyCoops/Math-To-Manim&type=date&legend=top-left)
 
-
+## See It In Action
 
 <div align="center">
 
-![Math-To-Manim Gemini Edition](public/GeminiM2M.jpeg)
+**Brownian Motion: From Pollen to Portfolio**
 
-**Transform natural language into beautiful mathematical animations using AI-powered agent pipelines.**
+![Brownian Motion](public/BrownianFinance.gif)
+
+*A journey from Robert Brown's microscope to Einstein's heat equation, arriving at the Black-Scholes model for financial options pricing.*
+
+---
+
+**Recursive Rhombicosidodecahedron**
+
+![Recursive Rhombicosidodecahedron](public/Rhombicosidodecahedron.gif)
+
+*A fractal Archimedean solid where every vertex spawns another complete rhombicosidodecahedron.*
+
+---
+
+**The Hopf Fibration**
+
+![Teaching Hopf](public/TeachingHopf.gif)
+
+*Stereographic projection of S3 fibers creating nested tori - pure topology rendered in 3D.*
 
 </div>
+
+
+
+
 
 
 
@@ -153,35 +175,7 @@ python KimiK2Thinking/examples/run_enrichment_pipeline.py path/to/tree.json
 
 ---
 
-## See It In Action
 
-<div align="center">
-
-**Brownian Motion: From Pollen to Portfolio**
-
-![Brownian Motion](public/BrownianFinance.gif)
-
-*A journey from Robert Brown's microscope to Einstein's heat equation, arriving at the Black-Scholes model for financial options pricing.*
-
----
-
-**Recursive Rhombicosidodecahedron**
-
-![Recursive Rhombicosidodecahedron](public/Rhombicosidodecahedron.gif)
-
-*A fractal Archimedean solid where every vertex spawns another complete rhombicosidodecahedron.*
-
----
-
-**The Hopf Fibration**
-
-![Teaching Hopf](public/TeachingHopf.gif)
-
-*Stereographic projection of S3 fibers creating nested tori - pure topology rendered in 3D.*
-
-</div>
-
----
 
 ## Installation
 
