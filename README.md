@@ -58,17 +58,6 @@
 
 
 
-
-
-
-
-![Recursive Knowledge Tree](public/knowledge_tree.png)
-
-
-**Result**: Every animation builds understanding layer by layer, generating verbose LaTeX-rich prompts that produce working code.
-
----
-
 ## Three AI Pipelines, One Goal
 
 Math-To-Manim offers **three distinct AI pipelines**. Choose based on your API access and preferences:
