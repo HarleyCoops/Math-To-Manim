@@ -19,3 +19,6 @@ with open(log_file, "w") as f:
         f.write(f"Error: {e}\n")
 
     f.write(f"Output exists: {os.path.exists(output_file)}\n")
+
+
+

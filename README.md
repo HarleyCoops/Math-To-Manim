@@ -46,6 +46,14 @@
 
 *Stereographic projection of S3 fibers creating nested tori - pure topology rendered in 3D.*
 
+---
+
+**The Whiskering Exchange**
+
+![Whiskering Exchange](public/WhiskeringExchangeScene.gif)
+
+*Visualizing the commutative property of 2-cell composition in higher category theory.*
+
 </div>
 
 
@@ -54,27 +62,8 @@
 
 
 
-```
-"Explain cosmology"
-    |
-    v
-What must I understand BEFORE cosmology?
-    -> General Relativity, Hubble's Law, Redshift, CMB radiation
-    |
-    v
-What must I understand BEFORE General Relativity?
-    -> Special Relativity, Differential Geometry, Gravitational Fields
-    |
-    v
-What must I understand BEFORE Special Relativity?
-    -> Galilean Relativity, Speed of light, Lorentz Transformations
-    |
-    v
-[Continue until hitting foundational concepts...]
-    |
-    v
-Build animation from foundation -> target concept
-```
+![Recursive Knowledge Tree](public/knowledge_tree.png)
+
 
 **Result**: Every animation builds understanding layer by layer, generating verbose LaTeX-rich prompts that produce working code.
 
