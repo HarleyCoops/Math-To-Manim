@@ -1,0 +1,8 @@
+Create an educational 3D animation on the Taylor Series.
+Use the provided image (which contains various Taylor series expansions) as a reference for the specific mathematical formulas to visualize.
+The key goal is to specific demonstrate the TOPOLOGY of convergence.
+- Show how the approximation surface "hugs" the target function surface closer and closer as terms are added.
+- Use 3D surfaces, not just 2D lines.
+- Make it visually "gorgeous" with high-quality rendering, lighting, and camera movements.
+- Include a "maximum topology demonstration" where we see the domain of convergence or the function manifold being approximated.
+- The tone should be awe-inspiring and educational.
