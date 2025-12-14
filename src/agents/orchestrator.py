@@ -7,7 +7,11 @@ Coordinates all agents in the proper sequence:
 3. MathematicalEnricher - Add equations and definitions
 4. VisualDesigner - Design visual specifications
 5. NarrativeComposer - Generate verbose prompt
-6. (External) CodeGenerator - Convert to Manim code
+6. CodeGenerator - Convert to Manim code and/or Three.js code
+
+Supports dual output modes:
+- Manim: Traditional video rendering (MP4)
+- Three.js: Interactive web-based 3D visualization (HTML/JS)
 
 Uses Claude Sonnet 4.5 via the Anthropic Claude Agent SDK.
 """
@@ -33,6 +37,7 @@ try:
     from src.agents.mathematical_enricher import MathematicalEnricher
     from src.agents.visual_designer import VisualDesigner
     from src.agents.narrative_composer import NarrativeComposer, Narrative
+    from src.agents.threejs_code_generator import ThreeJSCodeGenerator, ThreeJSOutput
     from src.agents.claude_agent_runtime import run_query_via_sdk
 except ImportError:
     try:
@@ -45,6 +50,7 @@ except ImportError:
         from mathematical_enricher import MathematicalEnricher
         from visual_designer import VisualDesigner
         from narrative_composer import NarrativeComposer, Narrative
+        from threejs_code_generator import ThreeJSCodeGenerator, ThreeJSOutput
         from claude_agent_runtime import run_query_via_sdk
     except ImportError:
         raise ImportError("Could not import required agents")
@@ -72,6 +78,8 @@ class AnimationResult:
     knowledge_tree: dict
     verbose_prompt: str
     manim_code: Optional[str] = None
+    threejs_html: Optional[str] = None
+    threejs_js: Optional[str] = None
     concept_order: list = field(default_factory=list)
     total_duration: int = 0
     scene_count: int = 0
@@ -85,6 +93,8 @@ class AnimationResult:
             'knowledge_tree': self.knowledge_tree,
             'verbose_prompt': self.verbose_prompt,
             'manim_code': self.manim_code,
+            'threejs_html': self.threejs_html,
+            'threejs_js': self.threejs_js,
             'concept_order': self.concept_order,
             'total_duration': self.total_duration,
             'scene_count': self.scene_count,
@@ -113,6 +123,14 @@ class AnimationResult:
             with open(f"{base_path}_animation.py", 'w') as f:
                 f.write(self.manim_code)
 
+        # Save Three.js code if generated
+        if self.threejs_html:
+            with open(f"{base_path}_threejs.html", 'w') as f:
+                f.write(self.threejs_html)
+        if self.threejs_js:
+            with open(f"{base_path}_threejs.js", 'w') as f:
+                f.write(self.threejs_js)
+
         # Save complete result metadata
         with open(f"{base_path}_result.json", 'w') as f:
             json.dump(self.to_dict(), f, indent=2)
@@ -122,6 +140,10 @@ class AnimationResult:
         print(f"  - {safe_concept}_tree.json")
         if self.manim_code:
             print(f"  - {safe_concept}_animation.py")
+        if self.threejs_html:
+            print(f"  - {safe_concept}_threejs.html")
+        if self.threejs_js:
+            print(f"  - {safe_concept}_threejs.js")
         print(f"  - {safe_concept}_result.json")
 
 
@@ -141,6 +163,7 @@ class ReverseKnowledgeTreeOrchestrator:
         model: str = CLAUDE_MODEL,
         max_tree_depth: int = 4,
         enable_code_generation: bool = True,
+        enable_threejs_generation: bool = False,
         enable_atlas: bool = False,
         atlas_dataset: str = "math-to-manim-concepts"
     ):
@@ -151,11 +174,13 @@ class ReverseKnowledgeTreeOrchestrator:
             model: Claude model to use
             max_tree_depth: Maximum depth for prerequisite tree
             enable_code_generation: Whether to generate Manim code
+            enable_threejs_generation: Whether to generate Three.js code
             enable_atlas: Whether to use Nomic Atlas for caching
             atlas_dataset: Atlas dataset name if enabled
         """
         self.model = model
         self.enable_code_generation = enable_code_generation
+        self.enable_threejs_generation = enable_threejs_generation
 
         # Initialize all agents
         self.concept_analyzer = ConceptAnalyzer(model=model)
@@ -166,6 +191,12 @@ class ReverseKnowledgeTreeOrchestrator:
         self.mathematical_enricher = MathematicalEnricher(model=model)
         self.visual_designer = VisualDesigner(model=model)
         self.narrative_composer = NarrativeComposer(model=model)
+
+        # Initialize Three.js generator if enabled
+        if enable_threejs_generation:
+            self.threejs_generator = ThreeJSCodeGenerator(model=model)
+        else:
+            self.threejs_generator = None
 
         # Enable Atlas integration if requested
         if enable_atlas:
@@ -267,12 +298,15 @@ class ReverseKnowledgeTreeOrchestrator:
         print(f"  Duration: {narrative.total_duration} seconds")
 
         # ===================================================================
-        # STEP 6: Code Generation (Optional)
+        # STEP 6: Code Generation (Optional - Manim and/or Three.js)
         # ===================================================================
         manim_code = None
+        threejs_html = None
+        threejs_js = None
+
         if self.enable_code_generation:
             print("\n" + "=" * 70)
-            print("STEP 6: MANIM CODE GENERATION")
+            print("STEP 6a: MANIM CODE GENERATION")
             print("=" * 70)
             print("\nGenerating Python code from verbose prompt...\n")
 
@@ -281,6 +315,26 @@ class ReverseKnowledgeTreeOrchestrator:
             print(f"\n✓ Manim code generated:")
             print(f"  Length: {len(manim_code)} characters")
             print(f"  Lines: {len(manim_code.splitlines())}")
+
+        if self.enable_threejs_generation and self.threejs_generator:
+            print("\n" + "=" * 70)
+            print("STEP 6b: THREE.JS CODE GENERATION")
+            print("=" * 70)
+            print("\nGenerating interactive Three.js visualization...\n")
+
+            threejs_output = await self.threejs_generator.generate_async(
+                verbose_prompt=narrative.verbose_prompt,
+                target_concept=analysis['core_concept'],
+                include_controls=True,
+                include_gui=True
+            )
+
+            threejs_html = threejs_output.html_code
+            threejs_js = threejs_output.js_code
+
+            print(f"\n✓ Three.js code generated:")
+            print(f"  HTML: {len(threejs_html)} characters")
+            print(f"  JS:   {len(threejs_js)} characters")
 
         # ===================================================================
         # Create result
@@ -291,6 +345,8 @@ class ReverseKnowledgeTreeOrchestrator:
             knowledge_tree=designed_tree.to_dict(),
             verbose_prompt=narrative.verbose_prompt,
             manim_code=manim_code,
+            threejs_html=threejs_html,
+            threejs_js=threejs_js,
             concept_order=narrative.concept_order,
             total_duration=narrative.total_duration,
             scene_count=narrative.scene_count
@@ -367,16 +423,31 @@ def demo():
 ║                                                                   ║
 ║  This demonstrates the full Reverse Knowledge Tree approach:     ║
 ║                                                                   ║
-║  Simple prompt → Knowledge tree → Verbose prompt → Manim code    ║
+║  Simple prompt → Knowledge tree → Verbose prompt → Code          ║
+║                                                                   ║
+║  Output options:                                                 ║
+║    - Manim: Traditional video rendering (MP4)                    ║
+║    - Three.js: Interactive web-based 3D visualization            ║
 ║                                                                   ║
 ║  NO TRAINING DATA - Just recursive reasoning!                    ║
 ╚═══════════════════════════════════════════════════════════════════╝
     """)
 
+    # Ask about output format
+    print("Output format options:")
+    print("  1. Manim only (traditional video)")
+    print("  2. Three.js only (interactive web)")
+    print("  3. Both Manim and Three.js")
+    output_choice = input("\nChoose output format (1-3) [default: 3]: ").strip() or "3"
+
+    enable_manim = output_choice in ["1", "3"]
+    enable_threejs = output_choice in ["2", "3"]
+
     # Create orchestrator
     orchestrator = ReverseKnowledgeTreeOrchestrator(
         max_tree_depth=3,  # Limit depth for demo
-        enable_code_generation=True,
+        enable_code_generation=enable_manim,
+        enable_threejs_generation=enable_threejs,
         enable_atlas=False  # Set to True if you have Nomic installed
     )
 
@@ -418,7 +489,18 @@ def demo():
         print(result.manim_code[:800])
         print("\n... (truncated)")
 
+    if result.threejs_html:
+        print("\n" + "=" * 70)
+        print("PREVIEW OF THREE.JS HTML:")
+        print("=" * 70)
+        print(result.threejs_html[:800])
+        print("\n... (truncated)")
+
     print("\n✅ Complete! Check the output/ directory for all files.")
+    if result.threejs_html:
+        safe_concept = "".join(c if c.isalnum() else "_" for c in result.target_concept)
+        print(f"\n🌐 Open the Three.js visualization:")
+        print(f"   file://output/{safe_concept}_threejs.html")
 
 
 if __name__ == "__main__":

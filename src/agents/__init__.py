@@ -30,6 +30,15 @@ except ImportError:
     from video_review_agent import VideoReviewAgent, VideoReviewResult  # type: ignore
 
 try:
+    from src.agents.threejs_code_generator import ThreeJSCodeGenerator, ThreeJSOutput
+except ImportError:
+    try:
+        from threejs_code_generator import ThreeJSCodeGenerator, ThreeJSOutput  # type: ignore
+    except ImportError:
+        ThreeJSCodeGenerator = None  # type: ignore[assignment]
+        ThreeJSOutput = None  # type: ignore[assignment]
+
+try:
     from src.agents.nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError
 except ImportError:
     from nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError  # type: ignore
@@ -48,6 +57,9 @@ __all__ = [
     "VisualDesigner",
     "NarrativeComposer",
 
+    # Code generators
+    "ThreeJSCodeGenerator",
+
     # Orchestrator (optional)
     "ReverseKnowledgeTreeOrchestrator",
 
@@ -57,6 +69,7 @@ __all__ = [
     "VisualSpec",
     "Narrative",
     "AnimationResult",
+    "ThreeJSOutput",
 
     # Video review
     "VideoReviewAgent",
