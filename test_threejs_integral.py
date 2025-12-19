@@ -73,9 +73,9 @@ Both values should match (within numerical precision), demonstrating the identit
 
 def main():
     print("""
-╔═══════════════════════════════════════════════════════════════════╗
-║  THREE.JS GENERATOR TEST - Trigonometric Integral                ║
-╚═══════════════════════════════════════════════════════════════════╝
++===================================================================+
+|  THREE.JS GENERATOR TEST - Trigonometric Integral                 |
++===================================================================+
     """)
 
     if not os.getenv("ANTHROPIC_API_KEY"):
