@@ -9,7 +9,10 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git log:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(tree:*)",
+      "Bash(ffprobe:*)",
+      "Bash(pip install:*)"
     ],
     "deny": []
   }
