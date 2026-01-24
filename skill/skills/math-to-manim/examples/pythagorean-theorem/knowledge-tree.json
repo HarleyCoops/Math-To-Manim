@@ -1,0 +1,131 @@
+{
+  "concept": "Pythagorean theorem",
+  "depth": 0,
+  "is_foundation": false,
+  "prerequisites": [
+    {
+      "concept": "right triangle",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "angles",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": ["\\theta = 90°"],
+          "definitions": {"θ": "angle measure in degrees"},
+          "visual_spec": {
+            "elements": ["angle_arc", "angle_label"],
+            "colors": {"angle_arc": "YELLOW", "angle_label": "WHITE"},
+            "animations": ["Create", "Write"],
+            "duration": 10
+          }
+        },
+        {
+          "concept": "sides of a triangle",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": ["a", "b", "c"],
+          "definitions": {
+            "a": "one leg (adjacent to right angle)",
+            "b": "other leg (adjacent to right angle)",
+            "c": "hypotenuse (opposite to right angle)"
+          },
+          "visual_spec": {
+            "elements": ["triangle", "side_labels"],
+            "colors": {"triangle": "BLUE", "side_labels": "GREEN"},
+            "animations": ["Create", "Write"],
+            "duration": 12
+          }
+        }
+      ],
+      "equations": ["\\angle C = 90°"],
+      "definitions": {"C": "the vertex at the right angle"},
+      "visual_spec": {
+        "elements": ["right_triangle", "right_angle_marker"],
+        "colors": {"right_triangle": "BLUE", "right_angle_marker": "YELLOW"},
+        "animations": ["Create", "FadeIn"],
+        "duration": 15
+      }
+    },
+    {
+      "concept": "squares and area",
+      "depth": 1,
+      "is_foundation": false,
+      "prerequisites": [
+        {
+          "concept": "multiplication",
+          "depth": 2,
+          "is_foundation": true,
+          "prerequisites": [],
+          "equations": ["A = s \\times s = s^2"],
+          "definitions": {
+            "A": "area",
+            "s": "side length"
+          },
+          "visual_spec": {
+            "elements": ["square", "area_label"],
+            "colors": {"square": "GREEN", "area_label": "WHITE"},
+            "animations": ["Create", "Write"],
+            "duration": 10
+          }
+        }
+      ],
+      "equations": [
+        "A_a = a^2",
+        "A_b = b^2",
+        "A_c = c^2"
+      ],
+      "definitions": {
+        "A_a": "area of square on side a",
+        "A_b": "area of square on side b",
+        "A_c": "area of square on side c"
+      },
+      "visual_spec": {
+        "elements": ["square_a", "square_b", "square_c"],
+        "colors": {
+          "square_a": "RED",
+          "square_b": "GREEN",
+          "square_c": "BLUE"
+        },
+        "animations": ["GrowFromEdge", "Write"],
+        "duration": 20
+      }
+    },
+    {
+      "concept": "equality",
+      "depth": 1,
+      "is_foundation": true,
+      "prerequisites": [],
+      "equations": ["a^2 + b^2 = c^2"],
+      "definitions": {"=": "equal in value"},
+      "visual_spec": {
+        "elements": ["equation"],
+        "colors": {"equation": "GOLD"},
+        "animations": ["Write"],
+        "duration": 8
+      }
+    }
+  ],
+  "equations": [
+    "a^2 + b^2 = c^2",
+    "c = \\sqrt{a^2 + b^2}"
+  ],
+  "definitions": {
+    "a": "length of first leg",
+    "b": "length of second leg",
+    "c": "length of hypotenuse"
+  },
+  "visual_spec": {
+    "elements": ["complete_diagram", "final_equation", "proof_animation"],
+    "colors": {
+      "complete_diagram": "BLUE",
+      "final_equation": "GOLD",
+      "proof_animation": "YELLOW"
+    },
+    "animations": ["Transform", "Circumscribe", "Write"],
+    "duration": 25
+  }
+}
