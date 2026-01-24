@@ -20,6 +20,64 @@
 
 [![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=date&legend=top-left)](https://www.star-history.com/#HarleyCoops/Math-To-Manim&type=date&legend=top-left)
 
+---
+
+## 🚀 NEW: Claude Code Skill Available
+
+**Use Math-To-Manim directly in Claude Code** — no setup required. Just install the skill and start creating animations with natural language.
+
+### Quick Install
+
+```bash
+# Clone and run with the skill
+git clone https://github.com/HarleyCoops/Math-To-Manim.git
+claude --plugin-dir ./Math-To-Manim/skill
+```
+
+### What You Can Do
+
+Once installed, just ask Claude:
+
+- *"Create a math animation about the Fourier transform"*
+- *"Animate how neural networks learn"*
+- *"Generate Manim code explaining quantum entanglement"*
+
+Claude will automatically use the **six-agent reverse knowledge tree pipeline** to:
+
+1. **Analyze** your concept and extract the core topic
+2. **Discover** prerequisites recursively (*"What must I understand BEFORE this?"*)
+3. **Enrich** each concept with LaTeX equations and definitions
+4. **Design** visual specifications (colors, animations, timing)
+5. **Compose** a 2000+ token verbose prompt
+6. **Generate** working Manim Python code
+
+### Why This Matters
+
+No training data. No examples needed. Pure LLM reasoning builds pedagogically sound animations that flow from foundations to advanced topics — every time.
+
+<details>
+<summary><b>Skill Directory Structure</b></summary>
+
+```
+skill/
+├── .claude-plugin/plugin.json
+└── skills/math-to-manim/
+    ├── SKILL.md                       # Core workflow definition
+    ├── references/                    # Detailed documentation
+    │   ├── reverse-knowledge-tree.md  # Algorithm deep-dive
+    │   ├── agent-system-prompts.md    # All 6 agent prompts
+    │   ├── verbose-prompt-format.md   # 2000+ token template
+    │   └── manim-code-patterns.md     # Code generation patterns
+    └── examples/
+        └── pythagorean-theorem/       # Complete workflow example
+```
+
+</details>
+
+> **Requirements**: [Claude Code CLI](https://claude.ai/code) + Python 3.10+ + Manim
+
+---
+
 ## See It In Action
 
 <div align="center">
@@ -207,6 +265,10 @@ Browse all examples: [docs/EXAMPLES.md](docs/EXAMPLES.md)
 ```
 Math-To-Manim/
 |
++-- skill/                  # 🚀 Claude Code Skill (NEW!)
+|   +-- .claude-plugin/     # Plugin manifest
+|   +-- skills/math-to-manim/  # Skill definition & references
+|
 +-- src/                    # Claude Sonnet 4.5 pipeline
 |   +-- agents/             # Agent implementations
 |   +-- app_claude.py       # Gradio UI
@@ -298,6 +360,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Documentation
 
+- **[Claude Code Skill](skill/README.md)** - Use Math-To-Manim in Claude Code (NEW!)
 - [Reverse Knowledge Tree](docs/REVERSE_KNOWLEDGE_TREE.md) - Core innovation
 - [Architecture](docs/ARCHITECTURE.md) - System design
 - [Examples Catalog](docs/EXAMPLES.md) - All 55+ animations

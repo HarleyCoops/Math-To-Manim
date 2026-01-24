@@ -12,7 +12,8 @@
       "Bash(python:*)",
       "Bash(tree:*)",
       "Bash(ffprobe:*)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(gh release create v1.0.0 --title \"v1.0.0 - Math-To-Manim Claude Code Plugin\" --notes \"$\\(cat <<''EOF''\n## Math-To-Manim: Reverse Knowledge Tree Animation Pipeline\n\nTransform any concept into professional Manim animations using a six-agent workflow that requires NO training data - only pure LLM reasoning.\n\n### Features\n- **Six-agent pipeline**: ConceptAnalyzer, PrerequisiteExplorer, MathematicalEnricher, VisualDesigner, NarrativeComposer, CodeGenerator\n- **Reverse knowledge tree**: Recursively discovers prerequisites to build pedagogically sound animations\n- **Manim Community Edition**: Generates working Python code for video rendering\n- **Three.js support**: Optional interactive web-based 3D visualizations\n- **Claude Code plugin**: Easy integration with Claude Code CLI\n\n### Quick Start\n\n```bash\n# Clone the repository\ngit clone https://github.com/HarleyCoops/Math-To-Manim.git\ncd Math-To-Manim\n\n# Use with Claude Code\nclaude --plugin-dir ./skill -p \"Create a Manim animation explaining the dot product\"\n\n# Render the output\nmanim -ql examples/mathematics/linear_algebra/dot_product.py DotProductExplained\n```\n\n### Example Animations\n- Pythagorean theorem visual proof\n- Brownian motion and Einstein''s equation\n- Quantum field theory visualizations\n- Machine learning concepts \\(AlexNet, GRPO, regularization\\)\n- And 50+ more examples\n\n### Requirements\n- Python 3.10+\n- Manim Community Edition 0.19.2+\n- FFmpeg\n- LaTeX distribution\nEOF\n\\)\")"
     ],
     "deny": []
   }
