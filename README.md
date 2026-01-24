@@ -22,7 +22,7 @@
 
 ---
 
-## 🚀 NEW: Claude Code Skill Available
+## CLaude Code Learns Manim
 
 **Use Math-To-Manim directly in Claude Code** — no setup required. Just install the skill and start creating animations with natural language.
 
@@ -393,3 +393,4 @@ MIT License - See [LICENSE](LICENSE)
 **Star this repo if you find it useful!**
 
 </div>
+
