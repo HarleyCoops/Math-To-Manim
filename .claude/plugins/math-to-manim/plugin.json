@@ -1,0 +1,20 @@
+{
+  "name": "math-to-manim",
+  "version": "1.0.0",
+  "description": "Transform any concept into professional Manim animations using a six-agent reverse knowledge tree pipeline. No training data required - pure LLM reasoning.",
+  "author": "HarleyCoops",
+  "repository": "https://github.com/HarleyCoops/Math-To-Manim",
+  "license": "MIT",
+  "keywords": [
+    "manim",
+    "animation",
+    "mathematics",
+    "education",
+    "visualization",
+    "reverse-knowledge-tree",
+    "multi-agent"
+  ],
+  "skills": [
+    "skills/math-to-manim"
+  ]
+}
