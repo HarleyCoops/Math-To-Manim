@@ -1,11 +1,11 @@
 # Reverse Knowledge Tree Architecture
 ## Recursive Concept Decomposition for Math-To-Manim
 
-**Powered by**: Claude Sonnet 4.5 + Claude Agent SDK
+**Powered by**: Claude Opus 4.5 + Claude Agent SDK
 
 **Core Insight**: Don't train on examples. Instead, build a knowledge tree by asking "What do I need to understand BEFORE this?" recursively until reaching foundational concepts, then animate from foundation -> target.
 
-**Technology**: Uses Claude Sonnet 4.5's superior reasoning capabilities via the Claude Agent SDK - no training data required!
+**Technology**: Uses Claude Opus 4.5's superior reasoning capabilities via the Claude Agent SDK - no training data required!
 
 ---
 
@@ -380,12 +380,12 @@ def generate_manim_code(narrative: Narrative) -> str:
     This is your EXISTING strength - keep using it!
     """
 
-    # Use Claude Sonnet 4.5 for superior code generation
+    # Use Claude Opus 4.5 for superior code generation
     # Feed the verbose prompt to Claude
 
     code = claude_generate(
         prompt=narrative.prompt,
-        model="claude-sonnet-4.5-20251022",
+        model="claude-opus-4-5-20251101",
         system="You are an expert Manim animator. Generate Python code using Manim Community Edition."
     )
 
@@ -541,7 +541,7 @@ Feed verbose prompt to DeepSeek R1 -> produces working Manim code (your existing
 ## Why This Works
 
 ### No Training Required
-- Agents use Claude Sonnet 4.5's reasoning, not pattern matching
+- Agents use Claude Opus 4.5's reasoning, not pattern matching
 - Works on ANY topic Claude knows about
 - Self-improving as Claude models improve
 - Claude Agent SDK provides built-in context management and tool integration

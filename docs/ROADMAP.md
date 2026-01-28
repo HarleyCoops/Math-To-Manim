@@ -1,7 +1,7 @@
 # Math-To-Manim Roadmap
 ## Vision: Multi-Agent Animation Generation System
 
-**Powered by**: Claude Sonnet 4.5 + Claude Agent SDK (October 2025)
+**Powered by**: Claude Opus 4.5 + Claude Agent SDK (October 2025)
 
 **Goal**: Transform simple human prompts like "explain cosmology to me" into professional Manim Community Edition animations through an orchestrated multi-agent system built on the Claude Agent SDK.
 
@@ -9,14 +9,14 @@
 
 ## Current State (v0.9 - 1000[*])
 
-[DONE] **Working**: Verbose prompts -> Claude Sonnet 4.5 -> Manim code -> Animations
-[DONE] **AI Model**: Claude Sonnet 4.5 (claude-sonnet-4.5-20251022)
+[DONE] **Working**: Verbose prompts -> Claude Opus 4.5 -> Manim code -> Animations
+[DONE] **AI Model**: Claude Opus 4.5 (claude-opus-4-5-20251101)
 [DONE] **Framework**: Claude Agent SDK (open source, October 2025)
 [DONE] **Output**: Animations + LaTeX study notes
 [DONE] **Interface**: Gradio web UI ([app_claude.py](app_claude.py))
 [DONE] **Examples**: 40+ working animation scripts
 
-**Key Achievement**: Proven that 2000+ token verbose prompts + Claude Sonnet 4.5 generate high-quality Manim code
+**Key Achievement**: Proven that 2000+ token verbose prompts + Claude Opus 4.5 generate high-quality Manim code
 
 ---
 
@@ -134,7 +134,7 @@
 - Prerequisite detection (what math background needed)
 - Visual element suggestions (what to animate)
 
-**Tech Stack**: Claude Agent SDK + Claude Sonnet 4.5 for reasoning
+**Tech Stack**: Claude Agent SDK + Claude Opus 4.5 for reasoning
 
 ### 2.2 Research Agent
 **Purpose**: Gather authoritative mathematical content
@@ -158,7 +158,7 @@
 - Color scheme selection
 - Error handling for common issues
 
-**Current Status**: Works well with Claude Sonnet 4.5! Use existing pipeline with enhanced capabilities.
+**Current Status**: Works well with Claude Opus 4.5! Use existing pipeline with enhanced capabilities.
 
 ### 2.4 Documentation Agent
 **Purpose**: Generate study materials

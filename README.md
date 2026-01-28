@@ -53,7 +53,7 @@ Claude will automatically use the **six-agent reverse knowledge tree pipeline** 
 
 ### Why This Matters
 
-No training data. No examples needed. Pure LLM reasoning builds pedagogically sound animations that flow from foundations to advanced topics — every time.
+No training data. No examples needed. Pure LLM reasoning builds pedagogically sound animations that flow from foundations to advanced topics.
 
 <details>
 <summary><b>Skill Directory Structure</b></summary>

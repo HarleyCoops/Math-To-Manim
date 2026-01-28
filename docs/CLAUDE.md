@@ -6,12 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Math-To-Manim transforms simple prompts like "explain cosmology" into professional Manim Community Edition animations using a multi-agent system based on **reverse knowledge tree decomposition**. The core innovation: recursively asking "What must I understand BEFORE X?" to build pedagogically sound animations from foundation concepts up to advanced topics.
 
-**Powered by**: Claude Sonnet 4.5 + Anthropic SDK
+**Powered by**: Claude Opus 4.5 + Anthropic SDK
 **Current Status**: Working prototype with reverse knowledge tree (prerequisite_explorer_claude.py). Building toward full 6-agent system.
 
 ## Core Architecture: Reverse Knowledge Tree
 
-**Key Principle**: NO training data required. The system uses Claude Sonnet 4.5's superior reasoning to recursively decompose concepts.
+**Key Principle**: NO training data required. The system uses Claude Opus 4.5's superior reasoning to recursively decompose concepts.
 
 **Pipeline Flow**:
 ```
@@ -21,7 +21,7 @@ Math-To-Manim transforms simple prompts like "explain cosmology" into profession
   -> MathematicalEnricher (add equations to nodes)
   -> VisualDesigner (specify animations)
   -> NarrativeComposer (tree -> 2000+ token verbose prompt)
-  -> CodeGenerator (verbose prompt -> Manim code via Claude Sonnet 4.5)
+  -> CodeGenerator (verbose prompt -> Manim code via Claude Opus 4.5)
   -> Render animation
 ```
 
@@ -71,7 +71,7 @@ Requires Python 3.10+, Manim 0.19.0+, Anthropic SDK.
 ```bash
 python prerequisite_explorer_claude.py
 ```
-This demos building knowledge trees for cosmology, QFT, and Fourier analysis using Claude Sonnet 4.5.
+This demos building knowledge trees for cosmology, QFT, and Fourier analysis using Claude Opus 4.5.
 
 ### Launch Web Interface
 ```bash
@@ -119,14 +119,14 @@ Math-To-Manim/
 ### Key Components
 
 **prerequisite_explorer_claude.py** - The foundation of the new system:
-- `PrerequisiteExplorer`: Recursively builds knowledge trees via Claude Sonnet 4.5 reasoning
+- `PrerequisiteExplorer`: Recursively builds knowledge trees via Claude Opus 4.5 reasoning
 - `ConceptAnalyzer`: Parses user input to identify core concepts using Claude
 - `KnowledgeNode`: Data structure representing concept + prerequisites
 - Caches prerequisite queries to avoid redundant API calls
 - Uses Anthropic SDK for native Claude integration
 
 **app_claude.py** - Web interface:
-- Claude Sonnet 4.5 (`claude-sonnet-4.5-20251022`) for code generation
+- Claude Opus 4.5 (`claude-opus-4-5-20251101`) for code generation
 - Chat mode for concept discussion and code help
 - Prompt expander for creating detailed prompts
 - LaTeX formatting for Gradio display
@@ -176,7 +176,7 @@ from anthropic import Anthropic
 client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 response = client.messages.create(
-    model="claude-sonnet-4.5-20251022",
+    model="claude-opus-4-5-20251101",
     max_tokens=4000,
     temperature=0.7,
     system="System prompt here",
@@ -190,7 +190,7 @@ answer = response.content[0].text
 - System prompt is a separate parameter (not in messages)
 - Max tokens must be specified
 - Response format: `.content[0].text`
-- Model name: `claude-sonnet-4.5-20251022` (current)
+- Model name: `claude-opus-4-5-20251101` (current)
 
 ## Prompt Engineering for Manim
 

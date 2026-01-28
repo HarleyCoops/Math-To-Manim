@@ -197,7 +197,7 @@ class ImprovedPrerequisiteExplorer:
     Integrates validation functions for better error prevention.
     """
 
-    def __init__(self, model: str = "claude-sonnet-4-5", max_depth: int = 4):
+    def __init__(self, model: str = "claude-opus-4-5-20251101", max_depth: int = 4):
         self.model = model
         self.max_depth = max_depth
 

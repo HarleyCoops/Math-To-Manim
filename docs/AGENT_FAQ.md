@@ -28,7 +28,7 @@ from anthropic import Anthropic
 
 client = Anthropic(api_key=...)
 response = client.messages.create(
-    model="claude-sonnet-4.5-20251022",
+    model="claude-opus-4-5-20251101",
     messages=[{"role": "user", "content": "What are the prerequisites for cosmology?"}]
 )
 
@@ -48,7 +48,7 @@ answer = response.content[0].text  # Done!
 from claude_agent_sdk import Agent, tools
 
 agent = Agent(
-    model="claude-sonnet-4.5-20251022",
+    model="claude-opus-4-5-20251101",
     tools=[tools.web_search, tools.file_read, tools.code_execution]
 )
 

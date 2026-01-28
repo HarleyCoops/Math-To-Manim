@@ -1,4 +1,4 @@
-# Migration to Claude Sonnet 4.5 + Claude Agent SDK
+# Migration to Claude Opus 4.5 + Claude Agent SDK
 
 **Date**: October 2, 2025
 **Status**: Complete architecture refactoring
@@ -7,12 +7,12 @@
 
 ## Summary
 
-Math-To-Manim has been completely refactored to use **Claude Sonnet 4.5** and the **Claude Agent SDK** (released October 1, 2025) instead of the previous DeepSeek-based architecture.
+Math-To-Manim has been completely refactored to use **Claude Opus 4.5** and the **Claude Agent SDK** (released October 1, 2025) instead of the previous DeepSeek-based architecture.
 
 ## Why Claude Agent SDK?
 
 ### Superior Technology Stack
-1. **Claude Sonnet 4.5**: Latest model with enhanced reasoning and coding capabilities
+1. **Claude Opus 4.5**: Latest model with enhanced reasoning and coding capabilities
 2. **Native Agent Framework**: Purpose-built by Anthropic for autonomous agents
 3. **Context Management**: Automatic compaction prevents running out of context
 4. **Built-in Tools**: File operations, code execution, web search out-of-the-box
@@ -118,7 +118,7 @@ from anthropic import Anthropic
 client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 response = client.messages.create(
-    model="claude-sonnet-4.5-20251022",
+    model="claude-opus-4-5-20251101",
     max_tokens=4000,
     system="You are an expert...",
     messages=[{"role": "user", "content": prompt}]
@@ -128,7 +128,7 @@ answer = response.content[0].text
 ```
 
 ### Key Differences
-1. **Model name**: `deepseek-reasoner` -> `claude-sonnet-4.5-20251022`
+1. **Model name**: `deepseek-reasoner` -> `claude-opus-4-5-20251101`
 2. **API style**: OpenAI-compatible -> Native Anthropic
 3. **Response format**: `.choices[0].message.content` -> `.content[0].text`
 4. **System prompts**: Passed in messages -> Dedicated `system` parameter
@@ -151,9 +151,9 @@ python app_claude.py
 ### Expected Output
 ```
 ╔═══════════════════════════════════════════════════════════════════╗
-║     PREREQUISITE EXPLORER - Claude Sonnet 4.5 Version            ║
+║     PREREQUISITE EXPLORER - Claude Opus 4.5 Version            ║
 ║                                                                   ║
-║  Powered by: Claude Sonnet 4.5 (claude-sonnet-4.5-20251022)     ║
+║  Powered by: Claude Opus 4.5 (claude-opus-4-5-20251101)     ║
 ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
@@ -195,15 +195,15 @@ The reverse knowledge tree algorithm remains **identical**:
 
 ### Reasoning Quality
 - **DeepSeek R1**: Good, especially for math
-- **Claude Sonnet 4.5**: Superior, especially for nuanced reasoning
+- **Claude Opus 4.5**: Superior, especially for nuanced reasoning
 
 ### Code Generation
 - **DeepSeek**: Good for Manim code
-- **Claude Sonnet 4.5**: Excellent, with better error handling
+- **Claude Opus 4.5**: Excellent, with better error handling
 
 ### Cost (Estimated)
 - **DeepSeek**: ~$0.10 per animation
-- **Claude Sonnet 4.5**: ~$0.30 per animation (with caching: ~$0.15)
+- **Claude Opus 4.5**: ~$0.30 per animation (with caching: ~$0.15)
 
 ### Speed
 - **DeepSeek**: Fast (China-based servers)
@@ -269,7 +269,7 @@ Now that we're on the Claude Agent SDK:
 - [x] Refactor core files to use Claude SDK
 - [x] Update documentation
 - [ ] Test on diverse topics
-- [ ] Optimize prompts for Claude Sonnet 4.5
+- [ ] Optimize prompts for Claude Opus 4.5
 
 ### Phase 2 (Next Month)
 - [ ] Implement full agent orchestration using SDK

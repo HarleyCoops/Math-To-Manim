@@ -38,7 +38,7 @@ def discover_prerequisites(self, concept: str) -> List[str]:
     """Ask Claude once, get response, done."""
 
     response = client.messages.create(
-        model="claude-sonnet-4.5-20251022",
+        model="claude-opus-4-5-20251101",
         max_tokens=500,
         messages=[{"role": "user", "content": f"Prerequisites for {concept}?"}]
     )
@@ -61,7 +61,7 @@ from claude_agent_sdk import Agent, tools
 
 agent = Agent(
     name="PrerequisiteExplorer",
-    model="claude-sonnet-4.5-20251022",
+    model="claude-opus-4-5-20251101",
     tools=[tools.web_search, tools.file_read, tools.code_execution],
     max_iterations=10
 )
@@ -100,7 +100,7 @@ In your codebase, "agents" are **conceptual components** - Python classes that e
 from prerequisite_explorer_claude import ConceptAnalyzer
 
 # Create instance
-analyzer = ConceptAnalyzer(model="claude-sonnet-4.5-20251022")
+analyzer = ConceptAnalyzer(model="claude-opus-4-5-20251101")
 
 # Test it
 result = analyzer.analyze("Explain cosmology to me")
@@ -134,7 +134,7 @@ from prerequisite_explorer_claude import PrerequisiteExplorer
 
 # Create instance
 explorer = PrerequisiteExplorer(
-    model="claude-sonnet-4.5-20251022",
+    model="claude-opus-4-5-20251101",
     max_depth=3  # Limit recursion
 )
 
@@ -240,7 +240,7 @@ class AgentMetrics:
     def log_api_call(self, tokens: int):
         self.api_calls += 1
         self.total_tokens += tokens
-        # Claude Sonnet 4.5 pricing (example)
+        # Claude Opus 4.5 pricing (example)
         self.total_cost += (tokens / 1000) * 0.003
 
 class PrerequisiteExplorer:
@@ -687,7 +687,7 @@ tools = [
 
 # Agent can now request tool use
 response = client.messages.create(
-    model="claude-sonnet-4.5-20251022",
+    model="claude-opus-4-5-20251101",
     max_tokens=1024,
     tools=tools,
     messages=[{
@@ -724,7 +724,7 @@ tools = [
 ]
 
 # Create agent
-llm = ChatAnthropic(model="claude-sonnet-4.5-20251022")
+llm = ChatAnthropic(model="claude-opus-4-5-20251101")
 agent = initialize_agent(
     tools=tools,
     llm=llm,
@@ -760,7 +760,7 @@ class SimpleAgent:
         for iteration in range(self.max_iterations):
             # Get Claude's next action
             response = client.messages.create(
-                model="claude-sonnet-4.5-20251022",
+                model="claude-opus-4-5-20251101",
                 messages=conversation + [{
                     "role": "user",
                     "content": task if iteration == 0 else "Continue"

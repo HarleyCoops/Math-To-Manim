@@ -4,7 +4,7 @@ ThreeJS Code Generator Agent - Generates Three.js animation code from verbose pr
 Takes the same narrative/verbose prompt from NarrativeComposer and generates
 interactive Three.js WebGL animations instead of Manim video output.
 
-Uses Claude Sonnet 4.5 via the Anthropic Claude Agent SDK.
+Uses Claude Opus 4.5 via the Anthropic Claude Agent SDK.
 """
 
 import os
@@ -25,7 +25,7 @@ except ImportError:
     except ImportError:
         run_query_via_sdk = None  # type: ignore[assignment]
 
-CLAUDE_MODEL = "claude-sonnet-4-5"
+CLAUDE_MODEL = "claude-opus-4-5-20251101"
 try:
     from src.agents.prerequisite_explorer_claude import CLAUDE_MODEL as _CLAUDE_MODEL
     CLAUDE_MODEL = _CLAUDE_MODEL

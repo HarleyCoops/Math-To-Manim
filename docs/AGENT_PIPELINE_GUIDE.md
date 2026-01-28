@@ -37,7 +37,7 @@ Beautiful Animation!
 | NarrativeComposer | ✅ DONE | `narrative_composer.py` | Generate prompts |
 | Orchestrator | ✅ DONE | `orchestrator.py` | Coordinate pipeline |
 
-**All agents use Claude Sonnet 4.5 via the Anthropic Claude Agent SDK!**
+**All agents use Claude Opus 4.5 via the Anthropic Claude Agent SDK!**
 
 ---
 
@@ -446,7 +446,7 @@ Get your API key from: https://console.anthropic.com/
 
 ```python
 orchestrator = ReverseKnowledgeTreeOrchestrator(
-    model="claude-sonnet-4-5",      # Claude model
+    model="claude-opus-4-5-20251101",  # Claude model
     max_tree_depth=4,                # Tree depth (1-5)
     enable_code_generation=True,     # Generate Manim code
     enable_atlas=False,              # Use Nomic Atlas caching
@@ -561,7 +561,7 @@ User Input: "Explain cosmology"
 
 ## Performance Notes
 
-### API Costs (Claude Sonnet 4.5)
+### API Costs (Claude Opus 4.5)
 
 Typical costs per animation:
 - **Depth 2**: ~$0.10-0.20 (5-10 API calls)
@@ -667,4 +667,4 @@ See: `CONTRIBUTING.md`
 
 **Last Updated**: 2025-10-20
 
-**Contributors**: Built with Claude Sonnet 4.5 via Claude Agent SDK
+**Contributors**: Built with Claude Opus 4.5 via Claude Agent SDK

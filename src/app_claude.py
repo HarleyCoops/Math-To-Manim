@@ -1,6 +1,6 @@
 """
 Math-To-Manim Web Interface
-Powered by Claude Sonnet 4.5 and the Claude Agent SDK
+Powered by Claude Opus 4.5 and the Claude Agent SDK
 """
 
 import os
@@ -25,11 +25,11 @@ except ImportError:  # pragma: no cover - fallback when running as `python src/a
 # Load environment variables from .env file
 load_dotenv()
 
-# Initialize Anthropic client for Claude Sonnet 4.5
+# Initialize Anthropic client for Claude Opus 4.5
 client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 # Model configuration
-CLAUDE_MODEL = "claude-sonnet-4.5-20251022"  # Latest Sonnet 4.5
+CLAUDE_MODEL = "claude-opus-4-5-20251101"  # Latest Opus 4.5
 
 # Optional video review agent (used once we have generated output)
 video_review_agent: Optional[VideoReviewAgent] = None
@@ -172,7 +172,7 @@ Always format LaTeX with proper escaping and use MathTex() for equations."""
 # Create Gradio interface with tabs for different modes
 with gr.Blocks(theme="soft", title="Math-To-Manim - Claude Sonnet 4.5") as iface:
     gr.Markdown("# Math-To-Manim Generator")
-    gr.Markdown("*Powered by Claude Sonnet 4.5 and the Claude Agent SDK*")
+    gr.Markdown("*Powered by Claude Opus 4.5 and the Claude Agent SDK*")
 
     with gr.Tab("Standard Mode"):
         gr.Markdown("""
@@ -340,7 +340,7 @@ if __name__ == "__main__":
 ╔═══════════════════════════════════════════════════════════════════╗
 ║             Math-To-Manim Web Interface                          ║
 ║                                                                   ║
-║  Powered by: Claude Sonnet 4.5 (claude-sonnet-4.5-20251022)     ║
+║  Powered by: Claude Opus 4.5 (claude-opus-4-5-20251101)         ║
 ║  Framework: Claude Agent SDK                                     ║
 ║                                                                   ║
 ║  Starting Gradio interface...                                    ║

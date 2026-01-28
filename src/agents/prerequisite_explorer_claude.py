@@ -2,7 +2,7 @@
 Prerequisite Explorer - The Core Innovation (Claude Agent SDK Version)
 Recursively decomposes concepts by asking "What must I understand BEFORE this?"
 
-Uses Claude Sonnet 4.5 via the Anthropic Claude Agent SDK.
+Uses Claude Opus 4.5 via the Anthropic Claude Agent SDK.
 No training data required - uses Claude's reasoning to build knowledge trees.
 """
 
@@ -52,7 +52,7 @@ def _ensure_client() -> Anthropic:
     return CLI_CLIENT
 
 
-CLAUDE_MODEL = "claude-sonnet-4-5"  # Claude Sonnet 4.5
+CLAUDE_MODEL = "claude-opus-4-5-20251101"  # Claude Opus 4.5
 
 
 @dataclass
@@ -96,7 +96,7 @@ class PrerequisiteExplorer:
     Core agent that recursively discovers prerequisites for any concept.
     This is the key innovation - no training data needed!
 
-    Powered by Claude Sonnet 4.5 for superior reasoning capabilities.
+    Powered by Claude Opus 4.5 for superior reasoning capabilities.
     """
 
     def __init__(self, model: str = CLAUDE_MODEL, max_depth: int = 4):
@@ -321,7 +321,7 @@ class ConceptAnalyzer:
     """
     Analyzes user input to extract the core concept and metadata.
 
-    Uses Claude Sonnet 4.5 for superior intent understanding.
+    Uses Claude Opus 4.5 for superior intent understanding.
     """
 
     def __init__(self, model: str = CLAUDE_MODEL):
@@ -405,13 +405,13 @@ def demo():
 
     print("""
 ╔═══════════════════════════════════════════════════════════════════╗
-║     PREREQUISITE EXPLORER - Claude Sonnet 4.5 Version            ║
+║     PREREQUISITE EXPLORER - Claude Opus 4.5 Version            ║
 ║                                                                   ║
 ║  This demonstrates the core innovation:                          ║
 ║  Recursively asking "What must I understand BEFORE X?"           ║
 ║  to build complete knowledge trees with NO training data.        ║
 ║                                                                   ║
-║  Powered by: Claude Sonnet 4.5 (claude-sonnet-4.5-20251022)     ║
+║  Powered by: Claude Opus 4.5 (claude-opus-4-5-20251101)         ║
 ╚═══════════════════════════════════════════════════════════════════╝
     """)
 
@@ -425,7 +425,7 @@ def demo():
 
         try:
             # Step 1: Analyze concept
-            print("\n[1] Analyzing concept with Claude Sonnet 4.5...")
+            print("\n[1] Analyzing concept with Claude Opus 4.5...")
             analysis = analyzer.analyze(user_input)
             print(json.dumps(analysis, indent=2))
 

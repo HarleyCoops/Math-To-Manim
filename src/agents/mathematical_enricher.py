@@ -6,7 +6,7 @@ For each concept in the tree, adds:
 - Physical/mathematical interpretations
 - Worked examples
 
-Uses Claude Sonnet 4.5 via the Anthropic Claude Agent SDK.
+Uses Claude Opus 4.5 via the Anthropic Claude Agent SDK.
 """
 
 import os
@@ -31,7 +31,7 @@ except ImportError:
 
 # KnowledgeNode is required for the enricher to operate, so fail fast with a clear
 # error if we cannot import it.
-CLAUDE_MODEL = "claude-sonnet-4-5"
+CLAUDE_MODEL = "claude-opus-4-5-20251101"
 try:
     from src.agents.prerequisite_explorer_claude import KnowledgeNode, CLAUDE_MODEL as _CLAUDE_MODEL
     CLAUDE_MODEL = _CLAUDE_MODEL

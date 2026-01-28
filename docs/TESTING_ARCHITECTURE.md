@@ -1,6 +1,6 @@
 # Testing Architecture for Math-To-Manim
 
-**Powered by**: Claude Sonnet 4.5 + Claude Agent SDK
+**Powered by**: Claude Opus 4.5 + Claude Agent SDK
 **Testing Framework**: pytest + custom validators
 
 ---
@@ -283,7 +283,7 @@ The prompt should:
 Format for Manim Community Edition."""
 
     response = client.messages.create(
-        model="claude-sonnet-4.5-20251022",
+        model="claude-opus-4-5-20251101",
         max_tokens=2000,
         temperature=0.7,
         messages=[{"role": "user", "content": prompt}]
@@ -308,7 +308,7 @@ Requirements:
 Return ONLY the Python code, no explanation."""
 
     response = client.messages.create(
-        model="claude-sonnet-4.5-20251022",
+        model="claude-opus-4-5-20251101",
         max_tokens=2000,
         temperature=0.3,
         messages=[{"role": "user", "content": code_prompt}]
@@ -455,7 +455,7 @@ def test_generated_prompt_latex_validity():
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
     response = client.messages.create(
-        model="claude-sonnet-4.5-20251022",
+        model="claude-opus-4-5-20251101",
         max_tokens=1000,
         messages=[{
             "role": "user",

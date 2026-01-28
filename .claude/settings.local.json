@@ -1,4 +1,7 @@
 {
+  "enabledPlugins": {
+    "math-to-manim": true
+  },
   "permissions": {
     "allow": [
       "Bash(gh pr diff:*)",

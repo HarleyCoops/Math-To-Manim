@@ -6,7 +6,7 @@ Walks the tree from foundation -> target, creating a coherent story that:
 - Generates 2000+ token verbose prompts
 - Includes all mathematical and visual specifications
 
-Uses Claude Sonnet 4.5 via the Anthropic Claude Agent SDK.
+Uses Claude Opus 4.5 via the Anthropic Claude Agent SDK.
 """
 
 import os
@@ -27,7 +27,7 @@ except ImportError:
     except ImportError:
         run_query_via_sdk = None  # type: ignore[assignment]
 
-CLAUDE_MODEL = "claude-sonnet-4-5"
+CLAUDE_MODEL = "claude-opus-4-5-20251101"
 try:
     from src.agents.prerequisite_explorer_claude import KnowledgeNode, CLAUDE_MODEL as _CLAUDE_MODEL
     CLAUDE_MODEL = _CLAUDE_MODEL
