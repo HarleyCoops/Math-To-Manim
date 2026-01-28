@@ -1,5 +1,3 @@
-
-
 ### The Visual Vision
 
 Imagine a void of infinite black. From the center emerges a structure resembling a nesting doll of toroidal (doughnut-shaped) magnetic fields, but constructed entirely of light.

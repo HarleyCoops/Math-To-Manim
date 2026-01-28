@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="ClaudeCodeManim.jpeg" alt="Claude Code Manim" width="100%">
+</p>
+
 # Math-To-Manim
 
 <div align="center">
