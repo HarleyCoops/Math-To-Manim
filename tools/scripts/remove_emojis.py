@@ -13,6 +13,11 @@ from pathlib import Path
 # - Variation Selector-16 (U+FE0F) + ZWJ (U+200D) which combine emojis
 EMOJI_RE = re.compile(r"[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F\u200D]")
 
+# Match a whole emoji sequence so we can replace it (covers VS16/ZWJ combos)
+EMOJI_SEQ_RE = re.compile(
+    r"(?:[\U0001F000-\U0001FAFF\u2600-\u27BF](?:\uFE0F|\u200D)*)+"
+)
+
 # Replacement map (emoji -> text equivalent)
 REPLACEMENTS = {
     '✅': '[DONE]',
@@ -57,9 +62,9 @@ def remove_emojis_from_file(filepath):
 
         original_content = content
 
-        # Replace each emoji with text equivalent
-        for emoji, replacement in REPLACEMENTS.items():
-            content = content.replace(emoji, replacement)
+        # Replace each emoji with text equivalent (handle longer keys first)
+        for emoji in sorted(REPLACEMENTS.keys(), key=len, reverse=True):
+            content = content.replace(emoji, REPLACEMENTS[emoji])
 
         # Strip any remaining emoji-like characters
         content = EMOJI_RE.sub("", content)
@@ -99,6 +104,9 @@ def main():
     }
 
     # Files to skip
+    # NOTE: We intentionally keep this script itself emoji-free, but we should
+    # not "remove emojis from the remover" because REPLACEMENTS embeds emoji
+    # keys by design. Skip it.
     skip_files = {"remove_emojis.py"}
 
     modified_files = []
