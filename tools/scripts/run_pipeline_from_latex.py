@@ -223,7 +223,7 @@ The change in the coupling strength with energy scale is described by the Renorm
         tree = enrichment_result.enriched_tree
         narrative_result = enrichment_result.narrative
 
-        print(f"\n✓ Enrichment complete: {len(tree.equations or [])} equations at root")
+        print(f"\n[OK] Enrichment complete: {len(tree.equations or [])} equations at root")
         print(f"  Narrative length: {len(narrative_result.verbose_prompt)} characters")
         print(f"  Scene count: {narrative_result.scene_count}")
 

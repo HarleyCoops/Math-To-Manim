@@ -155,18 +155,14 @@ class EulerPolyhedronFormula(ThreeDScene):
 
         tetra_edges = self.tetra_group[1]
         for i, edge in enumerate(tetra_edges):
-            # Create traveling particle
-            particle = Dot(radius=0.08, color=WHITE)
-            particle.move_to(edge.get_start())
+            # Highlight edge with color flash
             self.play(
                 edge.animate.set_color(YELLOW),
-                MoveAlongPath(particle, edge),
-                run_time=0.3
+                run_time=0.2
             )
             self.play(
                 edge.animate.set_color(ELECTRIC_BLUE),
-                FadeOut(particle),
-                run_time=0.15
+                run_time=0.1
             )
 
         # Update E label

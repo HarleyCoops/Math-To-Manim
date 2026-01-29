@@ -222,7 +222,7 @@ async def main():
     # Step 1: Load knowledge tree
     try:
         tree = load_knowledge_tree(json_path)
-        print(f"✓ Loaded tree for concept: {tree.concept}")
+        print(f"[OK] Loaded tree for concept: {tree.concept}")
         print(f"  Depth: {tree.depth}")
         print(f"  Prerequisites: {len(tree.prerequisites)}")
     except Exception as e:
@@ -244,13 +244,13 @@ async def main():
     narrative: Optional[str] = None
     if tree.narrative and tree.narrative.strip():
         narrative = tree.narrative
-        print(f"\n✓ Using narrative stored on the tree: {len(narrative)} characters")
+        print(f"\n[OK] Using narrative stored on the tree: {len(narrative)} characters")
         print(f"Preview:\n{narrative[:500]}...")
     else:
         print("\nNo stored narrative found. Generating a fresh narrative with Kimi K2...")
         try:
             narrative = await generate_narrative_from_tree(tree, kimi_client)
-            print(f"\n✓ Narrative generated: {len(narrative)} characters")
+            print(f"\n[OK] Narrative generated: {len(narrative)} characters")
             print(f"Preview:\n{narrative[:500]}...")
         except Exception as e:
             print(f"\nERROR: Failed to generate narrative: {e}")
@@ -269,7 +269,7 @@ async def main():
     try:
         manim_code = await generate_manim_code(narrative, kimi_client)
         
-        print(f"\n✓ Manim code generated: {len(manim_code)} characters")
+        print(f"\n[OK] Manim code generated: {len(manim_code)} characters")
         print(f"  Lines: {len(manim_code.splitlines())}")
         
     except Exception as e:

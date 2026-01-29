@@ -135,7 +135,7 @@ class AnimationResult:
         with open(f"{base_path}_result.json", 'w') as f:
             json.dump(self.to_dict(), f, indent=2)
 
-        print(f"\n✓ Results saved to {output_dir}/")
+        print(f"\n[OK] Results saved to {output_dir}/")
         print(f"  - {safe_concept}_prompt.txt")
         print(f"  - {safe_concept}_tree.json")
         if self.manim_code:
@@ -226,7 +226,7 @@ class ReverseKnowledgeTreeOrchestrator:
 ║  Using recursive prerequisite discovery (no training data!)      ║
 ╚═══════════════════════════════════════════════════════════════════╝
 """)
-        print(f"\n📝 USER INPUT: \"{user_input}\"\n")
+        print(f"\n[NOTE] USER INPUT: \"{user_input}\"\n")
 
         # ===================================================================
         # STEP 1: Concept Analysis
@@ -235,7 +235,7 @@ class ReverseKnowledgeTreeOrchestrator:
         print("STEP 1: CONCEPT ANALYSIS")
         print("=" * 70)
         analysis = self.concept_analyzer.analyze(user_input)
-        print(f"\n✓ Core concept: {analysis['core_concept']}")
+        print(f"\n[OK] Core concept: {analysis['core_concept']}")
         print(f"  Domain: {analysis['domain']}")
         print(f"  Level: {analysis['level']}")
         print(f"  Goal: {analysis['goal']}")
@@ -253,7 +253,7 @@ class ReverseKnowledgeTreeOrchestrator:
             analysis['core_concept']
         )
 
-        print("\n✓ Knowledge tree built:")
+        print("\n[OK] Knowledge tree built:")
         knowledge_tree.print_tree()
 
         # ===================================================================
@@ -266,7 +266,7 @@ class ReverseKnowledgeTreeOrchestrator:
 
         enriched_tree = await self.mathematical_enricher.enrich_node_async(knowledge_tree)
 
-        print("\n✓ Mathematical content added to all nodes")
+        print("\n[OK] Mathematical content added to all nodes")
 
         # ===================================================================
         # STEP 4: Visual Design
@@ -278,7 +278,7 @@ class ReverseKnowledgeTreeOrchestrator:
 
         designed_tree = await self.visual_designer.design_node_async(enriched_tree)
 
-        print("\n✓ Visual specifications added to all nodes")
+        print("\n[OK] Visual specifications added to all nodes")
 
         # ===================================================================
         # STEP 5: Narrative Composition
@@ -287,11 +287,11 @@ class ReverseKnowledgeTreeOrchestrator:
         print("STEP 5: NARRATIVE COMPOSITION")
         print("=" * 70)
         print("\nComposing verbose prompt from knowledge tree...")
-        print("Walking from foundation concepts → target concept\n")
+        print("Walking from foundation concepts -> target concept\n")
 
         narrative = await self.narrative_composer.compose_async(designed_tree)
 
-        print(f"\n✓ Verbose prompt generated:")
+        print(f"\n[OK] Verbose prompt generated:")
         print(f"  Length: {len(narrative.verbose_prompt)} characters")
         print(f"  Words: ~{len(narrative.verbose_prompt.split())}")
         print(f"  Scenes: {narrative.scene_count}")
@@ -312,7 +312,7 @@ class ReverseKnowledgeTreeOrchestrator:
 
             manim_code = await self._generate_manim_code_async(narrative.verbose_prompt)
 
-            print(f"\n✓ Manim code generated:")
+            print(f"\n[OK] Manim code generated:")
             print(f"  Length: {len(manim_code)} characters")
             print(f"  Lines: {len(manim_code.splitlines())}")
 
@@ -332,7 +332,7 @@ class ReverseKnowledgeTreeOrchestrator:
             threejs_html = threejs_output.html_code
             threejs_js = threejs_output.js_code
 
-            print(f"\n✓ Three.js code generated:")
+            print(f"\n[OK] Three.js code generated:")
             print(f"  HTML: {len(threejs_html)} characters")
             print(f"  JS:   {len(threejs_js)} characters")
 
@@ -356,7 +356,7 @@ class ReverseKnowledgeTreeOrchestrator:
         result.save(output_dir)
 
         print("\n" + "=" * 70)
-        print("✅ PIPELINE COMPLETE!")
+        print("[DONE] PIPELINE COMPLETE!")
         print("=" * 70)
 
         return result
@@ -423,7 +423,7 @@ def demo():
 ║                                                                   ║
 ║  This demonstrates the full Reverse Knowledge Tree approach:     ║
 ║                                                                   ║
-║  Simple prompt → Knowledge tree → Verbose prompt → Code          ║
+║  Simple prompt -> Knowledge tree -> Verbose prompt -> Code          ║
 ║                                                                   ║
 ║  Output options:                                                 ║
 ║    - Manim: Traditional video rendering (MP4)                    ║
@@ -496,10 +496,10 @@ def demo():
         print(result.threejs_html[:800])
         print("\n... (truncated)")
 
-    print("\n✅ Complete! Check the output/ directory for all files.")
+    print("\n[DONE] Complete! Check the output/ directory for all files.")
     if result.threejs_html:
         safe_concept = "".join(c if c.isalnum() else "_" for c in result.target_concept)
-        print(f"\n🌐 Open the Three.js visualization:")
+        print(f"\n[WEB] Open the Three.js visualization:")
         print(f"   file://output/{safe_concept}_threejs.html")
 
 

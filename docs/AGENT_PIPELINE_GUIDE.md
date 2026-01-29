@@ -1,6 +1,6 @@
 # Complete Agent Pipeline Guide
 
-**Status**: ✅ FULLY IMPLEMENTED (Week 1-2 Complete!)
+**Status**: [DONE] FULLY IMPLEMENTED (Week 1-2 Complete!)
 
 This guide documents the complete 6-agent pipeline for Math-To-Manim's Reverse Knowledge Tree approach.
 
@@ -10,19 +10,19 @@ We've successfully implemented all core agents that transform simple prompts int
 
 ```
 User: "Explain quantum tunneling"
-    ↓
-[1] ConceptAnalyzer → Extract: core concept, domain, level, goal
-    ↓
-[2] PrerequisiteExplorer → Build knowledge tree recursively
-    ↓
-[3] MathematicalEnricher → Add LaTeX equations, definitions
-    ↓
-[4] VisualDesigner → Design colors, animations, layout
-    ↓
-[5] NarrativeComposer → Generate 2000+ token verbose prompt
-    ↓
-[6] CodeGenerator → Create working Manim code
-    ↓
+    v
+[1] ConceptAnalyzer -> Extract: core concept, domain, level, goal
+    v
+[2] PrerequisiteExplorer -> Build knowledge tree recursively
+    v
+[3] MathematicalEnricher -> Add LaTeX equations, definitions
+    v
+[4] VisualDesigner -> Design colors, animations, layout
+    v
+[5] NarrativeComposer -> Generate 2000+ token verbose prompt
+    v
+[6] CodeGenerator -> Create working Manim code
+    v
 Beautiful Animation!
 ```
 
@@ -30,12 +30,12 @@ Beautiful Animation!
 
 | Agent | Status | File | Purpose |
 |-------|--------|------|---------|
-| ConceptAnalyzer | ✅ DONE | `prerequisite_explorer_claude.py` | Parse user intent |
-| PrerequisiteExplorer | ✅ DONE | `prerequisite_explorer_claude.py` | Build knowledge tree |
-| MathematicalEnricher | ✅ DONE | `mathematical_enricher.py` | Add equations |
-| VisualDesigner | ✅ DONE | `visual_designer.py` | Design animations |
-| NarrativeComposer | ✅ DONE | `narrative_composer.py` | Generate prompts |
-| Orchestrator | ✅ DONE | `orchestrator.py` | Coordinate pipeline |
+| ConceptAnalyzer | [DONE] DONE | `prerequisite_explorer_claude.py` | Parse user intent |
+| PrerequisiteExplorer | [DONE] DONE | `prerequisite_explorer_claude.py` | Build knowledge tree |
+| MathematicalEnricher | [DONE] DONE | `mathematical_enricher.py` | Add equations |
+| VisualDesigner | [DONE] DONE | `visual_designer.py` | Design animations |
+| NarrativeComposer | [DONE] DONE | `narrative_composer.py` | Generate prompts |
+| Orchestrator | [DONE] DONE | `orchestrator.py` | Coordinate pipeline |
 
 **All agents use Claude Opus 4.5 via the Anthropic Claude Agent SDK!**
 
@@ -228,7 +228,7 @@ print(spec['duration'])  # 25 seconds
 **Purpose**: Walks the knowledge tree to generate a 2000+ token verbose prompt.
 
 **Process**:
-1. **Topological Sort** - Order nodes from foundation → target
+1. **Topological Sort** - Order nodes from foundation -> target
 2. **Generate Segments** - Create 200-300 word description for each concept
 3. **Assemble Prompt** - Stitch segments into coherent narrative
 
@@ -250,7 +250,7 @@ class Narrative:
 ## Overview
 This animation builds quantum tunneling from first principles...
 
-Progression: wave functions → Schrödinger equation → potential barriers → quantum tunneling
+Progression: wave functions -> Schrödinger equation -> potential barriers -> quantum tunneling
 Duration: 3:45
 
 ## Scene 1: Wave Functions (0:00-0:20)
@@ -313,7 +313,7 @@ result = orchestrator.process(
 # - knowledge_tree (full tree as dict)
 # - verbose_prompt (2000+ tokens)
 # - manim_code (working Python code)
-# - concept_order (foundation → target)
+# - concept_order (foundation -> target)
 # - total_duration (seconds)
 ```
 
@@ -406,9 +406,9 @@ python test_agent_pipeline.py
 ```
 
 This tests:
-- ✓ Each agent individually
-- ✓ Complete orchestrator pipeline
-- ✓ Quick integration tests
+- [OK] Each agent individually
+- [OK] Complete orchestrator pipeline
+- [OK] Quick integration tests
 
 ### Run Individual Agent Demos
 
@@ -469,12 +469,12 @@ orchestrator = ReverseKnowledgeTreeOrchestrator(
 
 Traditional approach:
 ```
-Collect 1000s of prompt→animation pairs → Train model → Hope for generalization
+Collect 1000s of prompt->animation pairs -> Train model -> Hope for generalization
 ```
 
 Our approach:
 ```
-Ask "What before X?" recursively → Build tree → Walk tree → Generate prompt
+Ask "What before X?" recursively -> Build tree -> Walk tree -> Generate prompt
 ```
 
 **Result**: Works on ANY concept Claude knows about!
@@ -663,7 +663,7 @@ See: `CONTRIBUTING.md`
 
 ---
 
-**Status**: ✅ FULLY OPERATIONAL
+**Status**: [DONE] FULLY OPERATIONAL
 
 **Last Updated**: 2025-10-20
 

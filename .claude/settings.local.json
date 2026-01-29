@@ -19,7 +19,10 @@
       "Bash(powershell -Command \"Copy-Item -Path ''C:\\\\Users\\\\chris\\\\Math-To-Manim\\\\skill\\\\.claude-plugin\\\\*'' -Destination ''C:\\\\Users\\\\chris\\\\Math-To-Manim\\\\.claude\\\\plugins\\\\math-to-manim'' -Recurse -Force; Copy-Item -Path ''C:\\\\Users\\\\chris\\\\Math-To-Manim\\\\skill\\\\skills'' -Destination ''C:\\\\Users\\\\chris\\\\Math-To-Manim\\\\.claude\\\\plugins\\\\math-to-manim\\\\skills'' -Recurse -Force\")",
       "Bash(powershell -Command:*)",
       "Bash(git reset:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue comment:*)"
     ],
     "deny": []
   },

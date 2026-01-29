@@ -76,7 +76,7 @@ python tools/video_review_toolkit.py web <video.mp4> -o my_review.html
 | **Frame Viewer** | Interactive stepping, need keyboard control |
 | **Native Playback** | Quick check, ffmpeg available |
 
-## 🛠️ Setup
+##  Setup
 
 ### Requirements
 
@@ -114,7 +114,7 @@ See `docs/VIDEO_REVIEW_TOOLKIT.md` for comprehensive documentation including:
 - Architecture details
 - Future enhancement plans
 
-## 🎬 Example Workflow
+##  Example Workflow
 
 ```bash
 # 1. Create web player for general review
@@ -140,7 +140,7 @@ python tools/video_review_toolkit.py info media/videos/ULTRAQED/480p15/ULTRAQEDC
 
 **Video file not found** -> Check path with `ls media/videos/`
 
-## 🔗 Related Tools
+##  Related Tools
 
 - `tools/video_review_toolkit.py` - Main toolkit
 - `tools/frame_viewer.py` - Interactive viewer

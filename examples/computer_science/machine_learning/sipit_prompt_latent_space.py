@@ -701,7 +701,7 @@ class PromptLatentSpaceMapping(Scene):
                 weight=BOLD
             ),
             Tex(
-                r"1. LLM creates an injective map: distinct prompts → distinct embeddings",
+                r"1. LLM creates an injective map: distinct prompts -> distinct embeddings",
                 font_size=24
             ),
             Tex(

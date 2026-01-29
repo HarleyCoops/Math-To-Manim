@@ -6,13 +6,12 @@ import os
 import re
 from pathlib import Path
 
-# Emoji patterns to remove
-EMOJI_PATTERNS = [
-    r'✅',  r'❌',  r'🚧',  r'📋',  r'⭐',  r'💥',  r'⏭️',  r'❓',
-    r'🔍',  r'🧪',  r'🎯',  r'🚀',  r'📊',  r'📚',  r'🎉',  r'✨',
-    r'📦',  r'🔧',  r'📈',  r'🎓',  r'⚡',  r'🌐',  r'💰',  r'✓',
-    r'→',  r'↓',  r'▶',  r'⚠️',  r'💡',  r'🔑',  r'📝',  r'🎨',
-]
+# Broad emoji stripper for anything missed by REPLACEMENTS.
+# Includes:
+# - most emoji blocks (U+1F000..U+1FAFF)
+# - Dingbats/Misc Symbols (U+2600..U+27BF)
+# - Variation Selector-16 (U+FE0F) + ZWJ (U+200D) which combine emojis
+EMOJI_RE = re.compile(r"[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F\u200D]")
 
 # Replacement map (emoji -> text equivalent)
 REPLACEMENTS = {
@@ -62,6 +61,9 @@ def remove_emojis_from_file(filepath):
         for emoji, replacement in REPLACEMENTS.items():
             content = content.replace(emoji, replacement)
 
+        # Strip any remaining emoji-like characters
+        content = EMOJI_RE.sub("", content)
+
         # If content changed, write it back
         if content != original_content:
             with open(filepath, 'w', encoding='utf-8') as f:
@@ -75,20 +77,38 @@ def remove_emojis_from_file(filepath):
 
 def main():
     """Remove emojis from all files in the project"""
-    project_root = Path(__file__).parent
+    # repo root: tools/scripts/remove_emojis.py -> tools/scripts -> tools -> repo root
+    project_root = Path(__file__).resolve().parents[2]
 
     # File patterns to process
     patterns = ['**/*.md', '**/*.py', '**/*.txt']
 
+    # Paths to skip (avoid binary/media and large generated outputs)
+    skip_parts = {
+        ".git",
+        "__pycache__",
+        ".venv",
+        "venv",
+        "env",
+        "node_modules",
+        "media",
+        "giffolder",
+        "output",
+        ".mypy_cache",
+        ".pytest_cache",
+    }
+
     # Files to skip
-    skip_files = {'remove_emojis.py', '.git'}
+    skip_files = {"remove_emojis.py"}
 
     modified_files = []
 
     for pattern in patterns:
         for filepath in project_root.glob(pattern):
-            # Skip if in skip list or in .git directory
-            if any(skip in str(filepath) for skip in skip_files):
+            # Skip if in skip list or in skipped directories
+            if any(part in skip_parts for part in filepath.parts):
+                continue
+            if filepath.name in skip_files:
                 continue
 
             if filepath.is_file():

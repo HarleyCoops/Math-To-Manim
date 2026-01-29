@@ -273,7 +273,7 @@ Browse all examples: [docs/EXAMPLES.md](docs/EXAMPLES.md)
 ```
 Math-To-Manim/
 |
-+-- skill/                  # 🚀 Claude Code Skill (NEW!)
++-- skill/                  # [LAUNCH] Claude Code Skill (NEW!)
 |   +-- .claude-plugin/     # Plugin manifest
 |   +-- skills/math-to-manim/  # Skill definition & references
 |

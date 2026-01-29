@@ -6,7 +6,7 @@ constructed knowledge tree. Each concept is explained with mathematical rigor
 and visual clarity, building from foundational ideas to advanced understanding.
 
 **Total Concepts**: 7
-**Progression**: angles → sides of a triangle → right triangle → multiplication → squares and area → equality → Pythagorean theorem
+**Progression**: angles -> sides of a triangle -> right triangle -> multiplication -> squares and area -> equality -> Pythagorean theorem
 **Estimated Duration**: 100 seconds (1:40)
 
 ## Animation Requirements

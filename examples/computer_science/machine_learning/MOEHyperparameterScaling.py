@@ -210,7 +210,7 @@ class MOEHyperparameterScaling(Scene):
 
         highlight_point = Dot(color=ORANGE).move_to(axes.c2p(4, total_tokens / 4))
         highlight_label = Text(
-            "Sparser routing ↓ tokens per expert",
+            "Sparser routing v tokens per expert",
             font_size=26,
             color=ORANGE,
         ).next_to(highlight_point, UP, buff=0.5)

@@ -284,7 +284,7 @@ class VideoReviewToolkit:
 </head>
 <body>
     <div class="container">
-        <h1>🎬 Video Review Player</h1>
+        <h1> Video Review Player</h1>
         
         <div class="video-info">
             <strong>File:</strong> {video_path.name}<br>
@@ -302,10 +302,10 @@ class VideoReviewToolkit:
             <div class="control-group">
                 <label>Playback Controls</label>
                 <div class="button-row">
-                    <button id="playPause">>️ Play / Pause</button>
-                    <button id="stepBack" class="secondary">⏮️ -1 Frame</button>
+                    <button id="playPause">> Play / Pause</button>
+                    <button id="stepBack" class="secondary">⏮ -1 Frame</button>
                     <button id="stepForward" class="secondary">[SKIP] +1 Frame</button>
-                    <button id="restart" class="secondary">🔄 Restart</button>
+                    <button id="restart" class="secondary"> Restart</button>
                 </div>
             </div>
 
@@ -346,7 +346,7 @@ class VideoReviewToolkit:
         </div>
 
         <div class="shortcuts">
-            <h2>⌨️ Keyboard Shortcuts</h2>
+            <h2>⌨ Keyboard Shortcuts</h2>
             <ul>
                 <li><span class="shortcut-key">Space</span> Play / Pause</li>
                 <li><span class="shortcut-key">← -></span> Step backward / forward (1 frame)</li>
@@ -510,7 +510,7 @@ class VideoReviewToolkit:
             subprocess.Popen(["ffplay", "-autoexit", str(video_path)])
             print("[OK] ffplay launched (separate window)")
         except FileNotFoundError:
-            print("✗ ffplay not found. Install ffmpeg with: choco install ffmpeg")
+            print(" ffplay not found. Install ffmpeg with: choco install ffmpeg")
             raise
 
 
@@ -565,7 +565,7 @@ def cli():
         
         elif args.command == 'info':
             info = toolkit.get_video_info(args.video)
-            print("\n📹 Video Information:")
+            print("\n Video Information:")
             print("=" * 50)
             for key, value in info.items():
                 print(f"  {key:12}: {value}")
@@ -579,7 +579,7 @@ def cli():
             toolkit.launch_ffplay(args.video)
     
     except Exception as e:
-        print(f"\n✗ Error: {e}")
+        print(f"\n Error: {e}")
         sys.exit(1)
 
 

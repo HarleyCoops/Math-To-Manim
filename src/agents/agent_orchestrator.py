@@ -242,9 +242,9 @@ Example:
             self.context.concept_analysis = analysis
 
             if self.verbose:
-                print(f"  ✓ Core concept: {analysis.get('core_concept')}")
-                print(f"  ✓ Domain: {analysis.get('domain')}")
-                print(f"  ✓ Level: {analysis.get('level')}")
+                print(f"  [OK] Core concept: {analysis.get('core_concept')}")
+                print(f"  [OK] Domain: {analysis.get('domain')}")
+                print(f"  [OK] Level: {analysis.get('level')}")
 
     async def _discover_prerequisites(self):
         """Stage 2: Build knowledge tree of prerequisites."""
@@ -268,7 +268,7 @@ Example:
         self.context.knowledge_tree = tree
 
         if self.verbose:
-            print(f"\n  ✓ Knowledge tree built with {self._count_nodes(tree)} nodes")
+            print(f"\n  [OK] Knowledge tree built with {self._count_nodes(tree)} nodes")
 
     async def _enrich_mathematics(self):
         """Stage 3: Add LaTeX equations and definitions (TODO)."""
@@ -312,8 +312,8 @@ Example:
             self.context.video_review = result
 
             if self.verbose:
-                print(f"  ✓ Video reviewed: {result.video_path}")
-                print(f"  ✓ Frames extracted: {result.frames_dir}")
+                print(f"  [OK] Video reviewed: {result.video_path}")
+                print(f"  [OK] Frames extracted: {result.frames_dir}")
         except Exception as e:
             self.context.warnings.append(f"Video review failed: {e}")
 

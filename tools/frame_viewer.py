@@ -34,23 +34,23 @@ def view_frames(frames_dir: str, start_frame: int = 0):
         import matplotlib.pyplot as plt
         from matplotlib.image import imread
     except ImportError:
-        print("✗ Error: matplotlib is required for frame viewing")
+        print(" Error: matplotlib is required for frame viewing")
         print("  Install with: pip install matplotlib")
         sys.exit(1)
     
     frames_dir = Path(frames_dir)
     if not frames_dir.exists():
-        print(f"✗ Error: Directory not found: {frames_dir}")
+        print(f" Error: Directory not found: {frames_dir}")
         sys.exit(1)
     
     # Find all frame files
     frames = sorted(frames_dir.glob("frame_*.png"))
     if not frames:
-        print(f"✗ Error: No frames found in {frames_dir}")
+        print(f" Error: No frames found in {frames_dir}")
         print("  Extract frames first using: python tools/video_review_toolkit.py extract <video>")
         sys.exit(1)
     
-    print(f"📁 Found {len(frames)} frames in {frames_dir}")
+    print(f" Found {len(frames)} frames in {frames_dir}")
     print("\nControls:")
     print("  -> / Space    : Next frame")
     print("  ←            : Previous frame")
@@ -114,7 +114,7 @@ def view_frames(frames_dir: str, start_frame: int = 0):
     update_display()
     plt.show()
     
-    print("👋 Frame viewer closed")
+    print(" Frame viewer closed")
 
 
 def cli():

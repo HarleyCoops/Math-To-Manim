@@ -27,7 +27,7 @@ Pythagorean theorem (depth 0)
 └─ equality (depth 1) [FOUNDATION]
 ```
 
-### Topological Order (Foundation → Target)
+### Topological Order (Foundation -> Target)
 
 1. angles
 2. sides of a triangle

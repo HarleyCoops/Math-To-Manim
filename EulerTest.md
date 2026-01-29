@@ -9,11 +9,11 @@ Euler's Polyhedron Formula: V - E + F = 2
   Act 1: Counting the Tetrahedron
 
   Animate each element appearing one by one with satisfying "pop" sounds:
-  - Vertices (V): Count 1, 2, 3, 4 as each cyan dot illuminates → Display "V = 4"
-  - Edges (E): Trace each edge with a traveling light particle, count to 6 → Display "E = 6"
-  - Faces (F): Each triangular face fills with golden light, count to 4 → Display "F = 4"
+  - Vertices (V): Count 1, 2, 3, 4 as each cyan dot illuminates -> Display "V = 4"
+  - Edges (E): Trace each edge with a traveling light particle, count to 6 -> Display "E = 6"
+  - Faces (F): Each triangular face fills with golden light, count to 4 -> Display "F = 4"
 
-  The equation assembles itself: 4 - 6 + 4 = 2 ✓
+  The equation assembles itself: 4 - 6 + 4 = 2 [OK]
 
   Camera orbits 360° around the tetrahedron as it slowly rotates.
 
@@ -26,7 +26,7 @@ Euler's Polyhedron Formula: V - E + F = 2
   - E = 12 (edges light up like circuits)
   - F = 6 (faces glow one by one)
 
-  Equation: 8 - 12 + 6 = 2 ✓
+  Equation: 8 - 12 + 6 = 2 [OK]
 
   Display both polyhedra side-by-side, spinning gently.
 
@@ -40,7 +40,7 @@ Euler's Polyhedron Formula: V - E + F = 2
   - E = 30 (edges weave together)
   - F = 12 (pentagons lock into place)
 
-  20 - 30 + 12 = 2 ✓
+  20 - 30 + 12 = 2 [OK]
 
   Text appears: "No matter the shape... always 2."
 

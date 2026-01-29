@@ -34,7 +34,7 @@ gₙₓ₊ₙᵧ = nₓ + nᵧ + 1
 
 1. **Introduction**: Beautiful title with animated particles
 2. **Main Formulas**: Dramatic reveal of all key equations
-3. **Separation of Variables**: Visualizing 2D → 1D × 1D decomposition
+3. **Separation of Variables**: Visualizing 2D -> 1D × 1D decomposition
 4. **Hermite Polynomials**: Plots of H₀ through H₅
 5. **1D Wavefunctions**: Normalized wavefunctions for n=0,1,2,3
 6. **2D Wavefunctions**: Epic 3D surface plots with rotating camera

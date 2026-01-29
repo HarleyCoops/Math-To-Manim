@@ -86,7 +86,7 @@ class ThreeJSOutput:
         with open(js_path, 'w') as f:
             f.write(self.js_code)
 
-        print(f"✓ ThreeJS files saved:")
+        print(f"[OK] ThreeJS files saved:")
         print(f"  - {html_path}")
         print(f"  - {js_path}")
 
@@ -194,7 +194,7 @@ Return ONLY the code, no explanations. Generate two outputs:
             has_animation=True
         )
 
-        print(f"\n✓ Three.js code generated:")
+        print(f"\n[OK] Three.js code generated:")
         print(f"  HTML: {len(html_code)} characters")
         print(f"  JS:   {len(js_code)} characters")
 
@@ -234,13 +234,13 @@ Convert the above Manim animation specification to an interactive Three.js visua
 - Anti-aliased renderer with proper pixel ratio
 
 **Animation Mapping:**
-- Manim "FadeIn" → Three.js opacity animation (0 → 1)
-- Manim "Transform" → Three.js morph targets or geometry lerp
-- Manim "Write" → Progressive line drawing or text reveal
-- Manim "Create" → Scale animation (0 → 1)
-- Manim "Indicate" → Pulse/glow effect
-- Manim "Rotate" → Quaternion/euler rotation tween
-- Manim camera movements → OrbitControls + GSAP/tween.js
+- Manim "FadeIn" -> Three.js opacity animation (0 -> 1)
+- Manim "Transform" -> Three.js morph targets or geometry lerp
+- Manim "Write" -> Progressive line drawing or text reveal
+- Manim "Create" -> Scale animation (0 -> 1)
+- Manim "Indicate" -> Pulse/glow effect
+- Manim "Rotate" -> Quaternion/euler rotation tween
+- Manim camera movements -> OrbitControls + GSAP/tween.js
 
 **Mathematical Rendering:**
 - Use BufferGeometry for parametric surfaces
@@ -248,17 +248,17 @@ Convert the above Manim animation specification to an interactive Three.js visua
 - Use TextGeometry or CSS2DRenderer for labels
 - Use custom shaders for color mapping
 
-**Color Mapping (Manim → Three.js hex):**
-- BLUE → 0x3b82f6
-- RED → 0xef4444
-- GREEN → 0x22c55e
-- YELLOW → 0xeab308
-- PURPLE → 0xa855f7
-- ORANGE → 0xf97316
-- TEAL → 0x14b8a6
-- GOLD → 0xfbbf24
-- WHITE → 0xffffff
-- GRAY → 0x6b7280
+**Color Mapping (Manim -> Three.js hex):**
+- BLUE -> 0x3b82f6
+- RED -> 0xef4444
+- GREEN -> 0x22c55e
+- YELLOW -> 0xeab308
+- PURPLE -> 0xa855f7
+- ORANGE -> 0xf97316
+- TEAL -> 0x14b8a6
+- GOLD -> 0xfbbf24
+- WHITE -> 0xffffff
+- GRAY -> 0x6b7280
 
 {"**Interactive Controls:**" if include_controls else ""}
 {"- OrbitControls: rotate (left-click), zoom (scroll), pan (right-click)" if include_controls else ""}

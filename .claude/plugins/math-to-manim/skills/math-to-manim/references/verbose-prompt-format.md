@@ -20,7 +20,7 @@ constructed knowledge tree. Each concept is explained with mathematical rigor
 and visual clarity, building from foundational ideas to advanced understanding.
 
 **Total Concepts**: {CONCEPT_COUNT}
-**Progression**: {CONCEPT_1} → {CONCEPT_2} → ... → {TARGET_CONCEPT}
+**Progression**: {CONCEPT_1} -> {CONCEPT_2} -> ... -> {TARGET_CONCEPT}
 **Estimated Duration**: {TOTAL_SECONDS} seconds ({MINUTES}:{SECONDS:02d})
 
 ## Animation Requirements
@@ -195,7 +195,7 @@ corner for the next scene.
 
 ## Common Pitfalls to Avoid
 
-1. **Vague descriptions**: "Show the equation" → "Display r'$E=mc^2$' using MathTex() in BLUE at TOP"
+1. **Vague descriptions**: "Show the equation" -> "Display r'$E=mc^2$' using MathTex() in BLUE at TOP"
 2. **Missing positions**: Always specify where elements appear
 3. **Unclear timing**: Include duration for each animation
 4. **No transitions**: Explicitly describe how scenes connect

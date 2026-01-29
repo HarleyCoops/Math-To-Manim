@@ -150,7 +150,7 @@ def topological_sort(root: KnowledgeNode) -> List[KnowledgeNode]:
         result.append(node)
 
     dfs(root)
-    return result  # Foundation → Target order
+    return result  # Foundation -> Target order
 ```
 
 This ensures:

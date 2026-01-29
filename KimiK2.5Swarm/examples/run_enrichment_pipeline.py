@@ -62,15 +62,15 @@ async def main_async(tree_path: Path) -> None:
     root = load_tree(tree_path)
     pipeline = KimiEnrichmentPipeline()
 
-    print("\nRunning enrichment chain (math ➜ visuals ➜ narrative)...")
+    print("\nRunning enrichment chain (math  visuals  narrative)...")
     result = await pipeline.run_async(root)
 
     save_tree(tree_path, result.enriched_tree)
-    print(f"\n✓ Enriched tree written to {tree_path}")
+    print(f"\n[OK] Enriched tree written to {tree_path}")
 
     narrative_file = tree_path.with_name(f"{tree_path.stem}_narrative.txt")
     narrative_file.write_text(result.narrative.verbose_prompt, encoding="utf-8")
-    print(f"✓ Narrative prompt written to {narrative_file}")
+    print(f"[OK] Narrative prompt written to {narrative_file}")
 
 
 def main() -> None:

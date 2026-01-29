@@ -88,7 +88,7 @@ self.move_camera(...)  # Multiple angles
   - Final 60°/60° = Detail inspection angle
 - **Black Background** = Cosmic vacuum analogy
 
-# Critical Physics-to-Visual Mappings 🔄
+# Critical Physics-to-Visual Mappings 
 
 ## A. **Mexican Hat Potential**
 ```python
@@ -114,7 +114,7 @@ update_higgs_field(mob, alpha): new_radius = 5*alpha + 0.1
 - **Purple Color** = Distinction from red potential
 - **Transparency** = Pervasive but invisible field
 
-# Key Execution Notes 💻
+# Key Execution Notes 
 1. **Camera Anchoring**:
    - `add_fixed_in_frame_mobjects` keeps 2D elements stable during 3D rotation
 

@@ -170,7 +170,7 @@ Most AI code generators learn patterns from examples.
 Math-To-Manim does something different:
 It thinks like a teacher.
 
-Here's how... 🧵
+Here's how... 
 
 **Tweet 2**:
 When you ask "explain cosmology," it doesn't search for templates.
@@ -224,7 +224,7 @@ The innovation: No training data required. Just Claude Sonnet 4.5's reasoning + 
 
 What topics should we add next?
 
-🔗 [Link to repo]
+ [Link to repo]
 
 ---
 

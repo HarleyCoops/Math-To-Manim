@@ -159,9 +159,9 @@ Before committing, verify:
 ### Common Pitfalls
 
 1. **LaTeX Syntax Errors**:
-   - Unescaped underscores: `E_0` → `E\_0` in strings
-   - Mismatched braces: `\frac{1{2}` → `\frac{1}{2}`
-   - Missing backslashes: `alpha` → `\alpha`
+   - Unescaped underscores: `E_0` -> `E\_0` in strings
+   - Mismatched braces: `\frac{1{2}` -> `\frac{1}{2}`
+   - Missing backslashes: `alpha` -> `\alpha`
 
 2. **Performance Issues**:
    - Too many objects on screen at once

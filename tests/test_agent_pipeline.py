@@ -49,12 +49,12 @@ def test_individual_agents():
     print("="*70)
     analyzer = ConceptAnalyzer()
     analysis = analyzer.analyze(user_input)
-    print(f"✓ Core concept: {analysis['core_concept']}")
+    print(f"[OK] Core concept: {analysis['core_concept']}")
     print(f"  Domain: {analysis['domain']}")
     print(f"  Level: {analysis['level']}")
     assert 'core_concept' in analysis
     assert 'domain' in analysis
-    print("✅ ConceptAnalyzer PASSED")
+    print("[DONE] ConceptAnalyzer PASSED")
 
     # Test 2: PrerequisiteExplorer
     print("\n" + "="*70)
@@ -62,10 +62,10 @@ def test_individual_agents():
     print("="*70)
     explorer = PrerequisiteExplorer(max_depth=2)
     tree = explorer.explore(analysis['core_concept'])
-    print(f"✓ Built tree for: {tree.concept}")
+    print(f"[OK] Built tree for: {tree.concept}")
     tree.print_tree()
     assert tree.concept == analysis['core_concept']
-    print("✅ PrerequisiteExplorer PASSED")
+    print("[DONE] PrerequisiteExplorer PASSED")
 
     # Test 3: MathematicalEnricher
     print("\n" + "="*70)
@@ -73,10 +73,10 @@ def test_individual_agents():
     print("="*70)
     enricher = MathematicalEnricher()
     enriched = enricher.enrich_tree(tree)
-    print(f"✓ Enriched tree with math content")
+    print(f"[OK] Enriched tree with math content")
     assert enriched.equations is not None or len(enriched.prerequisites) > 0
     print(f"  Equations for {enriched.concept}: {len(enriched.equations or [])} found")
-    print("✅ MathematicalEnricher PASSED")
+    print("[DONE] MathematicalEnricher PASSED")
 
     # Test 4: VisualDesigner
     print("\n" + "="*70)
@@ -84,10 +84,10 @@ def test_individual_agents():
     print("="*70)
     designer = VisualDesigner()
     designed = designer.design_tree(enriched)
-    print(f"✓ Designed visual specs")
+    print(f"[OK] Designed visual specs")
     assert designed.visual_spec is not None
     print(f"  Visual elements: {designed.visual_spec.get('elements', [])[:3]}")
-    print("✅ VisualDesigner PASSED")
+    print("[DONE] VisualDesigner PASSED")
 
     # Test 5: NarrativeComposer
     print("\n" + "="*70)
@@ -95,14 +95,14 @@ def test_individual_agents():
     print("="*70)
     composer = NarrativeComposer()
     narrative = composer.compose(designed)
-    print(f"✓ Composed narrative")
+    print(f"[OK] Composed narrative")
     print(f"  Prompt length: {len(narrative.verbose_prompt)} chars")
     print(f"  Scene count: {narrative.scene_count}")
     assert len(narrative.verbose_prompt) > 500  # Should be verbose!
-    print("✅ NarrativeComposer PASSED")
+    print("[DONE] NarrativeComposer PASSED")
 
     print("\n" + "="*70)
-    print("✅ ALL INDIVIDUAL AGENT TESTS PASSED!")
+    print("[DONE] ALL INDIVIDUAL AGENT TESTS PASSED!")
     print("="*70)
 
 
@@ -122,7 +122,7 @@ def test_orchestrator():
 
     user_input = "Visualize Newton's second law"
 
-    print(f"\n📝 Testing with input: \"{user_input}\"")
+    print(f"\n[NOTE] Testing with input: \"{user_input}\"")
 
     result = orchestrator.process(
         user_input=user_input,
@@ -135,22 +135,22 @@ def test_orchestrator():
     print("="*70)
 
     assert result.target_concept is not None, "Missing target concept"
-    print(f"✓ Target concept: {result.target_concept}")
+    print(f"[OK] Target concept: {result.target_concept}")
 
     assert result.knowledge_tree is not None, "Missing knowledge tree"
-    print(f"✓ Knowledge tree: {len(str(result.knowledge_tree))} chars")
+    print(f"[OK] Knowledge tree: {len(str(result.knowledge_tree))} chars")
 
     assert len(result.verbose_prompt) > 500, "Prompt too short"
-    print(f"✓ Verbose prompt: {len(result.verbose_prompt)} chars")
+    print(f"[OK] Verbose prompt: {len(result.verbose_prompt)} chars")
 
     if result.manim_code:
         assert "from manim import" in result.manim_code, "Invalid Manim code"
-        print(f"✓ Manim code: {len(result.manim_code)} chars")
+        print(f"[OK] Manim code: {len(result.manim_code)} chars")
 
     assert len(result.concept_order) > 0, "Empty concept order"
-    print(f"✓ Concept order: {' → '.join(result.concept_order)}")
+    print(f"[OK] Concept order: {' -> '.join(result.concept_order)}")
 
-    print("\n✅ ORCHESTRATOR TEST PASSED!")
+    print("\n[DONE] ORCHESTRATOR TEST PASSED!")
 
 
 def test_quick_run():
@@ -173,12 +173,12 @@ def test_quick_run():
     ]
 
     for prompt in test_prompts:
-        print(f"\n📝 Testing: \"{prompt}\"")
+        print(f"\n[NOTE] Testing: \"{prompt}\"")
         result = orchestrator.process(prompt, output_dir="test_output")
-        print(f"   ✓ Generated {len(result.verbose_prompt)} char prompt")
-        print(f"   ✓ {result.scene_count} scenes")
+        print(f"   [OK] Generated {len(result.verbose_prompt)} char prompt")
+        print(f"   [OK] {result.scene_count} scenes")
 
-    print("\n✅ QUICK INTEGRATION TEST PASSED!")
+    print("\n[DONE] QUICK INTEGRATION TEST PASSED!")
 
 
 def main():
@@ -186,7 +186,7 @@ def main():
 
     # Verify API key
     if not os.getenv("ANTHROPIC_API_KEY"):
-        print("\n❌ ERROR: ANTHROPIC_API_KEY not set!")
+        print("\n[FAIL] ERROR: ANTHROPIC_API_KEY not set!")
         print("\nPlease create a .env file with:")
         print("  ANTHROPIC_API_KEY=your_key_here")
         return 1
@@ -204,7 +204,7 @@ def main():
 
     try:
         # Run test suites
-        print("\n🧪 Starting tests...\n")
+        print("\n[TEST] Starting tests...\n")
 
         # Test 1: Individual agents
         test_individual_agents()
@@ -217,16 +217,16 @@ def main():
 
         # Final summary
         print("\n" + "="*70)
-        print("🎉 ALL TESTS PASSED! 🎉")
+        print("[SUCCESS] ALL TESTS PASSED! [SUCCESS]")
         print("="*70)
         print("\nThe Reverse Knowledge Tree agent pipeline is working correctly!")
         print("\nWhat was tested:")
-        print("  ✓ ConceptAnalyzer - parsing user intent")
-        print("  ✓ PrerequisiteExplorer - building knowledge trees")
-        print("  ✓ MathematicalEnricher - adding equations")
-        print("  ✓ VisualDesigner - designing animations")
-        print("  ✓ NarrativeComposer - generating verbose prompts")
-        print("  ✓ ReverseKnowledgeTreeOrchestrator - full pipeline")
+        print("  [OK] ConceptAnalyzer - parsing user intent")
+        print("  [OK] PrerequisiteExplorer - building knowledge trees")
+        print("  [OK] MathematicalEnricher - adding equations")
+        print("  [OK] VisualDesigner - designing animations")
+        print("  [OK] NarrativeComposer - generating verbose prompts")
+        print("  [OK] ReverseKnowledgeTreeOrchestrator - full pipeline")
         print("\nYou can now use the agents to generate Manim animations!")
         print("\nNext steps:")
         print("  1. Try: python src/agents/orchestrator.py")
@@ -237,7 +237,7 @@ def main():
 
     except Exception as e:
         print("\n" + "="*70)
-        print("❌ TEST FAILED!")
+        print("[FAIL] TEST FAILED!")
         print("="*70)
         print(f"\nError: {e}")
         import traceback

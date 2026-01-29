@@ -49,7 +49,7 @@ User: Create an animation explaining the Pythagorean theorem
 
 Claude: [Uses Math-To-Manim skill to:]
 1. Analyze the concept
-2. Build prerequisite tree (angles → triangles → squares → theorem)
+2. Build prerequisite tree (angles -> triangles -> squares -> theorem)
 3. Enrich with LaTeX equations
 4. Design visual specifications
 5. Generate 2000+ token verbose prompt

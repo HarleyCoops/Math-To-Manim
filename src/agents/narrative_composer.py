@@ -295,7 +295,7 @@ constructed knowledge tree. Each concept is explained with mathematical rigor
 and visual clarity, building from foundational ideas to advanced understanding.
 
 **Total Concepts**: {len(segments)}
-**Progression**: {' → '.join(concept_order)}
+**Progression**: {' -> '.join(concept_order)}
 **Estimated Duration**: {total_duration} seconds ({total_duration // 60}:{total_duration % 60:02d})
 
 ## Animation Requirements
@@ -362,7 +362,7 @@ def demo():
 ║     NARRATIVE COMPOSER - Claude Sonnet 4.5 Version               ║
 ║                                                                   ║
 ║  Composes verbose LaTeX-rich prompts from knowledge trees:       ║
-║  - Topologically sorted (foundation → target)                    ║
+║  - Topologically sorted (foundation -> target)                    ║
 ║  - 2000+ token detailed descriptions                             ║
 ║  - Complete Manim specifications                                 ║
 ║  - Pedagogically sound progression                               ║

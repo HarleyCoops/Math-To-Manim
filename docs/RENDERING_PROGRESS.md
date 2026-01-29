@@ -22,7 +22,7 @@
      - Replaced `DotCloud` with `VGroup` of `Dot` objects
    - Location: `media/videos/fractal_scene/480p15/FractalQuantumTransition_ManimCE_v0.19.0.gif`
 
-### 🔄 Currently Rendering
+###  Currently Rendering
 
 3. **gravitational_wave.py** - GravitationalWaveVisualization
    - Status: RENDERING (Background process ffd0d2)
