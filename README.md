@@ -16,13 +16,17 @@
 <!-- AI Models / LLMs -->
 [![Claude Sonnet 4.5](https://img.shields.io/badge/Claude-Sonnet%204.5-blueviolet)](https://www.anthropic.com)
 [![Gemini 3](https://img.shields.io/badge/Gemini-3-4285F4?logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
-[![Kimi K2](https://img.shields.io/badge/Kimi-K2-00D4AA)](https://kimi.moonshot.cn/)
+[![Kimi K2.5](https://img.shields.io/badge/Kimi-K2.5%20Swarm-00D4AA)](https://kimi.moonshot.cn/)
 [![DeepSeek R1](https://img.shields.io/badge/DeepSeek-R1-536DFE)](https://www.deepseek.com/)
 [![Grok 3](https://img.shields.io/badge/Grok-3-000000)](https://x.ai/)
 
 </div>
 
 [![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=date&legend=top-left)](https://www.star-history.com/#HarleyCoops/Math-To-Manim&type=date&legend=top-left)
+
+---
+
+> **January 29, 2026** - The **Kimi Agent pipeline has been upgraded from K2 Thinking to the K2.5 Swarm architecture**. This brings significant improvements to chain-of-thought reasoning and multi-agent coordination. If you've used the Kimi pipeline before, I encourage you to give this new version a try!
 
 ---
 
@@ -126,12 +130,12 @@ Math-To-Manim offers **three distinct AI pipelines**. Choose based on your API a
 
 ### Pipeline Comparison
 
-| Feature | Gemini 3 (Google ADK) | Claude Sonnet 4.5 | Kimi K2 |
+| Feature | Gemini 3 (Google ADK) | Claude Sonnet 4.5 | Kimi K2.5 |
 |:--------|:---------------------|:------------------|:--------|
 | **Framework** | Google Agent Development Kit | Anthropic Agent SDK | OpenAI-compatible API |
-| **Architecture** | Six-Agent Swarm | Six-Agent Pipeline | Three-Stage Enrichment |
-| **Strengths** | Complex topology, physics reasoning | Reliable code generation, recursion | Chain-of-thought, structured tools |
-| **Best For** | Advanced 3D math, Kerr metrics | General purpose, production use | LaTeX-heavy explanations |
+| **Architecture** | Six-Agent Swarm | Six-Agent Pipeline | Six-Agent Swarm |
+| **Strengths** | Complex topology, physics reasoning | Reliable code generation, recursion | Chain-of-thought, multi-agent coordination |
+| **Best For** | Advanced 3D math, Kerr metrics | General purpose, production use | LaTeX-heavy explanations, structured reasoning |
 | **Setup Complexity** | Moderate | Simple | Simple |
 
 ---
@@ -184,11 +188,11 @@ The Claude pipeline uses the **Anthropic Agent SDK** with automatic context mana
 
 ---
 
-## Pipeline 3: Kimi K2 Thinking Model
+## Pipeline 3: Kimi K2.5 Swarm
 
 **Location**: `KimiK2Thinking/`
 
-The Kimi pipeline uses Moonshot AI's **K2 thinking model** with an OpenAI-compatible API and tool-calling interface.
+The Kimi pipeline uses Moonshot AI's **K2.5 Swarm architecture** with an OpenAI-compatible API, six-agent coordination, and enhanced chain-of-thought reasoning.
 
 ### How It Works
 
@@ -385,7 +389,7 @@ MIT License - See [LICENSE](LICENSE)
 - **Manim Community** - Incredible animation framework
 - **Anthropic** - Claude Sonnet 4.5 and Agent SDK
 - **Google** - Gemini 3 and Agent Development Kit
-- **Moonshot AI** - Kimi K2 thinking model
+- **Moonshot AI** - Kimi K2.5 Swarm architecture
 - **1400+ Stargazers** - Thank you for the support!
 
 ---
