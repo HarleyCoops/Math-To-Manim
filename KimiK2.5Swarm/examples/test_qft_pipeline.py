@@ -225,7 +225,6 @@ def check_node_data(node: KnowledgeNode, failures: List) -> None:
     for prereq in node.prerequisites:
         check_node_data(prereq, failures)
 
-
 if __name__ == "__main__":
     try:
         asyncio.run(test_pipeline())
@@ -237,4 +236,5 @@ if __name__ == "__main__":
         import traceback
         traceback.print_exc()
         sys.exit(1)
+
 
