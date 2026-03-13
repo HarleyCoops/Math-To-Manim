@@ -91,7 +91,7 @@ pytest tests/test_kimi_k2_prerequisite_explorer.py -v -k "not test_basic_api_cal
 ## Structure
 
 ```
-KimiK2Thinking/
+KimiK2.5Swarm/
 ├── README.md                    # This file
 ├── kimi_client.py               # Kimi K2 API client wrapper
 ├── tool_adapter.py              # Tool call to verbose instruction converter
@@ -124,7 +124,7 @@ KimiK2Thinking/
 
 4. **Verify Setup**: Run the test script:
    ```bash
-   python KimiK2Thinking/examples/test_kimi_integration.py
+   python KimiK2.5Swarm/examples/test_kimi_integration.py
    ```
 
 ## Key Differences from Claude Implementation
@@ -146,7 +146,7 @@ KimiK2Thinking/
 ### Basic Usage
 
 ```python
-from KimiK2Thinking.agents.prerequisite_explorer_kimi import KimiPrerequisiteExplorer
+from KimiK2.5Swarm.agents.prerequisite_explorer_kimi import KimiPrerequisiteExplorer
 import asyncio
 
 async def main():
@@ -160,7 +160,7 @@ asyncio.run(main())
 ### Direct API Usage
 
 ```python
-from KimiK2Thinking.kimi_client import KimiClient
+from KimiK2.5Swarm.kimi_client import KimiClient
 
 client = KimiClient()
 response = client.chat_completion(
@@ -175,7 +175,7 @@ print(client.get_text_content(response))
 When tools aren't available, the adapter converts them to verbose instructions:
 
 ```python
-from KimiK2Thinking.tool_adapter import ToolAdapter
+from KimiK2.5Swarm.tool_adapter import ToolAdapter
 
 adapter = ToolAdapter()
 tools = [...]  # Your tool definitions
@@ -188,8 +188,8 @@ instructions = adapter.tools_to_instructions(tools)
 Run the full enrichment chain on an existing knowledge tree:
 
 ```python
-from KimiK2Thinking.agents.enrichment_chain import KimiEnrichmentPipeline
-from KimiK2Thinking.agents.prerequisite_explorer_kimi import KnowledgeNode
+from KimiK2.5Swarm.agents.enrichment_chain import KimiEnrichmentPipeline
+from KimiK2.5Swarm.agents.prerequisite_explorer_kimi import KnowledgeNode
 import asyncio
 
 async def main():
@@ -217,7 +217,7 @@ Run the enrichment pipeline from the command line:
 
 ```bash
 # Run enrichment on an existing tree JSON file
-python KimiK2Thinking/examples/run_enrichment_pipeline.py path/to/tree.json
+python KimiK2.5Swarm/examples/run_enrichment_pipeline.py path/to/tree.json
 
 # This will:
 # 1. Load the tree JSON

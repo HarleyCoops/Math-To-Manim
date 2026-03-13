@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 # Add paths for Kimi K2 imports
 project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root / "KimiK2Thinking"))
+sys.path.insert(0, str(project_root / "KimiK2.5Swarm"))
 
 load_dotenv()
 

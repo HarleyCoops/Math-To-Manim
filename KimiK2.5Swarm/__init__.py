@@ -1,5 +1,5 @@
 """
-KimiK2Thinking - Knowledge tree enrichment pipeline using Kimi K2.5.
+KimiK2.5Swarm - Knowledge tree enrichment pipeline using Kimi K2.5.
 
 This package provides a comprehensive system for:
 - Building prerequisite knowledge trees
@@ -14,7 +14,7 @@ Key Components:
 - KimiEnrichmentPipeline: Legacy-compatible pipeline interface
 
 Example:
-    from KimiK2Thinking import (
+    from KimiK2.5Swarm import (
         KimiClient,
         PrerequisiteExplorer,
         KimiEnrichmentPipeline,

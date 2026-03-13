@@ -1,5 +1,5 @@
 """
-Tool infrastructure for KimiK2Thinking.
+Tool infrastructure for KimiK2.5Swarm.
 
 Provides centralized tool management, parallel execution, and built-in tools.
 """

@@ -18,12 +18,12 @@ from dotenv import load_dotenv
 
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
-sys.path.insert(0, str(project_root / "KimiK2Thinking"))
+sys.path.insert(0, str(project_root / "KimiK2.5Swarm"))
 
 load_dotenv()
 
-from KimiK2Thinking.agents.enrichment_chain import KimiEnrichmentPipeline
-from KimiK2Thinking.agents.prerequisite_explorer_kimi import (
+from agents.enrichment_chain import KimiEnrichmentPipeline
+from agents.prerequisite_explorer_kimi import (
     KimiPrerequisiteExplorer,
     KnowledgeNode,
 )

@@ -20,15 +20,12 @@ from typing import List, Dict, Optional
 from dataclasses import dataclass, asdict
 from dotenv import load_dotenv
 
-# Add src/agents directory to path for imports
+# Add project root to path for imports
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(project_root, 'src', 'agents'))
+sys.path.insert(0, project_root)
 
-from prerequisite_explorer_claude import (
-    ConceptAnalyzer,
-    PrerequisiteExplorer,
-    KnowledgeNode
-)
+from src.agents.prerequisite_explorer import ConceptAnalyzer, PrerequisiteExplorer
+from src.agents.knowledge_node import KnowledgeNode
 
 load_dotenv()
 

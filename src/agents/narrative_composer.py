@@ -342,9 +342,9 @@ colors, and animations.
 
 def demo():
     """Demo the narrative composer on a complete knowledge tree"""
-    from prerequisite_explorer_claude import PrerequisiteExplorer, ConceptAnalyzer
-    from mathematical_enricher import MathematicalEnricher
-    from visual_designer import VisualDesigner
+    from src.agents.prerequisite_explorer import PrerequisiteExplorer, ConceptAnalyzer
+    from src.agents.mathematical_enricher import MathematicalEnricher
+    from src.agents.visual_designer import VisualDesigner
 
     print("""
 ╔═══════════════════════════════════════════════════════════════════╗

@@ -313,8 +313,8 @@ Example for "Special Relativity":
 
 def demo():
     """Demo the visual designer on a sample knowledge tree"""
-    from prerequisite_explorer_claude import PrerequisiteExplorer, ConceptAnalyzer
-    from mathematical_enricher import MathematicalEnricher
+    from src.agents.prerequisite_explorer import PrerequisiteExplorer, ConceptAnalyzer
+    from src.agents.mathematical_enricher import MathematicalEnricher
 
     print("""
 ╔═══════════════════════════════════════════════════════════════════╗

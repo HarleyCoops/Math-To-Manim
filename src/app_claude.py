@@ -255,7 +255,7 @@ with gr.Blocks(theme="soft", title="Math-To-Manim - Claude Sonnet 4.5") as iface
 
         **Powered by**: Claude Sonnet 4.5's superior reasoning capabilities
 
-        See `prerequisite_explorer_claude.py` for the working prototype.
+        See `src/agents/prerequisite_explorer.py` for the working prototype.
         """)
 
         gr.Image(

@@ -1,5 +1,5 @@
 """
-Models layer for KimiK2Thinking.
+Models layer for KimiK2.5Swarm.
 
 Provides data structures used throughout the enrichment pipeline.
 """

@@ -125,7 +125,7 @@ Math-To-Manim/
 │   ├── integration/           # Integration tests
 │   └── e2e/                   # End-to-end tests
 │
-├── KimiK2Thinking/           # Alternative pipeline using Kimi K2
+├── KimiK2.5Swarm/           # Alternative pipeline using Kimi K2
 └── docs/                     # Documentation
 ```
 

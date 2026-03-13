@@ -1,5 +1,5 @@
 """
-Built-in tools for the KimiK2Thinking enrichment pipeline.
+Built-in tools for the KimiK2.5Swarm enrichment pipeline.
 
 Defines the tool schemas and placeholder implementations for:
 - Mathematical content enrichment

@@ -37,10 +37,10 @@ Math-To-Manim is a mature research/production hybrid project with a novel six-ag
 | Line | Issue |
 |------|-------|
 | 33 | Typo: "CLaude" → "Claude" |
-| 192 | Pipeline 3 path: `KimiK2Thinking/` → `KimiK2.5Swarm/` |
+| 192 | Pipeline 3 path: `KimiK2.5Swarm/` → `KimiK2.5Swarm/` |
 | 207-211 | All Kimi file paths reference wrong directory |
 | 276 | `skill/` directory doesn't exist; plugin is at `.claude/plugins/math-to-manim/` |
-| 289 | Another `KimiK2Thinking/` reference |
+| 289 | Another `KimiK2.5Swarm/` reference |
 | 371 | `skill/README.md` link is broken |
 
 **Fix**: Update all path references to match actual directory structure.
@@ -168,7 +168,7 @@ Legacy code tracked in the main branch adds confusion.
 
 **Fix**: Update to current pipelines and real links.
 
-### 16. `pytest.ini` Ignores `KimiK2Thinking` (Old Name)
+### 16. `pytest.ini` Ignores `KimiK2.5Swarm` (Old Name)
 
 Should ignore `KimiK2.5Swarm` instead.
 

@@ -1,5 +1,5 @@
 """
-Swarm orchestration for KimiK2Thinking.
+Swarm orchestration for KimiK2.5Swarm.
 
 Provides parallel enrichment and multi-agent coordination.
 """

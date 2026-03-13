@@ -16,12 +16,12 @@
 
 4. **Test the integration**:
    ```bash
-   python KimiK2Thinking/examples/test_kimi_integration.py
+   python KimiK2.5Swarm/examples/test_kimi_integration.py
    ```
 
 ## Configuration Options
 
-All configuration is in `KimiK2Thinking/config.py` or via environment variables:
+All configuration is in `KimiK2.5Swarm/config.py` or via environment variables:
 
 - `MOONSHOT_API_KEY`: Your Moonshot AI API key (required)
 - `KIMI_MODEL`: Model name (default: "moonshot-v1-8k")
@@ -51,7 +51,7 @@ All configuration is in `KimiK2Thinking/config.py` or via environment variables:
 If you get import errors, make sure you're running from the project root:
 ```bash
 cd /path/to/Math-To-Manim
-python KimiK2Thinking/examples/test_kimi_integration.py
+python KimiK2.5Swarm/examples/test_kimi_integration.py
 ```
 
 ### API Key Not Found

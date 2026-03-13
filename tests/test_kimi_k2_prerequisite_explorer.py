@@ -1,5 +1,5 @@
 """
-Unit Tests for KimiK2Thinking PrerequisiteExplorer
+Unit Tests for KimiK2.5Swarm PrerequisiteExplorer
 
 Tests the Kimi K2 implementation using Moonshot AI API.
 These tests are completely separate from the Claude/Anthropic tests.
@@ -16,11 +16,11 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Add KimiK2Thinking to path
+# Add KimiK2.5Swarm to path
 import sys
 from pathlib import Path
 project_root = Path(__file__).parent.parent
-kimi_path = project_root / "KimiK2Thinking"
+kimi_path = project_root / "KimiK2.5Swarm"
 sys.path.insert(0, str(kimi_path))
 
 # Import the Kimi K2 agents to test

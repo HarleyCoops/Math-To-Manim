@@ -1,5 +1,5 @@
 """
-Agents layer for KimiK2Thinking.
+Agents layer for KimiK2.5Swarm.
 
 Provides specialized agents for knowledge tree building and enrichment:
 - PrerequisiteExplorer: Builds prerequisite knowledge trees

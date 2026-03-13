@@ -1,5 +1,5 @@
 """
-Configuration for KimiK2Thinking - Dataclass-based configuration system.
+Configuration for KimiK2.5Swarm - Dataclass-based configuration system.
 
 This module provides centralized, type-safe configuration using dataclasses
 and enums, following the K2.5 patterns.

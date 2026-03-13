@@ -254,7 +254,7 @@ Example response for "Newton's Second Law":
 
 def demo():
     """Demo the mathematical enricher on a sample knowledge tree"""
-    from prerequisite_explorer_claude import PrerequisiteExplorer, ConceptAnalyzer
+    from src.agents.prerequisite_explorer import PrerequisiteExplorer, ConceptAnalyzer
 
     print("""
 ╔═══════════════════════════════════════════════════════════════════╗
