@@ -87,8 +87,10 @@ One of the most valuable contributions you can make is to add new examples of ma
 
 5. Set up environment variables:
    ```bash
-   # Create .env file with your API key
-   echo "DEEPSEEK_API_KEY=your_key_here" > .env
+   # Create .env file with your preferred API key
+   echo "ANTHROPIC_API_KEY=your_key_here" > .env    # For Claude
+   echo "GOOGLE_API_KEY=your_key_here" >> .env       # For Gemini
+   echo "MOONSHOT_API_KEY=your_key_here" >> .env     # For Kimi
    ```
 
 ## Pull Request Process
@@ -126,9 +128,7 @@ One of the most valuable contributions you can make is to add new examples of ma
 
 ## Community
 
-- Join our [Discord server](https://discord.gg/example) to connect with other contributors
-- Follow the project on [Twitter](https://twitter.com/example) for updates
-- Check out the [project website](https://example.com) for more information
+- Report issues and contribute at [GitHub](https://github.com/HarleyCoops/Math-To-Manim)
 
 Thank you for contributing to Math-To-Manim!
 
