@@ -23,51 +23,27 @@ from dataclasses import dataclass, field
 from typing import Optional
 from datetime import datetime
 
-from anthropic import Anthropic, NotFoundError
 from dotenv import load_dotenv
 
 # Import all agents
+from src.agents.knowledge_node import KnowledgeNode
+from src.agents.prerequisite_explorer import (
+    ConceptAnalyzer,
+    PrerequisiteExplorer,
+    CLAUDE_MODEL,
+)
+from src.agents.llm_client import AnthropicClient
+from src.agents.mathematical_enricher import MathematicalEnricher
+from src.agents.visual_designer import VisualDesigner
+from src.agents.narrative_composer import NarrativeComposer, Narrative
+from src.agents.threejs_code_generator import ThreeJSCodeGenerator, ThreeJSOutput
+
 try:
-    from src.agents.prerequisite_explorer_claude import (
-        ConceptAnalyzer,
-        PrerequisiteExplorer,
-        KnowledgeNode,
-        CLAUDE_MODEL
-    )
-    from src.agents.mathematical_enricher import MathematicalEnricher
-    from src.agents.visual_designer import VisualDesigner
-    from src.agents.narrative_composer import NarrativeComposer, Narrative
-    from src.agents.threejs_code_generator import ThreeJSCodeGenerator, ThreeJSOutput
     from src.agents.claude_agent_runtime import run_query_via_sdk
 except ImportError:
-    try:
-        from prerequisite_explorer_claude import (
-            ConceptAnalyzer,
-            PrerequisiteExplorer,
-            KnowledgeNode,
-            CLAUDE_MODEL
-        )
-        from mathematical_enricher import MathematicalEnricher
-        from visual_designer import VisualDesigner
-        from narrative_composer import NarrativeComposer, Narrative
-        from threejs_code_generator import ThreeJSCodeGenerator, ThreeJSOutput
-        from claude_agent_runtime import run_query_via_sdk
-    except ImportError:
-        raise ImportError("Could not import required agents")
+    run_query_via_sdk = None  # type: ignore[assignment]
 
 load_dotenv()
-
-CLI_CLIENT: Optional[Anthropic] = None
-
-
-def _ensure_client() -> Anthropic:
-    global CLI_CLIENT
-    if CLI_CLIENT is None:
-        api_key = os.getenv("ANTHROPIC_API_KEY")
-        if not api_key:
-            raise RuntimeError("ANTHROPIC_API_KEY environment variable not set.")
-        CLI_CLIENT = Anthropic(api_key=api_key)
-    return CLI_CLIENT
 
 
 @dataclass
@@ -182,10 +158,14 @@ class ReverseKnowledgeTreeOrchestrator:
         self.enable_code_generation = enable_code_generation
         self.enable_threejs_generation = enable_threejs_generation
 
+        # Create shared LLM client
+        self._llm_client = AnthropicClient(model=model)
+        self._anthropic = self._llm_client._client  # for direct API calls
+
         # Initialize all agents
-        self.concept_analyzer = ConceptAnalyzer(model=model)
+        self.concept_analyzer = ConceptAnalyzer(client=self._llm_client)
         self.prerequisite_explorer = PrerequisiteExplorer(
-            model=model,
+            client=self._llm_client,
             max_depth=max_tree_depth
         )
         self.mathematical_enricher = MathematicalEnricher(model=model)
@@ -386,22 +366,12 @@ Return ONLY the Python code, no explanations."""
 
 Return complete Python code that can be run directly."""
 
-        try:
-            response = _ensure_client().messages.create(
-                model=self.model,
-                max_tokens=8000,
-                temperature=0.3,
-                system=system_prompt,
-                messages=[{"role": "user", "content": user_prompt}],
-            )
-            content = response.content[0].text
-        except NotFoundError:
-            content = run_query_via_sdk(
-                user_prompt,
-                system_prompt=system_prompt,
-                temperature=0.3,
-                max_tokens=8000,
-            )
+        content = self._llm_client.query(
+            user_prompt=user_prompt,
+            system_prompt=system_prompt,
+            temperature=0.3,
+            max_tokens=8000,
+        )
 
         # Extract code from markdown if needed
         if "```python" in content:

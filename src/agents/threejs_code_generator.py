@@ -25,16 +25,7 @@ except ImportError:
     except ImportError:
         run_query_via_sdk = None  # type: ignore[assignment]
 
-CLAUDE_MODEL = "claude-opus-4-5-20251101"
-try:
-    from src.agents.prerequisite_explorer_claude import CLAUDE_MODEL as _CLAUDE_MODEL
-    CLAUDE_MODEL = _CLAUDE_MODEL
-except ImportError:
-    try:
-        from prerequisite_explorer_claude import CLAUDE_MODEL as _CLAUDE_MODEL
-        CLAUDE_MODEL = _CLAUDE_MODEL
-    except ImportError:
-        pass
+from src.agents.prerequisite_explorer import CLAUDE_MODEL
 
 load_dotenv()
 
