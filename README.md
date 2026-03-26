@@ -28,14 +28,14 @@
 
 ## Claude Code Learns Manim
 
-**Use Math-To-Manim directly in Claude Code** — no setup required. Just install the skill and start creating animations with natural language.
+**Use Math-To-Manim directly in Claude Code** — no setup required. Just load the bundled plugin and start creating animations with natural language.
 
 ### Quick Install
 
 ```bash
-# Clone and run with the skill
+# Clone and run with the bundled plugin
 git clone https://github.com/HarleyCoops/Math-To-Manim.git
-claude --plugin-dir ./Math-To-Manim/skill
+claude --plugin-dir ./Math-To-Manim/.claude/plugins/math-to-manim
 ```
 
 ### What You Can Do
@@ -63,7 +63,7 @@ No training data. No examples needed. Pure LLM reasoning builds pedagogically so
 <summary><b>Skill Directory Structure</b></summary>
 
 ```
-skill/
+.claude/plugins/math-to-manim/
 ├── .claude-plugin/plugin.json
 └── skills/math-to-manim/
     ├── SKILL.md                       # Core workflow definition
