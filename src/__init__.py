@@ -1,41 +1,15 @@
 """Top-level package for the Math-To-Manim agent system."""
 
-# Use absolute imports
-try:
-    from src.agents import (
-        AtlasClient,
-        AtlasConcept,
-        ConceptAnalyzer,
-        NomicNotInstalledError,
-        PrerequisiteExplorer,
-        VideoReviewAgent,
-        VideoReviewResult,
-    )
-except ImportError:
-    # This allows importing from the src directory directly
-    try:
-        from agents import (
-            AtlasClient,
-            AtlasConcept,
-            ConceptAnalyzer,
-            NomicNotInstalledError,
-            PrerequisiteExplorer,
-            VideoReviewAgent,
-            VideoReviewResult,
-        )
-    except ImportError:
-        # Direct imports as last resort
-        from src.agents.prerequisite_explorer_claude import ConceptAnalyzer, PrerequisiteExplorer
-        from src.agents.video_review_agent import VideoReviewAgent, VideoReviewResult
-        from src.agents.nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError
+__version__ = "0.1.0"
+
+from src.agents.knowledge_node import KnowledgeNode
+from src.agents.prerequisite_explorer import ConceptAnalyzer, PrerequisiteExplorer
+from src.agents.llm_client import create_client, LLMClient
 
 __all__ = [
-    "AtlasClient",
-    "AtlasConcept",
     "ConceptAnalyzer",
-    "NomicNotInstalledError",
+    "KnowledgeNode",
+    "LLMClient",
     "PrerequisiteExplorer",
-    "VideoReviewAgent",
-    "VideoReviewResult",
+    "create_client",
 ]
-

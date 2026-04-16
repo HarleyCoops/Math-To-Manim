@@ -344,7 +344,7 @@ Return format: ["concept1", "concept2", "concept3"]'''
                         section = section[4:]
                     try:
                         return json.loads(section.strip())
-                    except:
+                    except (json.JSONDecodeError, ValueError):
                         continue
             else:
                 # Extract JSON array using regex
@@ -352,7 +352,7 @@ Return format: ["concept1", "concept2", "concept3"]'''
                 if match:
                     try:
                         return json.loads(match.group(0))
-                    except:
+                    except (json.JSONDecodeError, ValueError):
                         pass
 
             # Last resort: try to extract quoted strings

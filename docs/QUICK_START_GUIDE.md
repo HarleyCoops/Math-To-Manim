@@ -9,27 +9,27 @@ Welcome to Math-To-Manim! This guide will help you get started quickly with the 
 The repository is now organized by topic. Navigate to the category that interests you:
 
 **Physics Animations**
-- [Quantum Mechanics](examples/physics/quantum/) - QED, QFT, quantum field theory
-- [Gravity](examples/physics/gravity/) - Gravitational waves, general relativity
-- [Nuclear Physics](examples/physics/nuclear/) - Atomic structure, radioactive decay
-- [Particle Physics](examples/physics/particle_physics/) - Electroweak symmetry, interactions
+- [Quantum Mechanics](../examples/physics/quantum/) - QED, QFT, quantum field theory
+- [Gravity](../examples/physics/gravity/) - Gravitational waves, general relativity
+- [Nuclear Physics](../examples/physics/nuclear/) - Atomic structure, radioactive decay
+- [Particle Physics](../examples/physics/particle_physics/) - Electroweak symmetry, interactions
 
 **Mathematics Animations**
-- [Geometry](examples/mathematics/geometry/) - Pythagorean theorem, polyhedra
-- [Analysis](examples/mathematics/analysis/) - Optimal transport, diffusion
-- [Fractals](examples/mathematics/fractals/) - Fractal patterns
-- [Statistics](examples/mathematics/statistics/) - Information geometry, Brownian motion
-- [Trigonometry](examples/mathematics/trigonometry/) - Trig identities
+- [Geometry](../examples/mathematics/geometry/) - Pythagorean theorem, polyhedra
+- [Analysis](../examples/mathematics/analysis/) - Optimal transport, diffusion
+- [Fractals](../examples/mathematics/fractals/) - Fractal patterns
+- [Statistics](../examples/mathematics/statistics/) - Information geometry, Brownian motion
+- [Trigonometry](../examples/mathematics/trigonometry/) - Trig identities
 
 **Computer Science Animations**
-- [Machine Learning](examples/computer_science/machine_learning/) - Neural networks, attention
-- [Algorithms](examples/computer_science/algorithms/) - Gale-Shapley, sorting
-- [Spatial Reasoning](examples/computer_science/spatial_reasoning/) - 3D tests
+- [Machine Learning](../examples/computer_science/machine_learning/) - Neural networks, attention
+- [Algorithms](../examples/computer_science/algorithms/) - Gale-Shapley, sorting
+- [Spatial Reasoning](../examples/computer_science/spatial_reasoning/) - 3D tests
 
 **Other Topics**
-- [Cosmology](examples/cosmology/) - Cosmic evolution, probability
-- [Finance](examples/finance/) - Option pricing
-- [Miscellaneous](examples/misc/) - Experimental animations
+- [Cosmology](../examples/cosmology/) - Cosmic evolution, probability
+- [Finance](../examples/finance/) - Option pricing
+- [Miscellaneous](../examples/misc/) - Experimental animations
 
 ### 2. Install Dependencies
 
@@ -117,22 +117,22 @@ src/
 ### Finding Examples by Difficulty
 
 **Beginner** (Good for learning Manim basics):
-- [pythagorean.py](examples/mathematics/geometry/pythagorean.py)
-- [bouncing_balls.py](examples/mathematics/geometry/bouncing_balls.py)
-- [stickman.py](examples/misc/stickman.py)
-- [TrigInference.py](examples/mathematics/trigonometry/TrigInference.py)
+- [pythagorean.py](../examples/mathematics/geometry/pythagorean.py)
+- [bouncing_balls.py](../examples/mathematics/geometry/bouncing_balls.py)
+- [stickman.py](../examples/misc/stickman.py)
+- [TrigInference.py](../examples/mathematics/trigonometry/TrigInference.py)
 
 **Intermediate** (Requires domain knowledge):
-- [fractal_scene.py](examples/mathematics/fractals/fractal_scene.py)
-- [gale_shaply.py](examples/computer_science/algorithms/gale_shaply.py)
-- [AlexNet.py](examples/computer_science/machine_learning/AlexNet.py)
-- [optionskew.py](examples/finance/optionskew.py)
+- [fractal_scene.py](../examples/mathematics/fractals/fractal_scene.py)
+- [gale_shaply.py](../examples/computer_science/algorithms/gale_shaply.py)
+- [AlexNet.py](../examples/computer_science/machine_learning/AlexNet.py)
+- [optionskew.py](../examples/finance/optionskew.py)
 
 **Advanced** (Complex mathematical concepts):
-- [QED.py](examples/physics/quantum/QED.py)
-- [diffusion_optimal_transport.py](examples/mathematics/analysis/diffusion_optimal_transport.py)
-- [information_geometry.py](examples/mathematics/statistics/information_geometry.py)
-- [ElectroweakSymmetryScene.py](examples/physics/particle_physics/ElectroweakSymmetryScene.py)
+- [QED.py](../examples/physics/quantum/QED.py)
+- [diffusion_optimal_transport.py](../examples/mathematics/analysis/diffusion_optimal_transport.py)
+- [information_geometry.py](../examples/mathematics/statistics/information_geometry.py)
+- [ElectroweakSymmetryScene.py](../examples/physics/particle_physics/ElectroweakSymmetryScene.py)
 
 ### Creating Course Materials
 
@@ -204,7 +204,7 @@ This will take much longer but produces 4K quality output.
 
 ## What's Next?
 
-1. **Browse Examples**: Explore the [examples/](examples/) directory
+1. **Browse Examples**: Explore the [examples/](../examples/) directory
 2. **Read Core Docs**: Understand the [reverse knowledge tree](docs/REVERSE_KNOWLEDGE_TREE.md) approach
 3. **Try the Interface**: Run `python src/app_claude.py` to use the Gradio UI
 4. **Contribute**: Add your own examples following the guidelines

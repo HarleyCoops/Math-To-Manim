@@ -15,21 +15,13 @@ This Claude Code skill provides a complete workflow for generating mathematical 
 
 ## Installation
 
-### Option 1: Install from GitHub
-
-```bash
-# Using skills.sh (coming soon)
-npx skills add HarleyCoops/Math-To-Manim/skill
-```
-
-### Option 2: Local Installation
-
 ```bash
 # Clone the repository
 git clone https://github.com/HarleyCoops/Math-To-Manim.git
+cd Math-To-Manim
 
-# Run Claude Code with the plugin
-claude --plugin-dir ./Math-To-Manim/skill
+# Run Claude Code with the bundled plugin
+claude --plugin-dir ./.claude/plugins/math-to-manim
 ```
 
 ## Usage
@@ -67,7 +59,7 @@ This builds pedagogically sound animations that flow naturally from foundation c
 ## Directory Structure
 
 ```
-skill/
+.claude/plugins/math-to-manim/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin manifest
 ├── skills/

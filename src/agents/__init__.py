@@ -2,46 +2,55 @@
 
 from __future__ import annotations
 
-# Import core agents with graceful fallbacks so test environments without the
-# Claude Agent SDK still work.
-try:
-    from src.agents.prerequisite_explorer_claude import ConceptAnalyzer, PrerequisiteExplorer, KnowledgeNode
-except ImportError:
-    from prerequisite_explorer_claude import ConceptAnalyzer, PrerequisiteExplorer, KnowledgeNode  # type: ignore
+# Canonical data structures
+from src.agents.knowledge_node import KnowledgeNode
 
+# Unified prerequisite explorer and concept analyzer
+from src.agents.prerequisite_explorer import (
+    ConceptAnalyzer,
+    PrerequisiteExplorer,
+    CLAUDE_MODEL,
+)
+
+# LLM client interface
+from src.agents.llm_client import (
+    LLMClient,
+    AnthropicClient,
+    DeepSeekClient,
+    KimiClient,
+    create_client,
+)
+
+# Enrichment agents
 try:
     from src.agents.mathematical_enricher import MathematicalEnricher, MathematicalContent
 except ImportError:
-    from mathematical_enricher import MathematicalEnricher, MathematicalContent  # type: ignore
+    MathematicalEnricher = None  # type: ignore[assignment]
+    MathematicalContent = None  # type: ignore[assignment]
 
 try:
     from src.agents.visual_designer import VisualDesigner, VisualSpec
 except ImportError:
-    from visual_designer import VisualDesigner, VisualSpec  # type: ignore
+    VisualDesigner = None  # type: ignore[assignment]
+    VisualSpec = None  # type: ignore[assignment]
 
 try:
     from src.agents.narrative_composer import NarrativeComposer, Narrative
 except ImportError:
-    from narrative_composer import NarrativeComposer, Narrative  # type: ignore
+    NarrativeComposer = None  # type: ignore[assignment]
+    Narrative = None  # type: ignore[assignment]
 
 try:
     from src.agents.video_review_agent import VideoReviewAgent, VideoReviewResult
 except ImportError:
-    from video_review_agent import VideoReviewAgent, VideoReviewResult  # type: ignore
+    VideoReviewAgent = None  # type: ignore[assignment]
+    VideoReviewResult = None  # type: ignore[assignment]
 
 try:
     from src.agents.threejs_code_generator import ThreeJSCodeGenerator, ThreeJSOutput
 except ImportError:
-    try:
-        from threejs_code_generator import ThreeJSCodeGenerator, ThreeJSOutput  # type: ignore
-    except ImportError:
-        ThreeJSCodeGenerator = None  # type: ignore[assignment]
-        ThreeJSOutput = None  # type: ignore[assignment]
-
-try:
-    from src.agents.nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError
-except ImportError:
-    from nomic_atlas_client import AtlasClient, AtlasConcept, NomicNotInstalledError  # type: ignore
+    ThreeJSCodeGenerator = None  # type: ignore[assignment]
+    ThreeJSOutput = None  # type: ignore[assignment]
 
 try:
     from src.agents.orchestrator import ReverseKnowledgeTreeOrchestrator, AnimationResult
@@ -50,34 +59,32 @@ except ImportError:
     AnimationResult = None  # type: ignore[assignment]
 
 __all__ = [
+    # Core types
+    "KnowledgeNode",
+    "CLAUDE_MODEL",
+    # LLM clients
+    "LLMClient",
+    "AnthropicClient",
+    "DeepSeekClient",
+    "KimiClient",
+    "create_client",
     # Core agents
     "ConceptAnalyzer",
     "PrerequisiteExplorer",
     "MathematicalEnricher",
     "VisualDesigner",
     "NarrativeComposer",
-
     # Code generators
     "ThreeJSCodeGenerator",
-
-    # Orchestrator (optional)
+    # Orchestrator
     "ReverseKnowledgeTreeOrchestrator",
-
     # Data structures
-    "KnowledgeNode",
     "MathematicalContent",
     "VisualSpec",
     "Narrative",
     "AnimationResult",
     "ThreeJSOutput",
-
     # Video review
     "VideoReviewAgent",
     "VideoReviewResult",
-
-    # Atlas integration
-    "AtlasClient",
-    "AtlasConcept",
-    "NomicNotInstalledError",
 ]
-

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="ClaudeCodeManim.jpeg" alt="Claude Code Manim" width="100%">
+  <img src="public/hero.jpeg" alt="Claude Code Manim" width="100%">
 </p>
 
 # Math-To-Manim
@@ -36,16 +36,16 @@
 
 ---
 
-## CLaude Code Learns Manim
+## Claude Code Learns Manim
 
-**Use Math-To-Manim directly in Claude Code** — no setup required. Just install the skill and start creating animations with natural language.
+**Use Math-To-Manim directly in Claude Code** — no setup required. Just load the bundled plugin and start creating animations with natural language.
 
 ### Quick Install
 
 ```bash
-# Clone and run with the skill
+# Clone and run with the bundled plugin
 git clone https://github.com/HarleyCoops/Math-To-Manim.git
-claude --plugin-dir ./Math-To-Manim/skill
+claude --plugin-dir ./Math-To-Manim/.claude/plugins/math-to-manim
 ```
 
 ### What You Can Do
@@ -73,7 +73,7 @@ No training data. No examples needed. Pure LLM reasoning builds pedagogically so
 <summary><b>Skill Directory Structure</b></summary>
 
 ```
-skill/
+.claude/plugins/math-to-manim/
 ├── .claude-plugin/plugin.json
 └── skills/math-to-manim/
     ├── SKILL.md                       # Core workflow definition
@@ -196,7 +196,7 @@ The Claude pipeline uses the **Anthropic Agent SDK** with automatic context mana
 
 ## Pipeline 3: Kimi K2.5 Swarm
 
-**Location**: `KimiK2Thinking/`
+**Location**: `KimiK2.5Swarm/`
 
 The Kimi pipeline uses Moonshot AI's **K2.5 Swarm architecture** with an OpenAI-compatible API, six-agent coordination, and enhanced chain-of-thought reasoning.
 
@@ -211,17 +211,17 @@ The Kimi pipeline uses Moonshot AI's **K2.5 Swarm architecture** with an OpenAI-
 echo "MOONSHOT_API_KEY=your_key_here" >> .env
 
 # Run prerequisite exploration
-python KimiK2Thinking/examples/test_kimi_integration.py
+python KimiK2.5Swarm/examples/test_kimi_integration.py
 
 # Run full enrichment pipeline
-python KimiK2Thinking/examples/run_enrichment_pipeline.py path/to/tree.json
+python KimiK2.5Swarm/examples/run_enrichment_pipeline.py path/to/tree.json
 ```
 
 ### Key Files
 
-- `KimiK2Thinking/kimi_client.py` - API client
-- `KimiK2Thinking/agents/enrichment_chain.py` - Three-stage pipeline
-- `KimiK2Thinking/README.md` - Complete documentation
+- `KimiK2.5Swarm/kimi_client.py` - API client
+- `KimiK2.5Swarm/agents/enrichment_chain.py` - Three-stage pipeline
+- `KimiK2.5Swarm/README.md` - Complete documentation
 
 ---
 
@@ -279,9 +279,7 @@ Browse all examples: [docs/EXAMPLES.md](docs/EXAMPLES.md)
 ```
 Math-To-Manim/
 |
-+-- skill/                  # [LAUNCH] Claude Code Skill (NEW!)
-|   +-- .claude-plugin/     # Plugin manifest
-|   +-- skills/math-to-manim/  # Skill definition & references
++-- .claude/plugins/math-to-manim/  # Claude Code Skill
 |
 +-- src/                    # Claude Sonnet 4.5 pipeline
 |   +-- agents/             # Agent implementations
@@ -292,7 +290,7 @@ Math-To-Manim/
 |   +-- docs/               # Gemini-specific docs
 |   +-- run_pipeline.py     # Entry point
 |
-+-- KimiK2Thinking/         # Kimi K2 pipeline
++-- KimiK2.5Swarm/          # Kimi K2.5 Swarm pipeline
 |   +-- agents/             # Enrichment chain
 |   +-- examples/           # Usage examples
 |
@@ -374,12 +372,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Documentation
 
-- **[Claude Code Skill](skill/README.md)** - Use Math-To-Manim in Claude Code (NEW!)
+- **[Claude Code Skill](docs/QUICK_START_GUIDE.md)** - Use Math-To-Manim in Claude Code
 - [Reverse Knowledge Tree](docs/REVERSE_KNOWLEDGE_TREE.md) - Core innovation
 - [Architecture](docs/ARCHITECTURE.md) - System design
 - [Examples Catalog](docs/EXAMPLES.md) - All 55+ animations
 - [Gemini Pipeline](Gemini3/docs/GOOGLE_ADK_AGENTS.md) - Google ADK details
-- [Kimi Pipeline](KimiK2Thinking/README.md) - Moonshot AI integration
+- [Kimi Pipeline](KimiK2.5Swarm/README.md) - Moonshot AI integration
 - [Quick Start Guide](docs/QUICK_START_GUIDE.md) - Get started fast
 
 ---
@@ -405,6 +403,8 @@ MIT License - See [LICENSE](LICENSE)
 **Built with recursive reasoning, not training data.**
 
 **Star this repo if you find it useful!**
+
+[![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=date&legend=top-left)](https://www.star-history.com/#HarleyCoops/Math-To-Manim&type=date&legend=top-left)
 
 </div>
 
