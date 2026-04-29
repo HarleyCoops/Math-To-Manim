@@ -21,10 +21,34 @@ logger = logging.getLogger(__name__)
 
 # Default model names — overridable via environment variables
 DEFAULT_CLAUDE_MODEL = os.getenv(
-    "CLAUDE_MODEL", "claude-opus-4-5-20251101"
+    "CLAUDE_MODEL", "claude-opus-4-7"
 )
 DEFAULT_DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL", "deepseek-reasoner")
 DEFAULT_KIMI_MODEL = os.getenv("KIMI_MODEL", "moonshot-v1-8k")
+
+
+def anthropic_message_params(
+    *,
+    model: str,
+    max_tokens: int,
+    system: str,
+    messages: list,
+    temperature: Optional[float] = None,
+) -> dict:
+    """Build Anthropic Messages API params across model generations.
+
+    Claude Opus 4.7 rejects the legacy ``temperature`` parameter, while older
+    project-default models still accept it. Keep callers model-agnostic.
+    """
+    params = {
+        "model": model,
+        "max_tokens": max_tokens,
+        "system": system,
+        "messages": messages,
+    }
+    if temperature is not None and model != "claude-opus-4-7":
+        params["temperature"] = temperature
+    return params
 
 
 def parse_json_response(text: str) -> object:
@@ -107,13 +131,13 @@ class AnthropicClient(LLMClient):
         max_tokens: int = 500,
         temperature: float = 0.3,
     ) -> str:
-        response = self._client.messages.create(
+        response = self._client.messages.create(**anthropic_message_params(
             model=self._model,
             max_tokens=max_tokens,
             temperature=temperature,
             system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
-        )
+        ))
         return response.content[0].text
 
     @property

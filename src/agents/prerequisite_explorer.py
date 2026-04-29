@@ -144,6 +144,10 @@ class PrerequisiteExplorer:
             prerequisites=nodes,
         )
 
+    async def explore_async(self, concept: str, depth: int = 0, **_: object) -> KnowledgeNode:
+        """Async-compatible wrapper around :meth:`explore` for orchestrator pipelines."""
+        return self.explore(concept, depth=depth)
+
     def is_foundation(self, concept: str) -> bool:
         """Return True if *concept* is understood at a high-school level."""
         self._stats["api_calls"] += 1
@@ -228,4 +232,4 @@ class ConceptAnalyzer:
 # ---------------------------------------------------------------------------
 
 # These constants are imported by other modules (mathematical_enricher, etc.)
-CLAUDE_MODEL = "claude-opus-4-5-20251101"
+CLAUDE_MODEL = "claude-opus-4-7"

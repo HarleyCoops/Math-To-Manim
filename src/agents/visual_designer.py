@@ -29,6 +29,7 @@ except ImportError:
         run_query_via_sdk = None  # type: ignore[assignment]
 
 from src.agents.knowledge_node import KnowledgeNode
+from src.agents.llm_client import anthropic_message_params
 from src.agents.prerequisite_explorer import CLAUDE_MODEL
 
 load_dotenv()
@@ -247,13 +248,13 @@ Example for "Special Relativity":
 }}'''
 
         try:
-            response = _ensure_client().messages.create(
+            response = _ensure_client().messages.create(**anthropic_message_params(
                 model=self.model,
                 max_tokens=2500,
                 temperature=0.6,  # Higher temperature for creative visual design
                 system=system_prompt,
                 messages=[{"role": "user", "content": user_prompt}],
-            )
+            ))
             content = response.content[0].text
         except NotFoundError:
             content = run_query_via_sdk(

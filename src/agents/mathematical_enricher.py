@@ -30,6 +30,7 @@ except ImportError:
         run_query_via_sdk = None  # type: ignore[assignment]
 
 from src.agents.knowledge_node import KnowledgeNode
+from src.agents.llm_client import anthropic_message_params
 from src.agents.prerequisite_explorer import CLAUDE_MODEL
 
 load_dotenv()
@@ -190,13 +191,13 @@ Example response for "Newton's Second Law":
 }}'''
 
         try:
-            response = _ensure_client().messages.create(
+            response = _ensure_client().messages.create(**anthropic_message_params(
                 model=self.model,
                 max_tokens=2000,
                 temperature=0.4,
                 system=system_prompt,
                 messages=[{"role": "user", "content": user_prompt}],
-            )
+            ))
             content = response.content[0].text
         except NotFoundError:
             content = run_query_via_sdk(

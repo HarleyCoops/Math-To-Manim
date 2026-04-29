@@ -26,6 +26,7 @@ except ImportError:
         run_query_via_sdk = None  # type: ignore[assignment]
 
 from src.agents.prerequisite_explorer import CLAUDE_MODEL
+from src.agents.llm_client import anthropic_message_params
 
 load_dotenv()
 
@@ -282,13 +283,13 @@ The HTML should:
 Return ONLY the complete HTML code starting with <!DOCTYPE html>."""
 
         try:
-            response = _ensure_client().messages.create(
+            response = _ensure_client().messages.create(**anthropic_message_params(
                 model=self.model,
                 max_tokens=12000,
                 temperature=0.3,
                 system=self.THREEJS_SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": user_prompt}],
-            )
+            ))
             content = response.content[0].text
         except NotFoundError:
             content = run_query_via_sdk(
@@ -339,13 +340,13 @@ export class ConceptVisualization {{
 Return ONLY the JavaScript code."""
 
         try:
-            response = _ensure_client().messages.create(
+            response = _ensure_client().messages.create(**anthropic_message_params(
                 model=self.model,
                 max_tokens=10000,
                 temperature=0.3,
                 system=self.THREEJS_SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": user_prompt}],
-            )
+            ))
             content = response.content[0].text
         except NotFoundError:
             content = run_query_via_sdk(

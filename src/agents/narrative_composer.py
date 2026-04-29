@@ -28,6 +28,7 @@ except ImportError:
         run_query_via_sdk = None  # type: ignore[assignment]
 
 from src.agents.knowledge_node import KnowledgeNode
+from src.agents.llm_client import anthropic_message_params
 from src.agents.prerequisite_explorer import CLAUDE_MODEL
 
 load_dotenv()
@@ -249,13 +250,13 @@ Format: A single paragraph of 200-300 words with detailed Manim instructions.
 Include all LaTeX equations with double backslashes.'''
 
         try:
-            response = _ensure_client().messages.create(
+            response = _ensure_client().messages.create(**anthropic_message_params(
                 model=self.model,
                 max_tokens=1500,
                 temperature=0.7,  # Higher for creative narrative
                 system=system_prompt,
                 messages=[{"role": "user", "content": user_prompt}],
-            )
+            ))
             segment = response.content[0].text
         except NotFoundError:
             segment = run_query_via_sdk(

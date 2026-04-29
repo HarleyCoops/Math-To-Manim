@@ -1,410 +1,358 @@
 <p align="center">
-  <img src="public/hero.jpeg" alt="Claude Code Manim" width="100%">
+  <img src="public/derivatives-as-slopes-hero.gif" alt="Math-To-Manim derivative animation hero" width="100%">
 </p>
 
 # Math-To-Manim
 
 <div align="center">
 
-<!-- Core Requirements -->
-[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![FFmpeg Required](https://img.shields.io/badge/FFmpeg-required-red)](https://ffmpeg.org/)
-[![Manim Version](https://img.shields.io/badge/manim-v0.19.0-orange)](https://www.manim.community/)
-[![GitHub Stars](https://img.shields.io/github/stars/HarleyCoops/Math-To-Manim?style=social)](https://github.com/HarleyCoops/Math-To-Manim)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![Manim CE](https://img.shields.io/badge/Manim-CE%200.19%2B-orange)](https://www.manim.community/)
+[![FFmpeg](https://img.shields.io/badge/FFmpeg-required-red)](https://ffmpeg.org/)
+[![Claude Opus 4.7](https://img.shields.io/badge/Claude-Opus%204.7-blueviolet)](https://www.anthropic.com/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-<!-- AI Models / LLMs -->
-[![Claude Sonnet 4.5](https://img.shields.io/badge/Claude-Sonnet%204.5-blueviolet)](https://www.anthropic.com)
-[![Gemini 3](https://img.shields.io/badge/Gemini-3-4285F4?logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
-[![Kimi K2.5](https://img.shields.io/badge/Kimi-K2.5%20Swarm-00D4AA)](https://kimi.moonshot.cn/)
-[![DeepSeek R1](https://img.shields.io/badge/DeepSeek-R1-536DFE)](https://www.deepseek.com/)
-[![Grok 3](https://img.shields.io/badge/Grok-3-000000)](https://x.ai/)
+**Turn a one-line math prompt into a rendered Manim video with a multi-agent reverse knowledge tree pipeline.**
 
 </div>
 
-<a href="https://www.star-history.com/#HarleyCoops/Math-To-Manim&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date" />
- </picture>
-</a>
+---
+
+## What just happened in the hero GIF?
+
+The prompt was tiny:
+
+```text
+Explain why derivatives are slopes
+```
+
+Math-To-Manim expanded it into a full agent pipeline:
+
+```text
+simple prompt
+  -> ConceptAnalyzer
+  -> PrerequisiteExplorer: "What must I understand BEFORE this?"
+  -> MathematicalEnricher
+  -> VisualDesigner
+  -> NarrativeComposer
+  -> Manim CodeGenerator
+  -> Python syntax validation / repair
+  -> Manim render
+  -> MP4 / GIF
+```
+
+The generated derivative demo built this concept chain:
+
+```text
+derivatives as slopes of tangent lines
+  +- slope of a line
+  +- functions and their graphs
+  +- limits
+  +- secant lines
+  +- linear equations
+```
+
+Then Claude generated a 400+ line Manim scene with 100+ animations, and Manim rendered the final MP4.
 
 ---
 
-> **January 29, 2026** - The **Kimi Agent pipeline has been upgraded from K2 Thinking to the K2.5 Swarm architecture**. This brings significant improvements to chain-of-thought reasoning and multi-agent coordination. If you've used the Kimi pipeline before, I encourage you to give this new version a try!
+## Why this project is different
+
+Math-To-Manim does **not** just ask an LLM to "write a Manim script."
+
+It first builds a **reverse knowledge tree**. For any requested concept, the system recursively asks:
+
+> What must someone understand before they can understand this?
+
+That produces a pedagogical dependency tree from foundations to the target idea. Later agents enrich that tree with equations, visual metaphors, scene structure, and finally executable Manim code.
+
+The result is a path from **understanding** to **animation**, not just text-to-code.
 
 ---
 
-## Claude Code Learns Manim
+## Current best demo: 10-minute multi-agent run
 
-**Use Math-To-Manim directly in Claude Code** — no setup required. Just load the bundled plugin and start creating animations with natural language.
+This is the recommended live demo because it shows the agents working in the terminal and ends with a real rendered MP4.
 
-### Quick Install
+### 1. Install
 
 ```bash
-# Clone and run with the bundled plugin
 git clone https://github.com/HarleyCoops/Math-To-Manim.git
-claude --plugin-dir ./Math-To-Manim/.claude/plugins/math-to-manim
-```
-
-### What You Can Do
-
-Once installed, just ask Claude:
-
-- *"Create a math animation about the Fourier transform"*
-- *"Animate how neural networks learn"*
-- *"Generate Manim code explaining quantum entanglement"*
-
-Claude will automatically use the **six-agent reverse knowledge tree pipeline** to:
-
-1. **Analyze** your concept and extract the core topic
-2. **Discover** prerequisites recursively (*"What must I understand BEFORE this?"*)
-3. **Enrich** each concept with LaTeX equations and definitions
-4. **Design** visual specifications (colors, animations, timing)
-5. **Compose** a 2000+ token verbose prompt
-6. **Generate** working Manim Python code
-
-### Why This Matters
-
-No training data. No examples needed. Pure LLM reasoning builds pedagogically sound animations that flow from foundations to advanced topics.
-
-<details>
-<summary><b>Skill Directory Structure</b></summary>
-
-```
-.claude/plugins/math-to-manim/
-├── .claude-plugin/plugin.json
-└── skills/math-to-manim/
-    ├── SKILL.md                       # Core workflow definition
-    ├── references/                    # Detailed documentation
-    │   ├── reverse-knowledge-tree.md  # Algorithm deep-dive
-    │   ├── agent-system-prompts.md    # All 6 agent prompts
-    │   ├── verbose-prompt-format.md   # 2000+ token template
-    │   └── manim-code-patterns.md     # Code generation patterns
-    └── examples/
-        └── pythagorean-theorem/       # Complete workflow example
-```
-
-</details>
-
-> **Requirements**: [Claude Code CLI](https://claude.ai/code) + Python 3.10+ + Manim
-
----
-
-## See It In Action
-
-<div align="center">
-
-**Brownian Motion: From Pollen to Portfolio**
-
-![Brownian Motion](public/BrownianFinance.gif)
-
-*A journey from Robert Brown's microscope to Einstein's heat equation, arriving at the Black-Scholes model for financial options pricing.*
-
----
-
-**Recursive Rhombicosidodecahedron**
-
-![Recursive Rhombicosidodecahedron](public/Rhombicosidodecahedron.gif)
-
-*A fractal Archimedean solid where every vertex spawns another complete rhombicosidodecahedron.*
-
----
-
-**The Hopf Fibration**
-
-![Teaching Hopf](public/TeachingHopf.gif)
-
-*Stereographic projection of S3 fibers creating nested tori - pure topology rendered in 3D.*
-
----
-
-**The Whiskering Exchange**
-
-![Whiskering Exchange](public/WhiskeringExchangeScene.gif)
-
-*Visualizing the commutative property of 2-cell composition in higher category theory.*
-
-</div>
-
-
-
-## Three AI Pipelines, One Goal
-
-Math-To-Manim offers **three distinct AI pipelines**. Choose based on your API access and preferences:
-
-### Pipeline Comparison
-
-| Feature | Gemini 3 (Google ADK) | Claude Sonnet 4.5 | Kimi K2.5 |
-|:--------|:---------------------|:------------------|:--------|
-| **Framework** | Google Agent Development Kit | Anthropic Agent SDK | OpenAI-compatible API |
-| **Architecture** | Six-Agent Swarm | Six-Agent Pipeline | Six-Agent Swarm |
-| **Strengths** | Complex topology, physics reasoning | Reliable code generation, recursion | Chain-of-thought, multi-agent coordination |
-| **Best For** | Advanced 3D math, Kerr metrics | General purpose, production use | LaTeX-heavy explanations, structured reasoning |
-| **Setup Complexity** | Moderate | Simple | Simple |
-
----
-
-## Pipeline 1: Google Gemini 3 (ADK)
-
-**Location**: `Gemini3/`
-
-The Gemini pipeline uses the **Google Agent Development Kit** with a six-agent swarm architecture. Each agent is a specialist with a specific role in the animation generation process.
-
-### How It Works
-
-![Gemini Pipeline Architecture](https://mermaid.ink/img/Z3JhcGggVEQKICAgIFVzZXJQcm9tcHRbVXNlciBQcm9tcHRdIC0tPiBDQQogICAgCiAgICBDQVsiPGI+MS4gQ29uY2VwdEFuYWx5emVyPC9iPjxici8+RGVjb25zdHJ1Y3RzIHByb21wdCBpbnRvOjxici8+LSBDb3JlIGNvbmNlcHQ8YnIvPi0gVGFyZ2V0IGF1ZGllbmNlPGJyLz4tIERpZmZpY3VsdHkgbGV2ZWw8YnIvPi0gTWF0aGVtYXRpY2FsIGRvbWFpbiJdCiAgICAKICAgIENBIC0tPiBQRQogICAgUEVbIjxiPjIuIFByZXJlcXVpc2l0ZUV4cGxvcmVyPC9iPjxici8+QnVpbGRzIGtub3dsZWRnZSBEQUc6PGJyLz4nV2hhdCBtdXN0IGJlIHVuZGVyc3Rvb2QgQkVGT1JFIFg/Jzxici8+UmVjdXJzaXZlbHkgZGlzY292ZXJzIGRlcGVuZGVuY2llcyJdCiAgICAKICAgIFBFIC0tPiBNRQogICAgTUVbIjxiPjMuIE1hdGhlbWF0aWNhbEVucmljaGVyPC9iPjxici8+QWRkcyB0byBlYWNoIG5vZGU6PGJyLz4tIExhVGVYIGRlZmluaXRpb25zPGJyLz4tIEtleSBlcXVhdGlvbnM8YnIvPi0gVGhlb3JlbXMvcGh5c2ljYWwgbGF3cyJdCiAgICAKICAgIE1FIC0tPiBWRAogICAgVkRbIjxiPjQuIFZpc3VhbERlc2lnbmVyPC9iPjxici8+RGVzaWducyB1c2luZyBNYW5pbSBwcmltaXRpdmVzOjxici8+LSBWaXN1YWwgbWV0YXBob3JzIChzcGhlcmUgPSBwYXJ0aWNsZSk8YnIvPi0gQ2FtZXJhIG1vdmVtZW50czxici8+LSBDb2xvciBwYWxldHRlIChoZXggY29kZXMpPGJyLz4tIFRyYW5zaXRpb25zIl0KICAgIAogICAgVkQgLS0+IE5DCiAgICBOQ1siPGI+NS4gTmFycmF0aXZlQ29tcG9zZXI8L2I+PGJyLz5XZWF2ZXMgMjAwMCsgdG9rZW4gdmVyYm9zZSBwcm9tcHQ6PGJyLz4tIEV4YWN0IExhVGVYIHN0cmluZ3M8YnIvPi0gQW5pbWF0aW9uIHRpbWluZzxici8+LSBTY2VuZS1ieS1zY2VuZSBkZXNjcmlwdGlvbiJdCiAgICAKICAgIE5DIC0tPiBDRwogICAgQ0dbIjxiPjYuIENvZGVHZW5lcmF0b3I8L2I+PGJyLz5Qcm9kdWNlcyBleGVjdXRhYmxlIE1hbmltIGNvZGU6PGJyLz4tIFRocmVlRFNjZW5lIHdpdGggY2FtZXJhIG1vdmVtZW50czxici8+LSBDb3JyZWN0IExhVGVYIHJlbmRlcmluZzxici8+LSBObyBleHRlcm5hbCBhc3NldHMgcmVxdWlyZWQiXQoKICAgIHN0eWxlIENBIGZpbGw6I2UxZjVmZSxzdHJva2U6IzAxNTc5YixzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIFBFIGZpbGw6I2ZmZjljNCxzdHJva2U6I2ZiYzAyZCxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIE1FIGZpbGw6I2UwZjJmMSxzdHJva2U6IzAwNjk1YyxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIFZEIGZpbGw6I2YzZTVmNSxzdHJva2U6Izg4MGU0ZixzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIE5DIGZpbGw6I2ZmZWJlZSxzdHJva2U6I2I3MWMxYyxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIENHIGZpbGw6I2YxZjhlOSxzdHJva2U6IzMzNjkxZSxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQK)
-
-### Quick Start
-
-```bash
-# Set API key
-echo "GOOGLE_API_KEY=your_key_here" >> .env
-
-# Run the pipeline
-python Gemini3/run_pipeline.py "Explain the Hopf Fibration"
-```
-
-### Key Files
-
-- `Gemini3/run_pipeline.py` - Entry point
-- `Gemini3/src/agents.py` - Agent definitions with system prompts
-- `Gemini3/src/pipeline.py` - Orchestration logic
-- `Gemini3/docs/GOOGLE_ADK_AGENTS.md` - Full documentation
-
----
-
-## Pipeline 2: Claude Sonnet 4.5 (Anthropic SDK)
-
-**Location**: `src/`
-
-The Claude pipeline uses the **Anthropic Agent SDK** with automatic context management and built-in tools.
-
-### How It Works
-
-![Claude Pipeline Architecture](https://mermaid.ink/img/Z3JhcGggVEQKICAgIFVzZXJQcm9tcHRbVXNlciBQcm9tcHRdIC0tPiBDQQogICAgCiAgICBDQVsiPGI+MS4gQ29uY2VwdEFuYWx5emVyPC9iPjxici8+UGFyc2VzIHByb21wdCwgaWRlbnRpZmllczo8YnIvPi0gQ29yZSBjb25jZXB0PGJyLz4tIERvbWFpbiAocGh5c2ljcywgbWF0aCwgQ1MpPGJyLz4tIFZpc3VhbGl6YXRpb24gYXBwcm9hY2giXQogICAgCiAgICBDQSAtLT4gUEUKICAgIFBFWyI8Yj4yLiBQcmVyZXF1aXNpdGVFeHBsb3JlcjwvYj48YnIvPlRIRSBLRVkgSU5OT1ZBVElPTjo8YnIvPlJlY3Vyc2l2ZWx5IGFza3MgJ1doYXQgYmVmb3JlIFg/Jzxici8+QnVpbGRzIGNvbXBsZXRlIGtub3dsZWRnZSB0cmVlPGJyLz5JZGVudGlmaWVzIGZvdW5kYXRpb24gY29uY2VwdHMiXQogICAgCiAgICBQRSAtLT4gTUUKICAgIE1FWyI8Yj4zLiBNYXRoZW1hdGljYWxFbnJpY2hlcjwvYj48YnIvPkVuc3VyZXMgbWF0aGVtYXRpY2FsIHJpZ29yOjxici8+LSBMYVRlWCBmb3IgZXZlcnkgZXF1YXRpb248YnIvPi0gQ29uc2lzdGVudCBub3RhdGlvbjxici8+LSBMaW5rcyBmb3JtdWxhcyB0byB2aXN1YWxzIl0KICAgIAogICAgTUUgLS0+IFZECiAgICBWRFsiPGI+NC4gVmlzdWFsRGVzaWduZXI8L2I+PGJyLz5TcGVjaWZpZXMgZXhhY3QgY2luZW1hdG9ncmFwaHk6PGJyLz4tIENhbWVyYSBhbmdsZXMgYW5kIG1vdmVtZW50czxici8+LSBDb2xvciBzY2hlbWVzIHdpdGggbWVhbmluZzxici8+LSBUaW1pbmcgYW5kIHRyYW5zaXRpb25zIl0KICAgIAogICAgVkQgLS0+IE5DCiAgICBOQ1siPGI+NS4gTmFycmF0aXZlQ29tcG9zZXI8L2I+PGJyLz5XYWxrcyB0cmVlIGZyb20gZm91bmRhdGlvbi0+dGFyZ2V0Ojxici8+LSAyMDAwKyB0b2tlbiB2ZXJib3NlIHByb21wdDxici8+LSBOYXJyYXRpdmUgYXJjIHRocm91Z2ggY29uY2VwdHMiXQogICAgCiAgICBOQyAtLT4gQ0cKICAgIENHWyI8Yj42LiBDb2RlR2VuZXJhdG9yPC9iPjxici8VHJhbnNsYXRlcyB0byBNYW5pbTo8YnIvPi0gV29ya2luZyBQeXRob24gc2NlbmVzPGJyLz4tIEhhbmRsZXMgTGFUZVggcmVuZGVyaW5nPGJyLz4tIDNEIGNhbWVyYSBtb3ZlbWVudHMiXQoKICAgIHN0eWxlIENBIGZpbGw6I2UxZjVmZSxzdHJva2U6IzAxNTc5YixzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIFBFIGZpbGw6I2ZmZjljNCxzdHJva2U6I2ZiYzAyZCxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIE1FIGZpbGw6I2UwZjJmMSxzdHJva2U6IzAwNjk1YyxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIFZEIGZpbGw6I2YzZTVmNSxzdHJva2U6Izg4MGU0ZixzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIE5DIGZpbGw6I2ZmZWJlZSxzdHJva2U6I2I3MWMxYyxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQKICAgIHN0eWxlIENHIGZpbGw6I2YxZjhlOSxzdHJva2U6IzMzNjkxZSxzdHJva2Utd2lkdGg6MnB4LGNvbG9yOmJsYWNrLGFsaWduOmxlZnQK)
-
-
-### Key Files
-
-- `src/app_claude.py` - Gradio UI entry point
-- `src/agents/prerequisite_explorer_claude.py` - Claude SDK agent
-- `docs/ARCHITECTURE.md` - System design details
-
----
-
-## Pipeline 3: Kimi K2.5 Swarm
-
-**Location**: `KimiK2.5Swarm/`
-
-The Kimi pipeline uses Moonshot AI's **K2.5 Swarm architecture** with an OpenAI-compatible API, six-agent coordination, and enhanced chain-of-thought reasoning.
-
-### How It Works
-
-![Kimi Pipeline Architecture](https://mermaid.ink/img/Z3JhcGggVEQKICAgIFVzZXJQcm9tcHRbVXNlciBQcm9tcHRdIC0tPiBLUEUKICAgIAogICAgS1BFWyI8Yj4xLiBLaW1pUHJlcmVxdWlzaXRlRXhwbG9yZXI8L2I+PGJyLz5CdWlsZHMga25vd2xlZGdlIHRyZWU6PGJyLz4tIFRvb2wtY2FsbGluZyBmb3Igc3RydWN0dXJlZCBvdXRwdXQ8YnIvPi0gVGhpbmtpbmcgbW9kZSBzaG93cyByZWFzb25pbmc8YnIvPi0gUmVjdXJzaXZlIGRlcGVuZGVuY3kgZGlzY292ZXJ5Il0KICAgIAogICAgS1BFIC0tPiBNRQogICAgTUVbIjxiPjIuIE1hdGhlbWF0aWNhbEVucmljaG1lbnQ8L2I+PGJyLz5UaHJlZS1zdGFnZSBlbnJpY2htZW50Ojxici8+LSBNYXRoIEVucmljaGVyOiBMYVRlWCBlcXVhdGlvbnMsIGRlZmluaXRpb25zPGJyLz4tIFZpc3VhbCBEZXNpZ25lcjogRGVzY3JpcHRpb25zIChub3QgTWFuaW0gY2xhc3Nlcyk8YnIvPi0gTmFycmF0aXZlIENvbXBvc2VyOiBDb25uZWN0cyBldmVyeXRoaW5nIl0KICAgIAogICAgTUUgLS0+IENHCiAgICBDR1siPGI+My4gQ29kZUdlbmVyYXRpb248L2I+PGJyLz5GaW5hbCBNYW5pbSBjb2RlOjxici8+LSBGb2N1c2VzIG9uIExhVGVYIHJlbmRlcmluZzxici8+LSBMZXRzIE1hbmltIGhhbmRsZSB2aXN1YWxzPGJyLz4tIFRvb2wgYWRhcHRlciBmb3IgdmVyYm9zZSBpbnN0cnVjdGlvbnMiXQoKICAgIHN0eWxlIEtQRSBmaWxsOiNmZmY5YzQsc3Ryb2tlOiNmYmMwMmQsc3Ryb2tlLXdpZHRoOjJweCxjb2xvcjpibGFjayxhbGlnbjpsZWZ0CiAgICBzdHlsZSBNRSBmaWxsOiNlMGYyZjEsc3Ryb2tlOiMwMDY5NWMsc3Ryb2tlLXdpZHRoOjJweCxjb2xvcjpibGFjayxhbGlnbjpsZWZ0CiAgICBzdHlsZSBDRyBmaWxsOiNmMWY4ZTksc3Ryb2tlOiMzMzY5MWUsc3Ryb2tlLXdpZHRoOjJweCxjb2xvcjpibGFjayxhbGlnbjpsZWZ0Cg==)
-
-### Quick Start
-
-```bash
-# Set API key
-echo "MOONSHOT_API_KEY=your_key_here" >> .env
-
-# Run prerequisite exploration
-python KimiK2.5Swarm/examples/test_kimi_integration.py
-
-# Run full enrichment pipeline
-python KimiK2.5Swarm/examples/run_enrichment_pipeline.py path/to/tree.json
-```
-
-### Key Files
-
-- `KimiK2.5Swarm/kimi_client.py` - API client
-- `KimiK2.5Swarm/agents/enrichment_chain.py` - Three-stage pipeline
-- `KimiK2.5Swarm/README.md` - Complete documentation
-
----
-
-
-
-## Installation
-
-```bash
-# Clone repository
-git clone https://github.com/HarleyCoops/Math-To-Manim
 cd Math-To-Manim
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up your preferred API key
-echo "ANTHROPIC_API_KEY=your_key" >> .env    # For Claude
-echo "GOOGLE_API_KEY=your_key" >> .env       # For Gemini
-echo "MOONSHOT_API_KEY=your_key" >> .env     # For Kimi
-
-# Install FFmpeg (required for video rendering)
-# Windows: choco install ffmpeg
-# Linux: sudo apt-get install ffmpeg
-# macOS: brew install ffmpeg
+python -m venv .venv
+source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
+pip install -e ".[dev,claude,web]"
 ```
 
----
-
-## Run Example Animations
-
-We have **55+ working examples** organized by topic:
+System dependencies:
 
 ```bash
-# Physics - Black Hole Symphony
-manim -pql examples/physics/black_hole_symphony.py BlackHoleSymphony
-
-# Mathematics - Hopf Fibration
-manim -pql examples/misc/epic_hopf.py HopfFibrationEpic
-
-# Finance - Option Pricing
-manim -pql examples/finance/optionskew.py OptionSkewScene
-
-# Computer Science - Neural Networks
-manim -pql examples/computer_science/machine_learning/AlexNet.py AlexNetScene
+ffmpeg -version
+python -m manim --version
+latex --version
 ```
 
-**Flags**: `-p` preview, `-q` quality (`l` low, `m` medium, `h` high, `k` 4K)
+Add your Anthropic key to `.env`:
 
-Browse all examples: [docs/EXAMPLES.md](docs/EXAMPLES.md)
+```bash
+ANTHROPIC_API_KEY=your_key_here
+```
+
+### 2. Run the cinematic derivative demo
+
+```bash
+python scripts/demo_10_minute_pipeline.py \
+  --prompt "Explain why derivatives are slopes" \
+  --depth 1 \
+  --style cinematic \
+  --model claude-opus-4-7
+```
+
+On Windows PowerShell:
+
+```powershell
+python scripts\demo_10_minute_pipeline.py `
+  --prompt "Explain why derivatives are slopes" `
+  --depth 1 `
+  --style cinematic `
+  --model claude-opus-4-7
+```
+
+The runner prints each stage, saves the generated artifacts, infers the Manim scene class, and renders the MP4.
+
+Typical final video path:
+
+```text
+media/videos/derivatives_as_slopes_of_tangent_lines_animation/480p15/DerivativesAsSlopes.mp4
+```
+
+### 3. Faster code-only run
+
+If you want to show the multi-agent process without waiting for Manim to render:
+
+```bash
+python scripts/demo_10_minute_pipeline.py \
+  --prompt "Explain why derivatives are slopes" \
+  --depth 1 \
+  --style cinematic \
+  --model claude-opus-4-7 \
+  --no-render
+```
 
 ---
 
-## Repository Structure
+## Demo runner options
 
+```bash
+python scripts/demo_10_minute_pipeline.py --help
 ```
-Math-To-Manim/
-|
-+-- .claude/plugins/math-to-manim/  # Claude Code Skill
-|
-+-- src/                    # Claude Sonnet 4.5 pipeline
-|   +-- agents/             # Agent implementations
-|   +-- app_claude.py       # Gradio UI
-|
-+-- Gemini3/                # Google Gemini 3 pipeline
-|   +-- src/                # Agent definitions
-|   +-- docs/               # Gemini-specific docs
-|   +-- run_pipeline.py     # Entry point
-|
-+-- KimiK2.5Swarm/          # Kimi K2.5 Swarm pipeline
-|   +-- agents/             # Enrichment chain
-|   +-- examples/           # Usage examples
-|
-+-- examples/               # 55+ working animations
-|   +-- physics/            # Quantum, gravity, particles
-|   +-- mathematics/        # Geometry, topology, analysis
-|   +-- computer_science/   # ML, algorithms
-|   +-- cosmology/          # Cosmic evolution
-|   +-- finance/            # Option pricing
-|
-+-- docs/                   # Documentation
-+-- tests/                  # Test suite
-+-- tools/                  # Utility scripts
+
+Important flags:
+
+| Flag | Purpose |
+|---|---|
+| `--prompt` | Natural-language animation request. |
+| `--depth` | Reverse knowledge tree depth. Use `1` or `2` for live demos. |
+| `--model` | Claude model ID. Current default: `claude-opus-4-7`. |
+| `--style` | `basic`, `cinematic`, or `experimental`. |
+| `--quality` | Manim render quality: `l`, `m`, `h`, `p`, `k`. Default: `l`. |
+| `--threejs` | Also generate an interactive Three.js artifact. |
+| `--no-render` | Generate code and artifacts, but skip MP4 rendering. |
+
+`cinematic` mode asks the code generator for a more polished educational-video style: dark background, visual hierarchy, geometry before algebra, readable labels, and a clear aha moment.
+
+`experimental` mode asks for a more creative metaphor while still trying to stay renderable with standard Manim CE primitives.
+
+---
+
+## Generated artifacts
+
+Each demo run writes files under:
+
+```text
+output/demo_10_minute/
+```
+
+Typical files:
+
+```text
+<concept>_tree.json       # reverse knowledge tree
+<concept>_prompt.txt      # verbose production prompt
+<concept>_animation.py    # generated Manim scene
+<concept>_result.json     # metadata and combined outputs
+```
+
+Rendered videos are written by Manim under:
+
+```text
+media/videos/
+```
+
+`output/` and `media/videos/` are generated artifacts and are intentionally gitignored.
+
+---
+
+## Architecture
+
+The default Claude pipeline lives in `src/agents/`.
+
+```text
+src/agents/
+  orchestrator.py             # coordinates the full pipeline
+  prerequisite_explorer.py    # reverse knowledge tree core
+  llm_client.py               # Anthropic / DeepSeek / Kimi client abstraction
+  mathematical_enricher.py    # equations, definitions, examples
+  visual_designer.py          # colors, layout, animation ideas
+  narrative_composer.py       # tree -> verbose production prompt
+  threejs_code_generator.py   # optional interactive web output
+```
+
+### The six main stages
+
+1. **ConceptAnalyzer**
+   - Extracts the core concept, domain, level, and learning goal.
+
+2. **PrerequisiteExplorer**
+   - Recursively asks what must be understood before the target concept.
+   - Builds a tree from foundations to the requested idea.
+
+3. **MathematicalEnricher**
+   - Adds equations, definitions, examples, and interpretation.
+
+4. **VisualDesigner**
+   - Adds visual elements, color palette, layout, timing, and transitions.
+
+5. **NarrativeComposer**
+   - Walks the tree from prerequisites to target.
+   - Produces a long, structured prompt for code generation.
+
+6. **CodeGenerator**
+   - Generates complete Manim Community Edition Python code.
+   - Validates syntax and asks the model to repair malformed code before saving.
+
+---
+
+## Python API example
+
+```python
+from dotenv import load_dotenv
+from src.agents.orchestrator import ReverseKnowledgeTreeOrchestrator
+
+load_dotenv()
+
+orchestrator = ReverseKnowledgeTreeOrchestrator(
+    model="claude-opus-4-7",
+    max_tree_depth=1,
+    enable_code_generation=True,
+    enable_threejs_generation=False,
+    creative_brief="Make this cinematic: geometry before algebra, dark palette, clear aha moment.",
+)
+
+result = orchestrator.process(
+    user_input="Explain why derivatives are slopes",
+    output_dir="output/demo_10_minute",
+)
+
+print(result.target_concept)
+print(result.verbose_prompt[:1000])
 ```
 
 ---
 
-## Why LaTeX-Rich Prompting Works
+## Render generated Manim manually
 
-### The Problem with Vague Prompts
+If you already have a generated file and scene class:
 
+```bash
+python -m manim -ql output/demo_10_minute/derivatives_as_slopes_of_tangent_lines_animation.py DerivativesAsSlopes
 ```
-"Create an animation showing quantum field theory"
+
+Use higher quality when you are ready to publish:
+
+```bash
+python -m manim -qm output/demo_10_minute/derivatives_as_slopes_of_tangent_lines_animation.py DerivativesAsSlopes
+python -m manim -qh output/demo_10_minute/derivatives_as_slopes_of_tangent_lines_animation.py DerivativesAsSlopes
 ```
-**Result**: Generic, incorrect, or broken code.
-
-### The Solution: Verbose LaTeX Prompts
-
-```
-"Begin with Minkowski spacetime showing the metric:
-
-$$ds^2 = -c^2 dt^2 + dx^2 + dy^2 + dz^2$$
-
-Each component highlighted in different hues. Introduce the QED Lagrangian:
-
-$$\mathcal{L}_{\text{QED}} = \bar{\psi}(i \gamma^\mu D_\mu - m)\psi - \tfrac{1}{4}F_{\mu\nu}F^{\mu\nu}$$
-
-with Dirac spinor $\psi$ in orange, covariant derivative $D_\mu$ in green..."
-```
-**Result**: Perfect animations with correct LaTeX, camera movements, and timing.
-
-**Our agents generate these verbose prompts automatically** by walking the knowledge tree.
 
 ---
 
-## Common Pitfalls (And How We Solve Them)
+## Rebuild the README hero GIF
 
-| Problem | Traditional Approach | Our Solution |
-|:--------|:--------------------|:-------------|
-| **LaTeX Errors** | Hope for the best | Verbose prompts show exact formulas |
-| **Vague Cinematography** | "Show quantum field" | Specify colors, angles, timing |
-| **Missing Prerequisites** | Jump to advanced topics | Recursive dependency discovery |
-| **Inconsistent Notation** | Mixed symbols | Mathematical enricher maintains consistency |
+The hero GIF is generated from the rendered derivative MP4 with FFmpeg:
 
----
+```bash
+MP4="media/videos/derivatives_as_slopes_of_tangent_lines_animation/480p15/DerivativesAsSlopes.mp4"
 
-## Technical Requirements
+ffmpeg -y -ss 95 -t 24 -i "$MP4" \
+  -vf "fps=12,scale=720:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=96[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5" \
+  public/derivatives-as-slopes-hero.gif
+```
 
-- **Python**: 3.10+
-- **API Key**: Anthropic, Google, or Moonshot
-- **FFmpeg**: For video rendering
-- **Manim Community**: v0.19.0
-- **RAM**: 8GB minimum, 16GB recommended
+This keeps the README asset small while showing the secant-line-to-tangent-line payoff.
 
 ---
 
-## Contributing
+## Other pipelines in the repo
 
-We welcome contributions:
+Math-To-Manim also contains experimental and alternative pipelines:
 
-1. **Add Examples**: Create animations for new topics
-2. **Improve Agents**: Enhance prerequisite discovery
-3. **Fix Bugs**: Report and fix issues
-4. **Documentation**: Improve guides
+| Pipeline | Location | Notes |
+|---|---|---|
+| Claude / Anthropic | `src/` | Default maintained path for the 10-minute demo. |
+| Gemini 3 / Google ADK | `Gemini3/` | Experimental Google-agent pipeline. |
+| Kimi K2.5 / Moonshot | `KimiK2.5Swarm/` | Experimental swarm-style pipeline. |
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+The root quickstart currently focuses on the Claude pipeline because it has the most reliable end-to-end prompt-to-MP4 demo path.
 
 ---
 
-## Documentation
+## Useful docs
 
-- **[Claude Code Skill](docs/QUICK_START_GUIDE.md)** - Use Math-To-Manim in Claude Code
-- [Reverse Knowledge Tree](docs/REVERSE_KNOWLEDGE_TREE.md) - Core innovation
-- [Architecture](docs/ARCHITECTURE.md) - System design
-- [Examples Catalog](docs/EXAMPLES.md) - All 55+ animations
-- [Gemini Pipeline](Gemini3/docs/GOOGLE_ADK_AGENTS.md) - Google ADK details
-- [Kimi Pipeline](KimiK2.5Swarm/README.md) - Moonshot AI integration
-- [Quick Start Guide](docs/QUICK_START_GUIDE.md) - Get started fast
+| Doc | Purpose |
+|---|---|
+| `docs/10_MINUTE_MULTI_AGENT_DEMO.md` | Presenter runbook for the live demo. |
+| `docs/REVERSE_KNOWLEDGE_TREE.md` | Core algorithm explanation. |
+| `docs/ARCHITECTURE.md` | System design details. |
+| `docs/EXAMPLES.md` | Existing generated animations. |
+| `docs/ROADMAP.md` | Project direction. |
+
+---
+
+## Troubleshooting
+
+### `ANTHROPIC_API_KEY is not set`
+
+Create `.env` in the repository root:
+
+```bash
+ANTHROPIC_API_KEY=your_key_here
+```
+
+Do not commit `.env`.
+
+### `Missing Python dependency: dotenv`
+
+Your active Python environment does not have the project dependencies installed. Run:
+
+```bash
+pip install -e ".[dev,claude,web]"
+```
+
+### `manim` command not found
+
+Use the module form; it works even when the console script is not on PATH:
+
+```bash
+python -m manim --version
+python -m manim -ql generated_file.py SceneName
+```
+
+### Windows and WSL environments are separate
+
+Installing dependencies in Windows Python does not install them into WSL Python. If you run from WSL, create and activate a WSL venv and install the project there.
 
 ---
 
 ## License
 
-MIT License - See [LICENSE](LICENSE)
-
----
-
-## Acknowledgments
-
-- **Manim Community** - Incredible animation framework
-- **Anthropic** - Claude Sonnet 4.5 and Agent SDK
-- **Google** - Gemini 3 and Agent Development Kit
-- **Moonshot AI** - Kimi K2.5 Swarm architecture
-- **1400+ Stargazers** - Thank you for the support!
-
----
-
-<div align="center">
-
-**Built with recursive reasoning, not training data.**
-
-**Star this repo if you find it useful!**
-
-[![Star History Chart](https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=date&legend=top-left)](https://www.star-history.com/#HarleyCoops/Math-To-Manim&type=date&legend=top-left)
-
-</div>
-
+MIT. See `LICENSE`.

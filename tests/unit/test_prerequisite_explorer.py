@@ -46,6 +46,20 @@ class TestPrerequisiteExplorer:
         assert tree.is_foundation is True
         assert tree.prerequisites == []
 
+    def test_explore_async_wraps_sync_explore_for_orchestrators(self):
+        """Async orchestrators can call the unified sync explorer API."""
+        import asyncio
+
+        client = MockClient()
+        client.add_response("velocity", "yes")
+        explorer = PrerequisiteExplorer(client, max_depth=3)
+
+        tree = asyncio.run(explorer.explore_async("velocity", verbose=True))
+
+        assert tree.concept == "velocity"
+        assert tree.is_foundation is True
+        assert tree.prerequisites == []
+
     def test_explore_with_prerequisites(self):
         client = MockClient()
         # "momentum" is NOT a foundation

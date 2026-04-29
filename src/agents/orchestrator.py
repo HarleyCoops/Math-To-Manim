@@ -13,12 +13,13 @@ Supports dual output modes:
 - Manim: Traditional video rendering (MP4)
 - Three.js: Interactive web-based 3D visualization (HTML/JS)
 
-Uses Claude Sonnet 4.5 via the Anthropic Claude Agent SDK.
+Uses Claude via the Anthropic Messages API.
 """
 
 import os
 import json
 import asyncio
+import ast
 from dataclasses import dataclass, field
 from typing import Optional
 from datetime import datetime
@@ -87,28 +88,28 @@ class AnimationResult:
         base_path = os.path.join(output_dir, safe_concept)
 
         # Save verbose prompt
-        with open(f"{base_path}_prompt.txt", 'w') as f:
+        with open(f"{base_path}_prompt.txt", 'w', encoding='utf-8') as f:
             f.write(self.verbose_prompt)
 
         # Save knowledge tree
-        with open(f"{base_path}_tree.json", 'w') as f:
+        with open(f"{base_path}_tree.json", 'w', encoding='utf-8') as f:
             json.dump(self.knowledge_tree, f, indent=2)
 
         # Save Manim code if generated
         if self.manim_code:
-            with open(f"{base_path}_animation.py", 'w') as f:
+            with open(f"{base_path}_animation.py", 'w', encoding='utf-8') as f:
                 f.write(self.manim_code)
 
         # Save Three.js code if generated
         if self.threejs_html:
-            with open(f"{base_path}_threejs.html", 'w') as f:
+            with open(f"{base_path}_threejs.html", 'w', encoding='utf-8') as f:
                 f.write(self.threejs_html)
         if self.threejs_js:
-            with open(f"{base_path}_threejs.js", 'w') as f:
+            with open(f"{base_path}_threejs.js", 'w', encoding='utf-8') as f:
                 f.write(self.threejs_js)
 
         # Save complete result metadata
-        with open(f"{base_path}_result.json", 'w') as f:
+        with open(f"{base_path}_result.json", 'w', encoding='utf-8') as f:
             json.dump(self.to_dict(), f, indent=2)
 
         print(f"\n[OK] Results saved to {output_dir}/")
@@ -141,7 +142,8 @@ class ReverseKnowledgeTreeOrchestrator:
         enable_code_generation: bool = True,
         enable_threejs_generation: bool = False,
         enable_atlas: bool = False,
-        atlas_dataset: str = "math-to-manim-concepts"
+        atlas_dataset: str = "math-to-manim-concepts",
+        creative_brief: Optional[str] = None,
     ):
         """
         Initialize the orchestrator with all agents.
@@ -157,6 +159,7 @@ class ReverseKnowledgeTreeOrchestrator:
         self.model = model
         self.enable_code_generation = enable_code_generation
         self.enable_threejs_generation = enable_threejs_generation
+        self.creative_brief = creative_brief
 
         # Create shared LLM client
         self._llm_client = AnthropicClient(model=model)
@@ -200,13 +203,16 @@ class ReverseKnowledgeTreeOrchestrator:
 
         print("""
 ╔═══════════════════════════════════════════════════════════════════╗
-║  REVERSE KNOWLEDGE TREE PIPELINE - Claude Sonnet 4.5             ║
+║  REVERSE KNOWLEDGE TREE PIPELINE                                  ║
 ║                                                                   ║
 ║  Transforming your prompt into a Manim animation...              ║
 ║  Using recursive prerequisite discovery (no training data!)      ║
 ╚═══════════════════════════════════════════════════════════════════╝
 """)
         print(f"\n[NOTE] USER INPUT: \"{user_input}\"\n")
+        print(f"[MODEL] Claude model: {self.model}")
+        if self.creative_brief:
+            print("[STYLE] Cinematic/creative demo directives enabled")
 
         # ===================================================================
         # STEP 1: Concept Analysis
@@ -277,6 +283,15 @@ class ReverseKnowledgeTreeOrchestrator:
         print(f"  Scenes: {narrative.scene_count}")
         print(f"  Duration: {narrative.total_duration} seconds")
 
+        if self.creative_brief:
+            narrative.verbose_prompt = f"""{narrative.verbose_prompt}
+
+## Cinematic Demo Upgrade
+
+{self.creative_brief}
+"""
+            print("  Creative brief: appended cinematic production directives")
+
         # ===================================================================
         # STEP 6: Code Generation (Optional - Manim and/or Three.js)
         # ===================================================================
@@ -344,7 +359,7 @@ class ReverseKnowledgeTreeOrchestrator:
     async def _generate_manim_code_async(self, verbose_prompt: str) -> str:
         """Generate Manim Python code from the verbose prompt"""
 
-        system_prompt = """You are an expert Manim Community Edition animator.
+        system_prompt = """You are an expert Manim Community Edition animator and educational film director.
 
 Generate complete, working Python code that implements the animation
 described in the prompt.
@@ -357,6 +372,10 @@ Requirements:
 - Include all specified visual elements, colors, animations
 - Follow the scene sequence exactly
 - Ensure code is runnable with: manim -pql file.py SceneName
+- Aim for first-render excellence: cohesive palette, readable typography,
+  opacity layering, breathing room after important reveals, and a clear
+  geometric aha moment before symbolic algebra.
+- Prefer robust Manim CE v0.19+ primitives over fragile custom tricks.
 
 Return ONLY the Python code, no explanations."""
 
@@ -370,7 +389,7 @@ Return complete Python code that can be run directly."""
             user_prompt=user_prompt,
             system_prompt=system_prompt,
             temperature=0.3,
-            max_tokens=8000,
+            max_tokens=16000,
         )
 
         # Extract code from markdown if needed
@@ -381,7 +400,46 @@ Return complete Python code that can be run directly."""
         else:
             code = content.strip()
 
+        try:
+            ast.parse(code)
+        except SyntaxError as exc:
+            print(f"  [WARN] Generated code had a syntax error; asking Claude to repair it: {exc}")
+            code = await self._repair_manim_code_async(code, str(exc))
+
         return code
+
+    async def _repair_manim_code_async(self, code: str, error: str) -> str:
+        """Ask the active Claude model to repair malformed generated Manim code."""
+
+        system_prompt = """You repair Python/Manim Community Edition code.
+
+Return ONLY a complete corrected Python file. Do not explain the fix.
+Preserve the scene's visual intent, but prioritize syntactically valid,
+renderable Manim CE v0.19+ code."""
+
+        user_prompt = f"""The generated Manim code failed Python syntax validation.
+
+Syntax error:
+{error}
+
+Code to repair:
+```python
+{code}
+```
+
+Return the complete corrected Python code."""
+
+        content = self._llm_client.query(
+            user_prompt=user_prompt,
+            system_prompt=system_prompt,
+            max_tokens=16000,
+        )
+
+        if "```python" in content:
+            return content.split("```python")[1].split("```")[0].strip()
+        if "```" in content:
+            return content.split("```")[1].split("```")[0].strip()
+        return content.strip()
 
 
 def demo():

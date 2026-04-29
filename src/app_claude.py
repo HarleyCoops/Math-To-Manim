@@ -1,6 +1,6 @@
 """
 Math-To-Manim Web Interface
-Powered by Claude Opus 4.5 and the Claude Agent SDK
+Powered by Claude via the Anthropic Messages API
 """
 
 import os
@@ -10,6 +10,7 @@ from typing import Optional
 from dotenv import load_dotenv
 import gradio as gr
 from anthropic import Anthropic
+from src.agents.llm_client import anthropic_message_params
 
 # Local agent imports (support both package and script execution)
 try:  # pragma: no cover - import shim
@@ -25,11 +26,11 @@ except ImportError:  # pragma: no cover - fallback when running as `python src/a
 # Load environment variables from .env file
 load_dotenv()
 
-# Initialize Anthropic client for Claude Opus 4.5
+# Initialize Anthropic client
 client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 # Model configuration
-CLAUDE_MODEL = "claude-opus-4-5-20251101"  # Latest Opus 4.5
+CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-4-7")
 
 # Optional video review agent (used once we have generated output)
 video_review_agent: Optional[VideoReviewAgent] = None
@@ -86,7 +87,7 @@ Transform the user's simple description into a comprehensive, 2000+ token prompt
 The output should be detailed enough for an AI to generate working Manim Community Edition code."""
 
     try:
-        response = client.messages.create(
+        response = client.messages.create(**anthropic_message_params(
             model=CLAUDE_MODEL,
             max_tokens=4000,
             temperature=0.7,
@@ -95,7 +96,7 @@ The output should be detailed enough for an AI to generate working Manim Communi
                 "role": "user",
                 "content": f"Create a detailed Manim animation prompt for: {simple_prompt}"
             }]
-        )
+        ))
 
         return format_latex(response.content[0].text)
     except Exception as e:
@@ -155,13 +156,13 @@ Always format LaTeX with proper escaping and use MathTex() for equations."""
 
     # Call the Claude API
     try:
-        response = client.messages.create(
+        response = client.messages.create(**anthropic_message_params(
             model=CLAUDE_MODEL,
             max_tokens=4000,
             temperature=0.7,
             system=system_prompt,
             messages=messages
-        )
+        ))
 
         answer = format_latex(response.content[0].text)
         return answer
