@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from math_to_manim.agents.base import StageAgent
 from math_to_manim.schemas import RenderResult, ValidationIssue, VideoReviewReport
-from math_to_manim.review import score_video_file
+from math_to_manim.rendering import probe_video
+from math_to_manim.review import score_video_file, score_video_probe
 
 
 class VideoReviewAgent(StageAgent[RenderResult, VideoReviewReport]):
@@ -26,12 +29,26 @@ class VideoReviewAgent(StageAgent[RenderResult, VideoReviewReport]):
                 recommendations=["Run Manim after local dependencies are installed, then rerun video review."],
                 metadata={"render_status": render_result.status},
             )
-        score = score_video_file(render_result.output_path)
+        probe = probe_video(render_result.output_path)
+        if probe.ok:
+            score = score_video_probe(
+                probe,
+                file_size_bytes=Path(render_result.output_path).stat().st_size,
+                min_duration_seconds=1.0,
+                min_width=640,
+                min_height=360,
+            )
+        else:
+            score = score_video_file(render_result.output_path)
         return VideoReviewReport(
             approved=score.passed,
             score=score.score,
             observations=[item.reason for item in score.items],
             issues=[],
             recommendations=[] if score.passed else ["Check duration, resolution, and whether the rendered file is non-empty."],
-            metadata={"score_items": [item.__dict__ for item in score.items]},
+            metadata={
+                "score_items": [item.__dict__ for item in score.items],
+                "probe_ok": probe.ok,
+                "probe_reason": probe.reason,
+            },
         )

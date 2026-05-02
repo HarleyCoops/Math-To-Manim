@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from math_to_manim.agents.base import StageAgent
+import json
 import re
 
+from math_to_manim.agents.base import StageAgent, mark_sdk_metadata, run_structured_sdk_agent
 from math_to_manim.schemas import ConceptIntent, KnowledgeGraph, KnowledgeGraphEdge, KnowledgeGraphNode
 
 
@@ -12,6 +13,23 @@ class PrerequisiteGraphAgent(StageAgent[ConceptIntent, KnowledgeGraph]):
     name = "prerequisite_graph"
 
     def run(self, intent: ConceptIntent) -> KnowledgeGraph:
+        if not self.config.deterministic:
+            artifact = run_structured_sdk_agent(
+                name="PrerequisiteGraphAgent",
+                instructions=(
+                    "Build a reverse prerequisite DAG for an educational animation. "
+                    "Use stable lowercase slug ids. The root_node_id must be the target concept. "
+                    "For each prerequisite edge, source is the prerequisite node and target is the "
+                    "concept it enables, with relationship='prerequisite'. Avoid duplicates, "
+                    "dangling edges, and cycles."
+                ),
+                prompt=json.dumps(intent.to_public_dict(), indent=2),
+                model=self.config.model,
+                output_type=KnowledgeGraph,
+            )
+            if artifact is not None:
+                return mark_sdk_metadata(artifact, agent_name=self.name, model=self.config.model)
+
         root_name = normalize_concept_name(intent.primary_concept)
         root_id = concept_id(root_name)
         prerequisites = intent.prerequisites or _default_prerequisites(intent.primary_concept)

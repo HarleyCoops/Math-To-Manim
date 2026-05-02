@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from math_to_manim.agents.base import StageAgent
+import json
+
+from math_to_manim.agents.base import StageAgent, mark_sdk_metadata, run_structured_sdk_agent
 from math_to_manim.schemas import ManimAnimationSpec, ManimObjectSpec, ManimSceneSpec, VisualStoryboard
 
 
@@ -10,6 +12,22 @@ class SceneSpecAgent(StageAgent[VisualStoryboard, ManimSceneSpec]):
     name = "scene_spec"
 
     def run(self, storyboard: VisualStoryboard) -> ManimSceneSpec:
+        if not self.config.deterministic:
+            artifact = run_structured_sdk_agent(
+                name="SceneSpecAgent",
+                instructions=(
+                    "Translate the storyboard into an implementable Manim CE scene spec. "
+                    "Use one scene_name ending in Scene. Include concrete objects, animation "
+                    "steps, camera/config notes, code requirements, and metadata with a timeline. "
+                    "The spec must be practical for code generation, not just descriptive."
+                ),
+                prompt=json.dumps(storyboard.to_public_dict(), indent=2),
+                model=self.config.model,
+                output_type=ManimSceneSpec,
+            )
+            if artifact is not None:
+                return mark_sdk_metadata(artifact, agent_name=self.name, model=self.config.model)
+
         class_name = "".join(part for part in storyboard.title.title() if part.isalnum()) or "GeneratedScene"
         if not class_name.endswith("Scene"):
             class_name += "Scene"

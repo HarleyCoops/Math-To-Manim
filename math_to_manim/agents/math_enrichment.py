@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from math_to_manim.agents.base import StageAgent
+import json
+
+from math_to_manim.agents.base import StageAgent, mark_sdk_metadata, run_structured_sdk_agent
 from math_to_manim.schemas import CurriculumPlan, Equation, MathPacket
 
 
@@ -10,6 +12,22 @@ class MathAgent(StageAgent[CurriculumPlan, MathPacket]):
     name = "math"
 
     def run(self, curriculum: CurriculumPlan) -> MathPacket:
+        if not self.config.deterministic:
+            artifact = run_structured_sdk_agent(
+                name="MathEnrichmentAgent",
+                instructions=(
+                    "Create the mathematical packet for the curriculum. Include definitions, "
+                    "assumptions, key LaTeX equations that are safe for Manim MathTex, worked "
+                    "examples, common errors, and notes about rendering risks. Keep notation "
+                    "minimal and pedagogically sound."
+                ),
+                prompt=json.dumps(curriculum.to_public_dict(), indent=2),
+                model=self.config.model,
+                output_type=MathPacket,
+            )
+            if artifact is not None:
+                return mark_sdk_metadata(artifact, agent_name=self.name, model=self.config.model)
+
         steps = [step for module in curriculum.modules for step in module.steps]
         target = steps[-1].title if steps else curriculum.title
         equations = [

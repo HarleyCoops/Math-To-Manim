@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
-from math_to_manim.agents.base import StageAgent
+from math_to_manim.agents.base import StageAgent, mark_sdk_metadata, run_structured_sdk_agent
 from math_to_manim.schemas import GeneratedCode, ManimSceneSpec
 
 
@@ -12,6 +13,33 @@ class ManimCodeAgent(StageAgent[ManimSceneSpec, GeneratedCode]):
     name = "codegen"
 
     def run(self, spec: ManimSceneSpec) -> GeneratedCode:
+        if not self.config.deterministic:
+            artifact = run_structured_sdk_agent(
+                name="ManimCodeAgent",
+                instructions=(
+                    "Generate complete, runnable Manim Community Edition Python code from the scene spec. "
+                    "Return only the GeneratedCode artifact. The code must import `from manim import *`, "
+                    "define exactly the requested Scene class, avoid network/file IO, avoid custom external "
+                    "assets, keep text readable, and implement real educational visuals from the spec. "
+                    "Prefer robust Manim CE primitives: Axes, Dot, Line, always_redraw, ValueTracker, "
+                    "MathTex, VGroup, Transform, FadeIn, Create. Use raw strings for LaTeX. "
+                    "Do not produce a generic title-card scaffold. Keep overlays sparse: no more than "
+                    "two equation/text overlays visible in the same region, font sizes generally 24-40, "
+                    "and use fixed corners or side panels so labels never overlap the curve, axes, or "
+                    "each other. When animating labels, prefer FadeOut/FadeIn or ReplacementTransform "
+                    "between compatible MathTex objects; avoid transforms that leave unreadable glyph "
+                    "fragments."
+                ),
+                prompt=json.dumps(spec.to_public_dict(), indent=2),
+                model=self.config.model,
+                output_type=GeneratedCode,
+            )
+            if artifact is not None:
+                artifact = mark_sdk_metadata(artifact, agent_name=self.name, model=self.config.model)
+                if "file_path" not in artifact.metadata:
+                    artifact = artifact.model_copy(update={"metadata": {**artifact.metadata, "file_path": "generated_scene.py"}})
+                return artifact
+
         code = _deterministic_scene_code(spec)
         return GeneratedCode(
             scene_name=spec.scene_name,
@@ -24,6 +52,43 @@ class ManimCodeAgent(StageAgent[ManimSceneSpec, GeneratedCode]):
                 "risk_notes": ["deterministic scaffold; replace with SDK code generation for production quality"],
             },
         )
+
+    def repair(self, spec: ManimSceneSpec, generated: GeneratedCode, failure: str) -> GeneratedCode:
+        """Repair generated Manim code after a static/render failure."""
+
+        if self.config.deterministic:
+            return generated
+        artifact = run_structured_sdk_agent(
+            name="ManimRepairAgent",
+            instructions=(
+                "Repair a complete Manim Community Edition Python scene using the traceback. "
+                "Return only a GeneratedCode artifact with the complete corrected file. Preserve "
+                "the educational visual intent, scene class name, and dependencies. Make surgical "
+                "fixes first. Avoid fragile or version-specific methods. In Manim CE 0.19, do not "
+                "use add_fixed_in_frame_mobjects in MovingCameraScene; use normal mobjects, camera "
+                "frame animation, or a compatible Scene/ThreeDScene choice instead. Also fix visible "
+                "layout risks while repairing: remove overlapping labels, reduce crowded text, place "
+                "formulas in stable corners/panels, and replace glitchy text transforms with clean "
+                "FadeOut/FadeIn or ReplacementTransform. Avoid file IO, network calls, and external assets."
+            ),
+            prompt=json.dumps(
+                {
+                    "scene_spec": spec.to_public_dict(),
+                    "generated_code": generated.to_public_dict(),
+                    "failure": failure[-8000:],
+                },
+                indent=2,
+            ),
+            model=self.config.model,
+            output_type=GeneratedCode,
+        )
+        if artifact is None:
+            return generated
+        artifact = mark_sdk_metadata(artifact, agent_name="repair", model=self.config.model)
+        metadata = dict(artifact.metadata)
+        metadata.setdefault("file_path", generated.metadata.get("file_path", "generated_scene.py"))
+        metadata["repair_of"] = generated.scene_name
+        return artifact.model_copy(update={"metadata": metadata})
 
 
 def _deterministic_scene_code(spec: ManimSceneSpec) -> str:

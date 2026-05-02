@@ -17,6 +17,7 @@ class RuntimeConfig:
     max_static_repairs: int = 3
     max_render_repairs: int = 3
     max_visual_repairs: int = 2
+    render_timeout_seconds: float = 900.0
     trace_enabled: bool = True
     deterministic: bool = False
 
@@ -31,6 +32,7 @@ class RuntimeConfig:
             max_static_repairs=int(os.getenv("M2M2_MAX_STATIC_REPAIRS", "3")),
             max_render_repairs=int(os.getenv("M2M2_MAX_RENDER_REPAIRS", "3")),
             max_visual_repairs=int(os.getenv("M2M2_MAX_VISUAL_REPAIRS", "2")),
+            render_timeout_seconds=float(os.getenv("M2M2_RENDER_TIMEOUT_SECONDS", "900")),
             trace_enabled=os.getenv("M2M2_TRACE", "1") not in {"0", "false", "False"},
             deterministic=os.getenv("M2M2_DETERMINISTIC", "0") in {"1", "true", "True"},
         )

@@ -112,3 +112,56 @@ def maybe_run_sdk_agent(
     if not isinstance(output, str):
         output = json.dumps(output)
     return output_parser(output)
+
+
+def run_structured_sdk_agent(
+    *,
+    name: str,
+    instructions: str,
+    prompt: str,
+    model: str,
+    output_type: type[OutputT],
+) -> OutputT | None:
+    """Run an OpenAI Agents SDK stage and return a typed artifact.
+
+    Returns ``None`` only when the SDK or API key is unavailable. If credentials
+    exist and the stage fails, the exception is allowed to surface because a
+    silent deterministic fallback would hide that the real chain did not run.
+    """
+
+    if not os.getenv("OPENAI_API_KEY"):
+        return None
+
+    sdk = load_openai_agents_sdk()
+    if sdk is None:
+        return None
+
+    from agents.agent_output import AgentOutputSchema  # type: ignore
+
+    Agent = sdk["Agent"]
+    Runner = sdk["Runner"]
+    agent = Agent(
+        name=name,
+        instructions=instructions,
+        model=model,
+        output_type=AgentOutputSchema(output_type, strict_json_schema=False),
+    )
+    result = Runner.run_sync(agent, prompt)
+    output = getattr(result, "final_output", result)
+    if isinstance(output, output_type):
+        return output
+    return output_type.model_validate(output)
+
+
+def mark_sdk_metadata(artifact: OutputT, *, agent_name: str, model: str) -> OutputT:
+    """Annotate a Pydantic artifact with runtime provenance metadata."""
+
+    metadata = dict(getattr(artifact, "metadata", {}) or {})
+    metadata.update(
+        {
+            "source_agent": agent_name,
+            "runtime": "openai_agents_sdk",
+            "model": model,
+        }
+    )
+    return artifact.model_copy(update={"metadata": metadata})  # type: ignore[return-value]

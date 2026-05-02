@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from math_to_manim.agents.base import StageAgent
+import json
+
+from math_to_manim.agents.base import StageAgent, mark_sdk_metadata, run_structured_sdk_agent
 from math_to_manim.schemas import ConceptIntent, UserRequest
 
 
@@ -10,6 +12,22 @@ class IntentAgent(StageAgent[UserRequest, ConceptIntent]):
     name = "intent"
 
     def run(self, request: UserRequest) -> ConceptIntent:
+        if not self.config.deterministic:
+            artifact = run_structured_sdk_agent(
+                name="ConceptIntentAgent",
+                instructions=(
+                    "You identify the educational intent behind a math/science animation request. "
+                    "Return a compact ConceptIntent. Include prerequisites, learning objectives, "
+                    "likely misconceptions, and target audience. Keep it useful for downstream "
+                    "visual storyboarding."
+                ),
+                prompt=json.dumps(request.to_public_dict(), indent=2),
+                model=self.config.model,
+                output_type=ConceptIntent,
+            )
+            if artifact is not None:
+                return mark_sdk_metadata(artifact, agent_name=self.name, model=self.config.model)
+
         prompt = request.prompt.strip()
         core = _derive_core_concept(prompt)
         domain = _guess_domain(core)

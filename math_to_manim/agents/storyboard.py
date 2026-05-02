@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from math_to_manim.agents.base import StageAgent
+import json
+
+from math_to_manim.agents.base import StageAgent, mark_sdk_metadata, run_structured_sdk_agent
 from math_to_manim.schemas import MathPacket, StoryboardScene, VisualStoryboard
 
 
@@ -10,6 +12,22 @@ class StoryboardAgent(StageAgent[MathPacket, VisualStoryboard]):
     name = "storyboard"
 
     def run(self, math_packet: MathPacket) -> VisualStoryboard:
+        if not self.config.deterministic:
+            artifact = run_structured_sdk_agent(
+                name="VisualStoryboardAgent",
+                instructions=(
+                    "Design a visual storyboard before code. Each scene needs concrete visual "
+                    "actions, camera notes, timing, concept ids, and metadata such as visual_metaphor, "
+                    "objects, color_roles, text_overlays, equation_overlays, transition, and "
+                    "manim_primitives. Favor actual educational animation beats over generic title cards."
+                ),
+                prompt=json.dumps(math_packet.to_public_dict(), indent=2),
+                model=self.config.model,
+                output_type=VisualStoryboard,
+            )
+            if artifact is not None:
+                return mark_sdk_metadata(artifact, agent_name=self.name, model=self.config.model)
+
         scenes = []
         scene_titles = ["Foundation", "Visual Model", "Formal Connection", "Takeaway"]
         equations = [equation.latex for equation in math_packet.key_equations]

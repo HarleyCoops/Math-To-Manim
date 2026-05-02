@@ -105,6 +105,44 @@ class AnimationPipeline:
                 "render_result",
                 self.render_agent.run((generated, code_path, self.config.default_quality)),
             )
+            repair_attempt = 0
+            while (
+                render_result.status != "succeeded"
+                and not self.config.deterministic
+                and repair_attempt < self.config.max_render_repairs
+            ):
+                repair_attempt += 1
+                trace.event(
+                    "render_repair_requested",
+                    {
+                        "attempt": repair_attempt,
+                        "scene": generated.scene_name,
+                        "stderr_tail": (render_result.stderr or "")[-1200:],
+                    },
+                )
+                generated = state.put(
+                    "generated_code",
+                    self.codegen_agent.repair(scene_spec, generated, render_result.stderr or render_result.stdout or "render failed"),
+                )
+                save_artifact(run_dir, f"generated_code_repair_{repair_attempt}", generated)
+                code_path = write_generated_code(generated, run_dir)
+                validation = state.put("validation_report", self.static_review_agent.run((generated, code_path)))
+                save_artifact(run_dir, f"validation_report_repair_{repair_attempt}", validation)
+                if not validation.is_successful:
+                    render_result = RenderResult(
+                        status="failed",
+                        scene_name=generated.scene_name,
+                        output_path=None,
+                        command=[],
+                        stdout="",
+                        stderr="repair output did not pass static validation",
+                        metadata={"skipped": True, "repair_attempt": repair_attempt},
+                    )
+                    continue
+                render_result = state.put(
+                    "render_result",
+                    self.render_agent.run((generated, code_path, self.config.default_quality)),
+                )
         else:
             render_result = state.put(
                 "render_result",

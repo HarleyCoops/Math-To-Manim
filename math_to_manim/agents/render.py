@@ -20,6 +20,7 @@ class RenderAgent(StageAgent[tuple[GeneratedCode, Path, str], RenderResult]):
             output_dir=file_path.parent / "media",
             quality=quality,
             working_dir=file_path.parent,
+            timeout_seconds=self.config.render_timeout_seconds,
         )
         return RenderResult(
             status="succeeded" if result.ok else "failed",

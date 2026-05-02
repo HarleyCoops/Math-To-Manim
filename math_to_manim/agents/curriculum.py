@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from math_to_manim.agents.base import StageAgent
+import json
+
+from math_to_manim.agents.base import StageAgent, mark_sdk_metadata, run_structured_sdk_agent
 from math_to_manim.schemas import CurriculumModule, CurriculumPlan, CurriculumStep, KnowledgeGraph
 
 
@@ -10,6 +12,21 @@ class CurriculumAgent(StageAgent[KnowledgeGraph, CurriculumPlan]):
     name = "curriculum"
 
     def run(self, graph: KnowledgeGraph) -> CurriculumPlan:
+        if not self.config.deterministic:
+            artifact = run_structured_sdk_agent(
+                name="CurriculumAgent",
+                instructions=(
+                    "Convert a prerequisite graph into a short teachable sequence for a Manim video. "
+                    "Order concepts foundation-first. Compress prerequisites when needed. "
+                    "Create clear CurriculumStep objectives that can become visual scenes."
+                ),
+                prompt=json.dumps(graph.to_public_dict(), indent=2),
+                model=self.config.model,
+                output_type=CurriculumPlan,
+            )
+            if artifact is not None:
+                return mark_sdk_metadata(artifact, agent_name=self.name, model=self.config.model)
+
         order = graph.topological_node_ids()
         labels = {node.id: node.label for node in graph.nodes}
         steps = [
