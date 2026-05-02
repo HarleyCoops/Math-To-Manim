@@ -10,10 +10,15 @@ from .commands import ToolResult, resolve_binary
 
 QUALITY_FLAGS = {
     "draft": "-ql",
+    "l": "-ql",
     "low": "-ql",
+    "m": "-qm",
     "medium": "-qm",
+    "h": "-qh",
     "high": "-qh",
+    "p": "-qp",
     "production": "-qp",
+    "k": "-qk",
     "4k": "-qk",
 }
 
@@ -34,14 +39,14 @@ def render_manim_scene(
     Missing Manim is reported as a skipped result instead of an exception.
     """
 
-    source = Path(source_path)
+    source = Path(source_path).resolve()
     binary = resolve_binary(manim_bin)
     flag = _quality_flag(quality)
     command = [binary or manim_bin, flag, str(source)]
     if scene_name:
         command.append(scene_name)
     if output_dir is not None:
-        media_dir = Path(output_dir)
+        media_dir = Path(output_dir).resolve()
         media_dir.mkdir(parents=True, exist_ok=True)
         command.extend(["--media_dir", str(media_dir)])
 

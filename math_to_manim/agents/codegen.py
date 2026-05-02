@@ -38,7 +38,7 @@ def _deterministic_scene_code(spec: ManimSceneSpec) -> str:
         f"        title = Text('{title}', font_size=44).to_edge(UP)",
         "        subtitle = Text('Codex/OpenAI typed pipeline scaffold', font_size=24, color=GRAY_B).next_to(title, DOWN)",
         "        card = RoundedRectangle(width=11, height=4.6, corner_radius=0.12, color=BLUE_B)",
-        "        formula = MathTex(r\"f'(a)=\\\\lim_{h\\\\to0}\\\\frac{f(a+h)-f(a)}{h}\", font_size=40)",
+        "        formula = MathTex(r\"f'(a)=\\lim_{h\\to0}\\frac{f(a+h)-f(a)}{h}\", font_size=40)",
         "        takeaway = Text('Visual first. Symbols second. Render every claim.', font_size=28, color=YELLOW)",
         "        group = VGroup(card, formula, takeaway).arrange(DOWN, buff=0.45).move_to(ORIGIN)",
         "        self.play(FadeIn(title), FadeIn(subtitle))",
