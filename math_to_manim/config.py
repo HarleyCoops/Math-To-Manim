@@ -7,6 +7,22 @@ import os
 from pathlib import Path
 
 
+def load_env_file(path: Path = Path(".env")) -> None:
+    """Load simple KEY=VALUE entries from a local .env without overwriting env."""
+
+    if not path.exists():
+        return
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
 @dataclass(frozen=True)
 class RuntimeConfig:
     """Configuration shared by agents, tools, and pipeline stages."""
@@ -25,6 +41,7 @@ class RuntimeConfig:
     def from_env(cls) -> "RuntimeConfig":
         """Build config from environment variables with safe defaults."""
 
+        load_env_file()
         return cls(
             model=os.getenv("M2M2_MODEL", os.getenv("OPENAI_MODEL", "gpt-5.5")),
             runs_dir=Path(os.getenv("M2M2_RUNS_DIR", "runs")),

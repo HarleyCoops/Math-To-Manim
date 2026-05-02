@@ -12,7 +12,7 @@ import json
 import os
 from typing import Any, Callable, Generic, TypeVar
 
-from math_to_manim.config import RuntimeConfig
+from math_to_manim.config import RuntimeConfig, load_env_file
 
 InputT = TypeVar("InputT")
 OutputT = TypeVar("OutputT")
@@ -97,6 +97,7 @@ def maybe_run_sdk_agent(
     runtime state. The deterministic pipeline remains the offline baseline.
     """
 
+    load_env_file()
     if not os.getenv("OPENAI_API_KEY"):
         return None
 
@@ -129,6 +130,7 @@ def run_structured_sdk_agent(
     silent deterministic fallback would hide that the real chain did not run.
     """
 
+    load_env_file()
     if not os.getenv("OPENAI_API_KEY"):
         return None
 
