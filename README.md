@@ -4,6 +4,14 @@ This repository is the clean Codex/OpenAI Agents SDK spine for Math-To-Manim.
 It turns a compact prompt into typed pipeline artifacts, Manim code, render
 metadata, review reports, and a reproducible run directory.
 
+## Current Showcase
+
+![Star-Chart Statistics generated Manim preview](docs/assets/star_chart_statistics.gif)
+
+Generated from the Star-Chart Statistics prompt: data scatter becomes standard
+deviation, Brownian paths, diffusion, Black-Scholes geometry, and an implied
+volatility surface.
+
 The first target command is:
 
 ```bash
