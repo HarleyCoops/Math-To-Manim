@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "math-to-manim-codex"
+version = "0.1.0"
+description = "Codex/OpenAI Agents SDK pipeline for prompt-to-Manim educational animation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Math-To-Manim contributors" }]
+dependencies = [
+  "openai-agents>=0.3.3",
+  "pydantic>=1.10,<3",
+  "pyyaml>=6",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+]
+render = [
+  "manim>=0.19",
+]
+web = [
+  "fastapi>=0.110",
+  "gradio>=4",
+  "uvicorn>=0.29",
+]
+
+[project.scripts]
+math-to-manim = "math_to_manim.cli:main"
+m2m2 = "math_to_manim.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["math_to_manim*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
