@@ -14,22 +14,25 @@ class IntentAgent(StageAgent[UserRequest, ConceptIntent]):
         core = _derive_core_concept(prompt)
         domain = _guess_domain(core)
         return ConceptIntent(
-            core_concept=core,
-            domain=domain,
-            audience_level=request.audience_level,
-            learning_goal=f"Explain {core} with a concrete visual intuition.",
-            aha_moment=_guess_aha(core),
-            visual_potential="high",
-            forbidden_complexity=[
-                "unintroduced notation",
-                "dense text blocks",
-                "symbolic manipulation before geometric intuition",
+            primary_concept=core,
+            related_concepts=[],
+            prerequisites=_default_prerequisites(core),
+            learning_objectives=[f"Explain {core} with a concrete visual intuition."],
+            misconceptions=[
+                "visual approximations are not automatically formal proofs",
+                "symbols should not appear before the learner sees what changes",
             ],
-            success_criteria=[
-                "target concept appears in the title",
-                "visual metaphor is shown before formal notation",
-                "final scene states the core takeaway",
-            ],
+            target_audience=request.target_audience,
+            metadata={
+                "domain": domain,
+                "aha_moment": _guess_aha(core),
+                "visual_potential": "high",
+                "success_criteria": [
+                    "target concept appears in the title",
+                    "visual metaphor is shown before formal notation",
+                    "final scene states the core takeaway",
+                ],
+            },
         )
 
 
@@ -61,3 +64,16 @@ def _guess_aha(core: str) -> str:
     if "pythagorean" in text:
         return "The square on the hypotenuse contains the same area as the two leg squares."
     return f"The abstract idea of {core} becomes visible as a sequence of simple transformations."
+
+
+def _default_prerequisites(core: str) -> list[str]:
+    text = core.lower()
+    if "derivative" in text or "slope" in text:
+        return ["functions and graphs", "slope of a line", "secant lines", "limits"]
+    if "pythagorean" in text:
+        return ["right triangles", "area of squares", "congruence", "similarity"]
+    if "fourier" in text:
+        return ["periodic motion", "sine and cosine", "vectors in the plane", "superposition"]
+    if "lorenz" in text:
+        return ["differential equations", "phase space", "sensitive dependence", "trajectories"]
+    return ["basic notation", "visual model", "core definition", "worked example"]

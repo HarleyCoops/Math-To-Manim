@@ -10,16 +10,18 @@ class RepairAgent(StageAgent[ValidationReport, RepairPatch]):
     name = "repair"
 
     def run(self, report: ValidationReport) -> RepairPatch:
-        if report.ast_valid and report.manim_dry_run_pass:
+        if report.is_successful:
             return RepairPatch(
-                target_file=None,
-                patch_summary="No repair required.",
-                applied=False,
-                rationale="Static validation passed.",
+                target_artifact="generated_scene.py",
+                summary="No repair required.",
+                issue_codes=[],
+                validation_expectations=["Static validation passed."],
+                metadata={"applied": False, "rationale": "Static validation passed."},
             )
         return RepairPatch(
-            target_file=None,
-            patch_summary="Repair required but deterministic scaffold does not rewrite code automatically.",
-            applied=False,
-            rationale="OpenAI repair agent should patch only the failing generated file.",
+            target_artifact="generated_scene.py",
+            summary="Repair required but deterministic scaffold does not rewrite code automatically.",
+            issue_codes=[issue.code for issue in report.issues],
+            validation_expectations=["OpenAI repair agent should patch only the failing generated file."],
+            metadata={"applied": False},
         )

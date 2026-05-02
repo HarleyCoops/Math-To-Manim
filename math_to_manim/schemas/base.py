@@ -53,3 +53,8 @@ class ArtifactModel(BaseModel):
 
         def model_copy(self, *args: Any, **kwargs: Any) -> "ArtifactModel":
             return self.copy(*args, **kwargs)
+
+    def to_public_dict(self) -> dict[str, Any]:
+        """Return a JSON-safe representation for CLI/API responses."""
+
+        return self.model_dump(mode="json")

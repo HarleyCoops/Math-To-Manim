@@ -11,31 +11,38 @@ class StoryboardAgent(StageAgent[MathPacket, VisualStoryboard]):
 
     def run(self, math_packet: MathPacket) -> VisualStoryboard:
         scenes = []
-        for index, packet in enumerate(math_packet.concepts[:6], start=1):
+        scene_titles = ["Foundation", "Visual Model", "Formal Connection", "Takeaway"]
+        equations = [equation.latex for equation in math_packet.key_equations]
+        for index, title in enumerate(scene_titles, start=1):
             scenes.append(
                 StoryboardScene(
-                    title=packet.concept.title(),
-                    purpose="Build one step of the learner's intuition.",
-                    visual_metaphor=_metaphor(packet.concept),
-                    objects=["title", "axes or diagram", "highlight labels", "equation overlay"],
-                    color_roles={"primary": "BLUE", "accent": "YELLOW", "warning": "RED"},
-                    animation_beats=[
+                    id=f"scene-{index}",
+                    title=title,
+                    narration="Build one step of the learner's intuition.",
+                    visual_actions=[
                         "introduce visual object",
                         "highlight the changing quantity",
                         "reveal the matching equation",
                     ],
-                    camera_plan="static readable frame",
-                    timing_seconds=10,
-                    text_overlays=[packet.definitions[0]],
-                    equation_overlays=packet.latex_strings,
-                    transition="fade through highlighted takeaway",
-                    manim_primitives=["Scene", "Text", "MathTex", "VGroup", "FadeIn", "Transform"],
+                    concept_ids=[math_packet.concept_id] if math_packet.concept_id else [],
+                    duration_seconds=10,
+                    camera="static readable frame",
+                    metadata={
+                        "visual_metaphor": _metaphor(math_packet.definitions[-1] if math_packet.definitions else "concept"),
+                        "objects": ["title", "axes or diagram", "highlight labels", "equation overlay"],
+                        "color_roles": {"primary": "BLUE", "accent": "YELLOW", "warning": "RED"},
+                        "text_overlays": math_packet.definitions[:2],
+                        "equation_overlays": equations,
+                        "transition": "fade through highlighted takeaway",
+                        "manim_primitives": ["Scene", "Text", "MathTex", "VGroup", "FadeIn", "Transform"],
+                    },
                 )
             )
         return VisualStoryboard(
-            title=math_packet.concepts[-1].concept.title() if math_packet.concepts else "Math Animation",
+            title=(math_packet.metadata.get("curriculum_title") or "Math Animation"),
             scenes=scenes,
-            style_notes="Cinematic but readable: dark background, generous spacing, equations below visuals.",
+            target_duration_seconds=sum(scene.duration_seconds or 0 for scene in scenes),
+            metadata={"style_notes": "Cinematic but readable: dark background, generous spacing, equations below visuals."},
         )
 
 

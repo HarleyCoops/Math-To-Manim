@@ -3,29 +3,29 @@
 from __future__ import annotations
 
 from math_to_manim.agents.base import StageAgent
-from math_to_manim.schemas import CurriculumPlan, MathConceptPacket, MathPacket
+from math_to_manim.schemas import CurriculumPlan, Equation, MathPacket
 
 
 class MathAgent(StageAgent[CurriculumPlan, MathPacket]):
     name = "math"
 
     def run(self, curriculum: CurriculumPlan) -> MathPacket:
-        packets = []
-        for concept in curriculum.ordered_concepts:
-            packets.append(
-                MathConceptPacket(
-                    concept=concept,
-                    definitions=[f"Working definition for {concept}."],
-                    equations=_equations_for(concept),
-                    variables=_variables_for(concept),
-                    assumptions=["Audience knows basic algebraic notation."],
-                    examples=[f"A minimal visual example of {concept}."],
-                    latex_strings=_equations_for(concept),
-                    math_validity_notes="Deterministic seed content; validate with MathTex/SymPy tools before final render.",
-                    rendering_risk="low",
-                )
-            )
-        return MathPacket(concepts=packets)
+        steps = [step for module in curriculum.modules for step in module.steps]
+        target = steps[-1].title if steps else curriculum.title
+        equations = [
+            Equation(latex=latex, description=f"Equation used for {target}.", variables=_variables_for(target))
+            for latex in _equations_for(target)
+        ]
+        return MathPacket(
+            concept_id=(steps[-1].concept_ids[0] if steps and steps[-1].concept_ids else None),
+            definitions=[f"Working definition for {step.title}." for step in steps] or [f"Working definition for {target}."],
+            assumptions=["Audience knows basic algebraic notation."],
+            key_equations=equations,
+            worked_examples=[f"A minimal visual example of {target}."],
+            common_errors=["Using dense symbolic manipulation before the visual model is established."],
+            source_notes=["Deterministic seed content; validate with MathTex/SymPy tools before final render."],
+            metadata={"rendering_risk": "low", "curriculum_title": curriculum.title},
+        )
 
 
 def _equations_for(concept: str) -> list[str]:

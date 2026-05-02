@@ -5,8 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from math_to_manim.agents.base import StageAgent
-from math_to_manim.schemas import GeneratedCode, ValidationReport
-from math_to_manim.tools.manim_tools import discover_scene_classes, validate_python_ast
+from math_to_manim.schemas import GeneratedCode, ValidationIssue, ValidationReport
+from math_to_manim.tools import discover_scene_classes_in_file, validate_python_source
 
 
 class StaticReviewAgent(StageAgent[tuple[GeneratedCode, Path], ValidationReport]):
@@ -14,17 +14,41 @@ class StaticReviewAgent(StageAgent[tuple[GeneratedCode, Path], ValidationReport]
 
     def run(self, value: tuple[GeneratedCode, Path]) -> ValidationReport:
         generated, file_path = value
-        ast_report = validate_python_ast(generated.code)
-        scenes = discover_scene_classes(file_path)
-        scene_found = generated.scene_class in scenes
+        ast_report = validate_python_source(generated.code, filename=str(file_path))
+        schema_issues = [
+            ValidationIssue(
+                code=issue.code,
+                message=issue.message,
+                severity=issue.severity,
+                artifact=str(file_path),
+                metadata={"line": issue.lineno, "column": issue.col_offset},
+            )
+            for issue in ast_report.issues
+        ]
+        scenes = []
+        scene_found = False
+        if ast_report.ok:
+            scenes = [scene.name for scene in discover_scene_classes_in_file(file_path, require_construct=True)]
+            scene_found = generated.scene_name in scenes
+            if not scene_found:
+                schema_issues.append(
+                    ValidationIssue(
+                        code="scene-class-missing",
+                        message=f"Expected scene class {generated.scene_name!r}; discovered {scenes or 'none'}.",
+                        severity="error",
+                        artifact=str(file_path),
+                    )
+                )
+        status = "passed" if not schema_issues else "failed"
         return ValidationReport(
-            ast_valid=ast_report.ok,
-            imports_valid=True,
-            ruff_pass=None,
-            latex_pass=None,
-            manim_dry_run_pass=scene_found,
-            render_pass=None,
-            traceback=ast_report.error if not ast_report.ok else None,
-            repair_hints=[] if ast_report.ok and scene_found else ["ensure generated file is valid Python and contains the requested Scene class"],
-            scene_classes=scenes,
+            status=status,
+            issues=schema_issues,
+            checked_artifacts=[str(file_path)],
+            summary="Static validation passed." if status == "passed" else "Static validation failed.",
+            metadata={
+                "ast_valid": ast_report.ok,
+                "scene_found": scene_found,
+                "scene_classes": scenes,
+                "repair_hints": [] if ast_report.ok and scene_found else ["ensure generated file is valid Python and contains the requested Scene class"],
+            },
         )

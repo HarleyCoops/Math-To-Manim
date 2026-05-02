@@ -14,23 +14,25 @@ class ManimCodeAgent(StageAgent[ManimSceneSpec, GeneratedCode]):
     def run(self, spec: ManimSceneSpec) -> GeneratedCode:
         code = _deterministic_scene_code(spec)
         return GeneratedCode(
-            file_path="generated_scene.py",
-            scene_class=spec.scene_class_name,
+            scene_name=spec.scene_name,
             code=code,
-            imports=spec.imports,
             dependencies=["manim"],
-            estimated_runtime=30,
-            risk_notes=["deterministic scaffold; replace with SDK code generation for production quality"],
+            source_spec_id=spec.storyboard_scene_id,
+            metadata={
+                "file_path": "generated_scene.py",
+                "estimated_runtime_seconds": 30,
+                "risk_notes": ["deterministic scaffold; replace with SDK code generation for production quality"],
+            },
         )
 
 
 def _deterministic_scene_code(spec: ManimSceneSpec) -> str:
-    title = spec.scene_class_name.replace("Scene", "")
+    title = spec.scene_name.replace("Scene", "")
     lines = [
         "from manim import *",
         "",
         "",
-        f"class {spec.scene_class_name}(Scene):",
+        f"class {spec.scene_name}(Scene):",
         "    def construct(self):",
         "        self.camera.background_color = '#0f172a'",
         f"        title = Text('{title}', font_size=44).to_edge(UP)",
@@ -48,6 +50,6 @@ def _deterministic_scene_code(spec: ManimSceneSpec) -> str:
 
 
 def write_generated_code(generated: GeneratedCode, run_dir: Path) -> Path:
-    path = run_dir / generated.file_path
+    path = run_dir / str(generated.metadata.get("file_path", "generated_scene.py"))
     path.write_text(generated.code, encoding="utf-8")
     return path

@@ -3,50 +3,54 @@
 from __future__ import annotations
 
 from math_to_manim.agents.base import StageAgent
-from math_to_manim.schemas import ConceptIntent, KnowledgeEdge, KnowledgeGraph, KnowledgeNode
-from math_to_manim.tools.graph_tools import concept_id, normalize_concept_name
+import re
+
+from math_to_manim.schemas import ConceptIntent, KnowledgeGraph, KnowledgeGraphEdge, KnowledgeGraphNode
 
 
 class PrerequisiteGraphAgent(StageAgent[ConceptIntent, KnowledgeGraph]):
     name = "prerequisite_graph"
 
     def run(self, intent: ConceptIntent) -> KnowledgeGraph:
-        root_name = normalize_concept_name(intent.core_concept)
+        root_name = normalize_concept_name(intent.primary_concept)
         root_id = concept_id(root_name)
-        prerequisites = _default_prerequisites(intent.core_concept)
+        prerequisites = intent.prerequisites or _default_prerequisites(intent.primary_concept)
         nodes = [
-            KnowledgeNode(
+            KnowledgeGraphNode(
                 id=root_id,
                 label=root_name,
-                kind="target",
-                summary=intent.learning_goal,
-                confidence=0.8,
+                kind="concept",
+                summary=(intent.learning_objectives[0] if intent.learning_objectives else None),
+                tags=["target"],
+                metadata={"confidence": 0.8},
             )
         ]
-        edges: list[KnowledgeEdge] = []
+        edges: list[KnowledgeGraphEdge] = []
         for index, prereq in enumerate(prerequisites):
             label = normalize_concept_name(prereq)
             node_id = concept_id(label)
             nodes.append(
-                KnowledgeNode(
+                KnowledgeGraphNode(
                     id=node_id,
                     label=label,
-                    kind="foundation" if index < 2 else "prerequisite",
+                    kind="concept",
                     summary=f"Prerequisite for understanding {root_name}.",
-                    confidence=0.7,
+                    tags=["foundation" if index < 2 else "prerequisite"],
+                    metadata={"confidence": 0.7},
                 )
             )
-            edges.append(KnowledgeEdge(source=node_id, target=root_id, relation="requires"))
+            edges.append(KnowledgeGraphEdge(source=node_id, target=root_id, relationship="prerequisite"))
         return KnowledgeGraph(
-            root_node_id=root_id,
             nodes=nodes,
             edges=edges,
-            foundation_nodes=[node.id for node in nodes if node.kind == "foundation"],
-            depth=1,
-            rationale="Deterministic seed graph; replace with SDK graph expansion in production.",
-            confidence=0.7,
-            source_agent=self.name,
-            version="1.0",
+            root_node_id=root_id,
+            metadata={
+                "depth": 1,
+                "rationale": "Deterministic seed graph; replace with SDK graph expansion in production.",
+                "confidence": 0.7,
+                "source_agent": self.name,
+                "version": "1.0",
+            },
         )
 
 
@@ -61,3 +65,12 @@ def _default_prerequisites(core: str) -> list[str]:
     if "lorenz" in text:
         return ["differential equations", "phase space", "sensitive dependence", "trajectories"]
     return ["basic notation", "visual model", "core definition", "worked example"]
+
+
+def normalize_concept_name(concept: str) -> str:
+    return re.sub(r"\s+", " ", concept.strip().lower())
+
+
+def concept_id(concept: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", normalize_concept_name(concept)).strip("-")
+    return slug or "concept"

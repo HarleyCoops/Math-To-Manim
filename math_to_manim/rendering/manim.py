@@ -71,6 +71,7 @@ def render_manim_scene(
             reason=f"Timed out after {timeout_seconds} seconds",
         )
 
+    output_path = _discover_rendered_video(Path(output_dir) if output_dir is not None else None)
     return ToolResult(
         completed.returncode == 0,
         False,
@@ -78,6 +79,7 @@ def render_manim_scene(
         returncode=completed.returncode,
         stdout=completed.stdout,
         stderr=completed.stderr,
+        output_path=output_path,
     )
 
 
@@ -89,3 +91,12 @@ def _quality_flag(quality: str) -> str:
     except KeyError as exc:
         valid = ", ".join(sorted(QUALITY_FLAGS))
         raise ValueError(f"Unknown Manim quality '{quality}'. Valid values: {valid}") from exc
+
+
+def _discover_rendered_video(media_dir: Path | None) -> Path | None:
+    if media_dir is None or not media_dir.exists():
+        return None
+    videos = [path for path in media_dir.rglob("*.mp4") if path.is_file()]
+    if not videos:
+        return None
+    return max(videos, key=lambda path: path.stat().st_mtime)
