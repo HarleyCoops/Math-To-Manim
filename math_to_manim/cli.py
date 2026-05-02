@@ -26,6 +26,13 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--runs-dir", type=Path, default=None)
     generate.add_argument("--no-render", action="store_true", help="Skip Manim execution")
     generate.add_argument("--deterministic", action="store_true", help="Do not call model adapters")
+    generate.add_argument(
+        "--codegen-provider",
+        choices=["openai-agents", "codex-cli"],
+        default=None,
+        help="Provider for Manim codegen/repair stages; codex-cli uses local Codex subscription login",
+    )
+    generate.add_argument("--codex-full-auto", action="store_true", help="Pass --full-auto to codex exec")
     generate.add_argument("--json", action="store_true", help="Print the full AnimationPackage JSON")
 
     inspect_run = subparsers.add_parser("inspect-run", help="Print a run manifest")
@@ -44,6 +51,10 @@ def run_generate(args: argparse.Namespace) -> int:
         config = RuntimeConfig(**{**config.__dict__, "default_quality": args.quality})
     if args.deterministic:
         config = RuntimeConfig(**{**config.__dict__, "deterministic": True})
+    if args.codegen_provider:
+        config = RuntimeConfig(**{**config.__dict__, "codegen_provider": args.codegen_provider})
+    if args.codex_full_auto:
+        config = RuntimeConfig(**{**config.__dict__, "codex_full_auto": True})
 
     pipeline = AnimationPipeline(config=config)
     package = pipeline.generate(
