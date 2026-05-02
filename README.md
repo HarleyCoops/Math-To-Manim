@@ -30,8 +30,6 @@ From calculus intuition to chaotic attractors, topology, spacetime, stochastic f
 
 Math-To-Manim is not just text-to-code. It builds the prerequisite story, designs the visuals, writes Manim, validates the Python, and renders animations that teach.
 
-These README previews are optimized clips generated from the larger GIFs in `public/`, `giffolder/`, and `media/videos/` so the page stays fast while still showing the good stuff.
-
 <table>
   <tr>
     <td width="50%">
