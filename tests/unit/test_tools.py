@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from math_to_manim.rendering import extract_frame, probe_video, render_manim_scene
+from math_to_manim.rendering import extract_frame, make_contact_sheet, probe_video, render_manim_scene
 from math_to_manim.review import (
     EvalCriterion,
     build_eval_prompt,
@@ -102,10 +102,16 @@ def test_optional_rendering_wrappers_skip_missing_binaries(tmp_path) -> None:
         tmp_path / "frame.png",
         ffmpeg_bin="definitely-missing-ffmpeg-binary",
     )
+    sheet = make_contact_sheet(
+        tmp_path / "missing.mp4",
+        tmp_path / "contact_sheet.png",
+        ffmpeg_bin="definitely-missing-ffmpeg-binary",
+    )
 
     assert manim.skipped and not manim.ok
     assert probe.skipped and not probe.ok
     assert frame.skipped and not frame.ok
+    assert sheet.skipped and not sheet.ok
 
 
 def test_video_scoring_is_weighted_and_deterministic() -> None:

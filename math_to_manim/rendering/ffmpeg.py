@@ -179,6 +179,74 @@ def extract_frame(
     )
 
 
+def make_contact_sheet(
+    video_path: str | Path,
+    output_path: str | Path,
+    *,
+    interval_seconds: float = 10.0,
+    columns: int = 3,
+    rows: int = 3,
+    tile_width: int = 284,
+    tile_height: int = 160,
+    ffmpeg_bin: str = "ffmpeg",
+    timeout_seconds: float = 60.0,
+    overwrite: bool = True,
+) -> ToolResult:
+    """Create a tiled review image from regularly sampled video frames."""
+
+    video = Path(video_path)
+    output = Path(output_path)
+    binary = resolve_binary(ffmpeg_bin)
+    interval = max(float(interval_seconds), 0.1)
+    command = [
+        binary or ffmpeg_bin,
+        "-y" if overwrite else "-n",
+        "-i",
+        str(video),
+        "-vf",
+        f"fps=1/{interval:.3f},scale={tile_width}:{tile_height},tile={columns}x{rows}",
+        "-frames:v",
+        "1",
+        str(output),
+    ]
+
+    if binary is None:
+        return ToolResult(False, True, tuple(command), output_path=output, reason=f"ffmpeg binary not found: {ffmpeg_bin}")
+    if not video.exists():
+        return ToolResult(False, True, tuple(command), output_path=output, reason=f"Video file not found: {video}")
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        completed = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        return ToolResult(
+            False,
+            False,
+            tuple(command),
+            stdout=exc.stdout or "",
+            stderr=exc.stderr or "",
+            reason=f"Timed out after {timeout_seconds} seconds",
+            output_path=output,
+        )
+
+    return ToolResult(
+        completed.returncode == 0 and output.exists(),
+        False,
+        tuple(command),
+        returncode=completed.returncode,
+        stdout=completed.stdout,
+        stderr=completed.stderr,
+        output_path=output,
+        reason=None if completed.returncode == 0 else "ffmpeg failed",
+    )
+
+
 def _parse_video_probe(raw: dict[str, Any]) -> dict[str, Any]:
     streams = raw.get("streams") if isinstance(raw.get("streams"), list) else []
     video_stream = next((stream for stream in streams if stream.get("codec_type") == "video"), {})

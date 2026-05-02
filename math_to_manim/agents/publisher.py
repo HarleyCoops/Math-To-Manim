@@ -27,5 +27,6 @@ class PublisherAgent(StageAgent[tuple[UserRequest, Path, RenderResult, VideoRevi
                 "run_trace": str(run_dir / "trace.jsonl"),
                 "reproducibility_manifest": str(run_dir / "manifest.json"),
                 "review_passed": review_report.approved,
+                "draft_review": review_report.metadata.get("draft_review"),
             },
         )

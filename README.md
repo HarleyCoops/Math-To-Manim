@@ -26,9 +26,19 @@ runs/<run_id>/
   validation_report.json
   render_result.json
   review_report.json
+  draft_review/
+    draft_review.md
+    contact_sheet.png
+    frames/
   animation_package.json
   manifest.json
 ```
+
+Successful renders are treated as drafts. The review stage writes a second-pass
+handoff in `draft_review/` with the rendered video path, contact sheet, sampled
+frames, and an improvement checklist. Full visual scoring and automatic visual
+repair are the next loop; the current review only proves the video rendered and
+creates assets for an editor or vision model to inspect.
 
 The package is deliberately structured around strict artifacts and local tools:
 
