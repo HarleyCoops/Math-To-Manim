@@ -318,6 +318,20 @@ The root quickstart currently focuses on the Claude pipeline because it has the 
 
 ---
 
+## Star history
+
+If Math-To-Manim is useful, a star helps people find the project.
+
+<a href="https://www.star-history.com/#HarleyCoops/Math-To-Manim&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date" />
+  </picture>
+</a>
+
+---
+
 ## Troubleshooting
 
 ### `ANTHROPIC_API_KEY is not set`
