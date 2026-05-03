@@ -67,18 +67,9 @@ The design principle is simple: **story before symbols, geometry before algebra,
 
 ## The pipeline at a glance
 
-```text
-"Explain why derivatives are slopes"
-        │
-        ▼
-IntentRequest ──► KnowledgeGraph ──► Curriculum ──► MathPacket
-        │                                                │
-        └────────────────────────────────────────────────▼
- Storyboard ──► SceneSpec ──► Generated Manim code ──► validation
-                                                    │
-                                                    ▼
-                                      render / review / manifest
-```
+<p align="center">
+  <img src="docs/assets/pipeline-at-a-glance.svg" alt="M2M2 pipeline diagram from prompt to typed artifacts, generated Manim code, validation, render, review, and manifest" width="100%" />
+</p>
 
 Each stage writes structured JSON so humans, tests, and Hermes/Codex agents can all understand what happened.
 

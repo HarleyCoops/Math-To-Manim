@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">M2M2 pipeline at a glance</title>
+  <desc id="desc">A colorful diagram showing a prompt flowing through IntentRequest, KnowledgeGraph, Curriculum, MathPacket, Storyboard, SceneSpec, Generated Manim code, validation, and render review manifest.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#070a16"/>
+      <stop offset="0.48" stop-color="#111827"/>
+      <stop offset="1" stop-color="#160b2f"/>
+    </linearGradient>
+    <radialGradient id="glowCyan" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.52"/>
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowPink" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#f472b6" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#f472b6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowGold" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000000" flood-opacity="0.42"/>
+    </filter>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <marker id="arrowCyan" markerWidth="13" markerHeight="13" refX="10" refY="6.5" orient="auto">
+      <path d="M1,1 L11,6.5 L1,12 Z" fill="#67e8f9"/>
+    </marker>
+    <marker id="arrowPink" markerWidth="13" markerHeight="13" refX="10" refY="6.5" orient="auto">
+      <path d="M1,1 L11,6.5 L1,12 Z" fill="#f9a8d4"/>
+    </marker>
+    <marker id="arrowGold" markerWidth="13" markerHeight="13" refX="10" refY="6.5" orient="auto">
+      <path d="M1,1 L11,6.5 L1,12 Z" fill="#fbbf24"/>
+    </marker>
+    <style>
+      .title { font: 800 42px Arial, Helvetica, sans-serif; fill: #f8fafc; letter-spacing: 0; }
+      .subtitle { font: 500 20px Arial, Helvetica, sans-serif; fill: #cbd5e1; letter-spacing: 0; }
+      .prompt { font: 700 25px Arial, Helvetica, sans-serif; fill: #ffffff; letter-spacing: 0; }
+      .nodeTitle { font: 800 21px Arial, Helvetica, sans-serif; fill: #ffffff; letter-spacing: 0; }
+      .nodeMeta { font: 600 13px Arial, Helvetica, sans-serif; fill: #dbeafe; letter-spacing: 0; }
+      .tiny { font: 700 12px Arial, Helvetica, sans-serif; fill: #a7f3d0; letter-spacing: 0; }
+      .caption { font: 700 17px Arial, Helvetica, sans-serif; fill: #f8fafc; letter-spacing: 0; }
+      .lineCyan { stroke: #67e8f9; stroke-width: 5; fill: none; marker-end: url(#arrowCyan); filter: url(#softGlow); }
+      .linePink { stroke: #f9a8d4; stroke-width: 5; fill: none; marker-end: url(#arrowPink); filter: url(#softGlow); }
+      .lineGold { stroke: #fbbf24; stroke-width: 5; fill: none; marker-end: url(#arrowGold); filter: url(#softGlow); }
+      .support { stroke: #94a3b8; stroke-width: 3; stroke-dasharray: 10 10; fill: none; marker-end: url(#arrowCyan); opacity: 0.82; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="720" fill="url(#bg)"/>
+  <circle cx="166" cy="128" r="180" fill="url(#glowCyan)"/>
+  <circle cx="1016" cy="120" r="210" fill="url(#glowPink)"/>
+  <circle cx="724" cy="642" r="220" fill="url(#glowGold)"/>
+
+  <g opacity="0.18">
+    <path d="M0 586 C160 506 270 664 425 574 S762 506 936 604 S1120 658 1200 592" stroke="#38bdf8" stroke-width="2" fill="none"/>
+    <path d="M0 185 C180 112 300 248 460 170 S744 88 922 198 S1110 292 1200 202" stroke="#fb7185" stroke-width="2" fill="none"/>
+    <path d="M52 658 C248 500 336 604 506 492 S792 368 1122 424" stroke="#fde68a" stroke-width="2" fill="none"/>
+  </g>
+
+  <text x="600" y="58" text-anchor="middle" class="title">The Pipeline At A Glance</text>
+  <text x="600" y="91" text-anchor="middle" class="subtitle">Every stage leaves a typed JSON artifact that the next stage can inspect, repair, or render.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="315" y="118" width="570" height="74" rx="20" fill="#0f172a" stroke="#a78bfa" stroke-width="3"/>
+    <text x="600" y="163" text-anchor="middle" class="prompt">"Explain why derivatives are slopes"</text>
+  </g>
+
+  <path class="lineCyan" d="M600 196 L600 232"/>
+
+  <g filter="url(#shadow)">
+    <rect x="54" y="238" width="220" height="96" rx="18" fill="#0f766e" stroke="#5eead4" stroke-width="3"/>
+    <text x="164" y="279" text-anchor="middle" class="nodeTitle">IntentRequest</text>
+    <text x="164" y="306" text-anchor="middle" class="nodeMeta">audience, tone, scope</text>
+
+    <rect x="342" y="238" width="220" height="96" rx="18" fill="#1d4ed8" stroke="#93c5fd" stroke-width="3"/>
+    <text x="452" y="279" text-anchor="middle" class="nodeTitle">KnowledgeGraph</text>
+    <text x="452" y="306" text-anchor="middle" class="nodeMeta">concepts and prerequisites</text>
+
+    <rect x="630" y="238" width="220" height="96" rx="18" fill="#7c3aed" stroke="#c4b5fd" stroke-width="3"/>
+    <text x="740" y="279" text-anchor="middle" class="nodeTitle">Curriculum</text>
+    <text x="740" y="306" text-anchor="middle" class="nodeMeta">lesson order and beats</text>
+
+    <rect x="918" y="238" width="220" height="96" rx="18" fill="#be123c" stroke="#fda4af" stroke-width="3"/>
+    <text x="1028" y="279" text-anchor="middle" class="nodeTitle">MathPacket</text>
+    <text x="1028" y="306" text-anchor="middle" class="nodeMeta">definitions and checks</text>
+  </g>
+
+  <path class="lineCyan" d="M274 286 L336 286"/>
+  <path class="lineCyan" d="M562 286 L624 286"/>
+  <path class="lineCyan" d="M850 286 L912 286"/>
+
+  <g filter="url(#shadow)">
+    <rect x="54" y="430" width="220" height="96" rx="18" fill="#b45309" stroke="#fcd34d" stroke-width="3"/>
+    <text x="164" y="471" text-anchor="middle" class="nodeTitle">Storyboard</text>
+    <text x="164" y="498" text-anchor="middle" class="nodeMeta">visual sequence</text>
+
+    <rect x="342" y="430" width="220" height="96" rx="18" fill="#0369a1" stroke="#7dd3fc" stroke-width="3"/>
+    <text x="452" y="471" text-anchor="middle" class="nodeTitle">SceneSpec</text>
+    <text x="452" y="498" text-anchor="middle" class="nodeMeta">camera, objects, timing</text>
+
+    <rect x="630" y="430" width="220" height="96" rx="18" fill="#4338ca" stroke="#a5b4fc" stroke-width="3"/>
+    <text x="740" y="467" text-anchor="middle" class="nodeTitle">Generated</text>
+    <text x="740" y="493" text-anchor="middle" class="nodeTitle">Manim code</text>
+
+    <rect x="918" y="430" width="220" height="96" rx="18" fill="#15803d" stroke="#86efac" stroke-width="3"/>
+    <text x="1028" y="471" text-anchor="middle" class="nodeTitle">validation</text>
+    <text x="1028" y="498" text-anchor="middle" class="nodeMeta">AST and scene checks</text>
+  </g>
+
+  <path class="linePink" d="M274 478 L336 478"/>
+  <path class="linePink" d="M562 478 L624 478"/>
+  <path class="linePink" d="M850 478 L912 478"/>
+  <path class="support" d="M164 334 C164 370 164 390 164 423"/>
+  <path class="support" d="M1028 334 C1028 378 842 384 736 396 C550 418 268 390 184 424"/>
+
+  <g filter="url(#shadow)">
+    <rect x="368" y="594" width="464" height="78" rx="22" fill="#111827" stroke="#fbbf24" stroke-width="4"/>
+    <text x="600" y="626" text-anchor="middle" class="caption">render / review / manifest</text>
+    <text x="600" y="653" text-anchor="middle" class="nodeMeta">MP4 draft, sampled frames, notes, reproducibility bundle</text>
+  </g>
+
+  <path class="lineGold" d="M1028 528 C1028 590 870 633 840 633"/>
+
+  <g opacity="0.88">
+    <rect x="76" y="365" width="190" height="31" rx="15.5" fill="#0f172a" stroke="#334155"/>
+    <text x="171" y="386" text-anchor="middle" class="tiny">branch into teachable motion</text>
+    <rect x="891" y="365" width="232" height="31" rx="15.5" fill="#0f172a" stroke="#334155"/>
+    <text x="1007" y="386" text-anchor="middle" class="tiny">math constraints feed the scene</text>
+  </g>
+</svg>
