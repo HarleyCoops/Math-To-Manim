@@ -14,48 +14,151 @@ knowledge tree, but makes each stage explicit, testable, and provider-agnostic.
 - Support Codex workers in parallel by assigning stable file ownership and
   artifact handoff points.
 
-## Runtime Shape
+## Runtime shape
+
+Execution is **single-threaded and strictly ordered**: `AnimationPipeline.generate()`
+in `math_to_manim/pipeline/runner.py` walks a fixed list of stage agents. There is
+no hidden parallelism; each arrow in the diagrams below is a synchronous call whose
+output becomes the input type for the next stage.
+
+**What gets written:** the runner saves `request.json` first, then almost every
+stage adds a sibling JSON file under the new `runs/<timestamp>-<slug>/`
+directory (`intent.json`, `knowledge_graph.json`, and so on). `trace.jsonl` records the same boundaries as structured events, and
+`manifest.json` summarizes artifact keys for that run. That is the concrete meaning
+of “typed pipeline”: the disk layout mirrors the control flow.
+
+**LLM vs deterministic:** when `RuntimeConfig.deterministic` is false (default),
+planning stages call `run_structured_sdk_agent()` and return Pydantic artifacts.
+When deterministic, stages fall back to scaffolded graphs or templates so CI and
+offline runs stay reproducible. Code generation uses the Agents SDK,
+`CodexCliProvider`, or a tiny deterministic Manim stub—see `ManimCodeAgent`.
+Rendering and static validation are tool-backed (Python AST, subprocess Manim).
+
+**Mermaid in docs:** GitHub renders fenced `mermaid` blocks in Markdown. If you
+paste the same source into [mermaid.live](https://mermaid.live), you get an
+editable canvas and optional PNG or SVG export—similar in spirit to services like
+mermaid.ink, without checking rendered bitmaps into git.
+
+### What the main diagram shows
+
+The graph is an **artifact chain**, not a sociogram of agents chatting. Each box
+names the Python stage class; the second line in a node is the primary JSON file
+produced for inspectability and reruns.
+
+```mermaid
+flowchart TB
+  subgraph planning["Planning — intent through scene spec"]
+    REQ["UserRequest"]
+    IA["IntentAgent"]
+    CI["ConceptIntent\n(intent.json)"]
+    PGA["PrerequisiteGraphAgent"]
+    KG["KnowledgeGraph\n(knowledge_graph.json)"]
+    CA["CurriculumAgent"]
+    CUR["CurriculumPlan\n(curriculum.json)"]
+    MA["MathAgent"]
+    MP["MathPacket\n(math_packet.json)"]
+    SA["StoryboardAgent"]
+    SB["VisualStoryboard\n(storyboard.json)"]
+    SSA["SceneSpecAgent"]
+    SPEC["ManimSceneSpec\n(scene_spec.json)"]
+
+    REQ --> IA --> CI --> PGA --> KG --> CA --> CUR --> MA --> MP --> SA --> SB --> SSA --> SPEC
+  end
+
+  subgraph codegen["Code — generation and static gate"]
+    MCA["ManimCodeAgent"]
+    GC["GeneratedCode\n(generated_code.json)"]
+    PY["generated_scene.py"]
+    SRA["StaticReviewAgent"]
+    VAL["ValidationReport\n(validation_report.json)"]
+
+    SPEC --> MCA --> GC --> PY --> SRA --> VAL
+  end
+
+  subgraph render_pkg["Render — subprocess Manim + packaging"]
+    RA["RenderAgent"]
+    RR["RenderResult\n(render_result.json)"]
+    VRA["VideoReviewAgent"]
+    REV["VideoReviewReport\n(review_report.json)"]
+    PA["PublisherAgent"]
+    PKG["AnimationPackage\n(animation_package.json)"]
+
+    VAL --> RA --> RR --> VRA --> REV --> PA --> PKG
+  end
+```
+
+Rendering runs only when rendering was requested **and** static validation
+reports success; otherwise `RenderAgent.run` is never called and the runner
+synthesizes a skipped `RenderResult` so downstream stages still receive the same
+schema shape. The skipped record carries stderr explaining whether the skip was
+intentional (`--no-render`) or due to validation failure.
+
+### Render repair loop (when Manim fails)
+
+Failed renders can trigger a bounded repair cycle **without** recomputing earlier
+planning artifacts. `ManimCodeAgent.repair()` consumes the same frozen
+`ManimSceneSpec` plus stderr or stdout; static validation must pass again before
+a retry. Attempts are capped by `RuntimeConfig.max_render_repairs`.
 
 ```mermaid
 flowchart LR
-  A["User prompt"] --> B["Request normalizer"]
-  B --> C["Concept planner"]
-  C --> D["Prerequisite explorer"]
-  D --> E["Mathematical enricher"]
-  E --> F["Visual designer"]
-  F --> G["Narrative composer"]
-  G --> H["Scene spec compiler"]
-  H --> I["Manim code generator"]
-  I --> J["Static validator"]
-  J --> K["Renderer"]
-  K --> L["Artifact packager"]
-  L --> M["Eval record"]
+  R0["RenderResult\nstatus != succeeded"]
+  REP["ManimCodeAgent.repair()"]
+  V1["StaticReviewAgent"]
+  R1["RenderAgent retry"]
+  R0 --> REP --> V1 --> R1
+  R1 -->|"still failing,\nattempt < max"| REP
 ```
 
-## Agent Roles
+When `codegen_provider=codex-cli`, repair calls `CodexCliProvider.repair_code` on
+the same path.
 
-The OpenAI Agents SDK should be used as the application orchestration layer.
-Agents own decisions; tools own deterministic work.
+### Mapping to classic Math-To-Manim names
 
-| Stage | Agent or tool | Output |
+The public repo names stages after pedagogy (ConceptAnalyzer, PrerequisiteExplorer,
+and similar). M2M2 keeps that **idea** but folds some narrative steps into single
+typed artifacts so the chain stays short and testable.
+
+| Legacy mental model | M2M2 stage(s) | Artifact |
 | --- | --- | --- |
-| Request normalizer | tool | `request_spec` |
-| Concept planner | agent | `concept_plan` |
-| Prerequisite explorer | agent with bounded depth | `knowledge_tree` |
-| Mathematical enricher | agent with math validation tools | `math_enrichment` |
-| Visual designer | agent | `visual_spec` |
-| Narrative composer | agent | `narrative_spec` |
-| Scene spec compiler | tool or constrained agent | `scene_spec` |
-| Manim code generator | agent | `manim_artifact` |
-| Static validator | tool | syntax, imports, scene-class checks |
-| Renderer | tool | `render_artifact` |
-| Eval grader | tool plus optional judge agent | `eval_record` |
+| Concept / goal framing | `IntentAgent` | `intent.json` |
+| Reverse knowledge tree | `PrerequisiteGraphAgent` | `knowledge_graph.json` |
+| Teachable ordering | `CurriculumAgent` | `curriculum.json` |
+| Equations and definitions | `MathAgent` | `math_packet.json` |
+| Visual plus narrative design | `StoryboardAgent` | `storyboard.json` |
+| Compiler-like scene contract | `SceneSpecAgent` | `scene_spec.json` |
+| Code generation and repair | `ManimCodeAgent` | `generated_code.json`, `generated_scene.py` |
+| Syntax and scene class checks | `StaticReviewAgent` | `validation_report.json` |
+| FFmpeg or Manim subprocess | `RenderAgent` | `render_result.json` |
+| Draft review handoff | `VideoReviewAgent` | `review_report.json` |
+| Final bundle metadata | `PublisherAgent` | `animation_package.json` |
 
-Use SDK handoffs when a stage needs a specialist to take over the conversation.
-Use function tools for deterministic steps such as schema validation, filesystem
-I/O, Manim invocation, and artifact packaging. Use guardrails at the first input,
-final output, and tool boundary where malformed code or unsafe file access can
-cause downstream failures.
+## Agent roles (implementation)
+
+Orchestration today is the pipeline runner, not nested SDK handoffs between every
+stage. Individual stages still use the Agents SDK (structured outputs) or Codex
+CLI where configured; tools handle AST checks, filesystem writes, Manim, and
+video probing.
+
+| Stage class | Typical mechanism | Primary output schema |
+| --- | --- | --- |
+| `IntentAgent` | Agents SDK structured call or deterministic scaffold | `ConceptIntent` in `intent.json` |
+| `PrerequisiteGraphAgent` | Agents SDK | `KnowledgeGraph` |
+| `CurriculumAgent` | Agents SDK or topological fallback from graph | `CurriculumPlan` |
+| `MathAgent` | Agents SDK | `MathPacket` |
+| `StoryboardAgent` | Agents SDK | `VisualStoryboard` |
+| `SceneSpecAgent` | Agents SDK | `ManimSceneSpec` |
+| `ManimCodeAgent` | Agents SDK, Codex CLI provider, or deterministic code | `GeneratedCode` |
+| `StaticReviewAgent` | AST and scene discovery tools | `ValidationReport` |
+| `RenderAgent` | Subprocess Manim | `RenderResult` |
+| `VideoReviewAgent` | Probe and scoring helpers | `VideoReviewReport` |
+| `PublisherAgent` | Pure assembly | `AnimationPackage` |
+
+Use SDK handoffs inside a stage when a specialist needs to take over one
+structured call. Use function tools for deterministic steps such as schema
+validation, filesystem I/O, Manim invocation, and artifact packaging. Use
+guardrails at the first input, final output, and tool boundary where malformed
+code or unsafe file access can cause downstream failures.
 
 ## Codex Worker Boundaries
 

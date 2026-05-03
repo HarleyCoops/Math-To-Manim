@@ -1,0 +1,9 @@
+# Ubuntu/Debian packages needed for Manim rendering with MathTex.
+# Install with:
+#   sudo xargs -a requirements-system.txt apt-get install -y
+ffmpeg
+dvisvgm
+texlive-latex-base
+texlive-latex-recommended
+texlive-latex-extra
+texlive-fonts-recommended

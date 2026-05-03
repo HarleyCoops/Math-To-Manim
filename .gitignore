@@ -17,5 +17,7 @@ output/
 artifacts/
 *.mp4
 *.gif
+# Curated legacy showcase GIFs are tracked (see docs/showcase/).
+!docs/showcase/assets/*.gif
 *.png
 *.log

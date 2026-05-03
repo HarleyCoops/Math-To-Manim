@@ -7,6 +7,8 @@ Agents SDK refactor.
 
 - [Architecture](ARCHITECTURE.md) describes the target agent pipeline and worker
   boundaries.
+- [Showcase](showcase/README.md) presents local copies of legacy Math-To-Manim
+  GIFs and the visual bar for generated scenes.
 - [Artifact schemas](ARTIFACT_SCHEMAS.md) defines the JSON/YAML contracts passed
   between planning, generation, render, and eval stages.
 - [Eval strategy](EVAL_STRATEGY.md) explains how prompt, artifact, code, and
@@ -19,4 +21,3 @@ Agents SDK refactor.
 - `evals/prompt_suite.yaml` contains the initial prompt-level eval suite.
 - `examples/reference/limit_tangent_reference.py` is a small Manim CE reference
   scene for renderer and style sanity checks.
-
