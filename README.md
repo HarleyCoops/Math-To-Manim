@@ -53,6 +53,43 @@
 
 ---
 
+## Start here: Hermes + M2M2 setup
+
+This repo is meant to be operated by **Hermes Agent** while M2M2 provides the Manim animation pipeline. The split is intentional:
+
+- **Hermes** is the repo operator: skills, file/search/patch tools, terminal checks, vision review, todos, delegation, memory, and GitHub verification.
+- **M2M2** is the Python package: typed curriculum/storyboard artifacts, Manim code generation, validation, render/review bundles, and showcase assets.
+
+Fastest path for a new checkout:
+
+```bash
+git clone https://github.com/HarleyCoops/M2M2.git
+cd M2M2
+
+# 1. Install and verify the Python package.
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -U pip
+python -m pip install -e ".[dev]"
+python -m pytest
+
+# 2. Install and verify Hermes.
+curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+hermes setup
+hermes doctor
+hermes tools list --summary
+hermes skills list
+
+# 3. Start Hermes with the repo skills that matter here.
+hermes --skills agents-md,codebase-inspection,manim-video,systematic-debugging
+```
+
+Once Hermes is inside this repo, the expected workflow is concrete: read `AGENTS.md`, inspect `pyproject.toml` and CLI help, run deterministic smoke generations, open the `runs/<run_id>/` artifact bundle, visually inspect frames/GIFs when media changes, then commit/push only verified docs/code/assets.
+
+See [How Hermes uses this repo](#hermes-learns-manim) for the detailed tool map.
+
+---
+
 ## What this is
 
 **Math to Manim** turns one-line prompts into cinematic Manim animations with an agentic teaching pipeline. It is not just “LLM writes a script.” The system first builds the lesson: what the viewer needs to understand, what should appear first, where the aha moment lives, and which visual metaphor makes the math feel inevitable.
@@ -281,9 +318,19 @@ Adjust `-ss` and `-t` to capture the teaching beat you want.
 
 ## Hermes learns Manim
 
-This repo is becoming a launch demo for **Hermes learns Manim**: Hermes uses native tools to inspect the codebase, load skills, run tests, call the M2M2 CLI, review generated artifacts, validate media, and help promote the best beats into the showcase.
+This repo is also a live **Hermes Agent workspace**. Hermes is not imported by M2M2 and is not a runtime dependency; it is the contributor/operator layer that uses the repo the way a developer would: read files, search code, patch docs and code, run terminal checks, inspect generated artifacts, review media with vision, delegate larger work, track todos, and preserve useful context through skills and memory.
 
-Hermes is not a runtime dependency for M2M2. It is contributor tooling for skill-driven planning, debugging, review, and publishable repo work.
+| Hermes-native capability | How it is used in M2M2 |
+| --- | --- |
+| File + search tools | Read `README.md`, `AGENTS.md`, `pyproject.toml`, schemas, tests, docs, and generated run artifacts before making claims. |
+| Patch tool | Make surgical edits to docs, schemas, tests, pipeline code, and launch copy while preserving repo style and typed contracts. |
+| Terminal tool | Run `pytest`, CLI help, deterministic smoke generations, Codex checks, Manim, FFmpeg, link validators, git, and GitHub verification. |
+| Vision/media review | Inspect screenshots, contact sheets, frames, and GIFs so showcase media is judged visually, not trusted because filenames exist. |
+| Delegation + todos | Split larger work across focused agents, track acceptance criteria, and keep implementation/review/checklist state explicit. |
+| Session search + memory | Recover prior repo decisions and preserve stable conventions without storing secrets or temporary run noise. |
+| Skills | Load procedures such as `agents-md`, `codebase-inspection`, `manim-video`, `systematic-debugging`, `writing-plans`, `test-driven-development`, and `subagent-driven-development`. |
+
+The M2M2 side gives Hermes concrete things to operate: the `m2m2` / `math-to-manim` CLI, deterministic helpers in `math_to_manim/tools/`, typed stages in `math_to_manim/agents/` and `math_to_manim/pipeline/`, schemas in `math_to_manim/schemas/`, render/review helpers, and reproducible `runs/<run_id>/` bundles containing JSON contracts, `generated_scene.py`, validation/render/review reports, contact sheets, frames, and `manifest.json`.
 
 Start a repo-aware Hermes session:
 
@@ -293,33 +340,9 @@ curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scri
 hermes setup
 hermes doctor
 
-# From the repo root, preload the skills that match this project.
+# From the repo root, preload skills for this repo.
 hermes --skills agents-md,manim-video,codebase-inspection,systematic-debugging
 ```
-
-Native-tool moments worth showcasing:
-
-| Hermes does this natively | Why it matters for Manim |
-| --- | --- |
-| Loads repo instructions and skills | Agent behavior is guided by project contracts, not one-off prompting. |
-| Reads files and CLI help | README, `pyproject.toml`, `AGENTS.md`, and actual commands stay aligned. |
-| Runs terminal checks | `pytest`, CLI smoke runs, Manim, and FFmpeg become verifiable steps. |
-| Inspects artifacts and media | A run is traceable from JSON contracts to `generated_scene.py` to render outputs. |
-| Uses visual review | GIFs are checked as images/motion, not trusted because filenames exist. |
-| Commits and verifies GitHub-visible docs/assets | Showcase work lands in the repo with remote proof. |
-
-Recommended skill map:
-
-| Work | Hermes skill to reach for | Why it matters here |
-| --- | --- | --- |
-| Update agent instructions | `agents-md` | Keeps agent behavior repo-specific and operational. |
-| Design or critique animations | `manim-video` | Preserves the “geometry before algebra” cinematic standard. |
-| Keep repo docs honest | `codebase-inspection` | Verifies entrypoints from `pyproject.toml`, CLI help, tests, and actual files. |
-| Break a feature into reviewable tasks | `writing-plans` | Keeps pipeline changes bite-sized and tied to file paths. |
-| Add behavior safely | `test-driven-development` | M2M2's value is typed, testable stages; tests should lead changes. |
-| Diagnose render/codegen failures | `systematic-debugging` | Manim failures often hide the real cause one stage earlier. |
-| Implement a plan with parallel workers | `subagent-driven-development` | Useful when one agent inspects schemas, one checks CLI behavior, and one edits docs/tests. |
-| Ask another agent to review before commit | `requesting-code-review` | Good for schema migrations, CLI flags, generated-code sandboxing, and media promotion. |
 
 See [`AGENTS.md`](AGENTS.md) for the full operating contract and [`docs/HERMES_LEARNS_MANIM.md`](docs/HERMES_LEARNS_MANIM.md) for the launch/thread plan and new animation slate.
 
