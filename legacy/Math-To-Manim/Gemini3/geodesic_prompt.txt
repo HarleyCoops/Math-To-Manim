@@ -1,0 +1,30 @@
+Create a gorgeous, cinematic 3D Manim animation explaining the Geodesic Equation.
+
+Visual Style:
+- Use a 3D scene (ThreeDScene).
+- Set the background color to an elegant off-white (e.g., "#F0F0F0" or similar) with dark text/math (BLACK or darker gray) for high contrast.
+- Use smooth camera movements (ambient_camera_rotation) to showcase the 3D nature.
+
+Content to Animate:
+1. Title: "Geodesic Equation" (bold, elegant font).
+2. The Main Equation:
+   $\frac{d^2x^\alpha}{d\tau^2} + \Gamma^\alpha_{\beta\gamma} \frac{dx^\beta}{d\tau} \frac{dx^\gamma}{d\tau} = 0$
+   - Explain that this describes a particle's motion under gravity in General Relativity.
+   - Highlight the terms:
+     - $\frac{d^2x^\alpha}{d\tau^2}$: Acceleration / 4-acceleration.
+     - $\Gamma^\alpha_{\beta\gamma}$: Christoffel symbols (encodes curvature).
+     - $\frac{dx^\beta}{d\tau}, \frac{dx^\gamma}{d\tau}$: Velocity / 4-velocity components.
+
+3. The Christoffel Symbol Definition:
+   $\Gamma^\alpha_{\beta\gamma} = \frac{1}{2}g^{\alpha\delta}(\frac{\partial g_{\delta\beta}}{\partial x^\gamma} + \frac{\partial g_{\delta\gamma}}{\partial x^\beta} - \frac{\partial g_{\beta\gamma}}{\partial x^\delta})$
+   - Show this appearing below or connected to the main equation.
+   - Annotate "spacetime metric" ($g_{\alpha\delta}$) and its derivatives.
+
+4. 3D Visualization:
+   - Illustrate the concept with a curved surface (e.g., a sphere or a parametric surface) in 3D.
+   - Show a "particle" (a dot) moving along a geodesic (shortest path) on this surface vs a non-geodesic path.
+   - Visualize tangent vectors or normal vectors if it helps explain the "straightest possible line" concept in curved space.
+
+Make the transitions smooth and the explanation clear. Use colors to link equation terms to the visual elements on the 3D surface.
+
+

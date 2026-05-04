@@ -1,0 +1,6 @@
+*.gif filter=lfs diff=lfs merge=lfs -text
+public/readme-showcase/*.gif -filter -diff -merge binary
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+*.avi filter=lfs diff=lfs merge=lfs -text
+*.webm filter=lfs diff=lfs merge=lfs -text

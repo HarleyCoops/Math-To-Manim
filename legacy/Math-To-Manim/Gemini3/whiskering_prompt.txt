@@ -1,0 +1,27 @@
+Explain and visualize the Whiskering Exchange Law (Interchange Law) in 2-categories. 
+
+Concept:
+In a 2-category, the whiskering exchange law describes the compatibility between horizontal and vertical composition of 2-cells. It states that composing 2-cells vertically and then horizontally yields the same result as composing them horizontally and then vertically.
+
+Visual Requirements:
+- The animation must be made within an off-white 3D space.
+- Use orange and blue highlights for the 2-cells and their compositions to clearly distinguish the two paths of composition (horizontal then vertical vs vertical then horizontal).
+- The style should be clean, modern, and mathematically precise.
+
+Technical Details / LaTeX from Image:
+The concept generalizes the following composition in a 2-category:
+$$A(a,b)(f,g) \times A(a,b)(g,h) \xrightarrow{\circ} A(a,b)(f,h)$$
+
+The Whiskering Exchange Law diagram involves:
+- Maps $\eta_j: \prod_{i=1}^n P_{ij}(a_{i-1}, a_i) \to Q_j(La_0, Ra_n)$
+- Map $\alpha: \prod_{i=1}^n X_i(f_{ij-1}, f_{ij}) \to Y(\eta_0(f_{i0}), \eta_1(f_{i1}))$
+
+The core commutative diagram to visualize is:
+$$A(a,b)(f,g) \times A(a,b)(g,h) \xrightarrow{\circ_0} A(a,c)(f' \circ f, g' \circ g) \times A(a,c)(g' \circ g, h' \circ h)$$
+$$\times A(b,c)(f',g') \times A(b,c)(g',h')$$
+
+Please generate a Manim scene `WhiskeringExchangeScene` that visualizes this concept.
+- Start with the basic objects (0-cells), morphisms (1-cells), and 2-morphisms (2-cells).
+- Illustrate the two different ways to compose the 2-cells (vertical then horizontal vs horizontal then vertical).
+- Use the 3D camera to show the structure clearly.
+- Render the LaTeX equations clearly in the off-white space.
