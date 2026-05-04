@@ -1,0 +1,185 @@
+\documentclass[11pt, letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+
+% Theorem Styles
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+% Custom Commands
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={The Hidden Geometry of Taylor Series},
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Mathematical Enrichment Series}
+\rhead{Taylor Series \& Topology}
+\rfoot{Page \thepage}
+
+\title{\textbf{From Formulas to Topology: \\ The Hidden Geometry of Taylor Series}}
+\author{\textit{Department of Mathematics}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    Standard calculus curricula often present Taylor Series as algebraic manipulations—lists of coefficients derived from repeated differentiation. This approach, while computationally useful, obscures the deep geometric constraints governing convergence. In these notes, we explore the \textbf{Runge Phenomenon}, a counter-intuitive example where a perfectly smooth real function fails to have a convergent Taylor series. By lifting our perspective from the real line $\R$ to the complex plane $\C$, we reveal that the Radius of Convergence is not merely an algebraic artifact, but a topological consequence of singularities "invisible" to the real observer.
+\end{abstract}
+
+\tableofcontents
+
+\section{The Standard View: The Wall of Formulas}
+
+In elementary calculus, we define the Taylor series of a smooth function $f(x)$ centered at $a$ as an infinite sum of polynomial terms.
+
+\begin{definition}[Taylor Series]
+    Let $f: I \to \R$ be an infinitely differentiable function at $a \in I$. The Taylor series of $f$ centered at $a$ is:
+    \begin{equation}
+        T_f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!} (x-a)^n
+    \end{equation}
+\end{definition}
+
+Students are accustomed to the "Wall of Text"—a table of standard expansions that seem universally valid. For example, centered at $a=0$ (Maclaurin Series):
+
+\begin{align}
+    e^x &= 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \dots & \forall x \in \R \\
+    \sin(x) &= x - \frac{x^3}{3!} + \frac{x^5}{5!} - \dots & \forall x \in \R \\
+    \frac{1}{1-x} &= 1 + x + x^2 + x^3 + \dots & |x| < 1
+\end{align}
+
+While the exponential and trigonometric functions converge everywhere, the geometric series (Eq. 4) introduces a constraint: $|x| < 1$. In the real domain, this restriction is usually justified by the Ratio Test. However, the geometric reason remains obscure.
+
+\section{The Counter-Example: The Runge Function}
+
+Consider the function introduced by Carl Runge in 1901.
+
+\begin{equation}
+    f(x) = \frac{1}{1+x^2}
+\end{equation}
+
+\subsection{Properties on the Real Line}
+Let us analyze $f(x)$ strictly over the domain $x \in \R$:
+\begin{enumerate}
+    \item \textbf{Smoothness:} The function is infinitely differentiable ($C^\infty$) everywhere.
+    \item \textbf{Boundedness:} $0 < f(x) \le 1$ for all real $x$.
+    \item \textbf{Regularity:} It has no vertical asymptotes, no cusps, and no discontinuities. It is a "perfectly behaved" bell-shaped curve.
+\end{enumerate}
+
+\subsection{The Taylor Expansion}
+We seek the Maclaurin series expansion of $f(x)$ centered at $x=0$. Utilizing the geometric series formula $\frac{1}{1-u} = \sum u^n$, we substitute $u = -x^2$:
+
+\begin{equation}
+    \frac{1}{1+x^2} = 1 - x^2 + x^4 - x^6 + \dots = \sum_{n=0}^{\infty} (-1)^n x^{2n}
+\end{equation}
+
+\subsection{The Convergence Test}
+Applying the Ratio Test to the generic term $a_n = (-1)^n x^{2n}$:
+\begin{equation}
+    L = \lim_{n \to \infty} \left| \frac{x^{2(n+1)}}{x^{2n}} \right| = |x|^2
+\end{equation}
+For convergence, we require $L < 1$, which implies $|x| < 1$.
+
+\begin{remark}
+    Here lies the paradox. The function $f(x) = \frac{1}{1+x^2}$ is perfectly smooth at $x=2$, $x=100$, and everywhere else. Yet, the Taylor series constructed at the origin \textbf{explodes} (diverges) if we try to evaluate it at $x=2$. The approximation fails catastrophically outside the interval $(-1, 1)$.
+\end{remark}
+
+\section{The Mystery: Action at a Distance}
+
+Why does the Taylor series "know" it must stop at $x=1$? 
+Looking at the graph of $y = \frac{1}{1+x^2}$ on the real plane, there is no barrier at $x=1$. The slope is finite; the curvature is finite. 
+
+From the perspective of Real Analysis, the divergence is a mystery. The radius of convergence $R=1$ seems arbitrary. To solve this, we must expand our domain.
+
+\section{The Topological Unveiling: Entering the Complex Plane}
+
+We must treat $f$ not as a function of a real variable $x$, but as a function of a complex variable $z$.
+\begin{equation}
+    f(z) = \frac{1}{1+z^2}
+\end{equation}
+
+\subsection{Locating the Singularities}
+A function fails to be analytic (expandable in a power series) where it is undefined. In the complex plane, division by zero is permissible in the context of identifying \textit{poles}.
+\begin{equation}
+    1 + z^2 = 0 \implies z^2 = -1 \implies z = \pm i
+\end{equation}
+
+Here are the "invisible villains." While the function has no singularities on the real line (the $x$-axis), it has two singularities on the imaginary axis at $i$ and $-i$.
+
+\subsection{The Geometry of the Disk}
+In Complex Analysis, convergence is not defined by intervals, but by \textbf{disks}.
+
+\begin{theorem}[Cauchy-Hadamard / Disk of Convergence]
+    The Taylor series of a function holomorphic (complex differentiable) at $z_0$ converges within the largest open disk centered at $z_0$ that contains no singularities.
+\end{theorem}
+
+If we visualize this topologically:
+\begin{enumerate}
+    \item We plant the center of our series at the origin $z_0 = 0$.
+    \item We inflate a balloon (the disk of convergence) centered at 0.
+    \item The balloon expands until it hits the \textit{nearest} singularity.
+\end{enumerate}
+
+\section{The Geometric Proof}
+
+The radius of convergence $R$ is strictly the Euclidean distance from the center of the series to the nearest singularity in the complex plane.
+
+Let the center be $z_0 = 0$.
+The singularities are $s_1 = i$ and $s_2 = -i$.
+
+The Euclidean distance $d$ is given by the modulus:
+\begin{equation}
+    R = \min(|s_1 - z_0|, |s_2 - z_0|)
+\end{equation}
+
+Substituting our coordinates:
+\begin{equation}
+    R = |i - 0| = |i| = \sqrt{0^2 + 1^2} = 1
+\end{equation}
+
+\subsection{Conclusion of the Proof}
+The disk of convergence is $D = \{ z \in \C : |z| < 1 \}$.
+When we restrict this disk back to the Real line (where $z = x + 0i$), we recover the interval:
+\begin{equation}
+    (-1, 1) = D \cap \R
+\end{equation}
+
+Thus, the Runge function diverges at $x=1.1$ not because of any property at $x=1.1$, but because the distance from the origin to $x=1.1$ is greater than the distance from the origin to the complex singularity $i$.
+
+\section{Summary}
+
+The behavior of Taylor series is governed by the topology of the Complex Plane.
+\begin{itemize}
+    \item \textbf{Exponential Function $e^z$:} No singularities anywhere in $\C$. Radius $R = \infty$.
+    \item \textbf{Geometric Series $\frac{1}{1-z}$:} Singularity at $z=1$. Distance from origin is 1. Radius $R=1$.
+    \item \textbf{Runge Function $\frac{1}{1+z^2}$:} Singularities at $\pm i$. Distance from origin is 1. Radius $R=1$.
+\end{itemize}
+
+The geometry of the complex plane imposes a "speed limit" on the convergence of real-valued functions, solving the mystery of the exploding Taylor series.
+
+\end{document}

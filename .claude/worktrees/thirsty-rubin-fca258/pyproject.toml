@@ -1,0 +1,88 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "math-to-manim"
+version = "0.1.0"
+description = "Transform math concepts into Manim animations using AI-powered reverse knowledge trees"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "HarleyCoops"},
+]
+keywords = ["manim", "math", "animation", "ai", "knowledge-tree"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Multimedia :: Video",
+]
+
+dependencies = [
+    "manim>=0.19.0",
+    "numpy>=1.22.0",
+    "scipy>=1.7.0",
+    "matplotlib>=3.5.0",
+    "python-dotenv>=1.0.0",
+    "manimpango>=0.5.0",
+]
+
+[project.optional-dependencies]
+claude = [
+    "anthropic>=0.40.0",
+]
+deepseek = [
+    "openai>=1.0.0",
+]
+kimi = [
+    "openai>=1.0.0",
+]
+web = [
+    "gradio>=3.50.0",
+]
+atlas = [
+    "nomic>=3.0.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "ruff>=0.4.0",
+    "anthropic>=0.40.0",
+    "openai>=1.0.0",
+]
+all = [
+    "math-to-manim[claude,deepseek,kimi,web,atlas,dev]",
+]
+
+[project.urls]
+Homepage = "https://github.com/HarleyCoops/Math-To-Manim"
+Repository = "https://github.com/HarleyCoops/Math-To-Manim"
+Issues = "https://github.com/HarleyCoops/Math-To-Manim/issues"
+
+[tool.setuptools.packages.find]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: marks tests as slow",
+    "integration: integration tests",
+    "live: tests requiring live API calls",
+    "unit: unit tests with mocks",
+]
+addopts = "-v --strict-markers --tb=short"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I"]
+ignore = ["E501"]

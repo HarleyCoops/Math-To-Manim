@@ -1,0 +1,133 @@
+# Manim Animation: Pythagorean Theorem
+
+## Overview
+This animation builds the Pythagorean theorem from first principles through a carefully
+constructed knowledge tree. Each concept is explained with mathematical rigor
+and visual clarity, building from foundational ideas to advanced understanding.
+
+**Total Concepts**: 7
+**Progression**: angles -> sides of a triangle -> right triangle -> multiplication -> squares and area -> equality -> Pythagorean theorem
+**Estimated Duration**: 100 seconds (1:40)
+
+## Animation Requirements
+- Use Manim Community Edition (manim)
+- All LaTeX must be in raw strings: r"$\frac{a}{b}$"
+- Use MathTex() for equations, Text() for labels
+- Maintain color consistency throughout
+- Ensure smooth transitions between scenes
+- Include voiceover-friendly pacing (2-3 seconds per concept introduction)
+
+## Scene Sequence
+
+### Scene 1: Angles
+**Timestamp**: 0:00 - 0:10
+
+Begin by fading in a simple angle visualization to establish our geometric foundation. Create two Line() objects meeting at a point, forming an angle. Use YELLOW for the angle arc created with Arc() and WHITE for the label. Display the notation r"$\theta$" using MathTex() positioned next to the arc with .next_to().
+
+Draw the angle arc using Create(arc) over 1 second, then Write() the theta symbol. Briefly indicate that angles measure rotation between lines. Use FadeIn for the explanatory Text("Angles measure rotation") in WHITE, positioned at the bottom.
+
+Wait 2 seconds for comprehension, then FadeOut all elements except leave a subtle indication that we'll build on this concept.
+
+---
+
+### Scene 2: Sides of a Triangle
+**Timestamp**: 0:10 - 0:22
+
+Transition by creating a triangle using Polygon() in BLUE. Position it at ORIGIN. Clearly label each side with Text() objects: "a", "b", and "c" in GREEN color. Use .next_to() to position labels adjacent to their respective sides.
+
+Animate the triangle creation using Create(triangle) over 2 seconds. Then sequentially Write() each label with 0.5 second delays between them. This establishes the naming convention we'll use throughout.
+
+Emphasize that these are the three sides of any triangle. Display Text("Every triangle has three sides") at the bottom. Wait 1 second, then prepare for the next scene by shifting the triangle to the LEFT.
+
+---
+
+### Scene 3: Right Triangle
+**Timestamp**: 0:22 - 0:37
+
+Transform the general triangle into a right triangle using ReplacementTransform(). The right triangle should have the right angle at the lower-left corner. Create a small square marker using Square(side_length=0.2) in YELLOW to indicate the 90-degree angle.
+
+Display r"$\angle C = 90°$" using MathTex() in YELLOW, positioned at the top. FadeIn the right angle marker. Use Indicate() to highlight the marker and the equation simultaneously.
+
+Add labels Text("hypotenuse") next to side c (the longest side, opposite the right angle) and Text("legs") next to sides a and b. Color the hypotenuse label BLUE and the legs label GREEN.
+
+This scene establishes the special property of right triangles that makes the theorem possible.
+
+---
+
+### Scene 4: Multiplication and Area
+**Timestamp**: 0:37 - 0:47
+
+Shift focus to area calculation. Create a simple square using Square() in GREEN to demonstrate that area equals side times side. Display r"$A = s \times s = s^2$" using MathTex() in WHITE at the top.
+
+Fill the square with a semi-transparent color using set_fill(GREEN, opacity=0.5). Write the equation, then use Indicate() on the s² term to emphasize the "squared" connection.
+
+This establishes the foundation for understanding squares built on triangle sides.
+
+---
+
+### Scene 5: Squares and Area
+**Timestamp**: 0:47 - 1:07
+
+This is a crucial visual scene. Start with the right triangle from Scene 3. Now grow three squares from each side of the triangle using GrowFromEdge():
+
+1. Square on side a: RED with opacity 0.5, grows from the side
+2. Square on side b: GREEN with opacity 0.5, grows from the side
+3. Square on side c (hypotenuse): BLUE with opacity 0.5, grows from the side
+
+Display the area equations sequentially:
+- r"$A_a = a^2$" in RED at upper left
+- r"$A_b = b^2$" in GREEN at upper right
+- r"$A_c = c^2$" in BLUE at bottom
+
+Use a VGroup() to organize the equations. The visual shows clearly that each side has a corresponding square.
+
+---
+
+### Scene 6: Equality
+**Timestamp**: 1:07 - 1:15
+
+Prepare for the key insight. Display r"$a^2 + b^2 = c^2$" in GOLD color using MathTex(), centered and large. This is the Pythagorean theorem equation.
+
+Use Write() animation over 2 seconds. Then use Circumscribe() with GOLD color to highlight the entire equation, drawing attention to this fundamental relationship.
+
+Add Text("The sum of squares on the legs equals the square on the hypotenuse") below, in WHITE.
+
+---
+
+### Scene 7: Pythagorean Theorem - Visual Proof
+**Timestamp**: 1:15 - 1:40
+
+This is the culminating scene that brings everything together.
+
+Start by showing the right triangle with all three squares attached (from Scene 5). Now demonstrate the proof visually:
+
+1. Highlight the squares on sides a and b using Indicate() with YELLOW
+2. Show their combined area by animating the equation r"$a^2 + b^2$"
+3. Transform or morph these two squares to fill the area of the square on side c
+4. This visual transformation shows that r"$a^2 + b^2 = c^2$"
+
+Display the final theorem statement in GOLD, large and centered:
+r"$a^2 + b^2 = c^2$"
+
+Below it, show the alternative form:
+r"$c = \sqrt{a^2 + b^2}$"
+
+Use Circumscribe() on the entire diagram to conclude. Add final text:
+Text("The Pythagorean Theorem") in WHITE at the top.
+
+Hold for 3 seconds, then gracefully FadeOut all elements.
+
+---
+
+## Final Notes
+
+This animation is designed to be pedagogically sound and mathematically rigorous.
+The progression from angles to Pythagorean theorem ensures that viewers
+have all necessary prerequisites before encountering the main concept.
+
+All visual elements, colors, and transitions have been specified to maintain
+consistency and clarity throughout the 100-second animation.
+
+Generate complete, working Manim Community Edition Python code that implements
+this scene sequence with all specified mathematical notation, visual elements,
+colors, and animations.

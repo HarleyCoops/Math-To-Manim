@@ -2,7 +2,7 @@
 
 # Math to Manim
 
-### Hermes learns Manim: prompt → prerequisite story → typed artifacts → cinematic mathematical motion
+### Ask a question → build the lesson → render the visual explanation
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
 [![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
@@ -10,7 +10,7 @@
 [![Hermes assisted](https://img.shields.io/badge/Hermes-learns%20Manim-8b5cf6)](#hermes-learns-manim)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
-[Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Launch plan](docs/HERMES_LEARNS_MANIM.md) · [Agent guide](AGENTS.md) · [Legacy Math-To-Manim](https://github.com/HarleyCoops/Math-To-Manim)
+[Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Launch plan](docs/HERMES_LEARNS_MANIM.md) · [Agent guide](AGENTS.md)
 
 <br />
 
@@ -45,7 +45,7 @@
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/whiskering-exchange.gif" alt="Whiskering exchange animation" width="24%" /></a>
 </p>
 
-**The rewrite keeps the visual ambition of the original project, but gives the pipeline contracts, traces, and repeatable run folders.**
+**Math-To-Manim helps teachers, tutors, parents, and guardians turn questions into visual explanations they can inspect, adjust, and reuse.**
 
 [**Browse the local GIF gallery →**](docs/showcase/README.md)
 
@@ -53,18 +53,18 @@
 
 ---
 
-## Start here: Hermes + M2M2 setup
+## Start here: Hermes + Math-To-Manim setup
 
-This repo is meant to be operated by **Hermes Agent** while M2M2 provides the Manim animation pipeline. The split is intentional:
+This repo is meant to be operated by **Hermes Agent** while Math-To-Manim provides the visual explanation pipeline. The split is intentional:
 
 - **Hermes** is the repo operator: skills, file/search/patch tools, terminal checks, vision review, todos, delegation, memory, and GitHub verification.
-- **M2M2** is the Python package: typed curriculum/storyboard artifacts, Manim code generation, validation, render/review bundles, and showcase assets.
+- **Math-To-Manim** is the Python package: typed curriculum/storyboard artifacts, Manim code generation, validation, render/review bundles, and showcase assets.
 
 Fastest path for a new checkout:
 
 ```bash
-git clone https://github.com/HarleyCoops/M2M2.git
-cd M2M2
+git clone https://github.com/HarleyCoops/Math-To-Manim.git
+cd Math-To-Manim
 
 # 1. Install and verify the Python package.
 python3 -m venv .venv
@@ -92,11 +92,13 @@ See [How Hermes uses this repo](#hermes-learns-manim) for the detailed tool map.
 
 ## What this is
 
-**Math to Manim** turns one-line prompts into cinematic Manim animations with an agentic teaching pipeline. It is not just “LLM writes a script.” The system first builds the lesson: what the viewer needs to understand, what should appear first, where the aha moment lives, and which visual metaphor makes the math feel inevitable.
+**Math to Manim** is for the moment when a learner asks, “Can you show me why?” A teacher, tutor, parent, or guardian can type a question and get back a visual explanation plan: the concept, the missing prerequisites, the order of ideas, the screen beats, the generated Manim code, and optionally the rendered video.
 
-The original [Math-To-Manim](https://github.com/HarleyCoops/Math-To-Manim) proved that this works: calculus, topology, chaos, spacetime, stochastic finance, and ML concepts can become publishable mathematical motion when agents plan the explanation before they write code.
+The input can be short, but the product is the explanation: what the learner needs to understand, what should appear first, where the aha moment lives, and which visual metaphor makes the idea feel inevitable.
 
-This repo is the rewrite of that idea around a cleaner spine:
+Math-To-Manim proves that calculus, topology, chaos, spacetime, stochastic finance, and ML concepts can become useful mathematical motion when agents plan the explanation before they write code.
+
+This repo turns that idea into a durable teaching pipeline:
 
 - a prerequisite-story pipeline inspired by the original reverse knowledge tree;
 - typed Pydantic artifacts between every stage;
@@ -111,11 +113,11 @@ The design principle is simple: **story before symbols, geometry before algebra,
 
 ## What makes this different
 
-A normal text-to-code demo jumps from prompt straight to Python. Math to Manim takes the long way on purpose:
+A normal text-to-code demo jumps from a request straight to Python. Math to Manim takes the long way on purpose:
 
 ```text
-short prompt
-  → intent: what should this teach?
+question
+  → intent: what is the learner really asking?
   → prerequisite graph: what must be understood first?
   → curriculum: what order makes the idea click?
   → math packet: which definitions/equations matter?
@@ -127,7 +129,7 @@ short prompt
   → review artifacts / showcase GIF
 ```
 
-That gives every run a memory: JSON contracts, generated code, render results, review notes, and a manifest. The output is not just a video; it is an inspectable path from **understanding** to **animation**.
+That gives every run a memory: JSON contracts, generated code, render results, review notes, and a manifest. The output is not just a video; it is an inspectable path from **question** to **understanding** to **animation**.
 
 ---
 
@@ -138,8 +140,8 @@ That gives every run a memory: JSON contracts, generated code, render results, r
 Windows PowerShell:
 
 ```powershell
-git clone https://github.com/HarleyCoops/M2M2.git
-cd M2M2
+git clone https://github.com/HarleyCoops/Math-To-Manim.git
+cd Math-To-Manim
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -U pip
@@ -150,8 +152,8 @@ python -m pytest
 macOS / Linux / WSL:
 
 ```bash
-git clone https://github.com/HarleyCoops/M2M2.git
-cd M2M2
+git clone https://github.com/HarleyCoops/Math-To-Manim.git
+cd Math-To-Manim
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -U pip
@@ -164,7 +166,7 @@ python -m pytest
 This proves the CLI, artifact contracts, and validators are wired before you spend model or render time:
 
 ```bash
-m2m2 generate "Explain why derivatives are slopes" --deterministic --no-render
+math-to-manim generate "Explain why derivatives are slopes" --deterministic --no-render
 ```
 
 Equivalent module form:
@@ -179,16 +181,16 @@ Set an OpenAI key and choose a model if desired:
 
 ```bash
 export OPENAI_API_KEY="sk-..."
-export M2M2_MODEL="gpt-4.1"
-m2m2 generate "Explain Fourier epicycles as rotating vectors" --no-render
+export OPENAI_MODEL="gpt-4.1"
+math-to-manim generate "Explain Fourier epicycles as rotating vectors" --no-render
 ```
 
 PowerShell:
 
 ```powershell
 $env:OPENAI_API_KEY = "sk-..."
-$env:M2M2_MODEL = "gpt-4.1"
-m2m2 generate "Explain Fourier epicycles as rotating vectors" --no-render
+$env:OPENAI_MODEL = "gpt-4.1"
+math-to-manim generate "Explain Fourier epicycles as rotating vectors" --no-render
 ```
 
 ### 4. Install render extras when you want MP4 output
@@ -211,7 +213,7 @@ The package list lives in [`requirements-system.txt`](requirements-system.txt).
 
 ## Codex CLI codegen path
 
-M2M2 can keep the typed planning pipeline while sending the Manim codegen and repair loop through a locally authenticated Codex CLI session.
+Math-To-Manim can keep the typed planning pipeline while sending the Manim codegen and repair loop through a locally authenticated Codex CLI session.
 
 Check Codex first:
 
@@ -223,20 +225,11 @@ codex exec "Say ready from inside this repo"
 Then route codegen through Codex:
 
 ```bash
-m2m2 generate "Explain derivatives as slopes with a cinematic tangent-line reveal" \
+math-to-manim generate "Explain derivatives as slopes with a cinematic tangent-line reveal" \
   --codegen-provider codex-cli \
   --codex-full-auto \
   --style cinematic \
   --quality l
-```
-
-Environment equivalents:
-
-```bash
-export M2M2_CODEGEN_PROVIDER=codex-cli
-export M2M2_CODEX_FULL_AUTO=1
-export M2M2_CODEX_COMMAND=codex
-export M2M2_CODEX_TIMEOUT_SECONDS=900
 ```
 
 Earlier planning stages remain on the typed adapters; only the generated-code and repair stages move first. That makes the migration incremental instead of all-or-nothing.
@@ -285,7 +278,7 @@ math_to_manim/
 
 ## Motion showcase
 
-Thirteen curated GIFs from the legacy repo's [`public/readme-showcase/`](https://github.com/HarleyCoops/Math-To-Manim/tree/main/public/readme-showcase) directory are copied into this repo under [`docs/showcase/assets/`](docs/showcase/assets/). They are not outputs from the rewrite yet; they are the **art direction target**.
+Thirteen curated GIFs are tracked under [`docs/showcase/assets/`](docs/showcase/assets/) as the **art direction target** for Math-To-Manim's visual explanations.
 
 <table>
 <tr>
@@ -318,9 +311,9 @@ Adjust `-ss` and `-t` to capture the teaching beat you want.
 
 ## Hermes learns Manim
 
-This repo is also a live **Hermes Agent workspace**. Hermes is not imported by M2M2 and is not a runtime dependency; it is the contributor/operator layer that uses the repo the way a developer would: read files, search code, patch docs and code, run terminal checks, inspect generated artifacts, review media with vision, delegate larger work, track todos, and preserve useful context through skills and memory.
+This repo is also a live **Hermes Agent workspace**. Hermes is not imported by Math-To-Manim and is not a runtime dependency; it is the contributor/operator layer that uses the repo the way a developer would: read files, search code, patch docs and code, run terminal checks, inspect generated artifacts, review media with vision, delegate larger work, track todos, and preserve useful context through skills and memory.
 
-| Hermes-native capability | How it is used in M2M2 |
+| Hermes-native capability | How it is used in Math-To-Manim |
 | --- | --- |
 | File + search tools | Read `README.md`, `AGENTS.md`, `pyproject.toml`, schemas, tests, docs, and generated run artifacts before making claims. |
 | Patch tool | Make surgical edits to docs, schemas, tests, pipeline code, and launch copy while preserving repo style and typed contracts. |
@@ -330,7 +323,7 @@ This repo is also a live **Hermes Agent workspace**. Hermes is not imported by M
 | Session search + memory | Recover prior repo decisions and preserve stable conventions without storing secrets or temporary run noise. |
 | Skills | Load procedures such as `agents-md`, `codebase-inspection`, `manim-video`, `systematic-debugging`, `writing-plans`, `test-driven-development`, and `subagent-driven-development`. |
 
-The M2M2 side gives Hermes concrete things to operate: the `m2m2` / `math-to-manim` CLI, deterministic helpers in `math_to_manim/tools/`, typed stages in `math_to_manim/agents/` and `math_to_manim/pipeline/`, schemas in `math_to_manim/schemas/`, render/review helpers, and reproducible `runs/<run_id>/` bundles containing JSON contracts, `generated_scene.py`, validation/render/review reports, contact sheets, frames, and `manifest.json`.
+The Math-To-Manim side gives Hermes concrete things to operate: the `math-to-manim` CLI, deterministic helpers in `math_to_manim/tools/`, typed stages in `math_to_manim/agents/` and `math_to_manim/pipeline/`, schemas in `math_to_manim/schemas/`, render/review helpers, and reproducible `runs/<run_id>/` bundles containing JSON contracts, `generated_scene.py`, validation/render/review reports, contact sheets, frames, and `manifest.json`.
 
 Start a repo-aware Hermes session:
 
@@ -348,12 +341,6 @@ See [`AGENTS.md`](AGENTS.md) for the full operating contract and [`docs/HERMES_L
 
 ---
 
-## Relationship to the classic repo
-
-Use [HarleyCoops/Math-To-Manim](https://github.com/HarleyCoops/Math-To-Manim) for historical Claude / Gemini / Kimi experiments, examples, and the original orchestration experiments. Use **M2M2** for the refactor focused on typed artifacts, tracing, staged provider migration, and repeatable agent workflows.
-
----
-
 ## License
 
-MIT. Showcase GIFs originate from the upstream Math-To-Manim project and are duplicated locally here for documentation and art-direction continuity.
+MIT.

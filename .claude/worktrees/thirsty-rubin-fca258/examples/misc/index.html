@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math to Manim Documentation</title>
+    <!-- Twitter Card metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Math to Manim Documentation">
+    <meta name="twitter:description" content="Mathematical documentation for quantum computing prompts and algorithms">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .pdf-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        .pdf-item {
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+        .pdf-item h2 {
+            margin-top: 0;
+            font-size: 1.4em;
+        }
+        .pdf-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .pdf-viewer {
+            width: 100%;
+            height: 700px;
+            border: none;
+            margin: 10px 0;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .pdf-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #0366d6;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: auto;
+            text-align: center;
+        }
+        .pdf-link:hover {
+            background: #0255b3;
+        }
+        .header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .mobile-notice {
+            display: none;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin: 10px 0;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .pdf-list {
+                grid-template-columns: 1fr;
+            }
+            .pdf-viewer {
+                display: none;
+            }
+            .mobile-notice {
+                display: block;
+            }
+            .pdf-item {
+                padding: 15px;
+            }
+            .pdf-link {
+                margin-top: 10px;
+            }
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Math to Manim Documentation</h1>
+            <p>Access our collection of mathematical documentation and algorithms:</p>
+            <p class="mobile-notice">For the best viewing experience, please use the "Open in New Tab" button on mobile devices.</p>
+        </div>
+        
+        <ul class="pdf-list">
+            <li class="pdf-item">
+                <div class="pdf-content">
+                    <h2>Quantum Prompt Documentation</h2>
+                    <p>Documentation for quantum computing prompts and algorithms.</p>
+                    <iframe src="docs/quantumprompt.pdf" class="pdf-viewer" title="Quantum Prompt Documentation"></iframe>
+                    <a href="docs/quantumprompt.pdf" class="pdf-link" target="_blank" rel="noopener">Open in New Tab</a>
+                </div>
+            </li>
+            <li class="pdf-item">
+                <div class="pdf-content">
+                    <h2>Benamou-Brenier Wasserstein</h2>
+                    <p>Mathematical documentation on the Benamou-Brenier formulation of Wasserstein distance.</p>
+                    <iframe src="docs/Benamou-Brenier-Wasserstein.pdf" class="pdf-viewer" title="Benamou-Brenier Documentation"></iframe>
+                    <a href="docs/Benamou-Brenier-Wasserstein.pdf" class="pdf-link" target="_blank" rel="noopener">Open in New Tab</a>
+                </div>
+            </li>
+            <li class="pdf-item">
+                <div class="pdf-content">
+                    <h2>Information Geometry</h2>
+                    <p>Documentation on Information Geometry implementations.</p>
+                    <iframe src="docs/Information_Geometry_py.pdf" class="pdf-viewer" title="Information Geometry Documentation"></iframe>
+                    <a href="docs/Information_Geometry_py.pdf" class="pdf-link" target="_blank" rel="noopener">Open in New Tab</a>
+                </div>
+            </li>
+            <li class="pdf-item">
+                <div class="pdf-content">
+                    <h2>ProLip Documentation</h2>
+                    <p>Documentation for the ProLip library.</p>
+                    <iframe src="docs/ProLip_py.pdf" class="pdf-viewer" title="ProLip Documentation"></iframe>
+                    <a href="docs/ProLip_py.pdf" class="pdf-link" target="_blank" rel="noopener">Open in New Tab</a>
+                </div>
+            </li>
+            <li class="pdf-item">
+                <div class="pdf-content">
+                    <h2>Gale-Shapley Algorithm</h2>
+                    <p>Documentation on the Gale-Shapley matching algorithm.</p>
+                    <iframe src="docs/gale_shaply.pdf" class="pdf-viewer" title="Gale-Shapley Documentation"></iframe>
+                    <a href="docs/gale_shaply.pdf" class="pdf-link" target="_blank" rel="noopener">Open in New Tab</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</body>
+</html> 
