@@ -8,7 +8,7 @@
 
 <br />
 
-<img src="assets/derivatives-as-slopes.gif" alt="Derivatives as slopes" width="760" />
+<img src="assets/quartic-torus-analysis.gif" alt="Quartic torus analysis" width="760" />
 
 **Educational animation should feel like an idea becoming visible.**
 
@@ -104,6 +104,7 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 | `assets/hopf-fibration.gif` | Topology | Dense colored fibers and projection geometry for the Hopf fibration. |
 | `assets/lorenz-attractor.gif` | Dynamical systems | Glowing trajectories reveal the butterfly shape of the Lorenz attractor. |
 | `assets/prolip-scene.gif` | Scientific networks | Molecular/protein interaction graphics with highlighted graph relationships. |
+| `assets/quartic-torus-analysis.gif` | Topology / differential geometry | A full M2M2 pipeline render of a quartic torus-like implicit surface, showing regularity, genus, curvature, and multi-view topology. |
 | `assets/radius-of-convergence.gif` | Analysis | Function behavior and boundary markers make convergence intervals concrete. |
 | `assets/rhombicosidodecahedron.gif` | Geometry | A polished 3D Archimedean solid with symmetry, depth, and color contrast. |
 | `assets/teaching-hopf.gif` | Topology / pedagogy | A slower explanatory Hopf fibration sequence built for instruction. |
