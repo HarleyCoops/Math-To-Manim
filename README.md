@@ -14,6 +14,10 @@
 
 <br />
 
+<img src="Hero.jpg" alt="M2M2 hero: mathematical motion and pipeline" width="760" />
+
+<br />
+
 <a href="docs/showcase/README.md">
   <img src="docs/showcase/assets/derivatives-as-slopes.gif" alt="Derivatives as slopes: a secant line becomes a tangent" width="760" />
 </a>
@@ -62,16 +66,6 @@ The public [Math-To-Manim](https://github.com/HarleyCoops/Math-To-Manim) repo pr
 - static validation, render metadata, review artifacts, and manifests that are easy to inspect in CI or by another agent.
 
 The design principle is simple: **story before symbols, geometry before algebra, artifacts before side effects.**
-
----
-
-## The pipeline at a glance
-
-<p align="center">
-  <img src="docs/assets/pipeline-at-a-glance.svg" alt="M2M2 pipeline diagram from prompt to typed artifacts, generated Manim code, validation, render, review, and manifest" width="100%" />
-</p>
-
-Each stage writes structured JSON so humans, tests, and Hermes/Codex agents can all understand what happened.
 
 ---
 
@@ -260,22 +254,49 @@ Adjust `-ss` and `-t` to capture the teaching beat you want.
 
 ---
 
-## Hermes skills make this repo easier to evolve
+## Hermes learns Manim
 
-This rewrite is designed for skill-driven agent work. When using Hermes Agent, start by loading the skill that matches the change rather than improvising a one-off workflow.
+This repo is becoming a launch demo for **Hermes learns Manim**: Hermes uses native tools to inspect the codebase, load skills, run tests, call the M2M2 CLI, review generated artifacts, validate media, and help promote the best beats into the showcase.
+
+Hermes is not a runtime dependency for M2M2. It is contributor tooling for skill-driven planning, debugging, review, and publishable repo work.
+
+Start a repo-aware Hermes session:
+
+```bash
+# Install/configure Hermes if needed.
+curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+hermes setup
+hermes doctor
+
+# From the repo root, preload the skills that match this project.
+hermes --skills agents-md,manim-video,codebase-inspection,systematic-debugging
+```
+
+Native-tool moments worth showcasing:
+
+| Hermes does this natively | Why it matters for Manim |
+| --- | --- |
+| Loads repo instructions and skills | Agent behavior is guided by project contracts, not one-off prompting. |
+| Reads files and CLI help | README, `pyproject.toml`, `AGENTS.md`, and actual commands stay aligned. |
+| Runs terminal checks | `pytest`, CLI smoke runs, Manim, and FFmpeg become verifiable steps. |
+| Inspects artifacts and media | A run is traceable from JSON contracts to `generated_scene.py` to render outputs. |
+| Uses visual review | GIFs are checked as images/motion, not trusted because filenames exist. |
+| Commits and verifies GitHub-visible docs/assets | Showcase work lands in the repo with remote proof. |
 
 Recommended skill map:
 
 | Work | Hermes skill to reach for | Why it matters here |
 | --- | --- | --- |
+| Update agent instructions | `agents-md` | Keeps agent behavior repo-specific and operational. |
+| Design or critique animations | `manim-video` | Preserves the “geometry before algebra” cinematic standard. |
+| Keep repo docs honest | `codebase-inspection` | Verifies entrypoints from `pyproject.toml`, CLI help, tests, and actual files. |
 | Break a feature into reviewable tasks | `writing-plans` | Keeps pipeline changes bite-sized and tied to file paths. |
-| Implement a plan with parallel workers | `subagent-driven-development` | Useful when one agent inspects schemas, one checks CLI behavior, and one edits docs/tests. |
 | Add behavior safely | `test-driven-development` | M2M2's value is typed, testable stages; tests should lead changes. |
 | Diagnose render/codegen failures | `systematic-debugging` | Manim failures often hide the real cause one stage earlier. |
-| Ask another agent to review before commit | `requesting-code-review` | Good for schema migrations, CLI flags, and generated-code sandboxing. |
-| Keep repo docs honest | `codebase-inspection` | Verify entrypoints from `pyproject.toml`, CLI help, tests, and actual files. |
+| Implement a plan with parallel workers | `subagent-driven-development` | Useful when one agent inspects schemas, one checks CLI behavior, and one edits docs/tests. |
+| Ask another agent to review before commit | `requesting-code-review` | Good for schema migrations, CLI flags, generated-code sandboxing, and media promotion. |
 
-Hermes plans can live under `.hermes/plans/` and should read like executable design docs: scope, skill, files, acceptance criteria, verification commands, and known pitfalls. If a PR changes the pipeline contract, update the plan or cite the skill used so future agents can resume without rediscovering context.
+See [`AGENTS.md`](AGENTS.md) for the full operating contract and [`docs/HERMES_LEARNS_MANIM.md`](docs/HERMES_LEARNS_MANIM.md) for the launch/thread plan and new animation slate.
 
 ---
 
