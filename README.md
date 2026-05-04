@@ -94,16 +94,6 @@ That gives every run a memory: JSON contracts, generated code, render results, r
 
 ---
 
-## The pipeline at a glance
-
-<p align="center">
-  <img src="docs/assets/pipeline-at-a-glance.svg" alt="Math to Manim pipeline diagram from prompt to typed artifacts, generated Manim code, validation, render, review, and manifest" width="100%" />
-</p>
-
-Each stage writes structured JSON so humans, tests, and Hermes/Codex agents can all understand what happened.
-
----
-
 ## Clone and run
 
 ### 1. Clone

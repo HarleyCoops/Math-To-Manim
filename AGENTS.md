@@ -179,7 +179,6 @@ Do not commit by default:
 Intentionally tracked exceptions:
 
 - `docs/showcase/assets/*.gif` — curated legacy showcase GIFs from the original Math-To-Manim repo. These are art-direction targets, not current rewrite outputs.
-- `docs/assets/pipeline-at-a-glance.svg` — pipeline overview diagram (docs asset).
 
 When touching showcase media:
 
