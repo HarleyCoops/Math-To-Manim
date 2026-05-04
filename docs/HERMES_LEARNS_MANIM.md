@@ -6,6 +6,10 @@ Launch concept for showing M2M2 as a living demo of Hermes Agent using native to
 
 Hermes learns Manim: an agent reads the repo, plans the lesson, writes typed artifacts, generates Manim code, runs the CLI, reviews the render, and turns the best motion beat into a showcase GIF.
 
+## Repo operator model
+
+Hermes supplies the developer/operator tools; M2M2 supplies the animation pipeline. Hermes reads and searches the repo, patches files, runs terminal checks, reviews frames/GIFs with vision, delegates larger work, tracks todos/session state, and loads task skills. M2M2 gives those tools concrete surfaces to operate: the `m2m2` CLI, `math_to_manim/tools/`, typed stage artifacts, render/review helpers, and `runs/<run_id>/` bundles.
+
 ## What we should show on X/Twitter
 
 The point is not only “AI made a Manim video.” The point is that Hermes can use the development environment natively:

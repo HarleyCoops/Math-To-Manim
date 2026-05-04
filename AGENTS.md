@@ -199,6 +199,21 @@ When touching showcase media:
 
 This repo is intended for skill-driven Hermes/Codex work. Hermes is contributor tooling, not an M2M2 runtime dependency. Use it to inspect, plan, test, debug, review, and coordinate changes while preserving typed pipeline contracts.
 
+### How Hermes should use this repo
+
+Hermes is the workspace operator around M2M2, not part of the Python package. Use Hermes-native tools against repo-local surfaces:
+
+- Use file/search tools to ground claims in `README.md`, `AGENTS.md`, `pyproject.toml`, `docs/`, `math_to_manim/`, and `tests/`.
+- Use patch tools for targeted edits; avoid broad rewrites unless the task explicitly calls for them.
+- Use terminal tools for setup, `pytest`, CLI help, deterministic smoke runs, Codex checks, render checks, FFmpeg/GIF commands, and git verification.
+- Use vision tools for rendered frames, contact sheets, screenshots, and GIF quality checks.
+- Use delegation/subagents for multi-file work where schemas, CLI, docs, tests, render behavior, or media assets can be reviewed separately.
+- Use todos/plans/session notes for acceptance criteria, run IDs, artifact paths, skipped checks, and rollback notes.
+- Use session search/memory carefully for stable repo decisions only; do not store secrets, temporary run noise, or user credentials.
+- Use skills to load procedure: `agents-md` for this file, `codebase-inspection` for claims, `manim-video` for animation quality, `systematic-debugging` for failing runs/renders, `writing-plans` for larger changes, and `test-driven-development` for behavior changes.
+
+Map those tools to M2M2 artifacts: the `m2m2` / `math-to-manim` CLI, deterministic helpers in `math_to_manim/tools/`, pipeline code in `math_to_manim/pipeline/`, schemas in `math_to_manim/schemas/`, and generated `runs/<run_id>/` bundles with JSON artifacts, `generated_scene.py`, reports, contact sheets/frames, and `manifest.json`.
+
 ### Install and verify Hermes
 
 Linux/macOS/WSL2:
