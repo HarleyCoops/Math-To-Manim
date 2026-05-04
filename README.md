@@ -1,20 +1,20 @@
 <div align="center">
 
-# M2M2 · Math-To-Manim, rewritten
+# Math to Manim
 
-### Prompt → typed curriculum → Manim code → renderable mathematical motion
+### Hermes learns Manim: prompt → prerequisite story → typed artifacts → cinematic mathematical motion
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
 [![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
 [![OpenAI Agents SDK](https://img.shields.io/badge/OpenAI-Agents%20SDK-111827)](https://openai.github.io/openai-agents-python/)
-[![Hermes assisted](https://img.shields.io/badge/Hermes-skill%20driven-8b5cf6)](#hermes-skills-make-this-repo-easier-to-evolve)
+[![Hermes assisted](https://img.shields.io/badge/Hermes-learns%20Manim-8b5cf6)](#hermes-learns-manim)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
-[Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Docs index](docs/README.md) · [Legacy Math-To-Manim](https://github.com/HarleyCoops/Math-To-Manim)
+[Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Launch plan](docs/HERMES_LEARNS_MANIM.md) · [Agent guide](AGENTS.md) · [Legacy Math-To-Manim](https://github.com/HarleyCoops/Math-To-Manim)
 
 <br />
 
-<img src="Hero.jpg" alt="M2M2 hero: mathematical motion and pipeline" width="760" />
+<img src="Hero.jpg" alt="Hermes learns Manim hero: mathematical motion, equations, and agentic animation" width="760" />
 
 <br />
 
@@ -55,17 +55,52 @@
 
 ## What this is
 
-The public [Math-To-Manim](https://github.com/HarleyCoops/Math-To-Manim) repo proved the core product idea: short educational prompts can become lecture-grade Manim animations when agents first plan the lesson instead of jumping straight to code.
+**Math to Manim** turns one-line prompts into cinematic Manim animations with an agentic teaching pipeline. It is not just “LLM writes a script.” The system first builds the lesson: what the viewer needs to understand, what should appear first, where the aha moment lives, and which visual metaphor makes the math feel inevitable.
 
-**M2M2** is the rewrite of that idea around a cleaner spine:
+The original [Math-To-Manim](https://github.com/HarleyCoops/Math-To-Manim) proved that this works: calculus, topology, chaos, spacetime, stochastic finance, and ML concepts can become publishable mathematical motion when agents plan the explanation before they write code.
 
+This repo is the rewrite of that idea around a cleaner spine:
+
+- a prerequisite-story pipeline inspired by the original reverse knowledge tree;
 - typed Pydantic artifacts between every stage;
 - OpenAI Agents SDK-compatible adapters for planning and generation;
 - optional Codex CLI-backed codegen for subscription-authenticated iteration;
 - a reproducible `runs/<run_id>/` bundle for every generation;
-- static validation, render metadata, review artifacts, and manifests that are easy to inspect in CI or by another agent.
+- static validation, render metadata, review artifacts, and manifests that are easy to inspect in CI, by Hermes, or by another agent.
 
 The design principle is simple: **story before symbols, geometry before algebra, artifacts before side effects.**
+
+---
+
+## What makes this different
+
+A normal text-to-code demo jumps from prompt straight to Python. Math to Manim takes the long way on purpose:
+
+```text
+short prompt
+  → intent: what should this teach?
+  → prerequisite graph: what must be understood first?
+  → curriculum: what order makes the idea click?
+  → math packet: which definitions/equations matter?
+  → storyboard: what should move on screen?
+  → scene spec: what Manim objects and beats are needed?
+  → generated_scene.py
+  → static validation / repair
+  → Manim render
+  → review artifacts / showcase GIF
+```
+
+That gives every run a memory: JSON contracts, generated code, render results, review notes, and a manifest. The output is not just a video; it is an inspectable path from **understanding** to **animation**.
+
+---
+
+## The pipeline at a glance
+
+<p align="center">
+  <img src="docs/assets/pipeline-at-a-glance.svg" alt="Math to Manim pipeline diagram from prompt to typed artifacts, generated Manim code, validation, render, review, and manifest" width="100%" />
+</p>
+
+Each stage writes structured JSON so humans, tests, and Hermes/Codex agents can all understand what happened.
 
 ---
 
