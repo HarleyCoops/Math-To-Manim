@@ -53,6 +53,43 @@
 
 ---
 
+## Start here: Hermes + M2M2 setup
+
+This repo is meant to be operated by **Hermes Agent** while M2M2 provides the Manim animation pipeline. The split is intentional:
+
+- **Hermes** is the repo operator: skills, file/search/patch tools, terminal checks, vision review, todos, delegation, memory, and GitHub verification.
+- **M2M2** is the Python package: typed curriculum/storyboard artifacts, Manim code generation, validation, render/review bundles, and showcase assets.
+
+Fastest path for a new checkout:
+
+```bash
+git clone https://github.com/HarleyCoops/M2M2.git
+cd M2M2
+
+# 1. Install and verify the Python package.
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -U pip
+python -m pip install -e ".[dev]"
+python -m pytest
+
+# 2. Install and verify Hermes.
+curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+hermes setup
+hermes doctor
+hermes tools list --summary
+hermes skills list
+
+# 3. Start Hermes with the repo skills that matter here.
+hermes --skills agents-md,codebase-inspection,manim-video,systematic-debugging
+```
+
+Once Hermes is inside this repo, the expected workflow is concrete: read `AGENTS.md`, inspect `pyproject.toml` and CLI help, run deterministic smoke generations, open the `runs/<run_id>/` artifact bundle, visually inspect frames/GIFs when media changes, then commit/push only verified docs/code/assets.
+
+See [How Hermes uses this repo](#hermes-learns-manim) for the detailed tool map.
+
+---
+
 ## What this is
 
 **Math to Manim** turns one-line prompts into cinematic Manim animations with an agentic teaching pipeline. It is not just “LLM writes a script.” The system first builds the lesson: what the viewer needs to understand, what should appear first, where the aha moment lives, and which visual metaphor makes the math feel inevitable.
