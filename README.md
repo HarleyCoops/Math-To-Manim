@@ -14,7 +14,7 @@
 
 <br />
 
-<img src="Hero.jpg" alt="Hermes learns Manim hero: mathematical motion, equations, and agentic animation" width="760" />
+<img src="docs/showcase/assets/quartic-torus-analysis.gif" alt="Quartic torus analysis: compact surface, curvature, topology, and agentic Manim rendering" width="760" />
 
 <br />
 
