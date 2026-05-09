@@ -7,14 +7,19 @@ Agents SDK refactor.
 
 - [Architecture](ARCHITECTURE.md) describes the target agent pipeline and worker
   boundaries.
+- [Roadmap](ROADMAP.md) answers current editable-workflow status and the planned
+  prompt/spec/code iteration loop.
 - [Deployment roadmap](DEPLOYMENT_ROADMAP.md) gives a practical public guide for
   deploying a Manim animation engine in the cloud.
+
 - [Showcase](showcase/README.md) presents local copies of legacy Math-To-Manim
   GIFs and the visual bar for generated scenes.
 - [Artifact schemas](ARTIFACT_SCHEMAS.md) defines the JSON/YAML contracts passed
   between planning, generation, render, and eval stages.
 - [Eval strategy](EVAL_STRATEGY.md) explains how prompt, artifact, code, and
   render checks fit together.
+- [Domain skills](DOMAIN_SKILLS.md) explains how physics/math skills can improve
+  animation intuition, Manim patterns, review loops, and ethical inspiration.
 - [Migration notes](MIGRATION_NOTES.md) summarizes the move from public
   Math-To-Manim into this refactor.
 
