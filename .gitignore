@@ -7,6 +7,8 @@ __pycache__/
 venv/
 .env
 .env.*
+# Claude Code nested worktrees: never commit (often broken gitlinks if admin dir is pruned).
+.claude/worktrees/
 build/
 dist/
 *.egg-info/
