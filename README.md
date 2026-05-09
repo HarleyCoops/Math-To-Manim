@@ -2,7 +2,7 @@
 
 # Math to Manim
 
-### Ask a question → build the lesson → render the visual explanation
+### Ask a question → Get A Movie
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
 [![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
