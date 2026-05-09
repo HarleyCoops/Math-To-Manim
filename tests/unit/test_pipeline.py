@@ -36,3 +36,31 @@ def test_pipeline_generates_no_render_vertical_slice(tmp_path) -> None:
     manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["render_requested"] is False
     assert "knowledge_graph" in manifest["artifacts"]
+
+
+def test_pipeline_preserves_long_prompt_for_codegen_with_safe_scene_name(tmp_path) -> None:
+    long_prompt = " ".join(["Explain GRPO semantic manifolds with LaTeX zooms"] * 20)
+    pipeline = AnimationPipeline(
+        RuntimeConfig(
+            runs_dir=tmp_path,
+            deterministic=True,
+            trace_enabled=False,
+        )
+    )
+
+    pipeline.generate(
+        prompt=long_prompt,
+        audience_level="advanced",
+        desired_duration=240,
+        style="cinematic 3D",
+        render=False,
+    )
+
+    run_dir = next(tmp_path.iterdir())
+    scene_spec = json.loads((run_dir / "scene_spec.json").read_text(encoding="utf-8"))
+    assert scene_spec["scene_name"].endswith("Scene")
+    assert len(scene_spec["scene_name"]) <= 80
+    assert scene_spec["metadata"]["original_prompt"] == long_prompt
+    assert scene_spec["metadata"]["requested_duration_seconds"] == 240
+    assert scene_spec["metadata"]["render_command"].endswith(f"generated_scene.py {scene_spec['scene_name']}")
+    assert long_prompt not in scene_spec["metadata"]["render_command"]

@@ -90,7 +90,14 @@ class AnimationPipeline:
         storyboard = state.put("storyboard", self.storyboard_agent.run(math_packet))
         save_artifact(run_dir, "storyboard", storyboard)
 
-        scene_spec = state.put("scene_spec", self.scene_spec_agent.run(storyboard))
+        scene_spec = self.scene_spec_agent.run(storyboard)
+        scene_spec = _attach_request_context(
+            scene_spec,
+            prompt=prompt,
+            style=style,
+            desired_duration=desired_duration,
+        )
+        scene_spec = state.put("scene_spec", scene_spec)
         save_artifact(run_dir, "scene_spec", scene_spec)
 
         generated = state.put("generated_code", self.codegen_agent.run(scene_spec))
@@ -205,6 +212,37 @@ class AnimationPipeline:
 
 def save_artifact(run_dir: Path, name: str, artifact: Any) -> None:
     save_json(run_dir / f"{name}.json", artifact.to_public_dict())
+
+
+def _attach_request_context(scene_spec: Any, *, prompt: str, style: str, desired_duration: int) -> Any:
+    """Preserve rich user intent for codegen while keeping Manim class names safe."""
+
+    scene_name = getattr(scene_spec, "scene_name", "") or "GeneratedScene"
+    updates: dict[str, Any] = {}
+    if len(scene_name) > 80:
+        scene_name = _safe_scene_name(prompt)
+        updates["scene_name"] = scene_name
+
+    metadata = dict(getattr(scene_spec, "metadata", {}) or {})
+    metadata.update(
+        {
+            "original_prompt": prompt,
+            "requested_style": style,
+            "requested_duration_seconds": desired_duration,
+            "render_command": f"python -m manim -ql generated_scene.py {scene_name}",
+        }
+    )
+    updates["metadata"] = metadata
+    return scene_spec.model_copy(update=updates)
+
+
+def _safe_scene_name(prompt: str) -> str:
+    words = re.findall(r"[A-Za-z0-9]+", prompt)
+    selected = words[:8] or ["Generated"]
+    class_name = "".join(word[:16].capitalize() for word in selected)
+    if class_name.endswith("Scene"):
+        return class_name[:80]
+    return f"{class_name[:75]}Scene"
 
 
 def save_json(path: Path, payload: Any) -> None:
