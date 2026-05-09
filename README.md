@@ -1,5 +1,13 @@
 <div align="center">
 
+<a href="https://www.star-history.com/#HarleyCoops/Math-To-Manim&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date" width="100%" />
+  </picture>
+</a>
+
 # Math to Manim
 
 ### Ask a question → Get A Movie
@@ -14,15 +22,13 @@
 
 <br />
 
-<img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="GRPO semantic manifold: sibling completions become a geometric policy update across the full scene" width="760" />
+<img src="docs/assets/hermes-learns-manim.jpg" alt="Hermes Learns Manim banner with mathematical formulas" width="760" />
 
 <br />
 
-<a href="docs/showcase/README.md">
-  <img src="docs/showcase/assets/derivatives-as-slopes.gif" alt="Derivatives as slopes: a secant line becomes a tangent" width="760" />
-</a>
+<img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="GRPO semantic manifold: sibling completions become a geometric policy update across the full scene" width="760" />
 
-*Classic calculus beat from the original pipeline: secant tension resolving into a tangent.*
+<br />
 
 <p align="center">
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/rhombicosidodecahedron.gif" alt="Rhombicosidodecahedron animation" width="24%" /></a>
