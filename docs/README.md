@@ -13,6 +13,8 @@ Agents SDK refactor.
   between planning, generation, render, and eval stages.
 - [Eval strategy](EVAL_STRATEGY.md) explains how prompt, artifact, code, and
   render checks fit together.
+- [Domain skills](DOMAIN_SKILLS.md) explains how physics/math skills can improve
+  animation intuition, Manim patterns, review loops, and ethical inspiration.
 - [Migration notes](MIGRATION_NOTES.md) summarizes the move from public
   Math-To-Manim into this refactor.
 
