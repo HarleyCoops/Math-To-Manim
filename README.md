@@ -18,7 +18,7 @@
 [![Hermes assisted](https://img.shields.io/badge/Hermes-learns%20Manim-8b5cf6)](#hermes-learns-manim)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
-[Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Launch plan](docs/HERMES_LEARNS_MANIM.md) · [Agent guide](AGENTS.md)
+[Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Deployment roadmap](docs/DEPLOYMENT_ROADMAP.md) · [Launch plan](docs/HERMES_LEARNS_MANIM.md) · [Agent guide](AGENTS.md)
 
 <br />
 
