@@ -118,13 +118,23 @@ hermes doctor
 hermes tools list --summary
 hermes skills list
 
-# 3. Start Hermes with the repo skills that matter here.
-hermes --skills agents-md,codebase-inspection,manim-video,systematic-debugging
+# 3. Register this repo's local Math-To-Manim skill.
+hermes config set skills.external_dirs "$(pwd)/hermes/skills"
+hermes skills list --source local
+
+# 4. Start Hermes with the repo skill plus the procedural skills that matter here.
+hermes --skills hermes-learns-manim,agents-md,codebase-inspection,manim-video,systematic-debugging
 ```
 
 Once Hermes is inside this repo, the expected workflow is concrete: read `AGENTS.md`, inspect `pyproject.toml` and CLI help, run deterministic smoke generations, open the `runs/<run_id>/` artifact bundle, visually inspect frames/GIFs when media changes, then commit/push only verified docs/code/assets.
 
 See [How Hermes uses this repo](#hermes-learns-manim) for the detailed tool map.
+
+### Where is the old Claude skill?
+
+The old Claude Code instructions that referenced `./skill` are historical. This rewrite does not keep a root `skill/` directory, and `claude --plugin-dir ./skill ...` is not the recommended path for the current repo.
+
+Repo-local Hermes skills live under [`hermes/skills/`](hermes/skills/). Register that parent directory with Hermes as shown above so individual skills (for example [`hermes-learns-manim/SKILL.md`](hermes/skills/hermes-learns-manim/SKILL.md)) are discoverable by name, then run Hermes with `--skills hermes-learns-manim,...`. The `hermes-learns-manim` skill is contributor/operator guidance around the M2M2 CLI, Codex-backed codegen option, deterministic smoke runs, and artifact review; it is not imported by the `math_to_manim` Python package.
 
 ---
 
