@@ -7,6 +7,8 @@ Agents SDK refactor.
 
 - [Architecture](ARCHITECTURE.md) describes the target agent pipeline and worker
   boundaries.
+- [Roadmap](ROADMAP.md) answers current editable-workflow status and the planned
+  prompt/spec/code iteration loop.
 - [Showcase](showcase/README.md) presents local copies of legacy Math-To-Manim
   GIFs and the visual bar for generated scenes.
 - [Artifact schemas](ARTIFACT_SCHEMAS.md) defines the JSON/YAML contracts passed
