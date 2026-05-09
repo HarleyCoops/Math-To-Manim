@@ -14,7 +14,7 @@
 
 <br />
 
-<img src="docs/showcase/assets/quartic-torus-analysis.gif" alt="Quartic torus analysis: compact surface, curvature, topology, and agentic Manim rendering" width="760" />
+<img src="docs/showcase/assets/grpo-semantic-manifold.gif" alt="GRPO semantic manifold: sibling completions become a geometric policy update" width="760" />
 
 <br />
 
@@ -27,7 +27,7 @@
 <p align="center">
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/rhombicosidodecahedron.gif" alt="Rhombicosidodecahedron animation" width="24%" /></a>
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/cosmic-gravity-3d.gif" alt="Cosmic gravity 3D animation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/grpo-explanation.gif" alt="GRPO explanation animation" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/grpo-semantic-manifold.gif" alt="GRPO semantic manifold animation" width="24%" /></a>
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/derivative-visualization.gif" alt="Derivative visualization animation" width="24%" /></a>
 </p>
 
@@ -278,7 +278,7 @@ math_to_manim/
 
 ## Motion showcase
 
-Thirteen curated GIFs are tracked under [`docs/showcase/assets/`](docs/showcase/assets/) as the **art direction target** for Math-To-Manim's visual explanations.
+Sixteen curated GIFs are tracked under [`docs/showcase/assets/`](docs/showcase/assets/) as the **art direction target** for Math-To-Manim's visual explanations.
 
 <table>
 <tr>

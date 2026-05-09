@@ -8,7 +8,7 @@
 
 <br />
 
-<img src="assets/quartic-torus-analysis.gif" alt="Quartic torus analysis" width="760" />
+<img src="assets/grpo-semantic-manifold.gif" alt="GRPO semantic manifold: sibling completions become a geometric policy update" width="760" />
 
 **Educational animation should feel like an idea becoming visible.**
 
@@ -16,7 +16,7 @@
 
 ---
 
-These GIFs are local copies of the original Math-To-Manim [`public/readme-showcase/`](https://github.com/HarleyCoops/Math-To-Manim/tree/main/public/readme-showcase) bundle. They are included here so the rewrite has its artistic north star in the same repository as the new pipeline.
+Most of these GIFs are local copies of the original Math-To-Manim [`public/readme-showcase/`](https://github.com/HarleyCoops/Math-To-Manim/tree/main/public/readme-showcase) bundle. New M2M2 recovery renders are added only after content validation, so the rewrite has both its artistic north star and current pipeline targets in the same repository.
 
 They are not just decoration. They define the bar M2M2 should eventually hit:
 
@@ -80,12 +80,12 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 <tr>
 <td width="33%"><img src="assets/whiskering-exchange.gif" alt="Whiskering exchange" /></td>
 <td width="33%"><img src="assets/brownian-finance.gif" alt="Brownian finance" /></td>
-<td width="33%"><img src="assets/grpo-explanation.gif" alt="GRPO explanation" /></td>
+<td width="33%"><img src="assets/grpo-semantic-manifold.gif" alt="GRPO semantic manifold" /></td>
 </tr>
 <tr>
 <td><b>Whiskering exchange</b><br />Category-theoretic structure presented as a formal visual proof rhythm.</td>
 <td><b>Brownian finance</b><br />A dark minimalist transition from calculus and integration toward measure, probability, and sample spaces.</td>
-<td><b>GRPO explanation</b><br />Group Relative Policy Optimization staged as a visual arc instead of a dense equation slide.</td>
+<td><b>GRPO semantic manifold</b><br />Sibling completions become points on a response manifold, then preference turns the objective into motion.</td>
 </tr>
 </table>
 
@@ -96,11 +96,13 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 | File | Theme | Description |
 | --- | --- | --- |
 | `assets/brownian-finance.gif` | Probability / finance | Calculus accumulation gives way to measure-theoretic uncertainty and sample-space intuition. |
+| `assets/continuous-geometric-picture.gif` | ML / reinforcement learning | Full-length GRPO response-manifold recovery render, preserved as source material for shorter README loops. |
 | `assets/cosmic-gravity-3d.gif` | Physics | A cinematic spacetime-curvature scene with cosmic scale and documentary pacing. |
 | `assets/derivative-visualization.gif` | Calculus | Foundational curve, axes, and local-linearization setup. |
 | `assets/derivatives-as-slopes.gif` | Calculus | Secant-to-tangent reveal for the slope interpretation of derivatives. |
 | `assets/fourier-epicycles.gif` | Fourier analysis | Rotating vectors compose a curve through epicycle motion. |
 | `assets/grpo-explanation.gif` | ML / reinforcement learning | GRPO explained as a staged visual concept rather than a wall of notation. |
+| `assets/grpo-semantic-manifold.gif` | ML / reinforcement learning | A validated M2M2 recovery render where sibling completions on a semantic manifold become a geometric policy update. |
 | `assets/hopf-fibration.gif` | Topology | Dense colored fibers and projection geometry for the Hopf fibration. |
 | `assets/lorenz-attractor.gif` | Dynamical systems | Glowing trajectories reveal the butterfly shape of the Lorenz attractor. |
 | `assets/prolip-scene.gif` | Scientific networks | Molecular/protein interaction graphics with highlighted graph relationships. |
