@@ -14,7 +14,7 @@
 
 <br />
 
-<img src="docs/showcase/assets/grpo-semantic-manifold.gif" alt="GRPO semantic manifold: sibling completions become a geometric policy update" width="760" />
+<img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="GRPO semantic manifold: sibling completions become a geometric policy update across the full scene" width="760" />
 
 <br />
 
@@ -27,7 +27,7 @@
 <p align="center">
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/rhombicosidodecahedron.gif" alt="Rhombicosidodecahedron animation" width="24%" /></a>
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/cosmic-gravity-3d.gif" alt="Cosmic gravity 3D animation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/grpo-semantic-manifold.gif" alt="GRPO semantic manifold animation" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="Full GRPO semantic manifold animation" width="24%" /></a>
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/derivative-visualization.gif" alt="Derivative visualization animation" width="24%" /></a>
 </p>
 
