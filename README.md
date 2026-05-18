@@ -10,15 +10,15 @@
 
 # Math to Manim
 
-### Ask a question → Get A Movie
+### Ask a question -> reverse reasoning -> Manim movie
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
 [![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
 [![OpenAI Agents SDK](https://img.shields.io/badge/OpenAI-Agents%20SDK-111827)](https://openai.github.io/openai-agents-python/)
-[![Hermes assisted](https://img.shields.io/badge/Hermes-learns%20Manim-8b5cf6)](#hermes-learns-manim)
+[![Hermes assisted](https://img.shields.io/badge/Hermes-agent%20assisted-8b5cf6)](#hermes-agent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
-[Motion showcase](docs/showcase/README.md) · [Roadmap](docs/ROADMAP.md) · [Deployment roadmap](docs/DEPLOYMENT_ROADMAP.md) · [Architecture](docs/ARCHITECTURE.md) · [Launch plan](docs/HERMES_LEARNS_MANIM.md) · [Agent guide](AGENTS.md)
+[Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md) · [Agent guide](AGENTS.md)
 
 <br />
 
@@ -47,94 +47,19 @@
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/whiskering-exchange.gif" alt="Whiskering exchange animation" width="24%" /></a>
 </p>
 
-**Math-To-Manim helps teachers, tutors, parents, and guardians turn questions into visual explanations they can inspect, adjust, and reuse.**
+**Math-To-Manim turns short prompts into reverse-reasoned lesson plans, typed pipeline artifacts, generated Manim code, and reusable visual explanations.**
 
 [**Browse the local GIF gallery →**](docs/showcase/README.md)
 
 <br />
 
-<img src="docs/assets/hermes-learns-manim.jpg" alt="Hermes Learns Manim banner with mathematical formulas" width="760" />
+<img src="docs/assets/reverse-reasoning-pipeline.svg" alt="Reverse reasoning pipeline diagram showing the actual Math-To-Manim stage agents, artifacts, validation gate, render path, review, package, and manifest" width="100%" />
 
 <br />
 
-## Hermes learns Manim
-
-This repo is also a live **Hermes Agent workspace**. Hermes is not imported by Math-To-Manim and is not a runtime dependency; it is the contributor/operator layer that uses the repo the way a developer would: read files, search code, patch docs and code, run terminal checks, inspect generated artifacts, review media with vision, delegate larger work, track todos, and preserve useful context through skills and memory.
-
-| Hermes-native capability | How it is used in Math-To-Manim |
-| --- | --- |
-| File + search tools | Read `README.md`, `AGENTS.md`, `pyproject.toml`, schemas, tests, docs, and generated run artifacts before making claims. |
-| Patch tool | Make surgical edits to docs, schemas, tests, pipeline code, and launch copy while preserving repo style and typed contracts. |
-| Terminal tool | Run `pytest`, CLI help, deterministic smoke generations, Codex checks, Manim, FFmpeg, link validators, git, and GitHub verification. |
-| Vision/media review | Inspect screenshots, contact sheets, frames, and GIFs so showcase media is judged visually, not trusted because filenames exist. |
-| Delegation + todos | Split larger work across focused agents, track acceptance criteria, and keep implementation/review/checklist state explicit. |
-| Session search + memory | Recover prior repo decisions and preserve stable conventions without storing secrets or temporary run noise. |
-| Skills | Load procedures such as `agents-md`, `codebase-inspection`, `manim-video`, `systematic-debugging`, `writing-plans`, `test-driven-development`, and `subagent-driven-development`. |
-
-The Math-To-Manim side gives Hermes concrete things to operate: the `math-to-manim` CLI, deterministic helpers in `math_to_manim/tools/`, typed stages in `math_to_manim/agents/` and `math_to_manim/pipeline/`, schemas in `math_to_manim/schemas/`, render/review helpers, and reproducible `runs/<run_id>/` bundles containing JSON contracts, `generated_scene.py`, validation/render/review reports, contact sheets, frames, and `manifest.json`.
-
-Start a repo-aware Hermes session:
-
-```bash
-# Install/configure Hermes if needed.
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
-hermes setup
-hermes doctor
-
-# From the repo root, preload skills for this repo.
-hermes --skills agents-md,manim-video,codebase-inspection,systematic-debugging
-```
-
-See [`AGENTS.md`](AGENTS.md) for the full operating contract and [`docs/HERMES_LEARNS_MANIM.md`](docs/HERMES_LEARNS_MANIM.md) for the launch/thread plan and new animation slate.
+<em>Code-grounded workflow: every run stays inspectable from prompt to artifacts to render.</em>
 
 </div>
-
----
-
-## Start here: Hermes + Math-To-Manim setup
-
-This repo is meant to be operated by **Hermes Agent** while Math-To-Manim provides the visual explanation pipeline. The split is intentional:
-
-- **Hermes** is the repo operator: skills, file/search/patch tools, terminal checks, vision review, todos, delegation, memory, and GitHub verification.
-- **Math-To-Manim** is the Python package: typed curriculum/storyboard artifacts, Manim code generation, validation, render/review bundles, and showcase assets.
-
-Fastest path for a new checkout:
-
-```bash
-git clone https://github.com/HarleyCoops/Math-To-Manim.git
-cd Math-To-Manim
-
-# 1. Install and verify the Python package.
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -U pip
-python -m pip install -e ".[dev]"
-python -m pytest
-
-# 2. Install and verify Hermes.
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
-hermes setup
-hermes doctor
-hermes tools list --summary
-hermes skills list
-
-# 3. Register this repo's local Math-To-Manim skill.
-hermes config set skills.external_dirs "$(pwd)/hermes/skills"
-hermes skills list --source local
-
-# 4. Start Hermes with the repo skill plus the procedural skills that matter here.
-hermes --skills hermes-learns-manim,agents-md,codebase-inspection,manim-video,systematic-debugging
-```
-
-Once Hermes is inside this repo, the expected workflow is concrete: read `AGENTS.md`, inspect `pyproject.toml` and CLI help, run deterministic smoke generations, open the `runs/<run_id>/` artifact bundle, visually inspect frames/GIFs when media changes, then commit/push only verified docs/code/assets.
-
-See [How Hermes uses this repo](#hermes-learns-manim) for the detailed tool map.
-
-### Where is the old Claude skill?
-
-The old Claude Code instructions that referenced `./skill` are historical. This rewrite does not keep a root `skill/` directory, and `claude --plugin-dir ./skill ...` is not the recommended path for the current repo.
-
-Repo-local Hermes skills live under [`hermes/skills/`](hermes/skills/). Register that parent directory with Hermes as shown above so individual skills (for example [`hermes-learns-manim/SKILL.md`](hermes/skills/hermes-learns-manim/SKILL.md)) are discoverable by name, then run Hermes with `--skills hermes-learns-manim,...`. The `hermes-learns-manim` skill is contributor/operator guidance around the M2M2 CLI, Codex-backed codegen option, deterministic smoke runs, and artifact review; it is not imported by the `math_to_manim` Python package.
 
 ---
 
@@ -146,36 +71,38 @@ The input can be short, but the product is the explanation: what the learner nee
 
 Math-To-Manim proves that calculus, topology, chaos, spacetime, stochastic finance, and ML concepts can become useful mathematical motion when agents plan the explanation before they write code.
 
-This repo turns that idea into a durable teaching pipeline:
+This repo turns that idea into a durable agent pipeline:
 
 - a prerequisite-story pipeline inspired by the original reverse knowledge tree;
 - typed Pydantic artifacts between every stage;
 - OpenAI Agents SDK-compatible adapters for planning and generation;
 - optional Codex CLI-backed codegen for subscription-authenticated iteration;
 - a reproducible `runs/<run_id>/` bundle for every generation;
-- static validation, render metadata, review artifacts, and manifests that are easy to inspect in CI, by Hermes, or by another agent.
+- static validation, render metadata, review artifacts, and manifests that are easy to inspect in CI or by another agent.
 
 The design principle is simple: **story before symbols, geometry before algebra, artifacts before side effects.**
 
 ---
 
-## What makes this different
+## Reverse reasoning pipeline
 
-A normal text-to-code demo jumps from a request straight to Python. Math to Manim takes the long way on purpose:
+A normal text-to-code demo jumps from request to Python. Math-To-Manim takes the long way on purpose: it reasons backward from the final concept to the prerequisites, then walks forward through a teachable visual sequence.
 
-```text
-question
-  → intent: what is the learner really asking?
-  → prerequisite graph: what must be understood first?
-  → curriculum: what order makes the idea click?
-  → math packet: which definitions/equations matter?
-  → storyboard: what should move on screen?
-  → scene spec: what Manim objects and beats are needed?
-  → generated_scene.py
-  → static validation / repair
-  → Manim render
-  → review artifacts / showcase GIF
-```
+The code path is explicit in [`math_to_manim/pipeline/runner.py`](math_to_manim/pipeline/runner.py). `AnimationPipeline.generate()` runs a fixed stage chain: `IntentAgent`, `PrerequisiteGraphAgent`, `CurriculumAgent`, `MathAgent`, `StoryboardAgent`, `SceneSpecAgent`, `ManimCodeAgent`, `StaticReviewAgent`, `RenderAgent`, `VideoReviewAgent`, and `PublisherAgent`.
+
+| Stage | Why it exists | Artifact |
+| --- | --- | --- |
+| Intent | Clarify what the learner is really asking. | `intent.json` |
+| Reverse prerequisites | Build the knowledge graph needed before the target idea. | `knowledge_graph.json` |
+| Curriculum | Turn the graph into a teachable order. | `curriculum.json` |
+| Math packet | Select definitions, equations, assumptions, and examples. | `math_packet.json` |
+| Storyboard | Decide the screen beats before code exists. | `storyboard.json` |
+| Scene spec | Compile the visual plan into Manim objects, animations, timing, and camera notes. | `scene_spec.json` |
+| Code, validation, render, review | Generate runnable Manim, gate it with static checks, render when allowed, and package the evidence. | `generated_scene.py`, reports, manifest |
+
+<p align="center">
+  <img src="docs/assets/render-repair-loop.svg" alt="Render validation and bounded repair loop diagram showing static review, render skip, Manim subprocess, repair from frozen scene spec, video review, and publisher package" width="100%" />
+</p>
 
 That gives every run a memory: JSON contracts, generated code, render results, review notes, and a manifest. The output is not just a video; it is an inspectable path from **question** to **understanding** to **animation**.
 
@@ -323,6 +250,16 @@ math_to_manim/
   rendering/   # Manim and FFmpeg wrappers
   review/      # static and visual review scoring
 ```
+
+---
+
+## Hermes Agent
+
+Hermes is the contributor/operator agent around this repository. It is not imported by Math-To-Manim and is not a runtime dependency; it uses the repo the way a developer would: read files, search code, patch docs and code, run terminal checks, inspect generated artifacts, review frames or GIFs, track todos, delegate larger work, and preserve stable context through skills.
+
+That makes Hermes useful for maintaining the reverse-reasoning pipeline without becoming part of it. A Hermes session can inspect `AGENTS.md`, `pyproject.toml`, schemas, tests, and `runs/<run_id>/` bundles; run `pytest`, CLI smoke commands, Manim, FFmpeg, and git checks; then verify that docs, code, and showcase media still match the artifact contracts.
+
+Repo-local Hermes skills live under [`hermes/skills/`](hermes/skills/). The old Claude `./skill` path is historical; current contributor guidance is in [`AGENTS.md`](AGENTS.md), with launch notes in [`docs/HERMES_LEARNS_MANIM.md`](docs/HERMES_LEARNS_MANIM.md).
 
 ---
 

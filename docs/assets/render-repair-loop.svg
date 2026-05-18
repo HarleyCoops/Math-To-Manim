@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760" viewBox="0 0 1600 760" role="img" aria-labelledby="title desc">
+  <title id="title">Math-To-Manim validation and render repair loop</title>
+  <desc id="desc">A diagram of the static validation gate and bounded render repair loop in AnimationPipeline.generate.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { fill: #101828; font: 700 42px Arial, sans-serif; }
+      .subtitle { fill: #475467; font: 400 22px Arial, sans-serif; }
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 16; }
+      .code { stroke: #d97706; }
+      .render { stroke: #059669; }
+      .fail { stroke: #dc2626; }
+      .gate { fill: #fff7ed; stroke: #f97316; stroke-width: 2; }
+      .agent { fill: #111827; font: 700 20px Arial, sans-serif; }
+      .artifact { fill: #475467; font: 400 17px Arial, sans-serif; }
+      .small { fill: #667085; font: 400 15px Arial, sans-serif; }
+      .arrow { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .repair { stroke: #dc2626; stroke-width: 3; fill: none; marker-end: url(#arrow-red); stroke-dasharray: 9 7; }
+      .band { fill: #ffffff; stroke: #e2e8f0; stroke-width: 1.5; rx: 20; }
+      .note { fill: #f1f5f9; stroke: #cbd5e1; stroke-width: 1.5; rx: 14; }
+      .mono { fill: #334155; font: 600 15px "Courier New", monospace; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#64748b" />
+    </marker>
+    <marker id="arrow-red" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#dc2626" />
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1600" height="760" />
+  <text class="title" x="70" y="78">Validation and render repair loop</text>
+  <text class="subtitle" x="70" y="116">Rendering is gated by static review. Failed renders repair only generated Manim code from the frozen scene spec.</text>
+
+  <rect class="band" x="60" y="166" width="1480" height="438" />
+
+  <rect class="box code" x="120" y="282" width="240" height="104" />
+  <text class="agent" x="146" y="322">ManimCodeAgent</text>
+  <text class="artifact" x="146" y="350">generated_code.json</text>
+  <text class="artifact" x="146" y="374">generated_scene.py</text>
+
+  <rect class="box code" x="450" y="282" width="240" height="104" />
+  <text class="agent" x="476" y="322">StaticReviewAgent</text>
+  <text class="artifact" x="476" y="350">AST checks</text>
+  <text class="artifact" x="476" y="374">validation_report.json</text>
+
+  <polygon class="gate" points="850,262 958,334 850,406 742,334" />
+  <text class="agent" x="803" y="323">passes static</text>
+  <text class="agent" x="827" y="348">review?</text>
+
+  <rect class="box fail" x="1052" y="228" width="290" height="94" />
+  <text class="agent" x="1080" y="267">No render call</text>
+  <text class="artifact" x="1080" y="294">RenderResult skipped</text>
+
+  <rect class="box render" x="1052" y="396" width="290" height="94" />
+  <text class="agent" x="1080" y="435">RenderAgent</text>
+  <text class="artifact" x="1080" y="462">subprocess Manim</text>
+
+  <rect class="box render" x="636" y="500" width="300" height="82" />
+  <text class="agent" x="664" y="534">VideoReviewAgent</text>
+  <text class="artifact" x="664" y="560">probe, frames, contact sheet</text>
+
+  <rect class="box render" x="1016" y="500" width="300" height="82" />
+  <text class="agent" x="1044" y="534">PublisherAgent</text>
+  <text class="artifact" x="1044" y="560">package + manifest</text>
+
+  <rect class="box fail" x="122" y="500" width="338" height="82" />
+  <text class="agent" x="150" y="534">Repair path</text>
+  <text class="artifact" x="150" y="560">repair(scene_spec, generated, failure)</text>
+
+  <path class="arrow" d="M360 334 H450" />
+  <path class="arrow" d="M690 334 H742" />
+  <path class="arrow" d="M958 304 H1052" />
+  <text class="small" x="992" y="288">no</text>
+  <path class="arrow" d="M958 364 H1006 V443 H1052" />
+  <text class="small" x="992" y="386">yes</text>
+  <path class="arrow" d="M1197 490 V541 H936" />
+  <path class="arrow" d="M936 541 H1016" />
+
+  <path class="repair" d="M1052 443 C900 664 520 664 291 582" />
+  <path class="repair" d="M291 500 C306 456 220 442 240 386" />
+  <text class="small" x="504" y="664">if render failed, deterministic is false, and repair_attempt &lt; max_render_repairs</text>
+
+  <rect class="note" x="82" y="638" width="1416" height="62" />
+  <text class="mono" x="108" y="674">Frozen upstream contract:</text>
+  <text class="small" x="330" y="674">the repair loop reuses the same scene_spec plus recorded stderr/stdout. It does not rerun intent, graph, curriculum, math, or storyboard planning.</text>
+</svg>
