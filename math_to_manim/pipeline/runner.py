@@ -23,6 +23,7 @@ from math_to_manim.agents import (
 )
 from math_to_manim.agents.codegen import write_generated_code
 from math_to_manim.config import RuntimeConfig
+from math_to_manim.pipeline.reference_assets import store_reference_images
 from math_to_manim.pipeline.state import PipelineState
 from math_to_manim.pipeline.tracing import TraceWriter
 from math_to_manim.schemas import AnimationPackage, RenderResult, UserRequest
@@ -53,7 +54,11 @@ class AnimationPipeline:
         desired_duration: int = 60,
         style: str = "cinematic",
         render: bool = True,
+        reference_images: list[str | Path] | None = None,
     ) -> AnimationPackage:
+        run_dir = self._create_run_dir(prompt)
+        reference_assets = store_reference_images(run_dir, reference_images)
+        reference_summary = reference_assets.to_public_dict() if reference_assets is not None else None
         request = UserRequest(
             prompt=prompt,
             target_audience=audience_level,
@@ -63,11 +68,18 @@ class AnimationPipeline:
                 "output_formats": ["mp4", "gif", "readme"],
                 "target_platform": "local",
             },
-            metadata={"requested_model": self.config.model},
+            metadata={
+                "requested_model": self.config.model,
+                **({"reference_assets": reference_summary} if reference_summary else {}),
+            },
         )
-        run_dir = self._create_run_dir(prompt)
         state = PipelineState(run_dir=run_dir)
         trace = TraceWriter(run_dir / "trace.jsonl", enabled=self.config.trace_enabled)
+
+        if reference_assets is not None:
+            state.put("reference_assets", reference_assets)
+            save_artifact(run_dir, "reference_assets", reference_assets)
+            trace.event("reference_assets", reference_assets.to_public_dict())
 
         state.put("request", request)
         save_artifact(run_dir, "request", request)
@@ -96,6 +108,7 @@ class AnimationPipeline:
             prompt=prompt,
             style=style,
             desired_duration=desired_duration,
+            reference_assets=reference_summary,
         )
         scene_spec = state.put("scene_spec", scene_spec)
         save_artifact(run_dir, "scene_spec", scene_spec)
@@ -114,7 +127,7 @@ class AnimationPipeline:
             )
             repair_attempt = 0
             while (
-                render_result.status != "succeeded"
+                render_result.status == "failed"
                 and not self.config.deterministic
                 and repair_attempt < self.config.max_render_repairs
             ):
@@ -154,7 +167,7 @@ class AnimationPipeline:
             render_result = state.put(
                 "render_result",
                 RenderResult(
-                    status="failed",
+                    status="skipped",
                     scene_name=generated.scene_name,
                     output_path=None,
                     command=[],
@@ -180,6 +193,7 @@ class AnimationPipeline:
         package = package.model_copy(
             update={
                 "intent": intent,
+                "reference_assets": reference_assets,
                 "knowledge_graph": graph,
                 "curriculum_plan": curriculum,
                 "math_packet": math_packet,
@@ -214,7 +228,14 @@ def save_artifact(run_dir: Path, name: str, artifact: Any) -> None:
     save_json(run_dir / f"{name}.json", artifact.to_public_dict())
 
 
-def _attach_request_context(scene_spec: Any, *, prompt: str, style: str, desired_duration: int) -> Any:
+def _attach_request_context(
+    scene_spec: Any,
+    *,
+    prompt: str,
+    style: str,
+    desired_duration: int,
+    reference_assets: dict[str, Any] | None = None,
+) -> Any:
     """Preserve rich user intent for codegen while keeping Manim class names safe."""
 
     scene_name = getattr(scene_spec, "scene_name", "") or "GeneratedScene"
@@ -230,6 +251,7 @@ def _attach_request_context(scene_spec: Any, *, prompt: str, style: str, desired
             "requested_style": style,
             "requested_duration_seconds": desired_duration,
             "render_command": f"python -m manim -ql generated_scene.py {scene_name}",
+            **({"reference_assets": reference_assets} if reference_assets else {}),
         }
     )
     updates["metadata"] = metadata

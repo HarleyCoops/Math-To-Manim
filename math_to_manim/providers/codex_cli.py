@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+import shutil
 import subprocess
 from collections.abc import Callable
 from typing import Any
@@ -64,13 +66,19 @@ class CodexCliProvider:
         return repaired.model_copy(update={"metadata": metadata})
 
     def _run_codex(self, prompt: str) -> str:
-        cmd = [self.config.codex_command, "exec"]
+        command = (
+            _resolve_codex_command(self.config.codex_command)
+            if self._runner is subprocess.run
+            else self.config.codex_command
+        )
+        cmd = [command, "exec"]
         if self.config.codex_full_auto:
             cmd.append("--full-auto")
-        cmd.append(prompt)
+        cmd.append("-")
         try:
             completed = self._runner(
                 cmd,
+                input=prompt,
                 cwd=str(self.config.codex_workdir) if self.config.codex_workdir else None,
                 text=True,
                 capture_output=True,
@@ -144,3 +152,13 @@ def _extract_json_object(text: str) -> dict[str, Any]:
     if not isinstance(parsed, dict):
         raise RuntimeError("Codex CLI returned JSON, but it was not an object")
     return parsed
+
+
+def _resolve_codex_command(command: str) -> str:
+    """Resolve Windows npm shims to an executable subprocess can launch."""
+
+    if os.name != "nt":
+        return command
+    if any(command.lower().endswith(suffix) for suffix in (".exe", ".cmd", ".bat", ".ps1")):
+        return command
+    return shutil.which(f"{command}.cmd") or shutil.which(f"{command}.exe") or shutil.which(command) or command

@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+import os
 from pathlib import Path
+import shlex
 import subprocess
+import sys
 
 from .commands import ToolResult, resolve_binary
 
@@ -30,6 +34,7 @@ def render_manim_scene(
     output_dir: str | Path | None = None,
     quality: str = "low",
     manim_bin: str = "manim",
+    manim_command: Sequence[str] | str | None = None,
     timeout_seconds: float = 120.0,
     working_dir: str | Path | None = None,
     dry_run: bool = False,
@@ -40,9 +45,9 @@ def render_manim_scene(
     """
 
     source = Path(source_path).resolve()
-    binary = resolve_binary(manim_bin)
     flag = _quality_flag(quality)
-    command = [binary or manim_bin, flag, str(source)]
+    command_prefix = _resolve_manim_command(manim_bin=manim_bin, manim_command=manim_command)
+    command = [*command_prefix, flag, str(source)]
     if scene_name:
         command.append(scene_name)
     if output_dir is not None:
@@ -50,8 +55,9 @@ def render_manim_scene(
         media_dir.mkdir(parents=True, exist_ok=True)
         command.extend(["--media_dir", str(media_dir)])
 
-    if binary is None:
-        return ToolResult(False, True, tuple(command), reason=f"Manim binary not found: {manim_bin}")
+    if not command_prefix:
+        requested = _format_requested_commands(manim_bin=manim_bin, manim_command=manim_command)
+        return ToolResult(False, True, tuple(command), reason=f"Manim command not found: {requested}")
     if dry_run:
         return ToolResult(True, True, tuple(command), reason="dry run", metadata={"quality": quality})
     if not source.exists():
@@ -105,3 +111,43 @@ def _discover_rendered_video(media_dir: Path | None) -> Path | None:
     if not videos:
         return None
     return max(videos, key=lambda path: path.stat().st_mtime)
+
+
+def _resolve_manim_command(*, manim_bin: str, manim_command: Sequence[str] | str | None) -> tuple[str, ...]:
+    for command in _candidate_manim_commands(manim_bin=manim_bin, manim_command=manim_command):
+        resolved = _resolve_command_prefix(command)
+        if resolved:
+            return resolved
+    return ()
+
+
+def _candidate_manim_commands(
+    *,
+    manim_bin: str,
+    manim_command: Sequence[str] | str | None,
+) -> tuple[tuple[str, ...], ...]:
+    if manim_command is not None:
+        return (_normalize_command(manim_command),)
+    if manim_bin == "manim":
+        return ((manim_bin,), (sys.executable, "-m", "manim"))
+    return ((manim_bin,),)
+
+
+def _normalize_command(command: Sequence[str] | str) -> tuple[str, ...]:
+    if isinstance(command, str):
+        return tuple(shlex.split(command, posix=os.name != "nt"))
+    return tuple(command)
+
+
+def _resolve_command_prefix(command: tuple[str, ...]) -> tuple[str, ...] | None:
+    if not command:
+        return None
+    binary = resolve_binary(command[0])
+    if binary is None:
+        return None
+    return (binary, *command[1:])
+
+
+def _format_requested_commands(*, manim_bin: str, manim_command: Sequence[str] | str | None) -> str:
+    candidates = _candidate_manim_commands(manim_bin=manim_bin, manim_command=manim_command)
+    return " or ".join(" ".join(command) for command in candidates)

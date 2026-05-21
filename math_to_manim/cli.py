@@ -7,9 +7,11 @@ import json
 from pathlib import Path
 from typing import Sequence
 
-from math_to_manim.config import RuntimeConfig
+from math_to_manim.config import RuntimeConfig, parse_command
+from math_to_manim.agents import RenderAgent, StaticReviewAgent, VideoReviewAgent
+from math_to_manim.pipeline.run_bundle import RunBundle
 from math_to_manim.pipeline.runner import AnimationPipeline
-from math_to_manim.schemas import AnimationPackage
+from math_to_manim.schemas import AnimationPackage, RenderResult
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -22,8 +24,16 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--duration", type=int, default=60)
     generate.add_argument("--style", default="cinematic")
     generate.add_argument("--quality", default=None, help="Manim quality flag: l, m, h, p, or k")
+    generate.add_argument("--manim-command", default=None, help='Manim command override, e.g. "python -m manim"')
     generate.add_argument("--model", default=None)
     generate.add_argument("--runs-dir", type=Path, default=None)
+    generate.add_argument(
+        "--reference-image",
+        action="append",
+        type=Path,
+        default=None,
+        help="Reference image to copy into the run bundle; may be repeated",
+    )
     generate.add_argument("--no-render", action="store_true", help="Skip Manim execution")
     generate.add_argument("--deterministic", action="store_true", help="Do not call model adapters")
     generate.add_argument(
@@ -38,23 +48,19 @@ def build_parser() -> argparse.ArgumentParser:
     inspect_run = subparsers.add_parser("inspect-run", help="Print a run manifest")
     inspect_run.add_argument("run_dir", type=Path)
 
+    render_run = subparsers.add_parser("render-run", help="Render an existing run bundle")
+    render_run.add_argument("run_dir", type=Path)
+    render_run.add_argument("--quality", default=None, help="Manim quality flag: l, m, h, p, or k")
+    render_run.add_argument("--manim-command", default=None, help='Manim command override, e.g. "python -m manim"')
+
+    review_run = subparsers.add_parser("review-run", help="Review an existing rendered run bundle")
+    review_run.add_argument("run_dir", type=Path)
+
     return parser
 
 
 def run_generate(args: argparse.Namespace) -> int:
-    config = RuntimeConfig.from_env()
-    if args.model:
-        config = RuntimeConfig(**{**config.__dict__, "model": args.model})
-    if args.runs_dir:
-        config = RuntimeConfig(**{**config.__dict__, "runs_dir": args.runs_dir})
-    if args.quality:
-        config = RuntimeConfig(**{**config.__dict__, "default_quality": args.quality})
-    if args.deterministic:
-        config = RuntimeConfig(**{**config.__dict__, "deterministic": True})
-    if args.codegen_provider:
-        config = RuntimeConfig(**{**config.__dict__, "codegen_provider": args.codegen_provider})
-    if args.codex_full_auto:
-        config = RuntimeConfig(**{**config.__dict__, "codex_full_auto": True})
+    config = _config_from_args(args)
 
     pipeline = AnimationPipeline(config=config)
     package = pipeline.generate(
@@ -63,6 +69,7 @@ def run_generate(args: argparse.Namespace) -> int:
         desired_duration=args.duration,
         style=args.style,
         render=not args.no_render,
+        reference_images=args.reference_image,
     )
     if args.json:
         print(json.dumps(package.to_public_dict(), indent=2))
@@ -79,6 +86,41 @@ def run_inspect(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_render_run(args: argparse.Namespace) -> int:
+    config = _config_from_args(args)
+    bundle = RunBundle(args.run_dir)
+    generated = bundle.load_current_generated_code()
+    scene_path = bundle.generated_scene_path
+
+    validation = StaticReviewAgent(config).run((generated, scene_path))
+    bundle.save_artifact("validation_report", validation)
+    if validation.is_successful:
+        render = RenderAgent(config).run((generated, scene_path, config.default_quality))
+    else:
+        render = RenderResult(
+            status="skipped",
+            scene_name=generated.scene_name,
+            output_path=None,
+            command=[],
+            stdout="",
+            stderr="static validation did not pass",
+            metadata={"skipped": True, "reason": "static_validation_failed"},
+        )
+    bundle.save_artifact("render_result", render)
+    print(_format_render_run_summary(bundle, validation, render))
+    return 0 if render.status == "succeeded" else 1
+
+
+def run_review_run(args: argparse.Namespace) -> int:
+    config = _config_from_args(args)
+    bundle = RunBundle(args.run_dir)
+    render = bundle.load_artifact("render_result", RenderResult)
+    review = VideoReviewAgent(config).run(render)
+    bundle.save_artifact("review_report", review)
+    print(_format_review_run_summary(bundle, review))
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -86,8 +128,31 @@ def main(argv: Sequence[str] | None = None) -> int:
         return run_generate(args)
     if args.command == "inspect-run":
         return run_inspect(args)
+    if args.command == "render-run":
+        return run_render_run(args)
+    if args.command == "review-run":
+        return run_review_run(args)
     parser.error(f"Unknown command: {args.command}")
     return 2
+
+
+def _config_from_args(args: argparse.Namespace) -> RuntimeConfig:
+    config = RuntimeConfig.from_env()
+    if getattr(args, "model", None):
+        config = RuntimeConfig(**{**config.__dict__, "model": args.model})
+    if getattr(args, "runs_dir", None):
+        config = RuntimeConfig(**{**config.__dict__, "runs_dir": args.runs_dir})
+    if getattr(args, "quality", None):
+        config = RuntimeConfig(**{**config.__dict__, "default_quality": args.quality})
+    if getattr(args, "manim_command", None):
+        config = RuntimeConfig(**{**config.__dict__, "manim_command": parse_command(args.manim_command)})
+    if getattr(args, "deterministic", False):
+        config = RuntimeConfig(**{**config.__dict__, "deterministic": True})
+    if getattr(args, "codegen_provider", None):
+        config = RuntimeConfig(**{**config.__dict__, "codegen_provider": args.codegen_provider})
+    if getattr(args, "codex_full_auto", False):
+        config = RuntimeConfig(**{**config.__dict__, "codex_full_auto": True})
+    return config
 
 
 def _format_generate_summary(package: AnimationPackage) -> str:
@@ -142,6 +207,36 @@ def _format_generate_summary(package: AnimationPackage) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def _format_render_run_summary(bundle: RunBundle, validation: object, render: RenderResult) -> str:
+    return "\n".join(
+        [
+            "Math-To-Manim render-run complete",
+            f"Run dir: {bundle.run_dir}",
+            f"Static validation: {getattr(validation, 'status', 'unknown')}",
+            f"Scene: {render.scene_name or 'unknown'}",
+            f"Render: {render.status}",
+            f"Video: {render.output_path or 'not produced'}",
+            f"Manifest: {bundle.manifest_path}",
+        ]
+    )
+
+
+def _format_review_run_summary(bundle: RunBundle, review: object) -> str:
+    metadata = getattr(review, "metadata", {}) or {}
+    draft = metadata.get("draft_review") if isinstance(metadata, dict) else None
+    return "\n".join(
+        [
+            "Math-To-Manim review-run complete",
+            f"Run dir: {bundle.run_dir}",
+            f"Review score: {getattr(review, 'score', None)}",
+            f"Approved: {getattr(review, 'approved', False)}",
+            f"Draft notes: {(draft or {}).get('notes_path') if isinstance(draft, dict) else 'not produced'}",
+            f"Contact sheet: {(draft or {}).get('contact_sheet') if isinstance(draft, dict) else 'not produced'}",
+            f"Manifest: {bundle.manifest_path}",
+        ]
+    )
 
 
 if __name__ == "__main__":

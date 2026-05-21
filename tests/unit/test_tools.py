@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 
 import pytest
 
@@ -112,6 +114,36 @@ def test_optional_rendering_wrappers_skip_missing_binaries(tmp_path) -> None:
     assert probe.skipped and not probe.ok
     assert frame.skipped and not frame.ok
     assert sheet.skipped and not sheet.ok
+
+
+def test_render_manim_scene_falls_back_to_python_module(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    scene_file = tmp_path / "scene.py"
+    scene_file.write_text("from manim import Scene\nclass DemoScene(Scene):\n    def construct(self):\n        pass\n", encoding="utf-8")
+    media_dir = tmp_path / "media"
+    calls: list[list[str]] = []
+
+    def fake_resolve_binary(binary: str) -> str | None:
+        if binary == "manim":
+            return None
+        if binary == sys.executable:
+            return sys.executable
+        return None
+
+    def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        calls.append(command)
+        video_dir = media_dir / "videos" / "scene" / "1080p30"
+        video_dir.mkdir(parents=True)
+        (video_dir / "DemoScene.mp4").write_bytes(b"video")
+        return subprocess.CompletedProcess(command, 0, stdout="ok", stderr="")
+
+    monkeypatch.setattr("math_to_manim.rendering.manim.resolve_binary", fake_resolve_binary)
+    monkeypatch.setattr("math_to_manim.rendering.manim.subprocess.run", fake_run)
+
+    result = render_manim_scene(scene_file, scene_name="DemoScene", output_dir=media_dir)
+
+    assert result.ok
+    assert result.command[:3] == (sys.executable, "-m", "manim")
+    assert calls[0][:3] == [sys.executable, "-m", "manim"]
 
 
 def test_video_scoring_is_weighted_and_deterministic() -> None:

@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import os
 from pathlib import Path
+import shlex
 
 
 def load_env_file(path: Path = Path(".env")) -> None:
@@ -34,6 +35,7 @@ class RuntimeConfig:
     max_render_repairs: int = 3
     max_visual_repairs: int = 2
     render_timeout_seconds: float = 900.0
+    manim_command: tuple[str, ...] | None = None
     trace_enabled: bool = True
     deterministic: bool = False
     codegen_provider: str = "openai-agents"
@@ -48,6 +50,7 @@ class RuntimeConfig:
 
         load_env_file()
         codex_workdir = os.getenv("M2M2_CODEX_WORKDIR")
+        manim_command = os.getenv("M2M2_MANIM_COMMAND")
         return cls(
             model=os.getenv("M2M2_MODEL", os.getenv("OPENAI_MODEL", "gpt-5.5")),
             runs_dir=Path(os.getenv("M2M2_RUNS_DIR", "runs")),
@@ -56,6 +59,7 @@ class RuntimeConfig:
             max_render_repairs=int(os.getenv("M2M2_MAX_RENDER_REPAIRS", "3")),
             max_visual_repairs=int(os.getenv("M2M2_MAX_VISUAL_REPAIRS", "2")),
             render_timeout_seconds=float(os.getenv("M2M2_RENDER_TIMEOUT_SECONDS", "900")),
+            manim_command=parse_command(manim_command) if manim_command else None,
             trace_enabled=os.getenv("M2M2_TRACE", "1") not in {"0", "false", "False"},
             deterministic=os.getenv("M2M2_DETERMINISTIC", "0") in {"1", "true", "True"},
             codegen_provider=os.getenv("M2M2_CODEGEN_PROVIDER", os.getenv("M2M2_PROVIDER", "openai-agents")),
@@ -64,3 +68,7 @@ class RuntimeConfig:
             codex_timeout_seconds=float(os.getenv("M2M2_CODEX_TIMEOUT_SECONDS", "900")),
             codex_workdir=Path(codex_workdir) if codex_workdir else None,
         )
+
+
+def parse_command(command: str) -> tuple[str, ...]:
+    return tuple(shlex.split(command, posix=os.name != "nt"))

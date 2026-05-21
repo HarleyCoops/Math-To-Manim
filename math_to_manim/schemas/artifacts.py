@@ -29,7 +29,7 @@ GraphRelationship = Literal[
 ]
 IssueSeverity = Literal["info", "warning", "error"]
 ValidationStatus = Literal["passed", "warning", "failed", "skipped"]
-RenderStatus = Literal["queued", "running", "succeeded", "failed"]
+RenderStatus = Literal["queued", "running", "succeeded", "failed", "skipped"]
 
 DEPENDENCY_RELATIONSHIPS: Tuple[str, ...] = ("prerequisite", "depends_on")
 
@@ -43,6 +43,21 @@ class UserRequest(ArtifactModel):
     duration_seconds: Optional[int] = Field(default=None, ge=1)
     style: Optional[str] = None
     constraints: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ReferenceAsset(ArtifactModel):
+    role: Literal["reference_image"] = "reference_image"
+    source_path: str
+    bundle_path: str
+    media_type: Optional[str] = None
+    sha256: str = Field(..., min_length=1)
+    size_bytes: int = Field(..., ge=0)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ReferenceAssets(ArtifactModel):
+    assets: List[ReferenceAsset] = Field(default_factory=list)
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
@@ -406,6 +421,7 @@ class RepairPatch(ArtifactModel):
 class AnimationPackage(ArtifactModel):
     package_id: Optional[str] = None
     request: UserRequest
+    reference_assets: Optional[ReferenceAssets] = None
     intent: Optional[ConceptIntent] = None
     knowledge_graph: Optional[KnowledgeGraph] = None
     curriculum_plan: Optional[CurriculumPlan] = None
