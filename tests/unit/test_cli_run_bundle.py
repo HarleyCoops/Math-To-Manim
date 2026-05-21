@@ -74,6 +74,52 @@ def test_review_run_reviews_existing_render(monkeypatch, tmp_path) -> None:
     assert "review_report" in manifest["artifacts"]
 
 
+def test_recover_render_runs_render_review_and_manifest(monkeypatch, tmp_path) -> None:
+    run_dir = _write_run_bundle(tmp_path)
+    rendered_video = run_dir / "media" / "videos" / "generated_scene" / "1080p30" / "DemoScene.mp4"
+
+    def fake_render_manim_scene(*args, **kwargs) -> ToolResult:
+        rendered_video.parent.mkdir(parents=True)
+        rendered_video.write_bytes(b"video")
+        return ToolResult(
+            ok=True,
+            skipped=False,
+            command=("python", "-m", "manim", "-ql", str(run_dir / "generated_scene.py"), "DemoScene"),
+            returncode=0,
+            stdout="rendered",
+            output_path=rendered_video,
+        )
+
+    def fake_review(self, render_result: RenderResult) -> VideoReviewReport:
+        return VideoReviewReport(
+            approved=False,
+            score=0.75,
+            observations=["draft"],
+            metadata={
+                "draft_review": {
+                    "notes_path": str(run_dir / "draft_review" / "draft_review.md"),
+                    "contact_sheet": str(run_dir / "draft_review" / "contact_sheet.png"),
+                }
+            },
+        )
+
+    monkeypatch.setattr("math_to_manim.agents.render.render_manim_scene", fake_render_manim_scene)
+    monkeypatch.setattr("math_to_manim.cli.VideoReviewAgent.run", fake_review)
+
+    exit_code = main(["recover-render", str(run_dir), "--quality", "l", "--manim-command", "python -m manim"])
+
+    assert exit_code == 0
+    render = json.loads((run_dir / "render_result.json").read_text(encoding="utf-8"))
+    review = json.loads((run_dir / "review_report.json").read_text(encoding="utf-8"))
+    recovery = json.loads((run_dir / "recovery_manifest.json").read_text(encoding="utf-8"))
+    manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
+    assert render["status"] == "succeeded"
+    assert review["score"] == 0.75
+    assert recovery["render_status"] == "succeeded"
+    assert recovery["artifacts"]["contact_sheet"].endswith("contact_sheet.png")
+    assert "recovery_manifest" in manifest["artifacts"]
+
+
 def _write_run_bundle(tmp_path: Path) -> Path:
     run_dir = tmp_path / "run"
     run_dir.mkdir()

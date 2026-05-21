@@ -231,6 +231,7 @@ runs/<run_id>/
   validation_report.json
   render_result.json
   review_report.json
+  recovery_manifest.json  # after recover-render
   draft_review/
     draft_review.md
     contact_sheet.png
@@ -238,6 +239,15 @@ runs/<run_id>/
   animation_package.json
   manifest.json
 ```
+
+After editing `generated_scene.py` inside a run bundle, rerun the recovery path:
+
+```bash
+math-to-manim recover-render runs/<run_id> --quality l
+```
+
+That command refreshes validation, render, review, draft-review assets, and
+`recovery_manifest.json` without regenerating upstream planning artifacts.
 
 Package layout:
 

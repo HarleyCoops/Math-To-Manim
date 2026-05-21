@@ -34,6 +34,7 @@ jobs:
         run: |
           python -m math_to_manim.cli --help
           python -m math_to_manim.cli generate --help
+          python -m math_to_manim.cli recover-render --help
           python -m math_to_manim.cli eval-suite --help
 
       - name: Compile package
