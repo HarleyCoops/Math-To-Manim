@@ -36,6 +36,10 @@ cases:
         - "limit"
         - "tangent slope"
         - "derivative notation"
+      acceptance_terms:
+        - "derivatives"
+        - "slopes"
+        - "limit"
       required_artifacts:
         - "request_spec"
         - "concept_plan"
@@ -71,6 +75,10 @@ cases:
         - "squares on side lengths"
         - "area preservation"
         - "a^2 + b^2 = c^2"
+      acceptance_terms:
+        - "Pythagorean"
+        - "areas"
+        - "a^2+b^2=c^2"
       required_artifacts:
         - "concept_plan"
         - "knowledge_tree"
@@ -102,6 +110,9 @@ cases:
         - "scaling factor"
         - "eigenvalue"
         - "eigenvector"
+      acceptance_terms:
+        - "eigenvector"
+        - "linear transformation"
       required_artifacts:
         - "concept_plan"
         - "math_enrichment"
@@ -146,3 +157,145 @@ cases:
         - "visual_spec replaces web images with Manim-native shapes."
     grading_notes: "This case checks guardrail behavior and constraint preservation."
 
+  - id: "erdos_unit_distance_lattice"
+    input:
+      prompt: "Tell the complete story of the Erdos unit distance conjecture using a clean algebraic lattice, connecting formulas to unit-distance shapes."
+      audience: "undergraduate"
+      duration_seconds: 120
+      style: "off-white 3D glass lattice"
+    expected:
+      target_concepts:
+        - "unit-distance graph"
+        - "algebraic lattice"
+        - "complex plane coordinates"
+        - "Erdos unit distance conjecture"
+      acceptance_terms:
+        - "unit distance"
+        - "Erdos"
+        - "lattice"
+      required_artifacts:
+        - "request_spec"
+        - "concept_plan"
+        - "knowledge_tree"
+        - "math_enrichment"
+        - "visual_spec"
+        - "scene_spec"
+      required_visuals:
+        - "off-white 3D space"
+        - "lattice points"
+        - "unit-distance edges"
+        - "formula labels connected to geometry"
+      forbidden_shortcuts:
+        - "Shows a dense graph without explaining why edges are unit length."
+        - "Uses the conjecture name without connecting the combinatorics to geometry."
+      acceptance_checks:
+        - "generated_scene.py parses."
+        - "scene_spec.scene_name is short and ends with Scene."
+    grading_notes: "Reward a clean lattice explanation over raw point-cloud density."
+
+  - id: "hopf_fibration_topology"
+    input:
+      prompt: "Explain the Hopf fibration as circles on S^3 projected into linked circles around S^2."
+      audience: "undergraduate"
+      duration_seconds: 105
+      style: "geometric topology"
+    expected:
+      target_concepts:
+        - "S^3"
+        - "S^2"
+        - "fiber circles"
+        - "linked circles"
+        - "projection"
+      acceptance_terms:
+        - "Hopf"
+        - "S^3"
+        - "S^2"
+        - "linked circles"
+      required_artifacts:
+        - "concept_plan"
+        - "knowledge_tree"
+        - "math_enrichment"
+        - "visual_spec"
+        - "scene_spec"
+      required_visuals:
+        - "sphere"
+        - "fiber circles"
+        - "linked rings"
+        - "projection"
+      forbidden_shortcuts:
+        - "Defines the Hopf fibration only symbolically with no linked-circle picture."
+      acceptance_checks:
+        - "generated_scene.py parses."
+        - "static validation passes."
+    grading_notes: "This case pressures 3D visual planning and topology language."
+
+  - id: "grpo_semantic_manifold"
+    input:
+      prompt: "Show GRPO on a semantic manifold, where policy updates move a response distribution toward higher-reward regions."
+      audience: "ml_engineer"
+      duration_seconds: 90
+      style: "research explainer"
+    expected:
+      target_concepts:
+        - "GRPO"
+        - "semantic manifold"
+        - "policy distribution"
+        - "reward"
+        - "update direction"
+      acceptance_terms:
+        - "GRPO"
+        - "semantic manifold"
+        - "policy"
+        - "reward"
+      required_artifacts:
+        - "concept_plan"
+        - "knowledge_tree"
+        - "visual_spec"
+        - "scene_spec"
+      required_visuals:
+        - "manifold surface"
+        - "response points"
+        - "reward gradient or region"
+        - "policy update arrow"
+      forbidden_shortcuts:
+        - "Treats GRPO as a generic gradient descent animation without policy or reward context."
+      acceptance_checks:
+        - "generated_scene.py parses."
+        - "static validation passes."
+    grading_notes: "This case checks whether abstract ML concepts survive into visual artifacts."
+
+  - id: "prolip_biology_mechanism"
+    input:
+      prompt: "Create a ProLIP biology mechanism explainer showing protein-lipid interaction motifs and how the interface changes function."
+      audience: "biology_researcher"
+      duration_seconds: 90
+      style: "molecular mechanism"
+    expected:
+      target_concepts:
+        - "ProLIP"
+        - "protein-lipid interaction"
+        - "binding motif"
+        - "interface"
+        - "functional change"
+      acceptance_terms:
+        - "ProLIP"
+        - "protein"
+        - "lipid"
+        - "interface"
+      required_artifacts:
+        - "concept_plan"
+        - "knowledge_tree"
+        - "math_enrichment"
+        - "visual_spec"
+        - "scene_spec"
+      required_visuals:
+        - "protein surface"
+        - "lipid membrane"
+        - "interaction motif"
+        - "functional state change"
+      forbidden_shortcuts:
+        - "Shows generic biology icons without a protein-lipid mechanism."
+      acceptance_checks:
+        - "generated_scene.py parses."
+        - "static validation passes."
+    grading_notes: "This case checks whether non-math mechanism prompts still produce inspectable story artifacts."

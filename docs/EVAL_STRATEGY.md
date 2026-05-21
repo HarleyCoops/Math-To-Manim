@@ -39,10 +39,22 @@ Each case has:
 6. Render at low quality for routine CI, then use higher quality only for release
    candidates or golden examples.
 
+## Local Runner
+
+Run the deterministic structural suite without Manim:
+
+```bash
+./.venv/bin/python -m math_to_manim.cli eval-suite evals/prompt_suite.yaml --runs-dir /tmp/m2m2-evals
+```
+
+Add `--render --quality l` when render dependencies are installed and the eval
+should require Manim output. The runner writes normal run bundles and checks
+artifact completeness, scene-name sanity, generated Python parsing, static
+validation, render status, and optional `expected.acceptance_terms`.
+
 ## Minimum CI Gates
 
-Until package code exists, CI can still lint docs and parse YAML fixtures. Once
-the runner exists, the minimum gates should be:
+Minimum gates should be:
 
 - All YAML suites parse.
 - Every generated artifact has a valid shared envelope.
@@ -77,4 +89,3 @@ artifact IDs together so a failed grade can be mapped back to the responsible
 agent stage.
 
 Source: https://platform.openai.com/docs/guides/agent-evals
-

@@ -9,6 +9,7 @@ from typing import Sequence
 
 from math_to_manim.config import RuntimeConfig, parse_command
 from math_to_manim.agents import RenderAgent, StaticReviewAgent, VideoReviewAgent
+from math_to_manim.eval_runner import EvalSuiteResult, run_prompt_suite
 from math_to_manim.pipeline.run_bundle import RunBundle
 from math_to_manim.pipeline.runner import AnimationPipeline
 from math_to_manim.schemas import AnimationPackage, RenderResult
@@ -55,6 +56,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     review_run = subparsers.add_parser("review-run", help="Review an existing rendered run bundle")
     review_run.add_argument("run_dir", type=Path)
+
+    eval_suite = subparsers.add_parser("eval-suite", help="Run a YAML prompt eval suite")
+    eval_suite.add_argument("suite_path", type=Path)
+    eval_suite.add_argument("--runs-dir", type=Path, default=None)
+    eval_suite.add_argument("--render", action="store_true", help="Require a successful low-quality render")
+    eval_suite.add_argument("--quality", default=None, help="Manim quality flag when --render is set")
+    eval_suite.add_argument("--manim-command", default=None, help='Manim command override, e.g. "python -m manim"')
+    eval_suite.add_argument("--model-backed", action="store_true", help="Use configured model stages instead of deterministic mode")
+    eval_suite.add_argument("--json", action="store_true", help="Print the full eval result JSON")
 
     return parser
 
@@ -121,6 +131,17 @@ def run_review_run(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_eval_suite(args: argparse.Namespace) -> int:
+    config = _config_from_args(args)
+    config = RuntimeConfig(**{**config.__dict__, "deterministic": bool(not args.model_backed)})
+    result = run_prompt_suite(args.suite_path, config=config, runs_dir=args.runs_dir, render=args.render)
+    if args.json:
+        print(json.dumps(result.to_public_dict(), indent=2))
+    else:
+        print(_format_eval_suite_summary(result))
+    return 0 if result.passed else 1
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -132,6 +153,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return run_render_run(args)
     if args.command == "review-run":
         return run_review_run(args)
+    if args.command == "eval-suite":
+        return run_eval_suite(args)
     parser.error(f"Unknown command: {args.command}")
     return 2
 
@@ -237,6 +260,22 @@ def _format_review_run_summary(bundle: RunBundle, review: object) -> str:
             f"Manifest: {bundle.manifest_path}",
         ]
     )
+
+
+def _format_eval_suite_summary(result: EvalSuiteResult) -> str:
+    lines = [
+        "Math-To-Manim eval-suite complete",
+        f"Suite: {result.suite_id}",
+        f"Cases: {result.passed_count}/{len(result.cases)} passed",
+        f"Runs dir: {result.runs_dir}",
+    ]
+    for case in result.cases:
+        status = "PASS" if case.passed else "FAIL"
+        lines.append(f"- {status} {case.case_id}: {case.run_dir or 'no run'}")
+        for check in case.checks:
+            if not check.passed:
+                lines.append(f"  - {check.name}: {check.message}")
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":
