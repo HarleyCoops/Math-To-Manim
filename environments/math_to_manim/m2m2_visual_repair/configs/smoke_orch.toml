@@ -1,0 +1,20 @@
+batch_size = 32
+rollouts_per_example = 4
+seq_len = 8192
+max_steps = 50
+max_concurrent = 16
+mask_truncated_completions = false
+zero_truncated_completions = true
+
+[model]
+name = "Qwen/Qwen3.5-0.8B"
+
+[sampling]
+max_tokens = 4096
+
+[[env]]
+id = "harleycooper/math-to-manim"
+
+[wandb]
+project = "math-to-manim-visual-repair"
+name = "m2m2-smoke-orchestrator"

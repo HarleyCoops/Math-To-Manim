@@ -1,0 +1,20 @@
+batch_size = 512
+rollouts_per_example = 16
+seq_len = 8192
+max_steps = 500
+max_concurrent = 64
+mask_truncated_completions = false
+zero_truncated_completions = true
+
+[model]
+name = "Qwen/Qwen3.5-397B-A17B"
+
+[sampling]
+max_tokens = 4096
+
+[[env]]
+id = "harleycooper/math-to-manim"
+
+[wandb]
+project = "math-to-manim-visual-repair"
+name = "m2m2-followup-orchestrator"

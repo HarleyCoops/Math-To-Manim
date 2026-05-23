@@ -1,0 +1,18 @@
+max_steps = 500
+
+[model]
+name = "Qwen/Qwen3.5-397B-A17B"
+
+[optim]
+lr = 5e-7
+
+[ckpt]
+interval = 50
+keep = 3
+
+[weights]
+interval = 50
+
+[wandb]
+project = "math-to-manim-visual-repair"
+name = "m2m2-followup-trainer"

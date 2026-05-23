@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="720" viewBox="0 0 1600 720" role="img" aria-labelledby="title desc">
+  <title id="title">Math-To-Manim Prime Intellect RL repair loop</title>
+  <desc id="desc">A dark diagram showing how generated Manim code, scene specifications, and validation evidence become Prime Intellect reward tasks, policy updates, and corrected renderable Manim Python.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#030712" />
+      <stop offset="0.55" stop-color="#0b1020" />
+      <stop offset="1" stop-color="#061b16" />
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#38bdf8" />
+      <stop offset="0.45" stop-color="#a7f3d0" />
+      <stop offset="1" stop-color="#22c55e" />
+    </linearGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="7" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <style>
+      .title { fill: #f8fafc; font: 800 42px Arial, sans-serif; letter-spacing: -0.02em; }
+      .subtitle { fill: #a7f3d0; font: 400 20px Arial, sans-serif; }
+      .box { fill: rgba(15, 23, 42, 0.94); stroke: #334155; stroke-width: 2; rx: 22; }
+      .box-hot { stroke: #22c55e; }
+      .box-blue { stroke: #38bdf8; }
+      .box-gold { stroke: #f59e0b; }
+      .label { fill: #f8fafc; font: 700 22px Arial, sans-serif; }
+      .body { fill: #cbd5e1; font: 400 17px Arial, sans-serif; }
+      .mono { fill: #bbf7d0; font: 700 16px "Courier New", monospace; }
+      .tiny { fill: #94a3b8; font: 400 14px Arial, sans-serif; }
+      .arrow { stroke: url(#glow); stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .loop { stroke: #22c55e; stroke-width: 4; fill: none; stroke-dasharray: 12 9; marker-end: url(#arrow-green); }
+      .grid { stroke: #164e63; stroke-width: 1; opacity: 0.25; }
+      .dot { fill: #22c55e; opacity: 0.7; }
+    </style>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L12,7 L2,12 Z" fill="#a7f3d0" /></marker>
+    <marker id="arrow-green" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L12,7 L2,12 Z" fill="#22c55e" /></marker>
+  </defs>
+  <rect width="1600" height="720" fill="url(#bg)" />
+  <g opacity="0.6">
+    <path class="grid" d="M0 120H1600M0 240H1600M0 360H1600M0 480H1600M0 600H1600" />
+    <path class="grid" d="M160 0V720M320 0V720M480 0V720M640 0V720M800 0V720M960 0V720M1120 0V720M1280 0V720M1440 0V720" />
+  </g>
+  <g opacity="0.55">
+    <circle class="dot" cx="1260" cy="92" r="4" /><circle class="dot" cx="1320" cy="124" r="3" /><circle class="dot" cx="1410" cy="78" r="5" />
+    <circle class="dot" cx="111" cy="594" r="3" /><circle class="dot" cx="248" cy="640" r="4" /><circle class="dot" cx="1488" cy="616" r="4" />
+  </g>
+
+  <text class="title" x="70" y="72">Prime Intellect RL repair loop for Manim code</text>
+  <text class="subtitle" x="70" y="108">Fast static rewards teach the model to turn failed generated scenes into corrected, renderable Manim Python.</text>
+
+  <rect class="box box-blue" x="70" y="178" width="270" height="184" />
+  <text class="label" x="100" y="224">M2M2 run bundle</text>
+  <text class="body" x="100" y="260">prompt + audience</text>
+  <text class="body" x="100" y="288">scene_spec.json</text>
+  <text class="body" x="100" y="316">generated_scene.py</text>
+  <text class="tiny" x="100" y="344">validation/render evidence</text>
+
+  <path class="arrow" d="M342 270 C390 270 402 270 446 270" />
+  <rect class="box box-gold" x="450" y="164" width="290" height="212" />
+  <text class="label" x="482" y="210">Verifiers environment</text>
+  <text class="mono" x="482" y="246">harleycooper/math-to-manim</text>
+  <text class="body" x="482" y="284">serves repair tasks</text>
+  <text class="body" x="482" y="314">requires GeneratedCode JSON</text>
+  <text class="tiny" x="482" y="344">no video render inside rollout</text>
+
+  <path class="arrow" d="M742 270 C790 270 806 270 854 270" />
+  <rect class="box box-hot" x="858" y="138" width="318" height="264" />
+  <text class="label" x="890" y="184">Reward function</text>
+  <text class="body" x="890" y="224">+ tagged JSON shape</text>
+  <text class="body" x="890" y="254">+ Python parses</text>
+  <text class="body" x="890" y="284">+ scene class + construct()</text>
+  <text class="body" x="890" y="314">+ safe imports/calls</text>
+  <text class="body" x="890" y="344">+ math terms + layout proxy</text>
+  <text class="tiny" x="890" y="374">dense/crowded code is penalized</text>
+
+  <path class="arrow" d="M1178 270 C1235 270 1248 270 1306 270" />
+  <rect class="box box-blue" x="1310" y="176" width="220" height="188" />
+  <text class="label" x="1338" y="222">Policy update</text>
+  <text class="body" x="1338" y="258">hosted RL</text>
+  <text class="body" x="1338" y="288">W&amp;B metrics</text>
+  <text class="body" x="1338" y="318">adapters/checkpoints</text>
+
+  <path class="loop" d="M1418 366 C1390 524 1110 602 820 598 C502 594 274 512 198 366" />
+  <text class="label" x="548" y="548">Corrected, renderable Manim Python flows back into recovery</text>
+  <text class="tiny" x="610" y="578">renderer stays the slower audit gate; RL learns the fast repair prior</text>
+
+  <rect x="520" y="444" width="560" height="58" rx="18" fill="#052e2b" stroke="#22c55e" stroke-width="2" filter="url(#softGlow)" />
+  <text class="mono" x="558" y="480">generated_scene.py -&gt; reward -&gt; corrected GeneratedCode -&gt; render</text>
+</svg>

@@ -18,7 +18,7 @@
 [![Hermes assisted](https://img.shields.io/badge/Hermes-agent%20assisted-8b5cf6)](#hermes-agent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
-[Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md) · [Agent guide](AGENTS.md)
+[Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Prime RL](docs/PRIME_INTELLECT_RL.md) · [Roadmap](docs/ROADMAP.md) · [Agent guide](AGENTS.md)
 
 <br />
 
@@ -110,6 +110,50 @@ The code path is explicit in [`math_to_manim/pipeline/runner.py`](math_to_manim/
 That gives every run a memory: JSON contracts, generated code, render results, review notes, and a manifest. The output is not just a video; it is an inspectable path from **question** to **understanding** to **animation**.
 
 For current editable-video status and the planned prompt/spec/code edit loop, see the [roadmap](docs/ROADMAP.md).
+
+---
+
+## Prime Intellect RL repair loop
+
+Math-To-Manim is also becoming a Prime Intellect reinforcement-learning environment. The first RL target is not "make the whole video in one shot." It is the repair move that matters most when generated animation code fails: take the typed scene plan, the broken `generated_scene.py`, and validation/render evidence, then return corrected Manim Python that is safe, sparse, and more likely to render.
+
+<p align="center">
+  <img src="docs/assets/prime-intellect/primeintellect-logo.svg" alt="Prime Intellect logo" width="220" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/prime-intellect/m2m2-prime-rl-loop.svg" alt="Diagram of the Math-To-Manim Prime Intellect RL repair loop from generated Manim code through static reward checks back to corrected renderable Manim Python" width="100%" />
+</p>
+
+<table>
+<tr>
+<td width="33%"><img src="docs/assets/prime-intellect/primeintellect-lab.png" alt="Prime Intellect lab field visual, used here to represent the environment task space" /></td>
+<td width="33%"><img src="docs/assets/prime-intellect/primeintellect-reward-hacking-cover.png" alt="Prime Intellect reward hacking visual, used here to represent reward design pressure" /></td>
+<td width="33%"><img src="docs/assets/prime-intellect/primeintellect-compute-bg.png" alt="Prime Intellect compute corridor visual, used here to represent hosted training and inference" /></td>
+</tr>
+<tr>
+<td><b>Run bundle as environment</b></td>
+<td><b>Reward function as critic</b></td>
+<td><b>Policy update as repair engine</b></td>
+</tr>
+</table>
+
+The current hub environment is `harleycooper/math-to-manim`. A repair task carries the original prompt, typed `scene_spec`, generated Manim Python, static-validation report, and render/recovery evidence when available. The model must return one strict `GeneratedCode` JSON block. The Verifiers reward checks whether the proposed code parses, defines the expected Manim scene, avoids unsafe imports and calls, preserves expected math terms, and reduces obvious text/layout crowding hazards.
+
+```text
+generated_scene.py + scene_spec + validation/render evidence
+  -> Prime Intellect Verifiers environment
+  -> model proposes corrected GeneratedCode JSON
+  -> static reward checks parseability, scene shape, safety, terms, layout
+  -> hosted RL updates the repair policy
+  -> corrected, renderable Manim Python flows back into M2M2 recovery
+```
+
+That keeps the fast RL loop text-and-AST based while the slower Manim renderer remains the audit gate. The intended result is a model that learns the house style of this repo: cinematic but readable scenes, sparse formulas, staged captions, safe Manim code, and scripts that are much more likely to render on the first recovery attempt.
+
+Current hosted-training status: the environment action passes on Prime, the hub package is published as `harleycooper/math-to-manim@0.1.1`, a 1-step smoke completed, and a 25-step W&B-enabled pilot has been launched on `Qwen/Qwen3.5-35B-A3B`.
+
+See the full integration notes in [`docs/PRIME_INTELLECT_RL.md`](docs/PRIME_INTELLECT_RL.md).
 
 ---
 
