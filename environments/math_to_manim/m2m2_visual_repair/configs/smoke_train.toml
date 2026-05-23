@@ -1,0 +1,18 @@
+max_steps = 50
+
+[model]
+name = "Qwen/Qwen3.5-0.8B"
+
+[optim]
+lr = 1e-6
+
+[ckpt]
+interval = 10
+keep = 3
+
+[weights]
+interval = 10
+
+[wandb]
+project = "math-to-manim-visual-repair"
+name = "m2m2-smoke-trainer"

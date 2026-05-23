@@ -11,6 +11,7 @@ from typing import Sequence
 from math_to_manim.config import RuntimeConfig, parse_command
 from math_to_manim.agents import RenderAgent, StaticReviewAgent, VideoReviewAgent
 from math_to_manim.eval_runner import EvalSuiteResult, run_prompt_suite
+from math_to_manim.integrations import export_repair_tasks
 from math_to_manim.pipeline.run_bundle import RunBundle
 from math_to_manim.pipeline.runner import AnimationPipeline
 from math_to_manim.schemas import AnimationPackage, RenderResult
@@ -71,6 +72,12 @@ def build_parser() -> argparse.ArgumentParser:
     eval_suite.add_argument("--manim-command", default=None, help='Manim command override, e.g. "python -m manim"')
     eval_suite.add_argument("--model-backed", action="store_true", help="Use configured model stages instead of deterministic mode")
     eval_suite.add_argument("--json", action="store_true", help="Print the full eval result JSON")
+
+    pi_export = subparsers.add_parser("pi-export-runs", help="Export run bundles as Prime Intellect repair-task JSONL")
+    pi_export.add_argument("--runs-dir", type=Path, default=Path("runs"), help="Directory containing M2M2 run bundles")
+    pi_export.add_argument("--output", type=Path, required=True, help="Output JSONL path")
+    pi_export.add_argument("--limit", type=int, default=None, help="Maximum number of tasks to write")
+    pi_export.add_argument("--json", action="store_true", help="Print export summary as JSON")
 
     return parser
 
@@ -178,6 +185,15 @@ def run_eval_suite(args: argparse.Namespace) -> int:
     return 0 if result.passed else 1
 
 
+def run_pi_export_runs(args: argparse.Namespace) -> int:
+    result = export_repair_tasks(args.runs_dir, args.output, limit=args.limit)
+    if args.json:
+        print(json.dumps(result.to_public_dict(), indent=2))
+    else:
+        print(_format_pi_export_summary(result))
+    return 0 if result.written else 1
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -193,6 +209,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return run_recover_render(args)
     if args.command == "eval-suite":
         return run_eval_suite(args)
+    if args.command == "pi-export-runs":
+        return run_pi_export_runs(args)
     parser.error(f"Unknown command: {args.command}")
     return 2
 
@@ -363,6 +381,21 @@ def _format_eval_suite_summary(result: EvalSuiteResult) -> str:
         for check in case.checks:
             if not check.passed:
                 lines.append(f"  - {check.name}: {check.message}")
+    return "\n".join(lines)
+
+
+def _format_pi_export_summary(result: object) -> str:
+    payload = result.to_public_dict()
+    lines = [
+        "Math-To-Manim Prime Intellect export complete",
+        f"Output: {payload['output_path']}",
+        f"Written: {payload['written']}",
+        f"Skipped: {payload['skipped']}",
+    ]
+    skipped_reasons = payload.get("skipped_reasons") or {}
+    if skipped_reasons:
+        lines.append("Skipped reasons:")
+        lines.extend(f"- {reason}: {count}" for reason, count in skipped_reasons.items())
     return "\n".join(lines)
 
 

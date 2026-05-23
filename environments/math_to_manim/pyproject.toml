@@ -1,0 +1,31 @@
+[project]
+name = "math-to-manim"
+description = "Prime Intellect Verifiers environment for Math-To-Manim generated-code repair."
+version = "0.1.2"
+requires-python = ">=3.10"
+authors = [
+    { name = "Math-To-Manim contributors" },
+]
+dependencies = [
+    "datasets>=2.18",
+    "pydantic>=1.10,<3",
+    "verifiers>=0.1.7.post0",
+]
+readme = "README.md"
+license = { text = "MIT" }
+keywords = ["manim", "math-to-manim", "rl", "verifiers", "prime-intellect"]
+tags = ["manim", "rl", "verifiers", "code-repair"]
+
+[project.urls]
+Repository = "https://github.com/HarleyCoops/Math-To-Manim"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["m2m2_visual_repair", "math_to_manim"]
+include = [
+    "m2m2_visual_repair/data/*.jsonl",
+    "m2m2_visual_repair/configs/*.toml",
+]
