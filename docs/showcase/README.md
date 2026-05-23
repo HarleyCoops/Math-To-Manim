@@ -8,7 +8,10 @@
 
 <br />
 
-<img src="assets/continuous-geometric-picture.gif" alt="GRPO semantic manifold: sibling completions become a geometric policy update across the full scene" width="760" />
+<p align="center">
+  <img src="assets/continuous-geometric-picture.gif" alt="GRPO semantic manifold: sibling completions become a geometric policy update across the full scene" width="48%" />
+  <img src="assets/qed-minkowski-epic-3d.gif" alt="QED and Minkowski spacetime: light cones, electromagnetic waves, gauge symmetry, and renormalization flow on an off-white 3D stage" width="48%" />
+</p>
 
 **Educational animation should feel like an idea becoming visible.**
 
@@ -87,6 +90,12 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 <td><b>Brownian finance</b><br />A dark minimalist transition from calculus and integration toward measure, probability, and sample spaces.</td>
 <td><b>Full GRPO semantic manifold</b><br />A complete 39-second arc: sibling completions become points on a response manifold, then preference turns the objective into motion.</td>
 </tr>
+<tr>
+<td colspan="3"><img src="assets/qed-minkowski-epic-3d.gif" alt="QED Minkowski epic 3D" /></td>
+</tr>
+<tr>
+<td colspan="3"><b>QED Minkowski epic 3D</b><br />A complete Math-To-Manim pipeline render on an off-white stage: Minkowski light cones become electromagnetic waves, then compact QED notation, gauge symmetry, and renormalization flow.</td>
+</tr>
 </table>
 
 ---
@@ -107,6 +116,7 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 | `assets/lorenz-attractor.gif` | Dynamical systems | Glowing trajectories reveal the butterfly shape of the Lorenz attractor. |
 | `assets/prolip-scene.gif` | Scientific networks | Molecular/protein interaction graphics with highlighted graph relationships. |
 | `assets/quartic-torus-analysis.gif` | Topology / differential geometry | A full agent-pipeline render of a quartic torus-like implicit surface, showing regularity, genus, curvature, and multi-view topology. |
+| `assets/qed-minkowski-epic-3d.gif` | Quantum field theory / physics | Complete short Math-To-Manim pipeline render: Minkowski spacetime, light cones, electromagnetic waves, QED Lagrangian, gauge symmetry, and RG flow on an off-white 3D stage. |
 | `assets/radius-of-convergence.gif` | Analysis | Function behavior and boundary markers make convergence intervals concrete. |
 | `assets/rhombicosidodecahedron.gif` | Geometry | A polished 3D Archimedean solid with symmetry, depth, and color contrast. |
 | `assets/teaching-hopf.gif` | Topology / pedagogy | A slower explanatory Hopf fibration sequence built for instruction. |
