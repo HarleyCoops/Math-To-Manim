@@ -1,7 +1,7 @@
 max_steps = 300
 
 [model]
-name = "Qwen/Qwen3.5-35B-A3B"
+name = "Qwen/Qwen3-30B-A3B-Instruct-2507"
 
 [optim]
 lr = 1e-6
