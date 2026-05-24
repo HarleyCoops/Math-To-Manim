@@ -1,7 +1,25 @@
 # Prime Intellect RL Integration
 
-Math-To-Manim can become a Prime Intellect RL environment by treating each run
-bundle as a verifiable repair task.
+Math-To-Manim turns short educational text prompts into rendered Manim
+animations: typed planning artifacts, generated Python scenes, validation
+reports, and MP4/GIF outputs. Prime Intellect RL is the feedback loop that makes
+those already-working outputs better over time.
+
+The goal is not to ask RL to invent the whole video pipeline from scratch. M2M2
+already creates run bundles and rendered outputs. Prime receives those bundles as
+verifiable repair tasks, trains on the prompt, scene spec, generated code,
+validation/render evidence, and review signals, then rewards repairs that make
+future generated animations more correct, readable, safe, and visually robust.
+
+```text
+text prompt
+  -> Math-To-Manim pipeline
+  -> generated Manim scene
+  -> MP4/GIF output + validation evidence
+  -> Prime RL repair task
+  -> better generated animation code
+  -> better future MP4/GIF outputs
+```
 
 ## What Prime Runs
 
@@ -12,16 +30,21 @@ Prime's RL stack separates the job into three pieces:
   turns rewards into training batches.
 - **Trainer/inference**: updates the policy model and serves the latest weights.
 
-For M2M2, the environment is `harleycooper/math-to-manim`. The first task is
-not full video generation. It is generated-code repair:
+For M2M2, the environment is `harleycooper/math-to-manim`. The first training
+surface is generated-code repair, because it is fast enough for RL rollouts while
+still targeting the final product: high-quality rendered math animations.
 
 ```text
 M2M2 run bundle
-  -> prompt + scene_spec + generated_code + failure evidence
+  -> prompt + scene_spec + generated_code + render/validation/review evidence
   -> model returns GeneratedCode JSON
   -> fast static reward
   -> Prime RL update
 ```
+
+Full rendering and video review remain the slower audit/eval layer. The RL loop
+uses static code and layout proxies by default so rollouts stay cheap, then the
+normal Math-To-Manim pipeline can render improved code to MP4/GIF.
 
 ## Environment Contract
 
@@ -88,19 +111,19 @@ layout-repair task built from the QED/Minkowski README GIF run. It asks the mode
 to preserve the QED educational arc while making captions and formulas sparse,
 staged, scaled, and readable.
 
-## Publish From Prime RL Box
+## Publish to Prime
 
-The local Windows Prime CLI may be unauthenticated. Use the logged-in remote
-Prime RL box when needed:
+Run from an authenticated Prime environment:
 
 ```bash
-scp -r environments/math_to_manim ubuntu@69.19.136.157:~/math_to_manim_env
-ssh ubuntu@69.19.136.157
-cd ~/math_to_manim_env
-uv pip install -e .
-uv run python -c "from verifiers import load_environment; env = load_environment('math-to-manim'); print(len(env.dataset))"
-uv run vf-eval math-to-manim -n 2
-prime env push --path . --name math-to-manim --visibility PUBLIC
+prime env push --path environments/math_to_manim --name math-to-manim --visibility PUBLIC
+```
+
+Inside Codex's workspace sandbox, use the writable-home wrapper so the Prime CLI
+can update its temporary config/cache without writing to the real `~/.prime`:
+
+```bash
+prime-codex env push --path environments/math_to_manim --name math-to-manim --visibility PUBLIC
 ```
 
 ## Training Templates
@@ -109,9 +132,10 @@ Bundled templates live in
 `environments/math_to_manim/m2m2_visual_repair/configs/`.
 
 - Smoke: `Qwen/Qwen3.5-0.8B`
-- Practical repair: `Qwen/Qwen3.5-35B-A3B`
+- Practical repair: `Qwen/Qwen3-30B-A3B-Instruct-2507`
 - Follow-up: `Qwen/Qwen3.5-397B-A17B`
 
-Use the smoke model to verify the environment and reward wiring. Use the 35B
-repair model for the first serious Manim-code repair run. Use the 397B follow-up
-only after reward curves are stable and the environment has a clean eval signal.
+Use the smoke model to verify the environment and reward wiring. Use the
+practical repair model for the first serious Manim-code repair run. Use the
+follow-up model only after reward curves are stable and the environment has a
+clean eval signal.

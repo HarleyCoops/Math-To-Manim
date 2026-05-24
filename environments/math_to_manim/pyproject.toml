@@ -1,7 +1,7 @@
 [project]
 name = "math-to-manim"
-description = "Prime Intellect Verifiers environment for Math-To-Manim generated-code repair."
-version = "0.1.2"
+description = "Prime Intellect Verifiers environment for improving Math-To-Manim text-prompt-to-animation outputs."
+version = "0.1.3"
 requires-python = ">=3.10"
 authors = [
     { name = "Math-To-Manim contributors" },
