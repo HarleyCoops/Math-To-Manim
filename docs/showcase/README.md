@@ -35,24 +35,30 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 
 <table>
 <tr>
+<td width="33%"><img src="assets/circle-area-3d-unwrapped.gif" alt="3D circle area derivation" /></td>
 <td width="33%"><img src="assets/rhombicosidodecahedron.gif" alt="Rhombicosidodecahedron" /></td>
 <td width="33%"><img src="assets/cosmic-gravity-3d.gif" alt="Cosmic gravity 3D" /></td>
-<td width="33%"><img src="assets/derivatives-as-slopes.gif" alt="Derivatives as slopes" /></td>
 </tr>
 <tr>
+<td><b>Circle area 3D</b><br />Nested annuli unwrap into a triangular prism so A = 1/2(2πr)r becomes spatial, not memorized.</td>
 <td><b>Rhombicosidodecahedron</b><br />A vivid Archimedean solid: blue vertices, warm struts, and 3D symmetry as spectacle.</td>
 <td><b>Cosmic gravity 3D</b><br />Spacetime curvature framed like a science documentary: purple geometry, stars, and field-equation energy.</td>
-<td><b>Derivatives as slopes</b><br />The calculus aha moment: a secant tightens into a tangent so slope becomes visible, not merely symbolic.</td>
 </tr>
 <tr>
+<td><img src="assets/derivatives-as-slopes.gif" alt="Derivatives as slopes" /></td>
 <td><img src="assets/lorenz-attractor.gif" alt="Lorenz attractor" /></td>
 <td><img src="assets/hopf-fibration.gif" alt="Hopf fibration" /></td>
-<td><img src="assets/prolip-scene.gif" alt="ProLIP scene" /></td>
 </tr>
 <tr>
+<td><b>Derivatives as slopes</b><br />The calculus aha moment: a secant tightens into a tangent so slope becomes visible, not merely symbolic.</td>
 <td><b>Lorenz attractor</b><br />Chaos theory with glowing trajectories: sensitive dependence becomes a butterfly-shaped object.</td>
 <td><b>Hopf fibration</b><br />Topology as choreography: nested colored fibers give stereographic projection a spatial rhythm.</td>
-<td><b>ProLIP scene</b><br />Scientific network storytelling with molecular/protein graph motifs and highlighted interactions.</td>
+</tr>
+<tr>
+<td colspan="3"><img src="assets/prolip-scene.gif" alt="ProLIP scene" /></td>
+</tr>
+<tr>
+<td colspan="3"><b>ProLIP scene</b><br />Scientific network storytelling with molecular/protein graph motifs and highlighted interactions.</td>
 </tr>
 </table>
 
@@ -105,6 +111,7 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 | File | Theme | Description |
 | --- | --- | --- |
 | `assets/brownian-finance.gif` | Probability / finance | Calculus accumulation gives way to measure-theoretic uncertainty and sample-space intuition. |
+| `assets/circle-area-3d-unwrapped.gif` | Geometry / calculus | X-video-inspired M2M2 render: nested circle annuli unwrap into a 3D triangular wedge proving A = 1/2(2πr)r = πr². |
 | `assets/continuous-geometric-picture.gif` | ML / reinforcement learning | Full-length GRPO response-manifold recovery render: a 39-second geometric policy-update arc. |
 | `assets/cosmic-gravity-3d.gif` | Physics | A cinematic spacetime-curvature scene with cosmic scale and documentary pacing. |
 | `assets/derivative-visualization.gif` | Calculus | Foundational curve, axes, and local-linearization setup. |
