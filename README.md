@@ -10,7 +10,7 @@
 
 # Math to Manim
 
-### Ask a question -> reverse reasoning -> Manim movie
+### Ask a question -> get a reasoned movie
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
 [![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
@@ -50,7 +50,7 @@
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/whiskering-exchange.gif" alt="Whiskering exchange animation" width="24%" /></a>
 </p>
 
-**Math-To-Manim turns short prompts into reverse-reasoned lesson plans, typed pipeline artifacts, generated Manim code, and reusable visual explanations.**
+**Math-To-Manim turns serious math and physics prompts into Manim explainer videos and the reusable artifacts that produced them: intent, prerequisite graphs, lesson plans, math packets, storyboards, scene specs, generated code, validation reports, render evidence, review notes, and stage traces.**
 
 [**Browse the local GIF gallery →**](docs/showcase/README.md)
 
@@ -68,14 +68,23 @@
 
 ## What this is
 
-**Math to Manim** is for the moment when a learner asks, “Can you show me why?” A teacher, tutor, parent, or guardian can type a question and get back a visual explanation plan: the concept, the missing prerequisites, the order of ideas, the screen beats, the generated Manim code, and optionally the rendered video.
+**Math-To-Manim** started on the morning of Donald Trump's second inauguration. Around 4:30 a.m. my time on January 20, 2025, DeepSeek, a Chinese AI lab, released [R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) on Hugging Face. I read the timing as deliberate: a Sputnik-style signal that open reasoning models were now a geopolitical fact. My first move was to clone R1 and point it at math reasoning.
 
-The input can be short, but the product is the explanation: what the learner needs to understand, what should appear first, where the aha moment lives, and which visual metaphor makes the idea feel inevitable.
+The interesting part was not just that a reasoning model could solve math; it was that the path to a good explanation could be made visible. A topic could become prerequisites, then a teaching order, then equations, then screen beats, then Manim code, then a movie.
 
-Math-To-Manim proves that calculus, topology, chaos, spacetime, stochastic finance, and ML concepts can become useful mathematical motion when agents plan the explanation before they write code.
+M2M2 is the pipeline that grew out of that experiment. A teacher, tutor, parent, student, researcher, or agent can bring a short question, a lesson idea, or a dense technical note and get back an inspectable explanation: the concept, the missing prerequisites, the order of ideas, the screen beats, the generated Manim code, and optionally the rendered video.
 
-This repo turns that idea into a durable agent pipeline:
+The render can be a strong first pass at a four-to-five-minute explainer, with real mathematical and physical notation in LaTeX instead of decorative pseudo-math. The product is not only the MP4. Each run bundle preserves the reasoning artifacts and math that led to the scene, which makes the output useful for debugging, agent handoff, and reinforcement-learning work such as the Prime Intellect repair environment.
 
+The next direction is recursive editing. Inspired by [Recursive Language Models](https://arxiv.org/abs/2512.24601), the goal is to treat a finished movie and its run bundle as an environment an agent can inspect and revise. A request like, "rerender this, but tilt the camera so the equations are easier to read," should route back through the scene plan and Manim code, recompute the right change, validate it, render again, and leave a new trace that can train the next policy.
+
+This repo is the build log for that loop: agents learning to reason through complex topics, preserve their work, and turn the reasoning into visual explanations.
+
+- Christian
+
+Today, that means a durable agent pipeline with:
+
+- audience-aware request artifacts, from grade-school intuition to advanced notation;
 - a prerequisite-story pipeline inspired by the original reverse knowledge tree;
 - typed Pydantic artifacts between every stage;
 - OpenAI Agents SDK-compatible adapters for planning and generation;
@@ -278,6 +287,7 @@ runs/<run_id>/
   validation_report.json
   render_result.json
   review_report.json
+  trace.jsonl  # stage-boundary events when tracing is enabled
   recovery_manifest.json  # after recover-render
   draft_review/
     draft_review.md
