@@ -100,7 +100,7 @@ Run the fastest relevant checks before finishing. Prefer the venv-qualified form
 ./.venv/bin/python -m pytest
 ./.venv/bin/python -m math_to_manim.cli --help
 ./.venv/bin/python -m math_to_manim.cli generate --help
-./.venv/bin/python -m math_to_manim.cli generate "Explain why derivatives are slopes" --deterministic --no-render --runs-dir /tmp/m2m2-smoke
+./.venv/bin/python -m math_to_manim.cli generate "Explain why derivatives are slopes" --deterministic --no-render --runs-dir .tmp-runs/m2m2-smoke
 ```
 
 If the CLI entry points are installed in the active environment, these equivalents should also work:
@@ -140,6 +140,7 @@ A normal generation writes a run bundle under `runs/<run_id>/` with artifacts su
 
 Rules:
 
+- Keep user-visible M2M2 outputs under repo-local `runs/` unless the user explicitly asks for another path. Use `.tmp-runs/` for disposable smoke checks. Do not put demo/render outputs in `/tmp`, because users cloning the repo need paths they can find and inspect.
 - Preserve artifact names unless the task is explicitly a schema/pipeline migration.
 - If you change a schema, update all producers, consumers, tests, and docs that depend on it.
 - Deterministic mode must remain offline and reproducible.

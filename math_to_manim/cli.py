@@ -29,7 +29,7 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--quality", default=None, help="Manim quality flag: l, m, h, p, or k")
     generate.add_argument("--manim-command", default=None, help='Manim command override, e.g. "python -m manim"')
     generate.add_argument("--model", default=None)
-    generate.add_argument("--runs-dir", type=Path, default=None)
+    generate.add_argument("--runs-dir", type=Path, default=None, help="Output directory for run bundles (default: repo-local ./runs)")
     generate.add_argument(
         "--reference-image",
         action="append",
@@ -66,7 +66,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     eval_suite = subparsers.add_parser("eval-suite", help="Run a YAML prompt eval suite")
     eval_suite.add_argument("suite_path", type=Path)
-    eval_suite.add_argument("--runs-dir", type=Path, default=None)
+    eval_suite.add_argument("--runs-dir", type=Path, default=None, help="Output directory for eval run bundles (default: repo-local ./runs)")
     eval_suite.add_argument("--render", action="store_true", help="Require a successful low-quality render")
     eval_suite.add_argument("--quality", default=None, help="Manim quality flag when --render is set")
     eval_suite.add_argument("--manim-command", default=None, help='Manim command override, e.g. "python -m manim"')

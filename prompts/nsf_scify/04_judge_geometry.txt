@@ -1,0 +1,68 @@
+Title: NSF-SciFy judge geometry — precision and recall as two sweeps through a semantic bipartite graph
+
+Minimum rendered duration: 135–150 seconds. This must be a real explanatory animation, not a quick placeholder. The viewer should understand the paper’s LLM-as-judge metric design, why lexical overlap is insufficient, and why precision and recall are directional. Use at least 14 beats, slow readable equations, and a final conceptual summary.
+
+
+
+READABILITY AND CAMERA CONTRACT — ABSOLUTE REQUIREMENTS FOR THE RENDER:
+This example is being generated because the previous version was unreadable: text was tilted in 3D and equations were too small. Fix that completely.
+
+1. Every important text block and every MathTex equation must first appear as a large, front-facing, camera-parallel card occupying 60–80% of frame width. Use a dark translucent panel behind it.
+2. Do not place readable text at an oblique angle during its reading moment. Text may only rotate into the 3D scene after it has been shown straight-on for at least 3 seconds.
+3. Required camera rhythm for every major formula/concept:
+   a. FULL-SCREEN READ: zoom in / cut to a front-on card so the text is readable.
+   b. ANCHOR: hold still for 3–5 seconds.
+   c. ZOOM OUT: shrink the card into a node or plane in the larger scene.
+   d. ORBIT: rotate around the scenery only after the text has become a visual object, not while the viewer is expected to read it.
+   e. RETURN: when a new formula appears, rotate back to a straight-on view before showing it.
+4. Use Manim layout conventions that preserve readability: fixed-in-frame Text/MathTex for labels during read phases; large font sizes; no long lines; split paragraphs into stacked short phrases; keep equations centered.
+5. Avoid tiny labels, diagonal captions, or perspective-skewed formulas. If a label must remain in the 3D world, also show a front-facing callout copy.
+6. Use camera motion as pedagogy: zoom into the formula, explain it, then zoom out to reveal how it fits into the graph/atlas/landscape.
+7. Final video must feel like: "read the equation straight-on, then see it embedded in a cinematic 3D model." Not: "look at tiny tilted text in space."
+
+Implementation hint for generated Manim code: prefer a sequence of readable 2D cards over all-at-once 3D clutter. Use moving_camera_frame or ThreeDCamera only after the viewer has read the text. Text should be horizontal in the rendered frame for reading.
+
+Paper grounding from arXiv:2503.08600: for claim extraction, the paper evaluates a generated set \(S\) against a gold set \(G\) using a pairwise boolean judge function \(\Phi_{claim}\), implemented with GPT-4o-mini, to determine whether generated claim \(c\) is supported by gold claim \(g\). Precision averages over generated claims, taking the best gold match. Recall averages over gold claims, taking the best generated match. The paper notes this is needed because the task compares sets of claims, not one claim against one document, and because it must penalize spurious generated claims and missing gold claims. Repeats and near-repeats are removed by thresholding cosine similarity over TF-IDF representations. The same structure is used for investigation proposals with \(\Phi_{IP}\). The authors manually validated a subset and found near-perfect correlation for the pairwise comparison. Across directorates, extracted claims show consistently high precision but lower recall; investigation proposals are more balanced.
+
+Conceptual payload: make the metric geometry intuitive. Generated claims and gold claims are two point clouds. The judge draws support edges. Precision asks “does every generated point land near some gold point?” Recall asks “does every gold point get covered by some generated point?” The aha moment is that the formulas are two opposite sweeps through the same bipartite graph.
+
+Palette: deep navy #070B17; generated set \(S\) cyan #22D3EE; gold set \(G\) gold #FACC15; true support edges green #22C55E; false positives red #F43F5E; false negatives orange #FB923C; judge lens white #E2E8F0; dim inactive edges opacity 0.10.
+
+Scene graph and pacing:
+0–10s. Hook. Two clouds of sentence cards float in darkness. Left cloud is generated claims \(S\); right cloud is gold claims \(G\). Camera slowly trucks between them. Caption: “A model outputs a set. The gold answer is a set. How do we compare meaning?”
+10–22s. Why not lexical overlap. Show two semantically equivalent sentences with low word overlap; draw a green semantic bridge. Then show a superficially similar but unsupported sentence; draw a red broken bridge. Caption: “We need semantic matching, not just shared words.”
+22–36s. Judge function. A luminous lens appears between point clouds. Render:
+\[
+\Phi_{claim}(c,g)\in\{0,1\},
+\qquad \Phi_{claim}(c,g)=1\iff g\text{ supports }c.
+\]
+Camera zooms into \(\Phi\); it opens into a matrix of pairwise decisions.
+36–50s. Deduplication pre-step. Repeated generated claims collapse together under:
+\[
+\cos(\mathrm{tfidf}(c_i),\mathrm{tfidf}(c_j))>\tau.
+\]
+Explain that duplicates should not inflate quality.
+50–72s. Precision sweep. A cyan spotlight visits each \(c\in S\). For every generated claim, candidate edges fan out to all \(g\in G\), then only the best match remains. Render:
+\[
+\mathrm{Precision}=\frac{1}{|S|}\sum_{c\in S}\max_{g\in G}\Phi_{claim}(c,g).
+\]
+Unsupported generated claims turn red and fall into \(FP\). Caption: “Precision punishes hallucinated or overgeneralized claims.”
+72–94s. Recall sweep. The camera reverses. A gold spotlight visits each \(g\in G\), asking whether any generated claim covers it. Render:
+\[
+\mathrm{Recall}=\frac{1}{|G|}\sum_{g\in G}\max_{c\in S}\Phi_{claim}(g,c).
+\]
+Uncovered gold claims glow orange and drop into \(FN\). Caption: “Recall punishes missed science.”
+94–108s. F1 bridge. Precision and recall bars bend into a bridge:
+\[
+F_1=\frac{2PR}{P+R}.
+\]
+Animate the bridge sagging if either side is low.
+108–122s. Proposal metric mirror. Duplicate the geometry in violet and relabel \(\Phi_{IP}\). Show proposal particles as arrows rather than anchors. Explain: “The same judge geometry scores planned investigations.”
+122–136s. Directorates. Compress graph into a Cleveland-dot-plot style axis from 0.5 to 1.0 for DMR, MPS-DMR, GEO, ENG, CSE, BIO. Claims show high precision and lower recall; proposal metrics are more balanced. Use error-bar whiskers labeled bootstrap \(N=1000\).
+136–150s. Final synthesis. Return to the bipartite graph. Display:
+\[
+\text{Pairwise judging turns semantic support into measurable extraction quality.}
+\]
+Plain subtitle: “Precision catches hallucinations; recall catches omissions.” Hold for 5s.
+
+Rendering instructions: minimum runtime 120 seconds. Do not show all edges at full brightness. Only current comparisons are bright; inactive edges ghosted. Use camera direction reversal to make precision versus recall unforgettable.

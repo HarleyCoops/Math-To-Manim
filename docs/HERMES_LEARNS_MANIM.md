@@ -241,7 +241,7 @@ M2M2 deterministic smoke:
 
 ```bash
 ./.venv/bin/python -m pytest
-./.venv/bin/python -m math_to_manim.cli generate "Explain why derivatives are slopes" --deterministic --no-render --runs-dir /tmp/m2m2-smoke
+./.venv/bin/python -m math_to_manim.cli generate "Explain why derivatives are slopes" --deterministic --no-render --runs-dir .tmp-runs/m2m2-smoke
 ```
 
 Render path after dependencies are installed:
@@ -249,8 +249,11 @@ Render path after dependencies are installed:
 ```bash
 python -m pip install -e ".[dev,render]"
 ./scripts/bootstrap-render.sh
-m2m2 generate "Create a cinematic Manim explainer showing the M2M2 pipeline becoming a scene" --quality l
+m2m2 generate "Create a cinematic Manim explainer showing the M2M2 pipeline becoming a scene" --quality l --runs-dir runs
 ```
+
+Keep rendered/demo bundles in repo-local `runs/` unless the user asks otherwise;
+do not send user-visible movies to `/tmp`.
 
 GIF extraction recipe:
 

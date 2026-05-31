@@ -1,0 +1,251 @@
+suite_id: nsf_scify_visual_prompts_readable
+cases:
+- id: 01_lifecycle
+  input:
+    prompt: "Title: NSF-SciFy lifecycle — readable zoom-first version\n\nHARD VISUAL CORRECTION: The previous angled/3D version was unreadable.\
+      \ This version must be front-facing and text-first. Use a 2D MovingCameraScene, not ThreeDScene. No tilted camera, no oblique perspective,\
+      \ no rotated text, no text placed at an angle. Every equation and every important sentence must face the viewer straight-on. Use large typography:\
+      \ title 44–52, body 28–34, labels 22–26, MathTex 34–48. Never put more than 2 short body lines on screen unless the camera is zoomed into\
+      \ that panel. For each equation: first show it full-screen, zoom into each important symbol, then zoom back out to the whole diagram. Use\
+      \ an off-axis layout only for shapes, never for text. Keep all text horizontal.\n\nMinimum duration: 135–150 seconds. Draft quality is fine,\
+      \ but readability is not optional.\n\n\n\nREADABILITY AND CAMERA CONTRACT — ABSOLUTE REQUIREMENTS FOR THE RENDER:\nThis example is being\
+      \ generated because the previous version was unreadable: text was tilted in 3D and equations were too small. Fix that completely.\n\n1.\
+      \ Every important text block and every MathTex equation must first appear as a large, front-facing, camera-parallel card occupying 60–80%\
+      \ of frame width. Use a dark translucent panel behind it.\n2. Do not place readable text at an oblique angle during its reading moment.\
+      \ Text may only rotate into the 3D scene after it has been shown straight-on for at least 3 seconds.\n3. Required camera rhythm for every\
+      \ major formula/concept:\n   a. FULL-SCREEN READ: zoom in / cut to a front-on card so the text is readable.\n   b. ANCHOR: hold still for\
+      \ 3–5 seconds.\n   c. ZOOM OUT: shrink the card into a node or plane in the larger scene.\n   d. ORBIT: rotate around the scenery only after\
+      \ the text has become a visual object, not while the viewer is expected to read it.\n   e. RETURN: when a new formula appears, rotate back\
+      \ to a straight-on view before showing it.\n4. Use Manim layout conventions that preserve readability: fixed-in-frame Text/MathTex for labels\
+      \ during read phases; large font sizes; no long lines; split paragraphs into stacked short phrases; keep equations centered.\n5. Avoid tiny\
+      \ labels, diagonal captions, or perspective-skewed formulas. If a label must remain in the 3D world, also show a front-facing callout copy.\n\
+      6. Use camera motion as pedagogy: zoom into the formula, explain it, then zoom out to reveal how it fits into the graph/atlas/landscape.\n\
+      7. Final video must feel like: \"read the equation straight-on, then see it embedded in a cinematic 3D model.\" Not: \"look at tiny tilted\
+      \ text in space.\"\n\nImplementation hint for generated Manim code: prefer a sequence of readable 2D cards over all-at-once 3D clutter.\
+      \ Use moving_camera_frame or ThreeDCamera only after the viewer has read the text. Text should be horizontal in the rendered frame for reading.\n\
+      \nPaper grounding from arXiv:2503.08600: NSF-SciFy is built from the NSF Awards XML database, covering awards from 1970 through September\
+      \ 2024. After parsing, the authors obtain 412,155 parseable awards. The full dataset contains about 2.8 million scientific claims from roughly\
+      \ 400,000 NSF award abstracts across science and mathematics. Each record may include award ID, title/year, directorate/division, technical\
+      \ abstract, non-technical abstract, extracted scientific claims, extracted investigation proposals, and linked publications. Non-technical\
+      \ abstracts are present in about 81% of awards. Materials science subset: 16,042 awards, 114K claims, 145K investigation proposals, and\
+      \ 2,953 awards with linked publications. NSF-SciFy-20K: 20,001 awards across MPS, GEO, ENG, CSE, BIO with 135K claims and 139K investigation\
+      \ proposals.\n\nConceptual payload: a grant abstract is an early fossil record of scientific intent. NSF-SciFy turns prose into a typed\
+      \ record: what the proposal claims is true, what it plans to investigate, and what later publications may connect back to it. The viewer\
+      \ should see scientific truth as a time-indexed graph: proposal → claim/proposed work → publications → verification.\n\nPalette: dark archive\
+      \ #060A14, formula white #F8FAFC, NSF blue #2563EB, claim gold #FACC15, investigation violet #A78BFA, publication green #34D399, verification\
+      \ red #FB7185, quiet gray #64748B.\n\nScene choreography with mandatory zooms:\n1. Front-on title card. Large readable text: “NSF-SciFy:\
+      \ claims at birth.” Hold.\n2. Full-screen timeline equation: \\(1970\\to2024\\). Zoom into 1970, pan to 2024, zoom out to timeline.\n3.\
+      \ Counter card, centered and huge: \\(|\\mathcal A|=412{,}155\\) parseable awards. Zoom into \\(\\mathcal A\\), then into 412,155, then\
+      \ zoom out.\n4. Second counter card: \\(|\\mathcal C|\\approx2.8\\times10^6\\) claims from \\(\\sim400{,}000\\) abstracts. Zoom into \\\
+      (\\mathcal C\\), then \\(2.8\\times10^6\\), then zoom out.\n5. Build one front-facing record card. Show the formula full-screen:\n\\[\n\
+      r_i=(id,title,year,d_i,a_i^{tech},a_i^{nontech},C_i,I_i,\\Pi_i).\n\\]\nZoom into \\(a_i^{tech}\\), \\(a_i^{nontech}\\), \\(C_i\\), \\(I_i\\\
+      ), \\(\\Pi_i\\) one by one. Each symbol gets a one-line definition card.\n6. Zoom out from the formula into a clean horizontal pipeline:\
+      \ NSF XML → parsed award → abstract pair → extraction → typed record.\n7. Show the extraction operator full-screen:\n\\[\nE_{\\theta,T=0}(a_i^{tech},a_i^{nontech})\\\
+      to(C_i,I_i).\n\\]\nZoom into \\(E\\), then \\(a_i^{tech}\\), then \\(C_i\\), then \\(I_i\\). Explain: claims are asserted; investigations\
+      \ are planned.\n8. Show two large side-by-side sentence cards. Left gold: “Topological insulators host conductive surface states.” Right\
+      \ violet: “Predict, design, synthesize, and control topological phases.” Zoom into the verbs “host” and “Predict.”\n9. Show subset cards\
+      \ one at a time, front-on: MATSCI \\(114K\\) claims, \\(145K\\) proposals; 20K \\(135K\\) claims, \\(139K\\) proposals. Each card fills\
+      \ screen before joining the whole map.\n10. Zoom out into the full lifecycle graph. Text labels remain horizontal and large. Show:\n\\[\n\
+      \\mathrm{grant}\\to\\mathrm{claim}\\sqcup\\mathrm{investigation}\\to\\mathrm{publication}\\to\\mathrm{verification}.\n\\]\nZoom into each\
+      \ node, then pull back.\n11. Final full-screen takeaway: “NSF-SciFy turns funded scientific intent into a typed, searchable claim graph.”\
+      \ Hold at least 6 seconds.\n\nImplementation constraints: do not rotate text or equations. Use SurroundingRectangle/spotlight boxes to focus\
+      \ attention. Use camera.frame.animate.scale(0.55).move_to(equation_part) for zooms, then Restore(camera.frame). If the scene uses 3D objects,\
+      \ they must be background-only and all text/equations must remain fixed-in-frame, horizontal, and readable."
+    audience: graduate
+    duration_seconds: 150
+    style: readable front-facing formula cards that zoom out into cinematic 3D scene graph
+  expected:
+    acceptance_terms:
+    - front-facing
+    - zoom
+    - 412,155
+    - '2.8'
+    - typed, searchable claim graph
+- id: 02_taxonomy
+  input:
+    prompt: "Title: NSF-SciFy taxonomy — the semantic ecology of claims versus proposed investigations\n\nMinimum rendered duration: 135–150 seconds.\
+      \ This must not be a 5-second placeholder. It should patiently teach the paper’s taxonomy results with moving treemaps, examples, equations,\
+      \ and a final comparison. Use at least 14 visual beats and explicit narration captions.\n\n\n\nREADABILITY AND CAMERA CONTRACT — ABSOLUTE\
+      \ REQUIREMENTS FOR THE RENDER:\nThis example is being generated because the previous version was unreadable: text was tilted in 3D and equations\
+      \ were too small. Fix that completely.\n\n1. Every important text block and every MathTex equation must first appear as a large, front-facing,\
+      \ camera-parallel card occupying 60–80% of frame width. Use a dark translucent panel behind it.\n2. Do not place readable text at an oblique\
+      \ angle during its reading moment. Text may only rotate into the 3D scene after it has been shown straight-on for at least 3 seconds.\n\
+      3. Required camera rhythm for every major formula/concept:\n   a. FULL-SCREEN READ: zoom in / cut to a front-on card so the text is readable.\n\
+      \   b. ANCHOR: hold still for 3–5 seconds.\n   c. ZOOM OUT: shrink the card into a node or plane in the larger scene.\n   d. ORBIT: rotate\
+      \ around the scenery only after the text has become a visual object, not while the viewer is expected to read it.\n   e. RETURN: when a\
+      \ new formula appears, rotate back to a straight-on view before showing it.\n4. Use Manim layout conventions that preserve readability:\
+      \ fixed-in-frame Text/MathTex for labels during read phases; large font sizes; no long lines; split paragraphs into stacked short phrases;\
+      \ keep equations centered.\n5. Avoid tiny labels, diagonal captions, or perspective-skewed formulas. If a label must remain in the 3D world,\
+      \ also show a front-facing callout copy.\n6. Use camera motion as pedagogy: zoom into the formula, explain it, then zoom out to reveal how\
+      \ it fits into the graph/atlas/landscape.\n7. Final video must feel like: \"read the equation straight-on, then see it embedded in a cinematic\
+      \ 3D model.\" Not: \"look at tiny tilted text in space.\"\n\nImplementation hint for generated Manim code: prefer a sequence of readable\
+      \ 2D cards over all-at-once 3D clutter. Use moving_camera_frame or ThreeDCamera only after the viewer has read the text. Text should be\
+      \ horizontal in the rendered frame for reading.\n\nPaper grounding from arXiv:2503.08600: the authors manually analyze 810 extracted claims\
+      \ and 833 extracted investigation proposals from 120 NSF awards across five directorates: MPS, GEO, ENG, CSE, BIO. Claim categories include\
+      \ Capability/Application of Technology/Method (32.8%), Statement of Problem/Knowledge Gap (21.0%), Observed Phenomenon/Property (18.9%),\
+      \ Established Scientific Fact/Principle (9.8%), Definition/Classification (6.8%), Experimental Result/Finding/Measurability (5.2%), Process/Mechanism\
+      \ (3.6%), and smaller residual categories. Investigation proposal categories are different: Theoretical Analysis and Computational Modeling\
+      \ (36.9%), Experimental Technique and Tool Development (16.8%), Academic Training and Curriculum Development (12.8%), Algorithm/Method Development\
+      \ (8.7%), Tooling/Systems/Infrastructure (7.2%), Empirical Benchmarking/Field Study Evaluation (6.6%), Human/User Study (5.6%), and residual\
+      \ categories. The paper’s key observation is that claims mostly describe capabilities, gaps, and observed properties, while investigation\
+      \ proposals mostly describe planned modeling, tools, experiments, and training.\n\nConceptual payload: teach that scientific language has\
+      \ two geometries. A claim says what is asserted about the world; an investigation proposal says what researchers intend to do. The aha moment\
+      \ is a split-screen morph: the same corpus becomes two very different semantic maps.\n\nPalette: background #070B17; claim gold #F59E0B;\
+      \ knowledge-gap amber #FBBF24; method cyan #22D3EE; phenomenon teal #2DD4BF; principle blue #60A5FA; investigation violet #8B5CF6; theory\
+      \ magenta #D946EF; experiment green #22C55E; training rose #FB7185; residual gray #94A3B8. Use opacity 0.25 for inactive categories and\
+      \ 1.0 for the active one.\n\nScene graph and pacing:\n0–9s. Hook. Floating sentence strips fill a 3D space. Camera circles slowly. Title\
+      \ asks: “When scientists write a grant, what kind of language are they using?”\n9–20s. Formal split. Show:\n\\[\n\\mathcal{S}=\\{s_k\\}_{k=1}^{N},\\\
+      qquad \\mathcal{S}\\xrightarrow{\\text{semantic typing}}\\mathcal{C}\\sqcup\\mathcal{I}.\n\\]\nThe \\(\\sqcup\\) opens into two gates: gold\
+      \ \\(\\mathcal{C}\\) and violet \\(\\mathcal{I}\\).\n20–34s. Sampling design. Place five directorate pillars labeled MPS, GEO, ENG, CSE,\
+      \ BIO; send 120 award nodes through the center. Counters appear: 810 claims, 833 proposals.\n34–52s. Claim treemap grows. Rectangles expand\
+      \ by area. Render the top three probabilities:\n\\[\n\\Pr(\\mathrm{Capability/Method})=0.328,\n\\quad \\Pr(\\mathrm{Knowledge\\ Gap})=0.210,\n\
+      \\quad \\Pr(\\mathrm{Observed\\ Property})=0.189.\n\\]\nExplain each with a tiny sentence card: “what can be done,” “what remains unknown,”\
+      \ “what has been observed.”\n52–68s. Claim examples. Animate examples from Table A10 as short readable cards: “Memory-centric computing\
+      \ capitalizes on extensive parallelism,” “Current efforts are designed for individual applications,” “Lattice QCD has made important progress.”\
+      \ Each card lands in a category cell.\n68–84s. Investigation treemap transition. Rotate the gold treemap backward; grow the violet treemap\
+      \ forward. Render:\n\\[\n\\Pr(\\mathrm{Theory/Modeling})=0.369,\n\\quad \\Pr(\\mathrm{Experimental\\ Tools})=0.168,\n\\quad \\Pr(\\mathrm{Training/Curriculum})=0.128.\n\
+      \\]\nViolet arrows leave the cells to emphasize future action.\n84–100s. Proposal examples. Use Table A11-inspired examples: “Develop a\
+      \ geometric interpretation,” “Measure antiquark contributions,” “Develop a method of creating sulfur ylides.” Show that these are actions,\
+      \ not settled facts.\n100–116s. Comparison graph. Put both treemaps side by side with a formal weighted graph:\n\\[\nG_{tax}=(V_C\\cup V_I,E_{contrast}),\\\
+      qquad w(v)=\\frac{\\#v}{\\sum_u \\#u}.\n\\]\nDraw contrast edges: Knowledge gap \\(\\to\\) theoretical modeling; observed property \\(\\\
+      to\\) experimental tool; capability \\(\\to\\) algorithm/system.\n116–132s. Aha moment. Gold claim particles settle into stable basins;\
+      \ violet proposal particles become trajectories. Caption: “Claims stabilize the present. Proposals project a research future.”\n132–145s.\
+      \ Final atlas. Camera zooms out to a two-lobed semantic atlas. Final equation/card:\n\\[\n\\text{Science in grants is both asserted knowledge\
+      \ and planned inquiry.}\n\\]\nHold 5s.\n\nRendering instructions: build slowly, do not overcrowd text; each category label must be readable.\
+      \ The animation must run for at least 120 seconds, with pauses after the split equation, after both treemap reveals, after examples, and\
+      \ at final takeaway."
+    audience: graduate
+    duration_seconds: 150
+    style: readable front-facing formula cards that zoom out into cinematic 3D scene graph
+  expected:
+    acceptance_terms:
+    - front-facing
+    - zoom
+    - Capability/Application
+    - '0.328'
+    - planned inquiry
+- id: 03_phase_transition
+  input:
+    prompt: "Title: NSF-SciFy phase transition — fine-tuning turns grant prose into measurable extraction skill\n\nMinimum rendered duration:\
+      \ 135–150 seconds. This is a full paper-explainer scene, not a demo slide. Spend time explaining what fine-tuning changes and why the metrics\
+      \ jump. Use slow camera moves, readable equations, and at least 14 beats with pauses.\n\n\n\nREADABILITY AND CAMERA CONTRACT — ABSOLUTE\
+      \ REQUIREMENTS FOR THE RENDER:\nThis example is being generated because the previous version was unreadable: text was tilted in 3D and equations\
+      \ were too small. Fix that completely.\n\n1. Every important text block and every MathTex equation must first appear as a large, front-facing,\
+      \ camera-parallel card occupying 60–80% of frame width. Use a dark translucent panel behind it.\n2. Do not place readable text at an oblique\
+      \ angle during its reading moment. Text may only rotate into the 3D scene after it has been shown straight-on for at least 3 seconds.\n\
+      3. Required camera rhythm for every major formula/concept:\n   a. FULL-SCREEN READ: zoom in / cut to a front-on card so the text is readable.\n\
+      \   b. ANCHOR: hold still for 3–5 seconds.\n   c. ZOOM OUT: shrink the card into a node or plane in the larger scene.\n   d. ORBIT: rotate\
+      \ around the scenery only after the text has become a visual object, not while the viewer is expected to read it.\n   e. RETURN: when a\
+      \ new formula appears, rotate back to a straight-on view before showing it.\n4. Use Manim layout conventions that preserve readability:\
+      \ fixed-in-frame Text/MathTex for labels during read phases; large font sizes; no long lines; split paragraphs into stacked short phrases;\
+      \ keep equations centered.\n5. Avoid tiny labels, diagonal captions, or perspective-skewed formulas. If a label must remain in the 3D world,\
+      \ also show a front-facing callout copy.\n6. Use camera motion as pedagogy: zoom into the formula, explain it, then zoom out to reveal how\
+      \ it fits into the graph/atlas/landscape.\n7. Final video must feel like: \"read the equation straight-on, then see it embedded in a cinematic\
+      \ 3D model.\" Not: \"look at tiny tilted text in space.\"\n\nImplementation hint for generated Manim code: prefer a sequence of readable\
+      \ 2D cards over all-at-once 3D clutter. Use moving_camera_frame or ThreeDCamera only after the viewer has read the text. Text should be\
+      \ horizontal in the rendered frame for reading.\n\nPaper grounding from arXiv:2503.08600: NSF-SciFy is used to fine-tune Mistral-7B-Instruct-v0.3\
+      \ and Qwen2.5-7B-Instruct on three tasks: technical-to-non-technical abstract generation, abstract-to-scientific-claims extraction, and\
+      \ abstract-to-investigation-proposals extraction. The materials dataset is deduplicated and filtered to 11,141 examples, split into 8,641\
+      \ train, 500 validation, and 2,000 test. Fine-tuning uses LoRA with rank \\(128\\), \\(\\alpha=64\\), learning rate \\(10^{-5}\\), 3 epochs,\
+      \ 100 warmup steps, batch size 2 with 4 gradient accumulation steps, updating attention projections and MLP gate/up/down layers. Results:\
+      \ Task 1 improves modestly because base models are already strong: Mistral BERTScore-F1 \\(0.8561\\), +0.36%. Task 2 claim extraction improves\
+      \ dramatically: Mistral precision \\(0.7450\\), recall \\(0.7098\\), F1 \\(0.7097\\), F1 +101.8%. Task 3 investigation proposal extraction\
+      \ improves sharply: Mistral precision \\(0.7351\\), recall \\(0.7539\\), F1 \\(0.7261\\), F1 +90.97%.\n\nConceptual payload: show fine-tuning\
+      \ as a phase transition in semantic geometry. Before supervision, claims, proposals, and background prose are a noisy gas. After NSF-SciFy\
+      \ supervision, the latent space condenses into two usable decision basins. The aha moment is crossing a visible threshold where extraction\
+      \ becomes an instrument rather than a guess.\n\nPalette: background #050816; pre-tune gray #94A3B8; training blue #38BDF8; claim gold #FACC15;\
+      \ proposal violet #C084FC; phase green #22C55E; threshold red #EF4444; formula white #F8FAFC.\n\nScene graph and pacing:\n0–10s. Hook. A\
+      \ gray 3D cloud of grant sentences swirls chaotically. Camera tilts from overhead to horizon. Caption: “A 7B model can read grants, but\
+      \ can it reliably extract the claims?”\n10–24s. Three tasks appear as three portals: \\(a^{tech}\\to a^{nontech}\\), \\(a\\to C\\), and\
+      \ \\(a\\to I\\). Explain that the first is rewriting style, while the second and third require structured extraction.\n24–38s. Data preparation\
+      \ conveyor. Show 16,042 MATSCI records entering filters. Near-duplicate filter \\(Jaccard_3>0.9\\) removes copies; 10-gram similarity filter\
+      \ removes near-identical technical/nontechnical pairs; output split appears:\n\\[\nN=11{,}141=8{,}641_{train}+500_{val}+2{,}000_{test}.\n\
+      \\]\n38–54s. LoRA operator. Render:\n\\[\n\\theta' = \\theta - \\eta\\nabla_\\theta\\mathcal{L}_{NSF},\n\\quad \\eta=10^{-5},\\quad r=128,\n\
+      \\quad \\alpha=64.\n\\]\nBlue low-rank sheets slide into attention matrices \\(W_q,W_k,W_v,W_o\\) and MLP layers. Camera zooms into \\(\\\
+      nabla_\\theta\\mathcal{L}_{NSF}\\), which unfolds into labeled examples \\((a_i,C_i,I_i)\\).\n54–72s. Noisy latent gas. A surface \\(z=f_\\\
+      theta(x)\\) has mixed gray points. Labels “claim,” “proposal,” and “background” overlap. The decision boundary jitters.\n72–88s. Fine-tuning\
+      \ trajectory. A glowing parameter point \\(\\theta_t\\) moves downhill on the loss landscape. Training vectors pull gold claim particles\
+      \ into one basin and violet proposal particles into another.\n88–104s. Metric equations. Build precision, recall, F1 slowly:\n\\[\nP=\\\
+      frac{TP}{TP+FP},\\qquad R=\\frac{TP}{TP+FN},\n\\qquad F_1=\\frac{2PR}{P+R}.\n\\]\nPause so the viewer can read.\n104–118s. Claim extraction\
+      \ jump. Gauges rise to \\(P=0.7450\\), \\(R=0.7098\\), \\(F_1=0.7097\\), flash \\(+101.8\\%\\). A red wall labeled \\(F_1=0.70\\) is crossed;\
+      \ the gray gas crystallizes into gold clusters.\n118–132s. Investigation proposal jump. Violet gauges rise to \\(P=0.7351\\), \\(R=0.7539\\\
+      ), \\(F_1=0.7261\\), flash \\(+90.97\\%\\). The proposal basin becomes a stream of future-action arrows.\n132–142s. Contrast with Task 1.\
+      \ A small calm panel shows BERTScore-F1 \\(0.8561\\), +0.36%, as a ripple not a transition. Caption: “Some abilities are already latent.\
+      \ Extraction needs the dataset.”\n142–150s. Final takeaway. Camera pulls back across two stable basins. Display:\n\\[\n\\text{NSF-SciFy\
+      \ is the order parameter that separates claims from intentions.}\n\\]\nHold.\n\nRendering instructions: total runtime must be at least 120\
+      \ seconds. Do not use only static charts. Animate the gas-to-crystal transition, the LoRA sheets entering matrices, and the metric gauges\
+      \ crossing threshold."
+    audience: graduate
+    duration_seconds: 150
+    style: readable front-facing formula cards that zoom out into cinematic 3D scene graph
+  expected:
+    acceptance_terms:
+    - front-facing
+    - zoom
+    - LoRA
+    - '0.7097'
+    - order parameter
+- id: 04_judge_geometry
+  input:
+    prompt: "Title: NSF-SciFy judge geometry — precision and recall as two sweeps through a semantic bipartite graph\n\nMinimum rendered duration:\
+      \ 135–150 seconds. This must be a real explanatory animation, not a quick placeholder. The viewer should understand the paper’s LLM-as-judge\
+      \ metric design, why lexical overlap is insufficient, and why precision and recall are directional. Use at least 14 beats, slow readable\
+      \ equations, and a final conceptual summary.\n\n\n\nREADABILITY AND CAMERA CONTRACT — ABSOLUTE REQUIREMENTS FOR THE RENDER:\nThis example\
+      \ is being generated because the previous version was unreadable: text was tilted in 3D and equations were too small. Fix that completely.\n\
+      \n1. Every important text block and every MathTex equation must first appear as a large, front-facing, camera-parallel card occupying 60–80%\
+      \ of frame width. Use a dark translucent panel behind it.\n2. Do not place readable text at an oblique angle during its reading moment.\
+      \ Text may only rotate into the 3D scene after it has been shown straight-on for at least 3 seconds.\n3. Required camera rhythm for every\
+      \ major formula/concept:\n   a. FULL-SCREEN READ: zoom in / cut to a front-on card so the text is readable.\n   b. ANCHOR: hold still for\
+      \ 3–5 seconds.\n   c. ZOOM OUT: shrink the card into a node or plane in the larger scene.\n   d. ORBIT: rotate around the scenery only after\
+      \ the text has become a visual object, not while the viewer is expected to read it.\n   e. RETURN: when a new formula appears, rotate back\
+      \ to a straight-on view before showing it.\n4. Use Manim layout conventions that preserve readability: fixed-in-frame Text/MathTex for labels\
+      \ during read phases; large font sizes; no long lines; split paragraphs into stacked short phrases; keep equations centered.\n5. Avoid tiny\
+      \ labels, diagonal captions, or perspective-skewed formulas. If a label must remain in the 3D world, also show a front-facing callout copy.\n\
+      6. Use camera motion as pedagogy: zoom into the formula, explain it, then zoom out to reveal how it fits into the graph/atlas/landscape.\n\
+      7. Final video must feel like: \"read the equation straight-on, then see it embedded in a cinematic 3D model.\" Not: \"look at tiny tilted\
+      \ text in space.\"\n\nImplementation hint for generated Manim code: prefer a sequence of readable 2D cards over all-at-once 3D clutter.\
+      \ Use moving_camera_frame or ThreeDCamera only after the viewer has read the text. Text should be horizontal in the rendered frame for reading.\n\
+      \nPaper grounding from arXiv:2503.08600: for claim extraction, the paper evaluates a generated set \\(S\\) against a gold set \\(G\\) using\
+      \ a pairwise boolean judge function \\(\\Phi_{claim}\\), implemented with GPT-4o-mini, to determine whether generated claim \\(c\\) is supported\
+      \ by gold claim \\(g\\). Precision averages over generated claims, taking the best gold match. Recall averages over gold claims, taking\
+      \ the best generated match. The paper notes this is needed because the task compares sets of claims, not one claim against one document,\
+      \ and because it must penalize spurious generated claims and missing gold claims. Repeats and near-repeats are removed by thresholding cosine\
+      \ similarity over TF-IDF representations. The same structure is used for investigation proposals with \\(\\Phi_{IP}\\). The authors manually\
+      \ validated a subset and found near-perfect correlation for the pairwise comparison. Across directorates, extracted claims show consistently\
+      \ high precision but lower recall; investigation proposals are more balanced.\n\nConceptual payload: make the metric geometry intuitive.\
+      \ Generated claims and gold claims are two point clouds. The judge draws support edges. Precision asks “does every generated point land\
+      \ near some gold point?” Recall asks “does every gold point get covered by some generated point?” The aha moment is that the formulas are\
+      \ two opposite sweeps through the same bipartite graph.\n\nPalette: deep navy #070B17; generated set \\(S\\) cyan #22D3EE; gold set \\(G\\\
+      ) gold #FACC15; true support edges green #22C55E; false positives red #F43F5E; false negatives orange #FB923C; judge lens white #E2E8F0;\
+      \ dim inactive edges opacity 0.10.\n\nScene graph and pacing:\n0–10s. Hook. Two clouds of sentence cards float in darkness. Left cloud is\
+      \ generated claims \\(S\\); right cloud is gold claims \\(G\\). Camera slowly trucks between them. Caption: “A model outputs a set. The\
+      \ gold answer is a set. How do we compare meaning?”\n10–22s. Why not lexical overlap. Show two semantically equivalent sentences with low\
+      \ word overlap; draw a green semantic bridge. Then show a superficially similar but unsupported sentence; draw a red broken bridge. Caption:\
+      \ “We need semantic matching, not just shared words.”\n22–36s. Judge function. A luminous lens appears between point clouds. Render:\n\\\
+      [\n\\Phi_{claim}(c,g)\\in\\{0,1\\},\n\\qquad \\Phi_{claim}(c,g)=1\\iff g\\text{ supports }c.\n\\]\nCamera zooms into \\(\\Phi\\); it opens\
+      \ into a matrix of pairwise decisions.\n36–50s. Deduplication pre-step. Repeated generated claims collapse together under:\n\\[\n\\cos(\\\
+      mathrm{tfidf}(c_i),\\mathrm{tfidf}(c_j))>\\tau.\n\\]\nExplain that duplicates should not inflate quality.\n50–72s. Precision sweep. A cyan\
+      \ spotlight visits each \\(c\\in S\\). For every generated claim, candidate edges fan out to all \\(g\\in G\\), then only the best match\
+      \ remains. Render:\n\\[\n\\mathrm{Precision}=\\frac{1}{|S|}\\sum_{c\\in S}\\max_{g\\in G}\\Phi_{claim}(c,g).\n\\]\nUnsupported generated\
+      \ claims turn red and fall into \\(FP\\). Caption: “Precision punishes hallucinated or overgeneralized claims.”\n72–94s. Recall sweep. The\
+      \ camera reverses. A gold spotlight visits each \\(g\\in G\\), asking whether any generated claim covers it. Render:\n\\[\n\\mathrm{Recall}=\\\
+      frac{1}{|G|}\\sum_{g\\in G}\\max_{c\\in S}\\Phi_{claim}(g,c).\n\\]\nUncovered gold claims glow orange and drop into \\(FN\\). Caption: “Recall\
+      \ punishes missed science.”\n94–108s. F1 bridge. Precision and recall bars bend into a bridge:\n\\[\nF_1=\\frac{2PR}{P+R}.\n\\]\nAnimate\
+      \ the bridge sagging if either side is low.\n108–122s. Proposal metric mirror. Duplicate the geometry in violet and relabel \\(\\Phi_{IP}\\\
+      ). Show proposal particles as arrows rather than anchors. Explain: “The same judge geometry scores planned investigations.”\n122–136s. Directorates.\
+      \ Compress graph into a Cleveland-dot-plot style axis from 0.5 to 1.0 for DMR, MPS-DMR, GEO, ENG, CSE, BIO. Claims show high precision and\
+      \ lower recall; proposal metrics are more balanced. Use error-bar whiskers labeled bootstrap \\(N=1000\\).\n136–150s. Final synthesis. Return\
+      \ to the bipartite graph. Display:\n\\[\n\\text{Pairwise judging turns semantic support into measurable extraction quality.}\n\\]\nPlain\
+      \ subtitle: “Precision catches hallucinations; recall catches omissions.” Hold for 5s.\n\nRendering instructions: minimum runtime 120 seconds.\
+      \ Do not show all edges at full brightness. Only current comparisons are bright; inactive edges ghosted. Use camera direction reversal to\
+      \ make precision versus recall unforgettable."
+    audience: graduate
+    duration_seconds: 150
+    style: readable front-facing formula cards that zoom out into cinematic 3D scene graph
+  expected:
+    acceptance_terms:
+    - front-facing
+    - zoom
+    - Precision
+    - Recall
+    - Pairwise judging

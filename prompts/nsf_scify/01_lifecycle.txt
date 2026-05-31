@@ -1,0 +1,58 @@
+Title: NSF-SciFy lifecycle — readable zoom-first version
+
+HARD VISUAL CORRECTION: The previous angled/3D version was unreadable. This version must be front-facing and text-first. Use a 2D MovingCameraScene, not ThreeDScene. No tilted camera, no oblique perspective, no rotated text, no text placed at an angle. Every equation and every important sentence must face the viewer straight-on. Use large typography: title 44–52, body 28–34, labels 22–26, MathTex 34–48. Never put more than 2 short body lines on screen unless the camera is zoomed into that panel. For each equation: first show it full-screen, zoom into each important symbol, then zoom back out to the whole diagram. Use an off-axis layout only for shapes, never for text. Keep all text horizontal.
+
+Minimum duration: 135–150 seconds. Draft quality is fine, but readability is not optional.
+
+
+
+READABILITY AND CAMERA CONTRACT — ABSOLUTE REQUIREMENTS FOR THE RENDER:
+This example is being generated because the previous version was unreadable: text was tilted in 3D and equations were too small. Fix that completely.
+
+1. Every important text block and every MathTex equation must first appear as a large, front-facing, camera-parallel card occupying 60–80% of frame width. Use a dark translucent panel behind it.
+2. Do not place readable text at an oblique angle during its reading moment. Text may only rotate into the 3D scene after it has been shown straight-on for at least 3 seconds.
+3. Required camera rhythm for every major formula/concept:
+   a. FULL-SCREEN READ: zoom in / cut to a front-on card so the text is readable.
+   b. ANCHOR: hold still for 3–5 seconds.
+   c. ZOOM OUT: shrink the card into a node or plane in the larger scene.
+   d. ORBIT: rotate around the scenery only after the text has become a visual object, not while the viewer is expected to read it.
+   e. RETURN: when a new formula appears, rotate back to a straight-on view before showing it.
+4. Use Manim layout conventions that preserve readability: fixed-in-frame Text/MathTex for labels during read phases; large font sizes; no long lines; split paragraphs into stacked short phrases; keep equations centered.
+5. Avoid tiny labels, diagonal captions, or perspective-skewed formulas. If a label must remain in the 3D world, also show a front-facing callout copy.
+6. Use camera motion as pedagogy: zoom into the formula, explain it, then zoom out to reveal how it fits into the graph/atlas/landscape.
+7. Final video must feel like: "read the equation straight-on, then see it embedded in a cinematic 3D model." Not: "look at tiny tilted text in space."
+
+Implementation hint for generated Manim code: prefer a sequence of readable 2D cards over all-at-once 3D clutter. Use moving_camera_frame or ThreeDCamera only after the viewer has read the text. Text should be horizontal in the rendered frame for reading.
+
+Paper grounding from arXiv:2503.08600: NSF-SciFy is built from the NSF Awards XML database, covering awards from 1970 through September 2024. After parsing, the authors obtain 412,155 parseable awards. The full dataset contains about 2.8 million scientific claims from roughly 400,000 NSF award abstracts across science and mathematics. Each record may include award ID, title/year, directorate/division, technical abstract, non-technical abstract, extracted scientific claims, extracted investigation proposals, and linked publications. Non-technical abstracts are present in about 81% of awards. Materials science subset: 16,042 awards, 114K claims, 145K investigation proposals, and 2,953 awards with linked publications. NSF-SciFy-20K: 20,001 awards across MPS, GEO, ENG, CSE, BIO with 135K claims and 139K investigation proposals.
+
+Conceptual payload: a grant abstract is an early fossil record of scientific intent. NSF-SciFy turns prose into a typed record: what the proposal claims is true, what it plans to investigate, and what later publications may connect back to it. The viewer should see scientific truth as a time-indexed graph: proposal → claim/proposed work → publications → verification.
+
+Palette: dark archive #060A14, formula white #F8FAFC, NSF blue #2563EB, claim gold #FACC15, investigation violet #A78BFA, publication green #34D399, verification red #FB7185, quiet gray #64748B.
+
+Scene choreography with mandatory zooms:
+1. Front-on title card. Large readable text: “NSF-SciFy: claims at birth.” Hold.
+2. Full-screen timeline equation: \(1970\to2024\). Zoom into 1970, pan to 2024, zoom out to timeline.
+3. Counter card, centered and huge: \(|\mathcal A|=412{,}155\) parseable awards. Zoom into \(\mathcal A\), then into 412,155, then zoom out.
+4. Second counter card: \(|\mathcal C|\approx2.8\times10^6\) claims from \(\sim400{,}000\) abstracts. Zoom into \(\mathcal C\), then \(2.8\times10^6\), then zoom out.
+5. Build one front-facing record card. Show the formula full-screen:
+\[
+r_i=(id,title,year,d_i,a_i^{tech},a_i^{nontech},C_i,I_i,\Pi_i).
+\]
+Zoom into \(a_i^{tech}\), \(a_i^{nontech}\), \(C_i\), \(I_i\), \(\Pi_i\) one by one. Each symbol gets a one-line definition card.
+6. Zoom out from the formula into a clean horizontal pipeline: NSF XML → parsed award → abstract pair → extraction → typed record.
+7. Show the extraction operator full-screen:
+\[
+E_{\theta,T=0}(a_i^{tech},a_i^{nontech})\to(C_i,I_i).
+\]
+Zoom into \(E\), then \(a_i^{tech}\), then \(C_i\), then \(I_i\). Explain: claims are asserted; investigations are planned.
+8. Show two large side-by-side sentence cards. Left gold: “Topological insulators host conductive surface states.” Right violet: “Predict, design, synthesize, and control topological phases.” Zoom into the verbs “host” and “Predict.”
+9. Show subset cards one at a time, front-on: MATSCI \(114K\) claims, \(145K\) proposals; 20K \(135K\) claims, \(139K\) proposals. Each card fills screen before joining the whole map.
+10. Zoom out into the full lifecycle graph. Text labels remain horizontal and large. Show:
+\[
+\mathrm{grant}\to\mathrm{claim}\sqcup\mathrm{investigation}\to\mathrm{publication}\to\mathrm{verification}.
+\]
+Zoom into each node, then pull back.
+11. Final full-screen takeaway: “NSF-SciFy turns funded scientific intent into a typed, searchable claim graph.” Hold at least 6 seconds.
+
+Implementation constraints: do not rotate text or equations. Use SurroundingRectangle/spotlight boxes to focus attention. Use camera.frame.animate.scale(0.55).move_to(equation_part) for zooms, then Restore(camera.frame). If the scene uses 3D objects, they must be background-only and all text/equations must remain fixed-in-frame, horizontal, and readable.
