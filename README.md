@@ -53,10 +53,6 @@
 
 **Math-To-Manim turns serious math and physics prompts into Manim explainer videos and the reusable artifacts that produced them: intent, prerequisite graphs, lesson plans, math packets, storyboards, scene specs, generated code, validation reports, render evidence, review notes, and stage traces.**
 
-[**Browse the local GIF gallery →**](docs/showcase/README.md)
-
-<em>This is the absurd part: the question is tiny, the artifact trail is inspectable, and the output can become a real Manim movie.</em>
-
 </div>
 
 ---
