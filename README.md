@@ -55,12 +55,6 @@
 
 [**Browse the local GIF gallery →**](docs/showcase/README.md)
 
-<br />
-
-<img src="docs/assets/hermes-learns-manim.jpg" alt="Hermes Learns Manim: an agent surrounded by equations, turning recursive reasoning into animation code" width="100%" />
-
-<br />
-
 <em>This is the absurd part: the question is tiny, the artifact trail is inspectable, and the output can become a real Manim movie.</em>
 
 </div>
@@ -77,7 +71,7 @@ A        DeepSeek_R1_zero.ipynb
 A        Readme.md
 ```
 
-The first artifact was not a polished hero image. It was a notebook that tried to load `deepseek-ai/DeepSeek-R1-Zero` with `trust_remote_code=True`, quantization notes, and a tiny inference test. The image above is the later Hermes Learns Manim banner; the origin was rougher and more interesting: a clone, a notebook, and the realization that reasoning traces could become movies.
+The first artifact was not a polished hero image. It was a notebook that tried to load `deepseek-ai/DeepSeek-R1-Zero` with `trust_remote_code=True`, quantization notes, and a tiny inference test. The origin was rough, fast, and more interesting: a clone, a notebook, and the realization that reasoning traces could become movies.
 
 Three hours later, the first Manim file landed: `pythagorean.py` at `2025-01-20T07:18:12-07:00`. Then the tweet took off.
 
@@ -392,6 +386,10 @@ math_to_manim/
 ## Hermes Agent
 
 Hermes is the contributor/operator agent around this repository. It is not imported by Math-To-Manim and is not a runtime dependency; it uses the repo the way a developer would: read files, search code, patch docs and code, run terminal checks, inspect generated artifacts, review frames or GIFs, track todos, delegate larger work, and preserve stable context through skills.
+
+<p align="center">
+  <img src="docs/assets/hermes-learns-manim.jpg" alt="Hermes Learns Manim: an agent surrounded by equations, turning recursive reasoning into animation code" width="100%" />
+</p>
 
 That makes Hermes useful for maintaining the reverse-reasoning pipeline without becoming part of it. A Hermes session can inspect `AGENTS.md`, `pyproject.toml`, schemas, tests, and `runs/<run_id>/` bundles; run `pytest`, CLI smoke commands, Manim, FFmpeg, and git checks; then verify that docs, code, and showcase media still match the artifact contracts.
 
