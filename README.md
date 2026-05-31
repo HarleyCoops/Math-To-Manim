@@ -107,6 +107,52 @@ Today, that means a durable agent pipeline with:
 
 ---
 
+## "Hey man, I just want to see a demo, I don't need a calculus lecture"
+
+Fair. The whole point is that the pipeline should turn a one-sentence idea into something moving on screen before you have to read the architecture docs.
+
+<p align="center">
+  <img src="docs/showcase/assets/circle-area-3d-unwrapped.gif" alt="A generated Manim movie unwrapping circle annuli into a triangle" width="80%" />
+</p>
+
+WSL quickstart:
+
+```bash
+cd /mnt/c/Users/$USER
+
+git clone https://github.com/HarleyCoops/Math-To-Manim.git
+cd Math-To-Manim
+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -U pip
+python -m pip install -e ".[dev,render]"
+./scripts/bootstrap-render.sh  # Debian/Ubuntu/WSL system deps for real MP4 output
+
+m2m2 generate \
+  "Show why the quantum harmonic oscillator only allows discrete energies: start with a springy potential well, zoom into the wavefunctions, then reveal the ladder of allowed energy levels." \
+  --codegen-provider codex-cli \
+  --codex-full-auto \
+  --style cinematic \
+  --quality l \
+  --runs-dir runs
+```
+
+Generated bundles and videos stay in repo-local `runs/<run_id>/` by default;
+the `--runs-dir runs` flag above is intentionally explicit so agent-driven runs
+do not disappear into `/tmp`.
+
+If you want Hermes to run the harness like an operator instead of driving the CLI by hand:
+
+```bash
+hermes --skills manim-video,systematic-debugging,codebase-inspection \
+  -z "Run the M2M2 pipeline on the quantum harmonic oscillator demo prompt with --runs-dir runs, inspect the repo-local run bundle, try a low-quality render, and report the generated movie path or the exact blocker. Do not put user-visible outputs in /tmp."
+```
+
+That gives you the practical loop: ask for the movie, inspect the run bundle, then tell the agent what to fix.
+
+---
+
 ## Reverse reasoning pipeline
 
 A normal text-to-code demo jumps from request to Python. Math-To-Manim takes the long way on purpose: it reasons backward from the final concept to the prerequisites, then walks forward through a teachable visual sequence.
@@ -176,52 +222,6 @@ That keeps the fast RL loop text-and-AST based while the slower Manim renderer r
 Current hosted-training status: the environment action passes on Prime, the hub package is published as `harleycooper/math-to-manim@0.1.1`, a 1-step smoke completed, and a 25-step W&B-enabled pilot has been launched on `Qwen/Qwen3.5-35B-A3B`.
 
 See the full integration notes in [`docs/PRIME_INTELLECT_RL.md`](docs/PRIME_INTELLECT_RL.md).
-
----
-
-## "Hey man, I just want to see a demo, I don't need a calculus lecture"
-
-Fair. The whole point is that the pipeline should turn a one-sentence idea into something moving on screen before you have to read the architecture docs.
-
-<p align="center">
-  <img src="docs/showcase/assets/circle-area-3d-unwrapped.gif" alt="A generated Manim movie unwrapping circle annuli into a triangle" width="80%" />
-</p>
-
-WSL quickstart:
-
-```bash
-cd /mnt/c/Users/$USER
-
-git clone https://github.com/HarleyCoops/Math-To-Manim.git
-cd Math-To-Manim
-
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -U pip
-python -m pip install -e ".[dev,render]"
-./scripts/bootstrap-render.sh  # Debian/Ubuntu/WSL system deps for real MP4 output
-
-m2m2 generate \
-  "Show why the quantum harmonic oscillator only allows discrete energies: start with a springy potential well, zoom into the wavefunctions, then reveal the ladder of allowed energy levels." \
-  --codegen-provider codex-cli \
-  --codex-full-auto \
-  --style cinematic \
-  --quality l \
-  --runs-dir runs
-```
-
-Generated bundles and videos stay in repo-local `runs/<run_id>/` by default;
-the `--runs-dir runs` flag above is intentionally explicit so agent-driven runs
-do not disappear into `/tmp`.
-
-If you want Hermes to run the harness like an operator instead of driving the CLI by hand:
-
-```bash
-hermes --skills manim-video,systematic-debugging,codebase-inspection \
-  -z "Run the M2M2 pipeline on the quantum harmonic oscillator demo prompt with --runs-dir runs, inspect the repo-local run bundle, try a low-quality render, and report the generated movie path or the exact blocker. Do not put user-visible outputs in /tmp."
-```
-
-That gives you the practical loop: ask for the movie, inspect the run bundle, then tell the agent what to fix.
 
 ---
 
