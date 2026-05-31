@@ -85,15 +85,15 @@ Three hours later, the first Manim file landed: `pythagorean.py` at `2025-01-20T
 
 That post reached nearly a million views because the implication was obvious: if a reasoning model could produce a working visual proof on release morning, then "text in, movie out" was not a toy demo. It was the first flash of a new interface for math and physics.
 
-The surprising part was not only that a reasoning model could solve math. It was that the route to a good explanation could be made visible: a topic becomes prerequisites, then a teaching order, then equations, then screen beats, then Manim code, then a movie. That is absurd in the best possible way.
+What I imagined with R1 is now becoming practical: Math-To-Manim can still one-shot a question into a movie, but the real value is the preserved reasoning spine around that movie. Every run leaves behind typed artifacts: prompt, intent, prerequisite graph, lesson plan, math packet, storyboard, scene spec, generated Manim, validation, render evidence, review notes, and the final GIF or video.
 
-M2M2 is the pipeline that grew out of that first clone. It is now pivoting back toward the original reinforcement-learning idea: not just "generate a video once," but build a recursive system that can inspect its own movie, understand what is broken, modify the code, and try again.
+That makes this repo an out-of-the-box natural experiment for reinforcement learning: **text prompt -> JSON reasoning artifacts -> Manim code -> movie/GIF -> text correction -> revised movie/GIF**. The model does not just get a pass/fail score; it gets the screen, the code, the intermediate reasoning, and the human correction that says what should change.
 
-That bet looks less crazy now. Recursive reasoning is no longer just a hunch: the January 2026 [Recursive Language Models](https://arxiv.org/abs/2512.24601) work and OpenAI's 4.8 dynamic workflows point toward agents that can keep state, revise intermediate artifacts, and improve through the loop. Math-To-Manim is a small, concrete playground for that idea because every failure is visible: overlapping text, unreadable formulas, bad camera angles, cramped captions, unsafe code, or a render that simply will not run.
+The next pivot is to make Math-To-Manim a fully hosted Prime Intellect experiment. Prime Intellect's [Hosted Evaluations](https://www.primeintellect.ai/blog/hosted-evaluations) now make it realistic to evaluate models against custom environments at scale, so these run bundles can become the RL spine I train and eval against: generate the movie, inspect the artifacts, apply the correction, render again, and reward the model for making the visual explanation clearer.
 
-The product is not only the MP4. Each run bundle preserves the reasoning artifacts and math that led to the scene, which makes the output useful for debugging, agent handoff, voice/text edit requests, and reinforcement-learning work such as the Prime Intellect repair environment.
+The first concrete training target is the quantum GIF on the main screen: fix the formula overlap, improve the point of view, and zoom into the equations when the learner needs to read them. That pair — a prompt, a movie, a text correction, and a better movie — is exactly the kind of loop visual reasoning models should learn from.
 
-This repo is the build log for that loop: agents learning to reason through complex topics, preserve their work, and turn the reasoning into visual explanations.
+This repo is the build log for that loop: agents learning to reason through complex topics, preserve their work, and turn corrections into better visual explanations.
 
 - Christian
 
