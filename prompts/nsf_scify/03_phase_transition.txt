@@ -1,0 +1,62 @@
+Title: NSF-SciFy phase transition — fine-tuning turns grant prose into measurable extraction skill
+
+Minimum rendered duration: 135–150 seconds. This is a full paper-explainer scene, not a demo slide. Spend time explaining what fine-tuning changes and why the metrics jump. Use slow camera moves, readable equations, and at least 14 beats with pauses.
+
+
+
+READABILITY AND CAMERA CONTRACT — ABSOLUTE REQUIREMENTS FOR THE RENDER:
+This example is being generated because the previous version was unreadable: text was tilted in 3D and equations were too small. Fix that completely.
+
+1. Every important text block and every MathTex equation must first appear as a large, front-facing, camera-parallel card occupying 60–80% of frame width. Use a dark translucent panel behind it.
+2. Do not place readable text at an oblique angle during its reading moment. Text may only rotate into the 3D scene after it has been shown straight-on for at least 3 seconds.
+3. Required camera rhythm for every major formula/concept:
+   a. FULL-SCREEN READ: zoom in / cut to a front-on card so the text is readable.
+   b. ANCHOR: hold still for 3–5 seconds.
+   c. ZOOM OUT: shrink the card into a node or plane in the larger scene.
+   d. ORBIT: rotate around the scenery only after the text has become a visual object, not while the viewer is expected to read it.
+   e. RETURN: when a new formula appears, rotate back to a straight-on view before showing it.
+4. Use Manim layout conventions that preserve readability: fixed-in-frame Text/MathTex for labels during read phases; large font sizes; no long lines; split paragraphs into stacked short phrases; keep equations centered.
+5. Avoid tiny labels, diagonal captions, or perspective-skewed formulas. If a label must remain in the 3D world, also show a front-facing callout copy.
+6. Use camera motion as pedagogy: zoom into the formula, explain it, then zoom out to reveal how it fits into the graph/atlas/landscape.
+7. Final video must feel like: "read the equation straight-on, then see it embedded in a cinematic 3D model." Not: "look at tiny tilted text in space."
+
+Implementation hint for generated Manim code: prefer a sequence of readable 2D cards over all-at-once 3D clutter. Use moving_camera_frame or ThreeDCamera only after the viewer has read the text. Text should be horizontal in the rendered frame for reading.
+
+Paper grounding from arXiv:2503.08600: NSF-SciFy is used to fine-tune Mistral-7B-Instruct-v0.3 and Qwen2.5-7B-Instruct on three tasks: technical-to-non-technical abstract generation, abstract-to-scientific-claims extraction, and abstract-to-investigation-proposals extraction. The materials dataset is deduplicated and filtered to 11,141 examples, split into 8,641 train, 500 validation, and 2,000 test. Fine-tuning uses LoRA with rank \(128\), \(\alpha=64\), learning rate \(10^{-5}\), 3 epochs, 100 warmup steps, batch size 2 with 4 gradient accumulation steps, updating attention projections and MLP gate/up/down layers. Results: Task 1 improves modestly because base models are already strong: Mistral BERTScore-F1 \(0.8561\), +0.36%. Task 2 claim extraction improves dramatically: Mistral precision \(0.7450\), recall \(0.7098\), F1 \(0.7097\), F1 +101.8%. Task 3 investigation proposal extraction improves sharply: Mistral precision \(0.7351\), recall \(0.7539\), F1 \(0.7261\), F1 +90.97%.
+
+Conceptual payload: show fine-tuning as a phase transition in semantic geometry. Before supervision, claims, proposals, and background prose are a noisy gas. After NSF-SciFy supervision, the latent space condenses into two usable decision basins. The aha moment is crossing a visible threshold where extraction becomes an instrument rather than a guess.
+
+Palette: background #050816; pre-tune gray #94A3B8; training blue #38BDF8; claim gold #FACC15; proposal violet #C084FC; phase green #22C55E; threshold red #EF4444; formula white #F8FAFC.
+
+Scene graph and pacing:
+0–10s. Hook. A gray 3D cloud of grant sentences swirls chaotically. Camera tilts from overhead to horizon. Caption: “A 7B model can read grants, but can it reliably extract the claims?”
+10–24s. Three tasks appear as three portals: \(a^{tech}\to a^{nontech}\), \(a\to C\), and \(a\to I\). Explain that the first is rewriting style, while the second and third require structured extraction.
+24–38s. Data preparation conveyor. Show 16,042 MATSCI records entering filters. Near-duplicate filter \(Jaccard_3>0.9\) removes copies; 10-gram similarity filter removes near-identical technical/nontechnical pairs; output split appears:
+\[
+N=11{,}141=8{,}641_{train}+500_{val}+2{,}000_{test}.
+\]
+38–54s. LoRA operator. Render:
+\[
+\theta' = \theta - \eta\nabla_\theta\mathcal{L}_{NSF},
+\quad \eta=10^{-5},\quad r=128,
+\quad \alpha=64.
+\]
+Blue low-rank sheets slide into attention matrices \(W_q,W_k,W_v,W_o\) and MLP layers. Camera zooms into \(\nabla_\theta\mathcal{L}_{NSF}\), which unfolds into labeled examples \((a_i,C_i,I_i)\).
+54–72s. Noisy latent gas. A surface \(z=f_\theta(x)\) has mixed gray points. Labels “claim,” “proposal,” and “background” overlap. The decision boundary jitters.
+72–88s. Fine-tuning trajectory. A glowing parameter point \(\theta_t\) moves downhill on the loss landscape. Training vectors pull gold claim particles into one basin and violet proposal particles into another.
+88–104s. Metric equations. Build precision, recall, F1 slowly:
+\[
+P=\frac{TP}{TP+FP},\qquad R=\frac{TP}{TP+FN},
+\qquad F_1=\frac{2PR}{P+R}.
+\]
+Pause so the viewer can read.
+104–118s. Claim extraction jump. Gauges rise to \(P=0.7450\), \(R=0.7098\), \(F_1=0.7097\), flash \(+101.8\%\). A red wall labeled \(F_1=0.70\) is crossed; the gray gas crystallizes into gold clusters.
+118–132s. Investigation proposal jump. Violet gauges rise to \(P=0.7351\), \(R=0.7539\), \(F_1=0.7261\), flash \(+90.97\%\). The proposal basin becomes a stream of future-action arrows.
+132–142s. Contrast with Task 1. A small calm panel shows BERTScore-F1 \(0.8561\), +0.36%, as a ripple not a transition. Caption: “Some abilities are already latent. Extraction needs the dataset.”
+142–150s. Final takeaway. Camera pulls back across two stable basins. Display:
+\[
+\text{NSF-SciFy is the order parameter that separates claims from intentions.}
+\]
+Hold.
+
+Rendering instructions: total runtime must be at least 120 seconds. Do not use only static charts. Animate the gas-to-crystal transition, the LoRA sheets entering matrices, and the metric gauges crossing threshold.

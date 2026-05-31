@@ -44,8 +44,11 @@ Each case has:
 Run the deterministic structural suite without Manim:
 
 ```bash
-./.venv/bin/python -m math_to_manim.cli eval-suite evals/prompt_suite.yaml --runs-dir /tmp/m2m2-evals
+./.venv/bin/python -m math_to_manim.cli eval-suite evals/prompt_suite.yaml --runs-dir .tmp-runs/m2m2-evals
 ```
+
+Use repo-local `.tmp-runs/` for disposable eval smoke output so a cloned checkout
+keeps artifacts discoverable without polluting tracked files.
 
 Add `--render --quality l` when render dependencies are installed and the eval
 should require Manim output. The runner writes normal run bundles and checks

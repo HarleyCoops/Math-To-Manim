@@ -1,0 +1,67 @@
+Title: NSF-SciFy taxonomy — the semantic ecology of claims versus proposed investigations
+
+Minimum rendered duration: 135–150 seconds. This must not be a 5-second placeholder. It should patiently teach the paper’s taxonomy results with moving treemaps, examples, equations, and a final comparison. Use at least 14 visual beats and explicit narration captions.
+
+
+
+READABILITY AND CAMERA CONTRACT — ABSOLUTE REQUIREMENTS FOR THE RENDER:
+This example is being generated because the previous version was unreadable: text was tilted in 3D and equations were too small. Fix that completely.
+
+1. Every important text block and every MathTex equation must first appear as a large, front-facing, camera-parallel card occupying 60–80% of frame width. Use a dark translucent panel behind it.
+2. Do not place readable text at an oblique angle during its reading moment. Text may only rotate into the 3D scene after it has been shown straight-on for at least 3 seconds.
+3. Required camera rhythm for every major formula/concept:
+   a. FULL-SCREEN READ: zoom in / cut to a front-on card so the text is readable.
+   b. ANCHOR: hold still for 3–5 seconds.
+   c. ZOOM OUT: shrink the card into a node or plane in the larger scene.
+   d. ORBIT: rotate around the scenery only after the text has become a visual object, not while the viewer is expected to read it.
+   e. RETURN: when a new formula appears, rotate back to a straight-on view before showing it.
+4. Use Manim layout conventions that preserve readability: fixed-in-frame Text/MathTex for labels during read phases; large font sizes; no long lines; split paragraphs into stacked short phrases; keep equations centered.
+5. Avoid tiny labels, diagonal captions, or perspective-skewed formulas. If a label must remain in the 3D world, also show a front-facing callout copy.
+6. Use camera motion as pedagogy: zoom into the formula, explain it, then zoom out to reveal how it fits into the graph/atlas/landscape.
+7. Final video must feel like: "read the equation straight-on, then see it embedded in a cinematic 3D model." Not: "look at tiny tilted text in space."
+
+Implementation hint for generated Manim code: prefer a sequence of readable 2D cards over all-at-once 3D clutter. Use moving_camera_frame or ThreeDCamera only after the viewer has read the text. Text should be horizontal in the rendered frame for reading.
+
+Paper grounding from arXiv:2503.08600: the authors manually analyze 810 extracted claims and 833 extracted investigation proposals from 120 NSF awards across five directorates: MPS, GEO, ENG, CSE, BIO. Claim categories include Capability/Application of Technology/Method (32.8%), Statement of Problem/Knowledge Gap (21.0%), Observed Phenomenon/Property (18.9%), Established Scientific Fact/Principle (9.8%), Definition/Classification (6.8%), Experimental Result/Finding/Measurability (5.2%), Process/Mechanism (3.6%), and smaller residual categories. Investigation proposal categories are different: Theoretical Analysis and Computational Modeling (36.9%), Experimental Technique and Tool Development (16.8%), Academic Training and Curriculum Development (12.8%), Algorithm/Method Development (8.7%), Tooling/Systems/Infrastructure (7.2%), Empirical Benchmarking/Field Study Evaluation (6.6%), Human/User Study (5.6%), and residual categories. The paper’s key observation is that claims mostly describe capabilities, gaps, and observed properties, while investigation proposals mostly describe planned modeling, tools, experiments, and training.
+
+Conceptual payload: teach that scientific language has two geometries. A claim says what is asserted about the world; an investigation proposal says what researchers intend to do. The aha moment is a split-screen morph: the same corpus becomes two very different semantic maps.
+
+Palette: background #070B17; claim gold #F59E0B; knowledge-gap amber #FBBF24; method cyan #22D3EE; phenomenon teal #2DD4BF; principle blue #60A5FA; investigation violet #8B5CF6; theory magenta #D946EF; experiment green #22C55E; training rose #FB7185; residual gray #94A3B8. Use opacity 0.25 for inactive categories and 1.0 for the active one.
+
+Scene graph and pacing:
+0–9s. Hook. Floating sentence strips fill a 3D space. Camera circles slowly. Title asks: “When scientists write a grant, what kind of language are they using?”
+9–20s. Formal split. Show:
+\[
+\mathcal{S}=\{s_k\}_{k=1}^{N},\qquad \mathcal{S}\xrightarrow{\text{semantic typing}}\mathcal{C}\sqcup\mathcal{I}.
+\]
+The \(\sqcup\) opens into two gates: gold \(\mathcal{C}\) and violet \(\mathcal{I}\).
+20–34s. Sampling design. Place five directorate pillars labeled MPS, GEO, ENG, CSE, BIO; send 120 award nodes through the center. Counters appear: 810 claims, 833 proposals.
+34–52s. Claim treemap grows. Rectangles expand by area. Render the top three probabilities:
+\[
+\Pr(\mathrm{Capability/Method})=0.328,
+\quad \Pr(\mathrm{Knowledge\ Gap})=0.210,
+\quad \Pr(\mathrm{Observed\ Property})=0.189.
+\]
+Explain each with a tiny sentence card: “what can be done,” “what remains unknown,” “what has been observed.”
+52–68s. Claim examples. Animate examples from Table A10 as short readable cards: “Memory-centric computing capitalizes on extensive parallelism,” “Current efforts are designed for individual applications,” “Lattice QCD has made important progress.” Each card lands in a category cell.
+68–84s. Investigation treemap transition. Rotate the gold treemap backward; grow the violet treemap forward. Render:
+\[
+\Pr(\mathrm{Theory/Modeling})=0.369,
+\quad \Pr(\mathrm{Experimental\ Tools})=0.168,
+\quad \Pr(\mathrm{Training/Curriculum})=0.128.
+\]
+Violet arrows leave the cells to emphasize future action.
+84–100s. Proposal examples. Use Table A11-inspired examples: “Develop a geometric interpretation,” “Measure antiquark contributions,” “Develop a method of creating sulfur ylides.” Show that these are actions, not settled facts.
+100–116s. Comparison graph. Put both treemaps side by side with a formal weighted graph:
+\[
+G_{tax}=(V_C\cup V_I,E_{contrast}),\qquad w(v)=\frac{\#v}{\sum_u \#u}.
+\]
+Draw contrast edges: Knowledge gap \(\to\) theoretical modeling; observed property \(\to\) experimental tool; capability \(\to\) algorithm/system.
+116–132s. Aha moment. Gold claim particles settle into stable basins; violet proposal particles become trajectories. Caption: “Claims stabilize the present. Proposals project a research future.”
+132–145s. Final atlas. Camera zooms out to a two-lobed semantic atlas. Final equation/card:
+\[
+\text{Science in grants is both asserted knowledge and planned inquiry.}
+\]
+Hold 5s.
+
+Rendering instructions: build slowly, do not overcrowd text; each category label must be readable. The animation must run for at least 120 seconds, with pauses after the split equation, after both treemap reveals, after examples, and at final takeaway.

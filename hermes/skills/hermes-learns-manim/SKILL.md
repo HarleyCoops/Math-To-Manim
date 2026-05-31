@@ -19,6 +19,8 @@ generate, validate, render, or review educational Manim animations.
 - Read `README.md` and `AGENTS.md` before editing.
 - Treat Hermes as contributor tooling, not a Python runtime dependency.
 - Keep M2M2 artifacts inspectable under `runs/<run_id>/`.
+- Keep user-visible render/demo outputs in repo-local `runs/`; use `.tmp-runs/`
+  only for disposable smoke checks, and do not send user-facing movies to `/tmp`.
 - Preserve the pipeline contract: story before symbols, geometry before algebra,
   artifacts before side effects.
 - Prefer deterministic no-render checks before model-backed or render-heavy runs.
@@ -33,7 +35,7 @@ From the repo root:
 ```bash
 ./.venv/bin/python -m math_to_manim.cli --help
 ./.venv/bin/python -m math_to_manim.cli generate --help
-./.venv/bin/python -m math_to_manim.cli generate "Explain why derivatives are slopes" --deterministic --no-render --runs-dir /tmp/m2m2-smoke
+./.venv/bin/python -m math_to_manim.cli generate "Explain why derivatives are slopes" --deterministic --no-render --runs-dir .tmp-runs/m2m2-smoke
 ```
 
 If the venv is not installed yet:

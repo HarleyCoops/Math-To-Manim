@@ -10,7 +10,7 @@
 
 # Math to Manim
 
-### Ask a question -> get a reasoned movie
+### Ask a question -> get a freakin' movie
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
 [![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
@@ -57,11 +57,11 @@
 
 <br />
 
-<img src="docs/assets/reverse-reasoning-pipeline.svg" alt="Reverse reasoning pipeline diagram showing the actual Math-To-Manim stage agents, artifacts, validation gate, render path, review, package, and manifest" width="100%" />
+<img src="docs/assets/hermes-learns-manim.jpg" alt="Hermes Learns Manim: an agent surrounded by equations, turning recursive reasoning into animation code" width="100%" />
 
 <br />
 
-<em>Code-grounded workflow: every run stays inspectable from prompt to artifacts to render.</em>
+<em>This is the absurd part: the question is tiny, the artifact trail is inspectable, and the output can become a real Manim movie.</em>
 
 </div>
 
@@ -69,15 +69,35 @@
 
 ## What this is
 
-**Math-To-Manim** started on the morning of Donald Trump's second inauguration. Around 4:30 a.m. my time on January 20, 2025, DeepSeek, a Chinese AI lab, released [R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) on Hugging Face. I read the timing as deliberate: a Sputnik-style signal that open reasoning models were now a geopolitical fact. My first move was to clone R1 and point it at math reasoning.
+**Math-To-Manim** started in the R1 shockwave. GitHub records the repo as created at `2025-01-20T11:04:50Z` / `04:04:50 MST`. The first commit landed twenty minutes later at `2025-01-20T04:24:50-07:00` and added exactly two files: `DeepSeek_R1_zero.ipynb` and `Readme.md`. DeepSeek had released [R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) and R1-Zero, and I read it as a Sputnik-style signal: open reasoning models were now real, geopolitical, and weirdly timed. My first move was to clone the model, point it at math reasoning, and ask whether the chain of thought could become a chain of visual artifacts.
 
-The interesting part was not just that a reasoning model could solve math; it was that the path to a good explanation could be made visible. A topic could become prerequisites, then a teaching order, then equations, then screen beats, then Manim code, then a movie.
+```text
+09a2f22  2025-01-20T04:24:50-07:00  updated
+A        DeepSeek_R1_zero.ipynb
+A        Readme.md
+```
 
-M2M2 is the pipeline that grew out of that experiment. A teacher, tutor, parent, student, researcher, or agent can bring a short question, a lesson idea, or a dense technical note and get back an inspectable explanation: the concept, the missing prerequisites, the order of ideas, the screen beats, the generated Manim code, and optionally the rendered video.
+The first artifact was not a polished hero image. It was a notebook that tried to load `deepseek-ai/DeepSeek-R1-Zero` with `trust_remote_code=True`, quantization notes, and a tiny inference test. The image above is the later Hermes Learns Manim banner; the origin was rougher and more interesting: a clone, a notebook, and the realization that reasoning traces could become movies.
 
-The render can be a strong first pass at a four-to-five-minute explainer, with real mathematical and physical notation in LaTeX instead of decorative pseudo-math. The product is not only the MP4. Each run bundle preserves the reasoning artifacts and math that led to the scene, which makes the output useful for debugging, agent handoff, and reinforcement-learning work such as the Prime Intellect repair environment.
+Three hours later, the first Manim file landed: `pythagorean.py` at `2025-01-20T07:18:12-07:00`. Then the tweet took off.
 
-The next direction is recursive editing. Inspired by [Recursive Language Models](https://arxiv.org/abs/2512.24601), the goal is to treat a finished movie and its run bundle as an environment an agent can inspect and revise. A request like, "rerender this, but tilt the camera so the equations are easier to read," should route back through the scene plan and Manim code, recompute the right change, validate it, render again, and leave a new trace that can train the next policy.
+<p align="center">
+  <a href="https://x.com/christiancooper/status/1881335734256492605?s=20"><img src="docs/assets/r1-pythagorean-tweet.gif" alt="The original R1 Pythagorean theorem Manim animation from the viral January 20, 2025 tweet" width="80%" /></a>
+</p>
+
+> "I asked #R1 to visually explain to me the Pythagorean theorem. This was done in one shot with no errors in less than 30 seconds. Wrap it up, its over: #DeepSeek #R1"
+>
+> — [Christian H. Cooper, January 20, 2025](https://x.com/christiancooper/status/1881335734256492605?s=20)
+
+That post reached nearly a million views because the implication was obvious: if a reasoning model could produce a working visual proof on release morning, then "text in, movie out" was not a toy demo. It was the first flash of a new interface for math and physics.
+
+The surprising part was not only that a reasoning model could solve math. It was that the route to a good explanation could be made visible: a topic becomes prerequisites, then a teaching order, then equations, then screen beats, then Manim code, then a movie. That is absurd in the best possible way.
+
+M2M2 is the pipeline that grew out of that first clone. It is now pivoting back toward the original reinforcement-learning idea: not just "generate a video once," but build a recursive system that can inspect its own movie, understand what is broken, modify the code, and try again.
+
+That bet looks less crazy now. Recursive reasoning is no longer just a hunch: the January 2026 [Recursive Language Models](https://arxiv.org/abs/2512.24601) work and OpenAI's 4.8 dynamic workflows point toward agents that can keep state, revise intermediate artifacts, and improve through the loop. Math-To-Manim is a small, concrete playground for that idea because every failure is visible: overlapping text, unreadable formulas, bad camera angles, cramped captions, unsafe code, or a render that simply will not run.
+
+The product is not only the MP4. Each run bundle preserves the reasoning artifacts and math that led to the scene, which makes the output useful for debugging, agent handoff, voice/text edit requests, and reinforcement-learning work such as the Prime Intellect repair environment.
 
 This repo is the build log for that loop: agents learning to reason through complex topics, preserve their work, and turn the reasoning into visual explanations.
 
@@ -125,7 +145,9 @@ For current editable-video status and the planned prompt/spec/code edit loop, se
 
 ## Prime Intellect RL repair loop
 
-Math-To-Manim is also becoming a Prime Intellect reinforcement-learning environment. The first RL target is not "make the whole video in one shot." It is the repair move that matters most when generated animation code fails: take the typed scene plan, the broken `generated_scene.py`, and validation/render evidence, then return corrected Manim Python that is safe, sparse, and more likely to render.
+Math-To-Manim is also becoming a Prime Intellect reinforcement-learning environment. The first RL target is not "make the whole video in one shot." It is the edit move that matters after a base model produces a plausible but flawed scene: text overlaps formulas, equations are too small, the camera angle hides the point, or the zoom never lands on the symbol the learner needs to read.
+
+A concrete target is the quantum-physics homepage-style failure mode: a beautiful Manim pass that still has text/formula collisions. The experiment is to give the model the typed scene plan, the generated Python, validation/render evidence, and a human request such as "fix the overlap," "change the POV angle," or "zoom into the formulas before the narration moves on." The policy should return a sparse code edit that preserves the scene while making the movie more readable.
 
 <p align="center">
   <img src="docs/assets/prime-intellect/primeintellect-logo.svg" alt="Prime Intellect logo" width="220" />
@@ -159,11 +181,57 @@ generated_scene.py + scene_spec + validation/render evidence
   -> corrected, renderable Manim Python flows back into M2M2 recovery
 ```
 
-That keeps the fast RL loop text-and-AST based while the slower Manim renderer remains the audit gate. The intended result is a model that learns the house style of this repo: cinematic but readable scenes, sparse formulas, staged captions, safe Manim code, and scripts that are much more likely to render on the first recovery attempt.
+That keeps the fast RL loop text-and-AST based while the slower Manim renderer remains the audit gate. The intended result is a model that learns the house style of this repo: cinematic but readable scenes, sparse formulas, staged captions, safe Manim code, and edits that can respond to text or voice change requests without throwing away the whole movie.
 
 Current hosted-training status: the environment action passes on Prime, the hub package is published as `harleycooper/math-to-manim@0.1.1`, a 1-step smoke completed, and a 25-step W&B-enabled pilot has been launched on `Qwen/Qwen3.5-35B-A3B`.
 
 See the full integration notes in [`docs/PRIME_INTELLECT_RL.md`](docs/PRIME_INTELLECT_RL.md).
+
+---
+
+## "Hey man, I just want to see a demo, I don't need a calculus lecture"
+
+Fair. The whole point is that the pipeline should turn a one-sentence idea into something moving on screen before you have to read the architecture docs.
+
+<p align="center">
+  <img src="docs/showcase/assets/circle-area-3d-unwrapped.gif" alt="A generated Manim movie unwrapping circle annuli into a triangle" width="80%" />
+</p>
+
+WSL quickstart:
+
+```bash
+cd /mnt/c/Users/$USER
+
+git clone https://github.com/HarleyCoops/Math-To-Manim.git
+cd Math-To-Manim
+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -U pip
+python -m pip install -e ".[dev,render]"
+./scripts/bootstrap-render.sh  # Debian/Ubuntu/WSL system deps for real MP4 output
+
+m2m2 generate \
+  "Show why the quantum harmonic oscillator only allows discrete energies: start with a springy potential well, zoom into the wavefunctions, then reveal the ladder of allowed energy levels." \
+  --codegen-provider codex-cli \
+  --codex-full-auto \
+  --style cinematic \
+  --quality l \
+  --runs-dir runs
+```
+
+Generated bundles and videos stay in repo-local `runs/<run_id>/` by default;
+the `--runs-dir runs` flag above is intentionally explicit so agent-driven runs
+do not disappear into `/tmp`.
+
+If you want Hermes to run the harness like an operator instead of driving the CLI by hand:
+
+```bash
+hermes --skills manim-video,systematic-debugging,codebase-inspection \
+  -z "Run the M2M2 pipeline on the quantum harmonic oscillator demo prompt with --runs-dir runs, inspect the repo-local run bundle, try a low-quality render, and report the generated movie path or the exact blocker. Do not put user-visible outputs in /tmp."
+```
+
+That gives you the practical loop: ask for the movie, inspect the run bundle, then tell the agent what to fix.
 
 ---
 
