@@ -105,8 +105,6 @@ Today, that means a durable agent pipeline with:
 - a reproducible `runs/<run_id>/` bundle for every generation;
 - static validation, render metadata, review artifacts, and manifests that are easy to inspect in CI or by another agent.
 
-The design principle is simple: **story before symbols, geometry before algebra, artifacts before side effects.**
-
 ---
 
 ## Reverse reasoning pipeline
