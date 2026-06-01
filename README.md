@@ -59,7 +59,13 @@
 
 ## What this is
 
-**Math-To-Manim** started in the R1 shockwave. GitHub records the repo as created at `2025-01-20T11:04:50Z` / `04:04:50 MST`. The first commit landed twenty minutes later at `2025-01-20T04:24:50-07:00` and added exactly two files: `DeepSeek_R1_zero.ipynb` and `Readme.md`. DeepSeek had released [R1](https://huggingface.co/deepseek-ai/DeepSeek-R1) and R1-Zero, and I read it as a Sputnik-style signal: open reasoning models were now real, geopolitical, and weirdly timed. My first move was to clone the model, point it at math reasoning, and ask whether the chain of thought could become a chain of visual artifacts.
+**Math-To-Manim** started on the morning of Donald Trump's inauguration. I do not think it was an accident that the Chinese decided to release the R1 model on that day.
+
+I was awake, saw the model hit Hugging Face, and quickly built a `.ipynb` to load the model and run it.
+
+I created this repo at `2025-01-20T11:04:50Z` / `04:04:50 MST`.
+
+Within a couple of minutes I realized what this meant. If the Chinese, via GRPO, had reasoning on a chip, recursive reasoning was not far behind. In my tweet I wrote "Wrap it up, its over" and I still believe it.
 
 ```text
 09a2f22  2025-01-20T04:24:50-07:00  updated
@@ -67,9 +73,7 @@ A        DeepSeek_R1_zero.ipynb
 A        Readme.md
 ```
 
-The first artifact was not a polished hero image. It was a notebook that tried to load `deepseek-ai/DeepSeek-R1-Zero` with `trust_remote_code=True`, quantization notes, and a tiny inference test. The origin was rough, fast, and more interesting: a clone, a notebook, and the realization that reasoning traces could become movies.
-
-Three hours later, the first Manim file landed: `pythagorean.py` at `2025-01-20T07:18:12-07:00`. Then the tweet took off.
+Three hours later, the first Manim file landed: `pythagorean.py` at `2025-01-20T07:18:12-07:00`.
 
 <p align="center">
   <a href="https://x.com/christiancooper/status/1881335734256492605?s=20"><img src="docs/assets/r1-pythagorean-tweet.gif" alt="The original R1 Pythagorean theorem Manim animation from the viral January 20, 2025 tweet" width="80%" /></a>
@@ -79,31 +83,15 @@ Three hours later, the first Manim file landed: `pythagorean.py` at `2025-01-20T
 >
 > — [Christian H. Cooper, January 20, 2025](https://x.com/christiancooper/status/1881335734256492605?s=20)
 
-That post reached nearly a million views because the implication was obvious: if a reasoning model could produce a working visual proof on release morning, then "text in, movie out" was not a toy demo. It was the first flash of a new interface for math and physics.
+What I saw with R1 is that the model was already good with Manim code out of the box. What actually runs under the hood with Math-To-Manim is a series of six planning agents that recursively reason over the prompt you gave it before code generation, validation, rendering, and review. This all runs on Codex 5.5.
 
-What I imagined with R1 is now becoming practical: Math-To-Manim can still one-shot a question into a movie, but the real value is the preserved reasoning spine around that movie. Every run leaves behind typed artifacts: prompt, intent, prerequisite graph, lesson plan, math packet, storyboard, scene spec, generated Manim, validation, render evidence, review notes, and the final GIF or video.
+However, since Prime Intellect rolled out hosted evals, and since I understand Recursive Learning Models better now, I am using the reasoning traces for RL training.
 
-That makes this repo an out-of-the-box natural experiment for reinforcement learning: **text prompt -> JSON reasoning artifacts -> Manim code -> movie/GIF -> text correction -> revised movie/GIF**. The model does not just get a pass/fail score; it gets the screen, the code, the intermediate reasoning, and the human correction that says what should change.
+But this will always just work. If you are a teacher or a parent, you can always ask for an explanation and just get an MP4 back. You never have to see or worry about the reasoning training.
 
-The next pivot is to make Math-To-Manim a public, fully hosted Prime Intellect experiment. Prime Intellect's [Hosted Evaluations](https://www.primeintellect.ai/blog/hosted-evaluations) now make it realistic to evaluate models against custom environments at scale, so these run bundles can become the RL spine I train and eval against: generate the movie, inspect the artifacts, apply the correction, render again, and reward the model for making the visual explanation clearer.
-
-The training method I want to adopt is the Recursive Language Model pattern: keep the intermediate state explicit, let the model revise its own artifacts, and evaluate whether each recursive edit makes the final output better. Math-To-Manim is a natural fit because the state is already public and typed: text prompt, JSON artifacts, Manim code, render evidence, GIF/video output, correction, and revised output.
-
-The first concrete training target is the quantum GIF on the main screen: fix the formula overlap, improve the point of view, and zoom into the equations when the learner needs to read them. That pair — a prompt, a movie, a text correction, and a better movie — is exactly the kind of loop visual reasoning models should learn from.
-
-This repo is the build log for that loop: agents learning to reason through complex topics, preserve their work, and turn corrections into better visual explanations.
+For the curious, follow along here: [Prime Intellect M2M hub: `harleycooper/math-to-manim`](docs/PRIME_INTELLECT_RL.md).
 
 - Christian
-
-Today, that means a durable agent pipeline with:
-
-- audience-aware request artifacts, from grade-school intuition to advanced notation;
-- a prerequisite-story pipeline inspired by the original reverse knowledge tree;
-- typed Pydantic artifacts between every stage;
-- OpenAI Agents SDK-compatible adapters for planning and generation;
-- optional Codex CLI-backed codegen for subscription-authenticated iteration;
-- a reproducible `runs/<run_id>/` bundle for every generation;
-- static validation, render metadata, review artifacts, and manifests that are easy to inspect in CI or by another agent.
 
 ---
 
