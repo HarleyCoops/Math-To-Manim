@@ -91,7 +91,7 @@ But this will always just work. If you are a teacher or a parent, you can always
 
 For the curious, follow along here: [Prime Intellect M2M hub: `harleycooper/math-to-manim`](docs/PRIME_INTELLECT_RL.md).
 
-- Christian
+-christian
 
 ---
 
