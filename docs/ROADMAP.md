@@ -60,11 +60,3 @@ The important product direction is artifact-first editing:
 Those may come later, but the first useful editable workflow is the one that is
 already aligned with M2M2's architecture: preserve the artifacts, edit the stage
 where the problem was introduced, and rerender.
-
-## Chinese Issue Response Draft
-
-目前“视频可编辑”的进展主要在工作流和中间产物层面，而不是已经完成一个大型可视化剪辑器。
-
-现在的方向是：每次生成都会保留 prompt、知识图谱、课程顺序、数学包、storyboard、`scene_spec.json`、`generated_scene.py`、验证报告、渲染报告和 review 结果。这样视频不是一个黑盒 MP4，而是可以回到对应阶段修改：想改讲解目标就改 prompt，想改画面节奏就改 storyboard/scene spec，想改 Manim 细节就改生成代码，然后通过静态验证、repair loop 和重新渲染得到新版视频。
-
-Hermes/Codex 会作为辅助迭代层：检查这些产物、修改 spec 或代码、运行验证/渲染、查看帧或 GIF，再继续下一轮。短期计划是把这个“中间产物可编辑 + 重新渲染/修复”的流程打磨清楚；完整的浏览器时间线编辑器不在当前最小范围内。
