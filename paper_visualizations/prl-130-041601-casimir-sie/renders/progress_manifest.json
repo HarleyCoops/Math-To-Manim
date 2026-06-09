@@ -1,0 +1,42 @@
+{
+  "project": "prl-130-041601-casimir-sie",
+  "updated_at": "2026-06-01T10:09:11-06:00",
+  "episodes": {
+    "episode_00_argument_map": {
+      "status": "upgraded_render_verified",
+      "source_script": "paper_visualizations/prl-130-041601-casimir-sie/manim/episode_00_argument_map.py",
+      "video": "paper_visualizations/prl-130-041601-casimir-sie/renders/manual_media/videos/episode_00_argument_map/480p10/Episode00ArgumentMap.mp4",
+      "contact_sheet": "paper_visualizations/prl-130-041601-casimir-sie/renders/contact_sheets/episode_00_upgraded_contact_sheet.jpg",
+      "ffprobe_report": "paper_visualizations/prl-130-041601-casimir-sie/renders/episode_00_upgraded_ffprobe.txt",
+      "verification": {
+        "py_compile": "passed",
+        "manim_render": "passed with ./.venv/bin/python -m manim -ql --fps 10",
+        "codec": "h264",
+        "width": 854,
+        "height": 480,
+        "fps": "10/1",
+        "duration_seconds": 72.6,
+        "size_bytes": 2062783,
+        "visual_review": "Bone/off-white background, readable front-facing cards/formulas, 3D vacuum/dipole opening, and roadmap graph are visible. Contact sheet confirms upgraded duration and readability. Some tiny source/subtitle text remains intentionally secondary."
+      }
+    },
+    "episode_01_vacuum_dipoles": {
+      "status": "upgraded_render_verified",
+      "source_script": "paper_visualizations/prl-130-041601-casimir-sie/manim/episode_01_vacuum_dipoles.py",
+      "video": "paper_visualizations/prl-130-041601-casimir-sie/renders/manual_media/videos/episode_01_vacuum_dipoles/480p10/Episode01VacuumDipoles.mp4",
+      "contact_sheet": "paper_visualizations/prl-130-041601-casimir-sie/renders/contact_sheets/episode_01_upgraded_contact_sheet.jpg",
+      "ffprobe_report": "paper_visualizations/prl-130-041601-casimir-sie/renders/episode_01_upgraded_ffprobe.txt",
+      "verification": {
+        "py_compile": "passed",
+        "manim_render": "passed with ./.venv/bin/python -m manim -ql --fps 10 --disable_caching",
+        "codec": "h264",
+        "width": 854,
+        "height": 480,
+        "fps": "10/1",
+        "duration_seconds": 74.7,
+        "size_bytes": 1783874,
+        "visual_review": "Final contact sheet confirms the bone/off-white background, readable large formula/text cards, symbol-by-symbol tensor highlights, transient dipoles, r/r' response bridge, alpha_F density/anisotropy texture, honest model caveat, and final takeaway card. Remaining minor issue: some title/subtitle text is small in the contact sheet, but the instructional cards and equations are readable."
+      }
+    }
+  }
+}

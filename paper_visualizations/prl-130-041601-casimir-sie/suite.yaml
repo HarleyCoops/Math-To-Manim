@@ -1,0 +1,14 @@
+name: prl_130_041601_casimir_sie_vertical_slice
+description: "First two paper-grounded prompts for the PRL 130, 041601 Casimir self-interaction energy density visualization."
+defaults:
+  audience_level: graduate
+  style: bone-background 3d cinematic paper explainer
+  no_render: true
+  deterministic: true
+prompts:
+  - id: episode_00_argument_map
+    file: prompts/episode_00_argument_map.md
+    duration: 90
+  - id: episode_01_vacuum_dipoles
+    file: prompts/episode_01_vacuum_dipoles.md
+    duration: 150

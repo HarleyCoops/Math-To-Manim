@@ -1,0 +1,6 @@
+codec_name=h264
+width=854
+height=480
+r_frame_rate=15/1
+duration=31.465689
+size=836344

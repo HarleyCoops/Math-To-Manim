@@ -1,0 +1,79 @@
+% Clean Manim-ready display equations for PRL 130, 041601 visualization.
+% Derived from arXiv e-print 2301.10151 source: latex/arxiv_source/Lambda_resubmission.tex
+% Notes:
+% - Removed revision macros \bbb and \rrr.
+% - Replaced \nicefrac with ordinary \frac.
+% - Replaced \bm with \mathbf where useful for Manim compatibility.
+% - Kept equation labels in comments for provenance.
+
+% Eq. (1), label eqExact
+\bar{E}_{\mathrm{SIE}}
+= \frac{\hbar}{2\pi V}
+\int_0^{\infty} du\int_0^1 d\lambda
+\int_V\int_V d\mathbf{r}\,d\mathbf{r}'
+\,\mathrm{Tr}\left\{\left[
+\boldsymbol{\alpha}_{\lambda}(\mathbf{r},\mathbf{r}',iu)
+-\boldsymbol{\alpha}_{0}(\mathbf{r},\mathbf{r}',iu)
+\right]\mathbf{T}(\mathbf{r},\mathbf{r}',iu)\right\}
+
+% Eq. (2), label eqAlphae-e+
+\alpha_{e^-/e^+}
+= \frac{2}{3}
+\left(\frac{\alpha_{\mathrm{fsc}}^{1/3} R_{e^-/e^+}}{a_0}\right)^4
+R_{e^-/e^+}^{3}
+
+% Eq. (3), label eqC2body
+\bar{E}_{\mathrm{SIE}}^{(2)}
+= -\frac{23\hbar c}{4\pi}
+\frac{\alpha_{e^-/e^+}^{2}}
+{(2R_{e^-/e^+})^7 V_{e^-/e^+}}
+
+% Eq. (4), label eqC2body_R4
+\bar{E}_{\mathrm{SIE}}^{(2)}
+= -\frac{23\hbar c}{3072\pi^2}
+\left(\frac{\alpha_{\mathrm{fsc}}^{1/3}}{a_0}\right)^8
+\left(R_{e^-/e^+}\right)^4
+
+% Eq. (5), label eqC2bodynum
+\bar{E}_{\mathrm{SIE}}^{(2)}
+= -\frac{23\alpha_{\mathrm{fsc}}^{29/3}}{3072\pi^2}
+\frac{\hbar c\alpha_{\mathrm{fsc}}}{a_0^4}
+= -\frac{23\alpha_{\mathrm{fsc}}^{29/3}E_h}{3072\pi^2 a_0^3}
+
+% Eq. (6), label E_SIE_N_eff
+\bar{E}_{\mathrm{SIE}}
+= \bar{E}_{\mathrm{SIE}}^{(2)} N_{\mathrm{eff}}
+
+% Eq. (7), label lattice_sum
+N_{\mathrm{eff}}
+= \sum_{\mathbf{R}_j\ne\mathbf{0}}
+\frac{(2R_{e^-/e^+})^7}{|\mathbf{R}_j|^7}
+
+% Eq. (8), label eqRadPol
+\bar{\alpha}_{e^-/e^+}(r)
+= \frac{4\pi r^2}{a_0^3}
+\left(\frac{\alpha_{\mathrm{fsc}}^{1/3}r}{a_0}\right)^4 r^3
+
+% Eq. (9), label E_SIE
+\bar{E}_{\mathrm{SIE}}
+= -\frac{3\hbar c}{8\pi a_0^3}
+\int_0^{r_f}\frac{\bar{\alpha}_{e^-/e^+}(r)}{r^4}\,dr
+
+% Eq. (10), label E_SIE_r_f
+\bar{E}_{\mathrm{SIE}}
+= -\frac{\hbar c}{4a_0^6}
+\left(\frac{\alpha_{\mathrm{fsc}}^{1/3}}{a_0}\right)^4 r_f^6
+
+% Eq. (11), label eqLambda
+\bar{E}_{\mathrm{SIE}}
+= -\frac{\hbar c\alpha_{\mathrm{fsc}}^{34/3}}{4a_0^4}
+= -\frac{1}{4}\alpha_{\mathrm{fsc}}^{31/3}E_h a_0^{-3}
+
+% Endpoint equation of state, source lines 192-197
+w = \frac{P}{\bar{E}_{\mathrm{SIE}}} = -1,
+\qquad P=-\frac{dE}{dV},
+\qquad E_{\mathrm{SIE}}\propto \bar{E}_{\mathrm{SIE}}V
+
+% Numeric comparison, source lines 185 and 148-151
+|\bar{E}_{\mathrm{SIE}}| = 2.07\times 10^{-23}\ \mathrm{Ha/Bohr^3}
+\in [1.84,2.20]\times10^{-23}\ \mathrm{Ha/Bohr^3}

@@ -1,0 +1,22 @@
+{
+  "episode": "episode_00_argument_map",
+  "type": "manual_vertical_slice_render",
+  "reason": "The deterministic Math-To-Manim run produced a valid but generic dark scaffold, so a manual Manim vertical slice was created to establish the requested bone/off-white 3D visual language.",
+  "source_script": "paper_visualizations/prl-130-041601-casimir-sie/manim/episode_00_argument_map.py",
+  "video": "paper_visualizations/prl-130-041601-casimir-sie/renders/manual_media/videos/episode_00_argument_map/480p15/Episode00ArgumentMap.mp4",
+  "contact_sheet": "paper_visualizations/prl-130-041601-casimir-sie/renders/contact_sheets/episode_00_manual_contact_sheet.jpg",
+  "ffprobe_report": "paper_visualizations/prl-130-041601-casimir-sie/renders/episode_00_manual_ffprobe.txt",
+  "verification": {
+    "py_compile": "passed",
+    "manim_render": "succeeded with ./.venv/bin/python -m manim -ql",
+    "ffprobe": {
+      "codec": "h264",
+      "width": 854,
+      "height": 480,
+      "fps": "15/1",
+      "duration_seconds": 31.465689,
+      "size_bytes": 836344
+    },
+    "visual_contact_sheet": "bone/off-white background visible; title/caveat/formula cards visible; 3D vacuum grid and argument-map nodes visible; remaining issue: this is a 31s draft vertical slice, not the full 60-90s Episode 0, and bottom node labels are small at 480p draft quality."
+  }
+}
