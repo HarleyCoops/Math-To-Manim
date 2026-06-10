@@ -23,4 +23,5 @@ artifacts/
 !docs/assets/*.gif
 !docs/showcase/assets/*.gif
 *.png
+!docs/assets/*.png
 *.log

@@ -12,13 +12,14 @@
 
 ### Ask a question -> get a freakin' movie
 
+[![Claude Mythos](https://img.shields.io/badge/Claude-Mythos%20pipeline-d97757)](#the-mythos-pipeline)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
 [![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
 [![OpenAI Agents SDK](https://img.shields.io/badge/OpenAI-Agents%20SDK-111827)](https://openai.github.io/openai-agents-python/)
 [![Hermes assisted](https://img.shields.io/badge/Hermes-agent%20assisted-8b5cf6)](#hermes-agent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
-[Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Prime RL](docs/PRIME_INTELLECT_RL.md) · [Roadmap](docs/ROADMAP.md) · [Agent guide](AGENTS.md)
+[Mythos pipeline](#the-mythos-pipeline) · [Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Prime RL](docs/PRIME_INTELLECT_RL.md) · [Roadmap](docs/ROADMAP.md) · [Agent guide](AGENTS.md)
 
 <br />
 
@@ -51,9 +52,48 @@
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/whiskering-exchange.gif" alt="Whiskering exchange animation" width="24%" /></a>
 </p>
 
-**Math-To-Manim turns serious math and physics prompts into Manim explainer videos and the reusable artifacts that produced them: intent, prerequisite graphs, lesson plans, math packets, storyboards, scene specs, generated code, validation reports, render evidence, review notes, and stage traces.**
+**Math-To-Manim is now a Claude Mythos-native pipeline: six reasoning agents turn a question into a cinematic Manim film — and every artifact that produced it: intent briefs, knowledge maps, curricula, math dossiers, shot lists, scene specs, generated code, validation reports, and render evidence.**
 
 </div>
+
+---
+
+## The Mythos pipeline
+
+<p align="center">
+  <img src="docs/assets/mythos-learns-math-to-manim.png" alt="Mythos Learns Math-to-Manim" width="92%" />
+</p>
+
+**This repo is now built around Claude Mythos.** The six-agent reasoning chain has been rebuilt on Claude-native tooling: the agents are Claude Code subagents, a custom harness drives them headlessly through the Claude CLI, and a Mythos-class model writes every frame with the camera as narrator — plain-language headlines before symbols, flights into the exact term being explained, pull-backs to restore context, true-3D set pieces.
+
+The chain: **intent → cartographer → curriculum → math-director → cinematographer → scene-composer**, then codegen → static checks → render → self-repair.
+
+| Piece | Where | What it does |
+|---|---|---|
+| Agent charters | [`mythos/agents/`](mythos/agents/) (mirrored in `.claude/agents/` for native Claude Code use) | The six minds of the chain, one markdown charter each |
+| Custom harness | [`mythos/harness.py`](mythos/harness.py) | Runs the whole chain via `claude -p`; artifacts land in `runs/mythos/<ts>/`; `--offline` rehearsal mode needs no login |
+| Camera grammar | [`mythos/cinematography.py`](mythos/cinematography.py) | `headline`, `zoom_to`, `pull_back`, `term_tour`, `tilt_to_3d`, glows — the Mythos house style, Anthropic palette |
+| Provider seam | [`math_to_manim/providers/mythos_cli.py`](math_to_manim/providers/mythos_cli.py) | Drops Mythos into the legacy typed pipeline: `M2M2_CODEGEN_PROVIDER=mythos-cli` |
+| Flagship film | [`examples/mythos/qft_cinematic.py`](examples/mythos/qft_cinematic.py) | QED in 8 acts: 200 s, ~160 animations, term-by-term Lagrangian camera tours |
+
+```bash
+uv sync --extra render
+
+# the whole chain, one line
+python -m mythos.harness "explain quantum field theory" --render -q m
+
+# or render the flagship directly
+manim -qh examples/mythos/qft_cinematic.py QFTCinematicJourney
+```
+
+<p align="center">
+  <img src="docs/assets/mythos-qft-term-tour.png" alt="Camera inside the QED Lagrangian: the Dirac term spotlit with a plain-language caption" width="49%" />
+  <img src="docs/assets/mythos-qft-vertex.png" alt="The electron-photon vertex with the fine-structure constant resolving to 1/137" width="49%" />
+</p>
+
+<p align="center"><em>Stills from the Mythos cut of the QED journey: the camera inside the Lagrangian (left); the e⁻e⁻γ vertex as α resolves to 1/137 (right).</em></p>
+
+The original Codex/OpenAI chain remains available as a legacy provider — nothing was removed, Mythos is simply the way the films get made now.
 
 ---
 
