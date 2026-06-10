@@ -43,6 +43,9 @@ class RuntimeConfig:
     codex_full_auto: bool = False
     codex_timeout_seconds: float = 900.0
     codex_workdir: Path | None = None
+    mythos_command: str = "claude"
+    mythos_model: str = "claude-fable-5"
+    mythos_timeout_seconds: float = 900.0
 
     @classmethod
     def from_env(cls) -> "RuntimeConfig":
@@ -67,6 +70,9 @@ class RuntimeConfig:
             codex_full_auto=os.getenv("M2M2_CODEX_FULL_AUTO", "0") in {"1", "true", "True"},
             codex_timeout_seconds=float(os.getenv("M2M2_CODEX_TIMEOUT_SECONDS", "900")),
             codex_workdir=Path(codex_workdir) if codex_workdir else None,
+            mythos_command=os.getenv("M2M2_MYTHOS_COMMAND", "claude"),
+            mythos_model=os.getenv("M2M2_MYTHOS_MODEL", "claude-fable-5"),
+            mythos_timeout_seconds=float(os.getenv("M2M2_MYTHOS_TIMEOUT_SECONDS", "900")),
         )
 
 

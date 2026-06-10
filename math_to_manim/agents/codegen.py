@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from math_to_manim.agents.base import StageAgent, mark_sdk_metadata, run_structured_sdk_agent
-from math_to_manim.providers import CodexCliProvider
+from math_to_manim.providers import CodexCliProvider, MythosCliProvider
 from math_to_manim.schemas import GeneratedCode, ManimSceneSpec
 
 
@@ -14,6 +14,9 @@ class ManimCodeAgent(StageAgent[ManimSceneSpec, GeneratedCode]):
     name = "codegen"
 
     def run(self, spec: ManimSceneSpec) -> GeneratedCode:
+        if self.config.codegen_provider in {"mythos-cli", "claude-cli"} and not self.config.deterministic:
+            return MythosCliProvider(self.config).generate_code(spec)
+
         if self.config.codegen_provider == "codex-cli" and not self.config.deterministic:
             return CodexCliProvider(self.config).generate_code(spec)
 
@@ -62,6 +65,8 @@ class ManimCodeAgent(StageAgent[ManimSceneSpec, GeneratedCode]):
 
         if self.config.deterministic:
             return generated
+        if self.config.codegen_provider in {"mythos-cli", "claude-cli"}:
+            return MythosCliProvider(self.config).repair_code(spec, generated, failure)
         if self.config.codegen_provider == "codex-cli":
             return CodexCliProvider(self.config).repair_code(spec, generated, failure)
 
