@@ -14,7 +14,15 @@
 
 <br />
 
-<img src="docs/showcase/assets/quartic-torus-analysis.gif" alt="Quartic torus analysis: compact surface, curvature, topology, and agentic Manim rendering" width="760" />
+<img src="Hero.jpg" alt="Hermes learns Manim hero: mathematical motion, equations, and agentic animation" width="760" />
+
+<br />
+
+<p><strong>Hermes learns Manim.</strong> The recovered hero is the icon for the operating model: Hermes drives the repo workflow, while M2M2 runs the typed Manim agent chain.</p>
+
+<p>Give Hermes a repo-local mission: inspect this checkout, run the deterministic smoke path, generate the Manim bundle, review the run artifacts and draft frames, repair only the failing stage, and promote media only after visual review passes.</p>
+
+<p>Hermes should ground itself in <code>AGENTS.md</code>, invoke <code>m2m2</code> / <code>math-to-manim</code>, follow artifacts from <code>intent.json</code> through <code>scene_spec.json</code>, and check <code>generated_scene.py</code> plus frames/contact sheets before touching showcase assets.</p>
 
 <br />
 
