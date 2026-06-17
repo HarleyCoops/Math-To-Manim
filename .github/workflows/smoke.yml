@@ -4,8 +4,8 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         if: ${{ hashFiles('requirements.txt', 'pyproject.toml', 'setup.py') != '' }}
         with:
           python-version: '3.x'
@@ -15,7 +15,7 @@ jobs:
       - name: pip install (pyproject)
         if: ${{ hashFiles('requirements.txt') == '' && hashFiles('pyproject.toml') != '' }}
         run: pip install .
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         if: ${{ hashFiles('package.json') != '' }}
         with:
           node-version: 'lts/*'
