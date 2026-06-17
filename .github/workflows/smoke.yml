@@ -1,0 +1,26 @@
+name: smoke
+on: [pull_request]
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        if: ${{ hashFiles('requirements.txt', 'pyproject.toml', 'setup.py') != '' }}
+        with:
+          python-version: '3.x'
+      - name: pip install
+        if: ${{ hashFiles('requirements.txt') != '' }}
+        run: pip install -r requirements.txt
+      - name: pip install (pyproject)
+        if: ${{ hashFiles('requirements.txt') == '' && hashFiles('pyproject.toml') != '' }}
+        run: pip install .
+      - uses: actions/setup-node@v4
+        if: ${{ hashFiles('package.json') != '' }}
+        with:
+          node-version: 'lts/*'
+      - name: npm install + build
+        if: ${{ hashFiles('package.json') != '' }}
+        run: |
+          npm ci || npm install
+          npm run build --if-present
