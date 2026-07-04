@@ -1,10 +1,13 @@
-"""Claude (Mythos) CLI provider for subscription-authenticated generation.
+"""Mythos generation provider for cinematic Manim code.
 
-Mirror of :mod:`codex_cli`, but the engine is the Claude Code CLI running a
-Mythos-class model. It drops into the exact same pipeline seam: scene spec
-in, ``GeneratedCode`` artifact out — with one addition: every prompt carries
-the Mythos Cinematic Charter, so generated scenes use camera-as-narrator
-grammar instead of static corner-parked equations.
+By default this routes prompts to Claude Fable 5 through the Claude CLI
+(``M2M2_MYTHOS_COMMAND=claude``, ``M2M2_MYTHOS_MODEL=claude-fable-5``).
+The Fugu Ultra API path remains available by setting
+``M2M2_MYTHOS_COMMAND=fugu-api`` with ``FUGU_API_KEY``.
+It drops into the exact same pipeline seam:
+scene spec in, ``GeneratedCode`` artifact out — with one addition: every
+prompt carries the Mythos Cinematic Charter, so generated scenes use
+camera-as-narrator grammar instead of static corner-parked equations.
 """
 
 from __future__ import annotations
@@ -19,6 +22,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from math_to_manim.config import RuntimeConfig
+from math_to_manim.providers.fugu_api import call_fugu_chat, fugu_base_url_from_env
 from math_to_manim.schemas import GeneratedCode, ManimSceneSpec
 
 Runner = Callable[..., subprocess.CompletedProcess[str]]
@@ -55,13 +59,11 @@ MYTHOS CINEMATIC CHARTER — the generated scene MUST obey all of it.
 """
 
 
-class MythosCliProvider:
-    """Generate Manim artifacts through the locally authenticated Claude CLI.
+FUGU_API_COMMANDS = {"fugu-api", "sakana-api", "sakaa-api"}
 
-    Talks to ``claude -p`` (print mode) instead of an HTTP API, so it rides
-    the user's Claude subscription/OAuth login — the same trick the Codex
-    provider uses, rebuilt on Mythos-native tooling.
-    """
+
+class MythosCliProvider:
+    """Generate Manim artifacts through Fugu Ultra or the legacy Mythos CLI."""
 
     def __init__(self, config: RuntimeConfig | None = None, runner: Runner | None = None):
         self.config = config or RuntimeConfig.from_env()
@@ -71,13 +73,13 @@ class MythosCliProvider:
 
     def generate_code(self, spec: ManimSceneSpec) -> GeneratedCode:
         prompt = self._build_codegen_prompt(spec)
-        raw = self._run_claude(prompt)
+        raw = self._run_model(prompt)
         generated = self._parse_generated_code(raw)
         return self._stamp(generated, source_agent="codegen")
 
     def repair_code(self, spec: ManimSceneSpec, generated: GeneratedCode, failure: str) -> GeneratedCode:
         prompt = self._build_repair_prompt(spec, generated, failure)
-        raw = self._run_claude(prompt)
+        raw = self._run_model(prompt)
         repaired = self._parse_generated_code(raw)
         stamped = self._stamp(repaired, source_agent="repair")
         metadata = dict(stamped.metadata)
@@ -89,10 +91,11 @@ class MythosCliProvider:
 
     def _stamp(self, generated: GeneratedCode, *, source_agent: str) -> GeneratedCode:
         metadata = dict(generated.metadata or {})
+        is_fugu_api = self.config.mythos_command in FUGU_API_COMMANDS
         metadata.update(
             {
-                "runtime": "mythos_cli",
-                "provider": "mythos-cli",
+                "runtime": "fugu_api" if is_fugu_api else "mythos_cli",
+                "provider": "mythos-fugu-api" if is_fugu_api else "mythos-cli",
                 "mythos_command": self.config.mythos_command,
                 "model": self.config.mythos_model,
                 "source_agent": source_agent,
@@ -102,7 +105,18 @@ class MythosCliProvider:
         metadata.setdefault("file_path", "generated_scene.py")
         return generated.model_copy(update={"metadata": metadata})
 
-    def _run_claude(self, prompt: str) -> str:
+    def _run_model(self, prompt: str) -> str:
+        if self.config.mythos_command in FUGU_API_COMMANDS:
+            return call_fugu_chat(
+                prompt,
+                system_prompt=CINEMATIC_CHARTER,
+                model=self.config.mythos_model,
+                base_url=fugu_base_url_from_env(),
+                timeout=self.config.mythos_timeout_seconds,
+            )
+        return self._run_cli(prompt)
+
+    def _run_cli(self, prompt: str) -> str:
         command = _resolve_command(self.config.mythos_command)
         cmd = [
             command,
@@ -122,8 +136,8 @@ class MythosCliProvider:
             )
         except FileNotFoundError as exc:
             raise RuntimeError(
-                f"Claude CLI not found: {self.config.mythos_command!r}. "
-                "Install Claude Code and run `claude login` first."
+                f"Mythos CLI not found: {self.config.mythos_command!r}. "
+                "Install the requested CLI or use M2M2_MYTHOS_COMMAND=fugu-api."
             ) from exc
         if completed.returncode != 0:
             raise RuntimeError(
@@ -146,7 +160,7 @@ class MythosCliProvider:
 
     def _build_codegen_prompt(self, spec: ManimSceneSpec) -> str:
         return (
-            "You are the Math-To-Manim code generation provider running on Claude Mythos.\n"
+            "You are the Math-To-Manim code generation provider running on Fugu Ultra Mythos.\n"
             "Return only valid JSON matching the GeneratedCode artifact shape. No Markdown fences.\n"
             "Required JSON keys: scene_name, code, dependencies, metadata.\n"
             "The code must be complete, runnable Manim Community Edition 0.19 Python that\n"
@@ -160,7 +174,7 @@ class MythosCliProvider:
 
     def _build_repair_prompt(self, spec: ManimSceneSpec, generated: GeneratedCode, failure: str) -> str:
         return (
-            "You are the Math-To-Manim repair provider running on Claude Mythos.\n"
+            "You are the Math-To-Manim repair provider running on Fugu Ultra Mythos.\n"
             "Return only valid JSON matching the GeneratedCode artifact shape (keys: \n"
             "scene_name, code, dependencies, metadata). Repair the scene below using the\n"
             "failure output. Make surgical fixes; preserve the cinematic structure, the\n"

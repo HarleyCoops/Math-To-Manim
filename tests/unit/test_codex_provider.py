@@ -40,9 +40,31 @@ def test_codex_cli_provider_builds_exec_command_and_parses_generated_code() -> N
     assert generated.code.startswith("from manim import *")
     assert generated.metadata["runtime"] == "codex_cli"
     assert generated.metadata["file_path"] == "generated_scene.py"
-    assert runner.calls == [["codex", "exec", "--full-auto", "-"]]
+    assert runner.calls == [["codex", "exec", "--full-auto", "--model", "gpt-5.5", "-"]]
     assert "Return only valid JSON" in runner.kwargs[0]["input"]
     assert "DemoScene" in runner.kwargs[0]["input"]
+
+
+def test_mythos_harness_can_use_codex_oauth_backend(monkeypatch: pytest.MonkeyPatch) -> None:
+    from mythos.harness import MythosHarness
+
+    calls: list[list[str]] = []
+    kwargs_seen: list[dict[str, object]] = []
+
+    def fake_run(cmd: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        calls.append(cmd)
+        kwargs_seen.append(kwargs)
+        return subprocess.CompletedProcess(cmd, 0, stdout='{"ok": true}', stderr="")
+
+    monkeypatch.setattr("mythos.harness.subprocess.run", fake_run)
+    monkeypatch.setattr("mythos.harness._resolve_command", lambda command: command)
+    harness = MythosHarness(command="codex", model="gpt-5.5")
+
+    output = harness._model("Return JSON only.")
+
+    assert output == '{"ok": true}'
+    assert calls == [["codex", "exec", "--model", "gpt-5.5", "-"]]
+    assert kwargs_seen[0]["input"] == "Return JSON only."
 
 
 def test_manim_code_agent_routes_codegen_to_codex_provider_when_configured(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -91,3 +113,56 @@ def test_codex_command_resolution_prefers_windows_cmd_shim(monkeypatch: pytest.M
     monkeypatch.setattr(codex_cli.shutil, "which", lambda command: "C:/npm/codex.cmd" if command == "codex.cmd" else None)
 
     assert codex_cli._resolve_codex_command("codex") == "C:/npm/codex.cmd"
+
+
+def test_mythos_provider_defaults_to_fugu_api(monkeypatch: pytest.MonkeyPatch) -> None:
+    from math_to_manim.providers.mythos_cli import MythosCliProvider
+
+    payload = {
+        "scene_name": "DemoScene",
+        "code": "from manim import *\nclass DemoScene(ThreeDScene):\n    def construct(self):\n        self.wait()\n",
+        "dependencies": ["manim"],
+        "metadata": {"note": "from fake fugu"},
+    }
+    calls: list[dict[str, object]] = []
+
+    def fake_call(prompt: str, **kwargs: object) -> str:
+        calls.append({"prompt": prompt, **kwargs})
+        return json.dumps(payload)
+
+    monkeypatch.setattr("math_to_manim.providers.mythos_cli.call_fugu_chat", fake_call)
+    monkeypatch.setattr("math_to_manim.providers.mythos_cli.fugu_base_url_from_env", lambda: "https://example.test/v1")
+    provider = MythosCliProvider(config=RuntimeConfig(codegen_provider="fugu-api"))
+
+    generated = provider.generate_code(ManimSceneSpec(scene_name="DemoScene"))
+
+    assert generated.scene_name == "DemoScene"
+    assert generated.metadata["runtime"] == "fugu_api"
+    assert generated.metadata["provider"] == "mythos-fugu-api"
+    assert generated.metadata["model"] == "fugu-ultra"
+    assert calls[0]["model"] == "fugu-ultra"
+    assert calls[0]["base_url"] == "https://example.test/v1"
+    assert "Fugu Ultra Mythos" in calls[0]["prompt"]
+
+
+def test_manim_code_agent_routes_codegen_to_fugu_provider(monkeypatch: pytest.MonkeyPatch) -> None:
+    from math_to_manim.agents.codegen import ManimCodeAgent
+
+    class StubProvider:
+        def __init__(self, config: RuntimeConfig):
+            self.config = config
+
+        def generate_code(self, spec: ManimSceneSpec) -> GeneratedCode:
+            return GeneratedCode(
+                scene_name=spec.scene_name,
+                code="from manim import *\nclass DemoScene(ThreeDScene):\n    def construct(self):\n        self.wait()\n",
+                dependencies=["manim"],
+                metadata={"runtime": "fugu_api", "file_path": "generated_scene.py"},
+            )
+
+    monkeypatch.setattr("math_to_manim.agents.codegen.MythosCliProvider", StubProvider)
+    agent = ManimCodeAgent(RuntimeConfig(codegen_provider="fugu-api"))
+
+    generated = agent.run(ManimSceneSpec(scene_name="DemoScene"))
+
+    assert generated.metadata["runtime"] == "fugu_api"

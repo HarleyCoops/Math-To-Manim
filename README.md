@@ -12,14 +12,14 @@
 
 ### Ask a question -> get a freakin' movie
 
-[![Claude Mythos](https://img.shields.io/badge/Claude-Mythos%20pipeline-d97757)](#the-mythos-pipeline)
+[![Claude Fable 5](https://img.shields.io/badge/Claude-Fable%205%20baseline-d97757)](#the-mythos-pipeline)
+[![Reverse reasoning](https://img.shields.io/badge/Pipeline-reverse%20reasoning-6a9bcc)](#the-reverse-reasoning-tree)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
 [![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
-[![OpenAI Agents SDK](https://img.shields.io/badge/OpenAI-Agents%20SDK-111827)](https://openai.github.io/openai-agents-python/)
 [![Hermes assisted](https://img.shields.io/badge/Hermes-agent%20assisted-8b5cf6)](#hermes-agent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
-[Mythos pipeline](#the-mythos-pipeline) · [Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Prime RL](docs/PRIME_INTELLECT_RL.md) · [Roadmap](docs/ROADMAP.md) · [Agent guide](AGENTS.md)
+[Mythos pipeline](#the-mythos-pipeline) · [Reverse reasoning](#the-reverse-reasoning-tree) · [The hooks](#the-hooks) · [Motion showcase](docs/showcase/README.md) · [Architecture](docs/ARCHITECTURE.md) · [Prime RL](docs/PRIME_INTELLECT_RL.md) · [Roadmap](docs/ROADMAP.md) · [Agent guide](AGENTS.md)
 
 <br />
 
@@ -52,54 +52,15 @@
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/whiskering-exchange.gif" alt="Whiskering exchange animation" width="24%" /></a>
 </p>
 
-**Math-To-Manim is now a Claude Mythos-native pipeline: six reasoning agents turn a question into a cinematic Manim film — and every artifact that produced it: intent briefs, knowledge maps, curricula, math dossiers, shot lists, scene specs, generated code, validation reports, and render evidence.**
+**You type one sentence. Six reasoning agents tear it apart, reason backward to everything a mind would need to already know, rebuild that knowledge as a curriculum, choreograph it shot by shot, and hand you a cinematic Manim film — plus every artifact that produced it. The baseline model for the whole chain is Claude Fable 5.**
 
 </div>
 
 ---
 
-## The Mythos pipeline
+## The morning it started
 
-<p align="center">
-  <img src="docs/assets/mythos-learns-math-to-manim.png" alt="Mythos Learns Math-to-Manim" width="92%" />
-</p>
-
-**This repo is now built around Claude Mythos.** The six-agent reasoning chain has been rebuilt on Claude-native tooling: the agents are Claude Code subagents, a custom harness drives them headlessly through the Claude CLI, and a Mythos-class model writes every frame with the camera as narrator — plain-language headlines before symbols, flights into the exact term being explained, pull-backs to restore context, true-3D set pieces.
-
-The chain: **intent → cartographer → curriculum → math-director → cinematographer → scene-composer**, then codegen → static checks → render → self-repair.
-
-| Piece | Where | What it does |
-|---|---|---|
-| Agent charters | [`mythos/agents/`](mythos/agents/) (mirrored in `.claude/agents/` for native Claude Code use) | The six minds of the chain, one markdown charter each |
-| Custom harness | [`mythos/harness.py`](mythos/harness.py) | Runs the whole chain via `claude -p`; artifacts land in `runs/mythos/<ts>/`; `--offline` rehearsal mode needs no login |
-| Camera grammar | [`mythos/cinematography.py`](mythos/cinematography.py) | `headline`, `zoom_to`, `pull_back`, `term_tour`, `tilt_to_3d`, glows — the Mythos house style, Anthropic palette |
-| Provider seam | [`math_to_manim/providers/mythos_cli.py`](math_to_manim/providers/mythos_cli.py) | Drops Mythos into the legacy typed pipeline: `M2M2_CODEGEN_PROVIDER=mythos-cli` |
-| Flagship film | [`examples/mythos/qft_cinematic.py`](examples/mythos/qft_cinematic.py) | QED in 8 acts: 200 s, ~160 animations, term-by-term Lagrangian camera tours |
-
-```bash
-uv sync --extra render
-
-# the whole chain, one line
-python -m mythos.harness "explain quantum field theory" --render -q m
-
-# or render the flagship directly
-manim -qh examples/mythos/qft_cinematic.py QFTCinematicJourney
-```
-
-<p align="center">
-  <img src="docs/assets/mythos-qft-term-tour.png" alt="Camera inside the QED Lagrangian: the Dirac term spotlit with a plain-language caption" width="49%" />
-  <img src="docs/assets/mythos-qft-vertex.png" alt="The electron-photon vertex with the fine-structure constant resolving to 1/137" width="49%" />
-</p>
-
-<p align="center"><em>Stills from the Mythos cut of the QED journey: the camera inside the Lagrangian (left); the e⁻e⁻γ vertex as α resolves to 1/137 (right).</em></p>
-
-The original Codex/OpenAI chain remains available as a legacy provider — nothing was removed, Mythos is simply the way the films get made now.
-
----
-
-## What this is
-
-**Math-To-Manim** started on the morning of Donald Trump's inauguration. I do not think it was an accident that the Chinese decided to release the R1 model on that day.
+Math-To-Manim began on the morning of Donald Trump's inauguration — **January 20, 2025 — the day the reasoning models arrived.** I do not think it was an accident that the Chinese decided to release the R1 model on that day.
 
 I was awake, saw the model hit Hugging Face, and quickly built a `.ipynb` to load the model and run it.
 
@@ -123,15 +84,150 @@ Three hours later, the first Manim file landed: `pythagorean.py` at `2025-01-20T
 >
 > — [Christian H. Cooper, January 20, 2025](https://x.com/christiancooper/status/1881335734256492605?s=20)
 
-What I saw with R1 is that the model was already good with Manim code out of the box. What actually runs under the hood with Math-To-Manim is a series of six planning agents that recursively reason over the prompt you gave it before code generation, validation, rendering, and review. This all runs on Codex 5.5.
+What R1 proved that morning is that a reasoning model was already good at Manim out of the box. What this repo became is the thesis taken seriously: **if one shot of reasoning gets you a clean Pythagorean proof, a chain of recursive reasoning gets you a film.** Six planning agents now reason over your prompt — backward, then forward — before a single line of scene code is generated, validated, rendered, and reviewed. The baseline model driving that chain today is **Claude Fable 5**.
 
-However, since Prime Intellect rolled out hosted evals, and since I understand Recursive Learning Models better now, I am using the reasoning traces for RL training.
-
-But this will always just work. If you are a teacher or a parent, you can always ask for an explanation and just get an MP4 back. You never have to see or worry about the reasoning training.
+And since Prime Intellect rolled out hosted evals, the reasoning traces from every run feed RL training. But this will always just work: if you are a teacher or a parent, you ask for an explanation and get an MP4 back. You never have to see or worry about the reasoning training.
 
 For the curious, follow along here: [Prime Intellect M2M hub: `harleycooper/math-to-manim`](docs/PRIME_INTELLECT_RL.md).
 
 -christian
+
+---
+
+## The reverse reasoning tree
+
+Every text-to-code demo you have seen jumps straight from request to Python. Math-To-Manim takes the long way on purpose, and the long way is the product.
+
+The pipeline's first move is not "write code" — it is a question: **what would a mind need to already hold for this idea to land?** Then it asks that question again, of each answer, recursively, until it bottoms out at things the viewer already knows. That is the reverse reasoning tree:
+
+```text
+                     "Explain quantum field theory"
+                                  │
+                                  ▼  what must you already know?
+                 ┌────────────────┴────────────────┐
+        special relativity                 quantum mechanics
+                 │                                  │
+        ┌────────┴────────┐                ┌────────┴─────────┐
+   spacetime          Lorentz         wavefunctions       operators
+   intervals        invariance             │                  │
+        │                │            superposition     commutation
+        ▼                ▼                 ▼                  ▼
+   ─────────────  the tree bottoms out at known ground  ─────────────
+                                  │
+                                  ▼  now walk it FORWARD
+      known ground → prerequisites → target concept → the film
+```
+
+The tree is built backward from the target and then **walked forward as a curriculum**: the film teaches the leaves first, so that by the time the camera reaches the QED Lagrangian, every symbol on screen has already been earned. That single design decision is why the output feels like teaching instead of decoration.
+
+The tree is not a metaphor — it is a file. Every run writes it to disk as a knowledge graph artifact (`02_knowledge_map.json` in the Mythos chain, `knowledge_graph.json` in the typed pipeline) that you can open, inspect, and edit before any code exists.
+
+---
+
+## The Mythos pipeline
+
+<p align="center">
+  <img src="docs/assets/mythos-learns-math-to-manim.png" alt="Mythos Learns Math-to-Manim" width="92%" />
+</p>
+
+**This repo is built around Claude Fable 5.** The six-agent reasoning chain runs on Claude-native tooling: the agents are Claude Code subagents, a custom harness drives them headlessly through the Claude CLI with `claude-fable-5` as the baseline model, and every frame is written with the camera as narrator — plain-language headlines before symbols, flights into the exact term being explained, pull-backs to restore context, true-3D set pieces.
+
+The chain: **intent → cartographer → curriculum → math-director → cinematographer → scene-composer**, then codegen → static checks → render → self-repair.
+
+| Agent | Question it answers | Artifact |
+|---|---|---|
+| **Intent** | What is the learner really asking, and at what level? | `01_intent.json` |
+| **Cartographer** | What is the reverse reasoning tree beneath the target? | `02_knowledge_map.json` |
+| **Curriculum** | In what order does the tree become teachable? | `03_curriculum.json` |
+| **Math-director** | Which definitions, equations, and examples carry the load? | `04_math_dossier.json` |
+| **Cinematographer** | What does the camera do, beat by beat? | `05_shot_list.json` |
+| **Scene-composer** | How does the shot list compile into Manim objects and timing? | `06_scene_spec.json` |
+
+| Piece | Where | What it does |
+|---|---|---|
+| Agent charters | [`mythos/agents/`](mythos/agents/) (mirrored in `.claude/agents/` for native Claude Code use) | The six minds of the chain, one markdown charter each |
+| Custom harness | [`mythos/harness.py`](mythos/harness.py) | Runs the whole chain via `claude -p --model claude-fable-5`; artifacts land in `runs/mythos/<ts>/`; `--offline` rehearsal mode needs no login |
+| Camera grammar | [`mythos/cinematography.py`](mythos/cinematography.py) | `headline`, `zoom_to`, `pull_back`, `term_tour`, `tilt_to_3d`, glows — the Mythos house style, Anthropic palette |
+| Provider seam | [`math_to_manim/providers/mythos_cli.py`](math_to_manim/providers/mythos_cli.py) | Drops Fable 5 into the legacy typed pipeline: `M2M2_CODEGEN_PROVIDER=mythos-cli` |
+| Flagship film | [`examples/mythos/qft_cinematic.py`](examples/mythos/qft_cinematic.py) | QED in 8 acts: 200 s, ~160 animations, term-by-term Lagrangian camera tours |
+
+```bash
+uv sync --extra render
+
+# the whole chain, one line, Fable 5 as the baseline
+python -m mythos.harness "explain quantum field theory" --render -q m
+
+# or render the flagship directly
+manim -qh examples/mythos/qft_cinematic.py QFTCinematicJourney
+```
+
+The model backend is a seam, not a marriage: `M2M2_MYTHOS_MODEL` overrides the model (default `claude-fable-5`), and `M2M2_MYTHOS_COMMAND=fugu-api` routes the same chain through an OpenAI-compatible Fugu Ultra endpoint instead of the Claude CLI. The original Codex/OpenAI chain remains available as a legacy provider — nothing was removed, Fable is simply the way the films get made now.
+
+<p align="center">
+  <img src="docs/assets/mythos-qft-term-tour.png" alt="Camera inside the QED Lagrangian: the Dirac term spotlit with a plain-language caption" width="49%" />
+  <img src="docs/assets/mythos-qft-vertex.png" alt="The electron-photon vertex with the fine-structure constant resolving to 1/137" width="49%" />
+</p>
+
+<p align="center"><em>Stills from the Mythos cut of the QED journey: the camera inside the Lagrangian (left); the e⁻e⁻γ vertex as α resolves to 1/137 (right).</em></p>
+
+---
+
+## The hooks
+
+Every arrow in the chain is a hook.
+
+Between any two stages, the pipeline stops at a **stage boundary**: the upstream agent emits a typed JSON artifact, the artifact is validated against a versioned schema, a trace event is written to `trace.jsonl`, and only then does the next agent get to read it. Nothing flows between agents as loose prose — everything crosses a boundary you can watch, intercept, or rewrite.
+
+That gives you four working hooks today:
+
+| Hook | Where it fires | What you can do with it |
+|---|---|---|
+| **Artifact hook** | After every reasoning stage | Open `02_knowledge_map.json`, prune a branch of the reverse reasoning tree, and the rest of the run inherits your edit |
+| **Static-review hook** | After codegen, before any render | The generated scene is gated by static checks; failures trigger a bounded repair loop from the frozen scene spec — code never renders unvetted |
+| **Render hook** | Around the Manim subprocess | Render failures feed evidence back into repair instead of crashing the run; `--no-render` and `--offline` short-circuit it entirely |
+| **Recovery hook** | Any time after a run | Hand-edit `generated_scene.py` in a run bundle, then `math-to-manim recover-render runs/<run_id>` re-fires validation → render → review without regenerating the plan |
+
+<p align="center">
+  <img src="docs/assets/render-repair-loop.svg" alt="Render validation and bounded repair loop diagram showing static review, render skip, Manim subprocess, repair from frozen scene spec, video review, and publisher package" width="100%" />
+</p>
+
+Because the six charters live in `.claude/agents/`, Claude Code discovers them natively — the same files the harness runs headlessly are the ones you can invoke interactively in a session. The design direction from here is to lift these stage boundaries into first-class Claude Code lifecycle hooks, so a human (or Hermes) can subscribe to any boundary — "pause after the shot list", "reject any scene spec with more than two formulas on screen" — without touching the harness.
+
+---
+
+## The process
+
+End to end, a run is a fixed chain with a memory. The typed pipeline in [`math_to_manim/pipeline/runner.py`](math_to_manim/pipeline/runner.py) makes the path explicit: `IntentAgent`, `PrerequisiteGraphAgent`, `CurriculumAgent`, `MathAgent`, `StoryboardAgent`, `SceneSpecAgent`, `ManimCodeAgent`, `StaticReviewAgent`, `RenderAgent`, `VideoReviewAgent`, `PublisherAgent`.
+
+| Stage | Why it exists | Artifact |
+| --- | --- | --- |
+| Intent | Clarify what the learner is really asking. | `intent.json` |
+| Reverse prerequisites | Build the reverse reasoning tree beneath the target idea. | `knowledge_graph.json` |
+| Curriculum | Turn the tree into a teachable order. | `curriculum.json` |
+| Math packet | Select definitions, equations, assumptions, and examples. | `math_packet.json` |
+| Storyboard | Decide the screen beats before code exists. | `storyboard.json` |
+| Scene spec | Compile the visual plan into Manim objects, animations, timing, and camera notes. | `scene_spec.json` |
+| Code, validation, render, review | Generate runnable Manim, gate it with static checks, render when allowed, and package the evidence. | `generated_scene.py`, reports, manifest |
+
+Every run leaves an inspectable path from **question** to **understanding** to **animation** — JSON contracts, generated code, render results, review notes, and a manifest. The output is never just a video.
+
+For current editable-video status and the planned prompt/spec/code edit loop, see the [roadmap](docs/ROADMAP.md).
+
+---
+
+## What the output is for
+
+A run bundle is one directory that serves five different people:
+
+**Teachers and parents** take the MP4 and walk away. Ask for an explanation, get a movie. The reasoning machinery is invisible unless you go looking.
+
+**Learners** get a study guide for free: `curriculum.json` is the reverse reasoning tree flattened into a learning order, and `math_packet.json` is the annotated formula sheet the film was built from.
+
+**Developers** get an edit loop: change `generated_scene.py` inside the bundle, run `recover-render`, and validation, render, and review refresh without re-planning. The scene spec stays frozen, so edits are sparse and safe.
+
+**Researchers** get reasoning traces. Every stage boundary is logged, every artifact is typed, and the bundles feed the [Prime Intellect RL environment](docs/PRIME_INTELLECT_RL.md) as training tasks for the repair policy.
+
+**Communicators** get clips: any render cuts down to a README-sized GIF with the [ffmpeg recipe below](#make-a-readme-sized-gif-from-a-render) — that is exactly how the showcase gallery on this page was made.
 
 ---
 
@@ -157,10 +253,18 @@ python -m pip install -U pip
 python -m pip install -e ".[dev,render]"
 ./scripts/bootstrap-render.sh  # Debian/Ubuntu/WSL system deps for real MP4 output
 
+# Fable 5 end to end (requires a logged-in Claude CLI)
+python -m mythos.harness \
+  "Show why the quantum harmonic oscillator only allows discrete energies: start with a springy potential well, zoom into the wavefunctions, then reveal the ladder of allowed energy levels." \
+  --render -q l
+```
+
+The same prompt also runs through the legacy typed pipeline if you prefer the m2m2 CLI:
+
+```bash
 m2m2 generate \
   "Show why the quantum harmonic oscillator only allows discrete energies: start with a springy potential well, zoom into the wavefunctions, then reveal the ladder of allowed energy levels." \
-  --codegen-provider codex-cli \
-  --codex-full-auto \
+  --codegen-provider mythos-cli \
   --style cinematic \
   --quality l \
   --runs-dir runs
@@ -192,32 +296,6 @@ Hermes is the contributor/operator agent around this repository. It is not impor
 That makes Hermes useful for maintaining the reverse-reasoning pipeline without becoming part of it. A Hermes session can inspect `AGENTS.md`, `pyproject.toml`, schemas, tests, and `runs/<run_id>/` bundles; run `pytest`, CLI smoke commands, Manim, FFmpeg, and git checks; then verify that docs, code, and showcase media still match the artifact contracts.
 
 Repo-local Hermes skills live under [`hermes/skills/`](hermes/skills/). The old Claude `./skill` path is historical; current contributor guidance is in [`AGENTS.md`](AGENTS.md), with launch notes in [`docs/HERMES_LEARNS_MANIM.md`](docs/HERMES_LEARNS_MANIM.md).
-
----
-
-## Reverse reasoning pipeline
-
-A normal text-to-code demo jumps from request to Python. Math-To-Manim takes the long way on purpose: it reasons backward from the final concept to the prerequisites, then walks forward through a teachable visual sequence.
-
-The code path is explicit in [`math_to_manim/pipeline/runner.py`](math_to_manim/pipeline/runner.py). `AnimationPipeline.generate()` runs a fixed stage chain: `IntentAgent`, `PrerequisiteGraphAgent`, `CurriculumAgent`, `MathAgent`, `StoryboardAgent`, `SceneSpecAgent`, `ManimCodeAgent`, `StaticReviewAgent`, `RenderAgent`, `VideoReviewAgent`, and `PublisherAgent`.
-
-| Stage | Why it exists | Artifact |
-| --- | --- | --- |
-| Intent | Clarify what the learner is really asking. | `intent.json` |
-| Reverse prerequisites | Build the knowledge graph needed before the target idea. | `knowledge_graph.json` |
-| Curriculum | Turn the graph into a teachable order. | `curriculum.json` |
-| Math packet | Select definitions, equations, assumptions, and examples. | `math_packet.json` |
-| Storyboard | Decide the screen beats before code exists. | `storyboard.json` |
-| Scene spec | Compile the visual plan into Manim objects, animations, timing, and camera notes. | `scene_spec.json` |
-| Code, validation, render, review | Generate runnable Manim, gate it with static checks, render when allowed, and package the evidence. | `generated_scene.py`, reports, manifest |
-
-<p align="center">
-  <img src="docs/assets/render-repair-loop.svg" alt="Render validation and bounded repair loop diagram showing static review, render skip, Manim subprocess, repair from frozen scene spec, video review, and publisher package" width="100%" />
-</p>
-
-That gives every run a memory: JSON contracts, generated code, render results, review notes, and a manifest. The output is not just a video; it is an inspectable path from **question** to **understanding** to **animation**.
-
-For current editable-video status and the planned prompt/spec/code edit loop, see the [roadmap](docs/ROADMAP.md).
 
 ---
 
@@ -309,9 +387,24 @@ Equivalent module form:
 python -m math_to_manim.cli generate "Explain why derivatives are slopes" --deterministic --no-render
 ```
 
+The Mythos harness has the same rehearsal mode: `python -m mythos.harness "the heat equation" --offline`.
+
 ### 3. Generate with model calls
 
-Set an OpenAI key and choose a model if desired:
+The Fable 5 path needs only a logged-in Claude CLI — the defaults already point at `claude-fable-5`:
+
+```bash
+python -m mythos.harness "Explain Fourier epicycles as rotating vectors" --render -q l
+```
+
+Override the backend if you want:
+
+```bash
+export M2M2_MYTHOS_MODEL="claude-fable-5"   # default
+export M2M2_MYTHOS_COMMAND="claude"          # default; "fugu-api" routes to Fugu Ultra
+```
+
+The legacy typed pipeline can also run on an OpenAI key:
 
 ```bash
 export OPENAI_API_KEY="sk-..."

@@ -41,9 +41,9 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--deterministic", action="store_true", help="Do not call model adapters")
     generate.add_argument(
         "--codegen-provider",
-        choices=["openai-agents", "codex-cli"],
+        choices=["openai-agents", "codex-cli", "mythos-cli", "fugu-api"],
         default=None,
-        help="Provider for Manim codegen/repair stages; codex-cli uses local Codex subscription login",
+        help="Provider for Manim codegen/repair stages; mythos-cli uses Claude Fable 5 via the Claude CLI by default (fugu-api routes to Fugu Ultra via FUGU_API_KEY)",
     )
     generate.add_argument("--codex-full-auto", action="store_true", help="Pass --full-auto to codex exec")
     generate.add_argument("--json", action="store_true", help="Print the full AnimationPackage JSON")

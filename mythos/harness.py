@@ -1,9 +1,9 @@
-"""Mythos harness: the 6-agent reasoning chain, driven through Claude CLI.
+"""Mythos harness: the 6-agent reasoning chain, driven through Claude Fable 5.
 
 The agent charters live in ``.claude/agents/*.md`` — the exact files Claude
 Code discovers natively for interactive use. This harness reads those same
-charters and drives them headlessly, so interactive sessions and automated
-runs share one source of truth.
+charters and drives them headlessly through the configured model backend, so
+interactive sessions and automated runs share one source of truth.
 
 Chain:
     intent -> cartographer -> curriculum -> math-director
@@ -15,7 +15,7 @@ python block. Artifacts land in ``runs/mythos/<timestamp>/``.
 
 Usage (from repo root):
     python -m mythos.harness "explain quantum field theory" --render -q m
-    python -m mythos.harness "the heat equation" --offline      # no CLI needed
+    python -m mythos.harness "the heat equation" --offline      # no API needed
 """
 
 from __future__ import annotations
@@ -35,8 +35,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from math_to_manim.providers.fugu_api import call_fugu_chat, fugu_base_url_from_env  # noqa: E402
 from math_to_manim.providers.mythos_cli import (  # noqa: E402
     CINEMATIC_CHARTER,
+    FUGU_API_COMMANDS,
     _extract_json_object,
     _resolve_command,
 )
@@ -82,10 +84,18 @@ class MythosHarness:
         self.runs_dir = runs_dir or (REPO_ROOT / "runs" / "mythos")
 
     # ------------------------------------------------------------------ #
-    # Claude CLI plumbing                                                  #
+    # Model plumbing                                                       #
     # ------------------------------------------------------------------ #
 
-    def _claude(self, prompt: str, *, system_extra: str | None = None) -> str:
+    def _model(self, prompt: str, *, system_extra: str | None = None) -> str:
+        if self.command in FUGU_API_COMMANDS:
+            return call_fugu_chat(
+                prompt,
+                system_prompt=system_extra,
+                model=self.model,
+                base_url=fugu_base_url_from_env(),
+                timeout=self.timeout,
+            )
         cmd = [
             _resolve_command(self.command),
             "-p",
@@ -100,7 +110,8 @@ class MythosHarness:
         )
         if completed.returncode != 0:
             raise RuntimeError(
-                f"claude CLI failed (exit {completed.returncode})\n"
+                f"Mythos model command failed (exit {completed.returncode})\n"
+                f"command: {cmd[0]}\n"
                 f"stderr:\n{completed.stderr[-4000:]}"
             )
         return completed.stdout
@@ -159,7 +170,7 @@ class MythosHarness:
                     f"{charter}\n\nINPUT ARTIFACT JSON:\n"
                     f"{json.dumps(artifact, indent=2)}{JSON_CONTRACT}"
                 )
-                raw = self._claude(stage_prompt, system_extra=CINEMATIC_CHARTER)
+                raw = self._model(stage_prompt, system_extra=CINEMATIC_CHARTER)
                 (run_dir / f"{artifact_name.split('.')[0]}.raw.txt").write_text(
                     raw, encoding="utf-8")
                 artifact = _extract_json_object(raw)
@@ -224,7 +235,7 @@ class MythosHarness:
                 "subclass. Respond with exactly one fenced python block and nothing\n"
                 "else.\n\nDOSSIER JSON:\n" + json.dumps(dossier, indent=2)
             )
-            raw = self._claude(codegen_prompt, system_extra=CINEMATIC_CHARTER)
+            raw = self._model(codegen_prompt, system_extra=CINEMATIC_CHARTER)
             (run_dir / "07_codegen.raw.txt").write_text(raw, encoding="utf-8")
             code = _extract_python_block(raw)
         code_path = run_dir / "mythos_scene.py"
@@ -266,7 +277,7 @@ class MythosHarness:
             f"CURRENT FILE:\n{code_path.read_text(encoding='utf-8')}\n\n"
             f"FAILURE OUTPUT (tail):\n{failure[-8000:]}"
         )
-        raw = self._claude(prompt, system_extra=CINEMATIC_CHARTER)
+        raw = self._model(prompt, system_extra=CINEMATIC_CHARTER)
         (run_dir / f"repair_{attempt}.raw.txt").write_text(raw, encoding="utf-8")
         code = _extract_python_block(raw)
         code_path.write_text(code, encoding="utf-8")
@@ -353,7 +364,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--render", action="store_true", help="Render after codegen")
     parser.add_argument("-q", "--quality", default="l", choices=list("lmhpk"))
     parser.add_argument("--model", default="claude-fable-5")
-    parser.add_argument("--command", default="claude", help="Claude CLI executable")
+    parser.add_argument("--command", default="claude", help="Model backend: claude (default), fugu-api, or another CLI executable")
     parser.add_argument("--timeout", type=float, default=900.0)
     parser.add_argument("--offline", action="store_true",
                         help="Deterministic artifacts; no CLI calls")

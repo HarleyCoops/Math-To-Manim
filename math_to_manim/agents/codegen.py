@@ -14,7 +14,7 @@ class ManimCodeAgent(StageAgent[ManimSceneSpec, GeneratedCode]):
     name = "codegen"
 
     def run(self, spec: ManimSceneSpec) -> GeneratedCode:
-        if self.config.codegen_provider in {"mythos-cli", "claude-cli"} and not self.config.deterministic:
+        if self.config.codegen_provider in {"mythos-cli", "fugu-api", "claude-cli"} and not self.config.deterministic:
             return MythosCliProvider(self.config).generate_code(spec)
 
         if self.config.codegen_provider == "codex-cli" and not self.config.deterministic:
@@ -65,7 +65,7 @@ class ManimCodeAgent(StageAgent[ManimSceneSpec, GeneratedCode]):
 
         if self.config.deterministic:
             return generated
-        if self.config.codegen_provider in {"mythos-cli", "claude-cli"}:
+        if self.config.codegen_provider in {"mythos-cli", "fugu-api", "claude-cli"}:
             return MythosCliProvider(self.config).repair_code(spec, generated, failure)
         if self.config.codegen_provider == "codex-cli":
             return CodexCliProvider(self.config).repair_code(spec, generated, failure)
