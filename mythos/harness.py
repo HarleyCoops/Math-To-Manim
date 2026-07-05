@@ -96,18 +96,28 @@ class MythosHarness:
                 base_url=fugu_base_url_from_env(),
                 timeout=self.timeout,
             )
-        cmd = [
-            _resolve_command(self.command),
-            "-p",
-            "--output-format", "text",
-            "--model", self.model,
-        ]
-        if system_extra:
-            cmd += ["--append-system-prompt", system_extra]
-        completed = subprocess.run(
-            cmd, input=prompt, text=True, capture_output=True,
-            timeout=self.timeout, check=False,
-        )
+        resolved = _resolve_command(self.command)
+        if "codex" in Path(self.command).name.lower():
+            # Codex OAuth backend: prompt on stdin, system extra folded in.
+            cmd = [resolved, "exec", "--model", self.model, "-"]
+            payload = f"{system_extra}\n\n{prompt}" if system_extra else prompt
+            completed = subprocess.run(
+                cmd, input=payload, text=True, capture_output=True,
+                timeout=self.timeout, check=False,
+            )
+        else:
+            cmd = [
+                resolved,
+                "-p",
+                "--output-format", "text",
+                "--model", self.model,
+            ]
+            if system_extra:
+                cmd += ["--append-system-prompt", system_extra]
+            completed = subprocess.run(
+                cmd, input=prompt, text=True, capture_output=True,
+                timeout=self.timeout, check=False,
+            )
         if completed.returncode != 0:
             raise RuntimeError(
                 f"Mythos model command failed (exit {completed.returncode})\n"

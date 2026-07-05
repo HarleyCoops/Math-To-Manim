@@ -74,6 +74,7 @@ class CodexCliProvider:
         cmd = [command, "exec"]
         if self.config.codex_full_auto:
             cmd.append("--full-auto")
+        cmd += ["--model", self.config.model]
         cmd.append("-")
         try:
             completed = self._runner(

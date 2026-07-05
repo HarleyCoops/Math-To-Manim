@@ -115,7 +115,7 @@ def test_codex_command_resolution_prefers_windows_cmd_shim(monkeypatch: pytest.M
     assert codex_cli._resolve_codex_command("codex") == "C:/npm/codex.cmd"
 
 
-def test_mythos_provider_defaults_to_fugu_api(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_mythos_provider_routes_fugu_api_when_configured(monkeypatch: pytest.MonkeyPatch) -> None:
     from math_to_manim.providers.mythos_cli import MythosCliProvider
 
     payload = {
@@ -132,7 +132,13 @@ def test_mythos_provider_defaults_to_fugu_api(monkeypatch: pytest.MonkeyPatch) -
 
     monkeypatch.setattr("math_to_manim.providers.mythos_cli.call_fugu_chat", fake_call)
     monkeypatch.setattr("math_to_manim.providers.mythos_cli.fugu_base_url_from_env", lambda: "https://example.test/v1")
-    provider = MythosCliProvider(config=RuntimeConfig(codegen_provider="fugu-api"))
+    provider = MythosCliProvider(
+        config=RuntimeConfig(
+            codegen_provider="fugu-api",
+            mythos_command="fugu-api",
+            mythos_model="fugu-ultra",
+        )
+    )
 
     generated = provider.generate_code(ManimSceneSpec(scene_name="DemoScene"))
 
@@ -142,7 +148,7 @@ def test_mythos_provider_defaults_to_fugu_api(monkeypatch: pytest.MonkeyPatch) -
     assert generated.metadata["model"] == "fugu-ultra"
     assert calls[0]["model"] == "fugu-ultra"
     assert calls[0]["base_url"] == "https://example.test/v1"
-    assert "Fugu Ultra Mythos" in calls[0]["prompt"]
+    assert "Mythos" in calls[0]["prompt"]
 
 
 def test_manim_code_agent_routes_codegen_to_fugu_provider(monkeypatch: pytest.MonkeyPatch) -> None:

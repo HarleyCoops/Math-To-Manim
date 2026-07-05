@@ -15,7 +15,7 @@ def test_runtime_config_loads_local_env_file(tmp_path, monkeypatch) -> None:
     assert str(config.runs_dir) == "custom-runs"
 
 
-def test_runtime_config_defaults_mythos_to_fugu(tmp_path, monkeypatch) -> None:
+def test_runtime_config_defaults_mythos_to_claude_fable(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     monkeypatch.delenv("M2M2_MYTHOS_COMMAND", raising=False)
     monkeypatch.delenv("M2M2_MYTHOS_MODEL", raising=False)
@@ -23,15 +23,16 @@ def test_runtime_config_defaults_mythos_to_fugu(tmp_path, monkeypatch) -> None:
 
     config = RuntimeConfig.from_env()
 
-    assert config.mythos_command == "fugu-api"
-    assert config.mythos_model == "fugu-ultra"
+    assert config.mythos_command == "claude"
+    assert config.mythos_model == "claude-fable-5"
 
 
-def test_runtime_config_reads_fugu_model_alias(tmp_path, monkeypatch) -> None:
+def test_runtime_config_reads_mythos_backend_env(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
-    monkeypatch.delenv("M2M2_MYTHOS_MODEL", raising=False)
-    monkeypatch.setenv("FUGU_MODEL", "fugu-custom")
+    monkeypatch.setenv("M2M2_MYTHOS_COMMAND", "fugu-api")
+    monkeypatch.setenv("M2M2_MYTHOS_MODEL", "fugu-ultra")
 
     config = RuntimeConfig.from_env()
 
-    assert config.mythos_model == "fugu-custom"
+    assert config.mythos_command == "fugu-api"
+    assert config.mythos_model == "fugu-ultra"

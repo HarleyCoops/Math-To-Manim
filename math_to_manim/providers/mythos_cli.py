@@ -160,7 +160,7 @@ class MythosCliProvider:
 
     def _build_codegen_prompt(self, spec: ManimSceneSpec) -> str:
         return (
-            "You are the Math-To-Manim code generation provider running on Fugu Ultra Mythos.\n"
+            "You are the Math-To-Manim code generation provider running on the Mythos baseline model.\n"
             "Return only valid JSON matching the GeneratedCode artifact shape. No Markdown fences.\n"
             "Required JSON keys: scene_name, code, dependencies, metadata.\n"
             "The code must be complete, runnable Manim Community Edition 0.19 Python that\n"
@@ -174,7 +174,7 @@ class MythosCliProvider:
 
     def _build_repair_prompt(self, spec: ManimSceneSpec, generated: GeneratedCode, failure: str) -> str:
         return (
-            "You are the Math-To-Manim repair provider running on Fugu Ultra Mythos.\n"
+            "You are the Math-To-Manim repair provider running on the Mythos baseline model.\n"
             "Return only valid JSON matching the GeneratedCode artifact shape (keys: \n"
             "scene_name, code, dependencies, metadata). Repair the scene below using the\n"
             "failure output. Make surgical fixes; preserve the cinematic structure, the\n"
