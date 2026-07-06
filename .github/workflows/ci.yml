@@ -30,43 +30,42 @@ jobs:
       - name: Run unit tests
         run: python -m pytest -q
 
+      - name: Compile package
+        run: python -m compileall -q mythos
+
       - name: Check CLI help
         run: |
-          python -m math_to_manim.cli --help
-          python -m math_to_manim.cli generate --help
-          python -m math_to_manim.cli recover-render --help
-          python -m math_to_manim.cli eval-suite --help
+          math-to-manim --version
+          math-to-manim run --help
+          math-to-manim serve-api --help
+          math-to-manim serve-mcp --help
+          math-to-manim runs --help
 
-      - name: Compile package
-        run: python -m compileall -q math_to_manim
+      - name: Offline chain smoke (no model calls)
+        run: |
+          math-to-manim run "Explain why derivatives are slopes" --offline
+          math-to-manim runs --limit 3
 
-      - name: Parse eval YAML
+      - name: API boots and answers /health
         run: |
           python - <<'PY'
-          from pathlib import Path
-          import yaml
-
-          for path in Path("evals").glob("*.yaml"):
-              payload = yaml.safe_load(path.read_text(encoding="utf-8"))
-              if not isinstance(payload, dict):
-                  raise SystemExit(f"{path} did not parse to a mapping")
-              if not payload.get("cases"):
-                  raise SystemExit(f"{path} has no cases")
+          from fastapi.testclient import TestClient
+          from mythos.api import app
+          body = TestClient(app).get("/health").json()
+          assert body["status"] == "ok", body
+          print("health:", body)
           PY
 
-      - name: Run deterministic pipeline smoke
-        run: >
-          python -m math_to_manim.cli generate
-          "Explain why derivatives are slopes"
-          --deterministic
-          --no-render
-          --runs-dir /tmp/m2m2-smoke
-
-      - name: Run prompt eval suite
-        run: >
-          python -m math_to_manim.cli eval-suite
-          evals/prompt_suite.yaml
-          --runs-dir /tmp/m2m2-evals
+      - name: MCP server registers all tools
+        run: |
+          python - <<'PY'
+          import asyncio
+          from mythos.mcp_server import mcp
+          tools = asyncio.run(mcp.list_tools())
+          names = sorted(t.name for t in tools)
+          assert len(names) >= 7, names
+          print("tools:", names)
+          PY
 
   render-smoke:
     if: github.event_name == 'workflow_dispatch'
@@ -91,10 +90,5 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev,render]"
 
-      - name: Run low-quality render smoke
-        run: >
-          python -m math_to_manim.cli generate
-          "Explain why derivatives are slopes"
-          --deterministic
-          --quality l
-          --runs-dir /tmp/m2m2-render-smoke
+      - name: Offline chain with a real low-quality render
+        run: math-to-manim run "Explain why derivatives are slopes" --offline --render -q l
