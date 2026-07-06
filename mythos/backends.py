@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import time
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -32,6 +33,10 @@ FUGU_API_KEY_ENV_CANDIDATES = ("FUGU_API_KEY", "SAKANA_API_KEY", "SAKAA_API_KEY"
 
 #: Windows CreateProcess command lines top out near 32k chars; leave headroom.
 _ARGV_PROMPT_LIMIT = 28000
+
+#: Access-violation exit codes from a flaky Windows CLI, worth retrying.
+_CRASH_EXIT_CODES = {3221225477, -1073741819}
+_CLI_CRASH_RETRIES = 3
 
 
 def run_model(
@@ -75,11 +80,17 @@ def run_model(
         # A stray ANTHROPIC_API_KEY in the environment would silently
         # override that login (and 401 if stale), so scrub it.
         env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}
-        completed = subprocess.run(
-            cmd, input=stdin_prompt, text=True, capture_output=True,
-            encoding="utf-8", errors="replace", env=env,
-            timeout=timeout, check=False,
-        )
+        # The Windows Claude CLI intermittently dies with an access
+        # violation (0xC0000005); retry those crashes a few times.
+        for attempt in range(_CLI_CRASH_RETRIES + 1):
+            completed = subprocess.run(
+                cmd, input=stdin_prompt, text=True, capture_output=True,
+                encoding="utf-8", errors="replace", env=env,
+                timeout=timeout, check=False,
+            )
+            if completed.returncode not in _CRASH_EXIT_CODES:
+                break
+            time.sleep(1.5 * (attempt + 1))
     if completed.returncode != 0:
         raise RuntimeError(
             f"Mythos model command failed (exit {completed.returncode})\n"
