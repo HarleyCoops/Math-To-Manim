@@ -14,6 +14,9 @@ dist/
 *.egg-info/
 runs/
 .tmp-runs/
+# Local-only experiment graveyard (never tracked).
+archive/local/
+uv.lock
 media/
 output/
 artifacts/
