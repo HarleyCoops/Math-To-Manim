@@ -31,6 +31,25 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 
 ---
 
+## The v1.1 house-style films
+
+Two new studies rendered by the engine's own cinematography grammar
+([`mythos/cinematography.py`](../../mythos/cinematography.py)) for the v1.1
+release — the scenes live in [`examples/mythos/`](../../examples/mythos/).
+
+<table>
+<tr>
+<td width="50%"><img src="assets/reverse-reasoning-tree.gif" alt="Reverse reasoning tree" /></td>
+<td width="50%"><img src="assets/mythos-grammar-reel.gif" alt="Mythos grammar reel" /></td>
+</tr>
+<tr>
+<td><b>The reverse reasoning tree</b><br />The repo's thesis, filmed: a question decomposes backward into glowing prerequisite constellations, bottoms out at known ground, then a gold pulse walks it forward as a curriculum — before tilting into 3D.</td>
+<td><b>The grammar reel</b><br />The Cinematic Charter beat by beat: headline before symbols, camera flying into each term of E = mc², captions in plain English, then a rippled energy surface as the 3D set piece.</td>
+</tr>
+</table>
+
+---
+
 ## Featured reel
 
 <table>
