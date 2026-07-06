@@ -1,10 +1,18 @@
-"""Mythos layer: Claude Mythos-driven cinematic Manim generation.
+"""Math-To-Manim: ask a question -> get a freakin' movie.
 
-Additive layer on top of the Math-To-Manim typed pipeline. Nothing here
-modifies the legacy codex flow; it provides:
+The Mythos engine turns one sentence into a cinematic Manim film through a
+6-agent reasoning chain driven by Claude Fable 5:
 
-- ``mythos.cinematography``: the visual grammar (zooms, headlines, term tours)
-- ``mythos.harness``: a 6-stage reasoning chain driven through the Claude CLI
+- ``mythos.harness``: the chain runner (intent -> ... -> scene-composer ->
+  codegen -> verify -> render -> repair)
+- ``mythos.cinematography``: the visual grammar (headlines, term zooms,
+  pull-backs, glows — the Mythos house style)
+- ``mythos.charter``: the Cinematic Charter and shared parsing utilities
+- ``mythos.backends``: model backends (Claude CLI, Codex CLI, OpenAI-compatible)
+- ``mythos.service``: job orchestration shared by every front door
+- ``mythos.api``: the REST API (FastAPI)
+- ``mythos.mcp_server``: the MCP server (FastMCP)
+- ``mythos.cli``: the ``math-to-manim`` command
 """
 
-__version__ = "0.1.0"
+__version__ = "1.1.0"

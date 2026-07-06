@@ -1,9 +1,10 @@
 """Mythos harness: the 6-agent reasoning chain, driven through Claude Fable 5.
 
-The agent charters live in ``.claude/agents/*.md`` — the exact files Claude
-Code discovers natively for interactive use. This harness reads those same
-charters and drives them headlessly through the configured model backend, so
-interactive sessions and automated runs share one source of truth.
+The agent charters live in ``mythos/agents/*.md`` (mirrored to
+``.claude/agents/`` for native Claude Code use). This harness reads those
+same charters and drives them headlessly through the configured model
+backend, so interactive sessions and automated runs share one source of
+truth.
 
 Chain:
     intent -> cartographer -> curriculum -> math-director
@@ -11,7 +12,7 @@ Chain:
 
 Each reasoning stage receives the prior artifact JSON and must return one
 JSON object. Codegen returns a complete Manim CE file inside one fenced
-python block. Artifacts land in ``runs/mythos/<timestamp>/``.
+python block. Artifacts land in ``runs/mythos/<timestamp>-<slug>/``.
 
 Usage (from repo root):
     python -m mythos.harness "explain quantum field theory" --render -q m
@@ -22,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import py_compile
 import re
 import shutil
@@ -35,16 +37,23 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from math_to_manim.providers.fugu_api import call_fugu_chat, fugu_base_url_from_env  # noqa: E402
-from math_to_manim.providers.mythos_cli import (  # noqa: E402
+from mythos.backends import (  # noqa: E402
+    DEFAULT_COMMAND,
+    DEFAULT_MODEL,
+    DEFAULT_TIMEOUT,
+    run_model,
+)
+from mythos.charter import (  # noqa: E402
     CINEMATIC_CHARTER,
-    FUGU_API_COMMANDS,
-    _extract_json_object,
-    _resolve_command,
+    JSON_CONTRACT,
+    extract_json_object,
+    extract_python_block,
+    find_scene_class,
+    load_env_file,
 )
 
 # Charter search order: user-local Claude Code dir first, then the tracked
-# canonical copies that ship with the repo (.claude/ is gitignored here).
+# canonical copies that ship with the repo.
 AGENT_DIRS = [
     REPO_ROOT / ".claude" / "agents",
     REPO_ROOT / "mythos" / "agents",
@@ -60,20 +69,26 @@ STAGES: list[tuple[str, str, str]] = [
     ("scene-composer", "mythos-scene-composer.md", "06_scene_spec.json"),
 ]
 
-JSON_CONTRACT = (
-    "\n\nOUTPUT CONTRACT: Respond with exactly one JSON object and nothing else — "
-    "no Markdown fences, no prose before or after. Be generous and verbose INSIDE "
-    "the JSON fields; the next agent in the chain feeds on detail."
-)
+_LINT_RULES = [
+    (r"self\.camera\.animate",
+     "never animate self.camera in a ThreeDScene; use move_camera"),
+]
+
+
+def default_runs_dir() -> Path:
+    load_env_file()
+    return Path(os.getenv("M2M2_RUNS_DIR", str(REPO_ROOT / "runs"))) / "mythos"
 
 
 class MythosHarness:
+    """Runs the full chain: six reasoning stages, codegen, verify, render, repair."""
+
     def __init__(
         self,
         *,
-        command: str = "claude",
-        model: str = "claude-fable-5",
-        timeout: float = 900.0,
+        command: str = DEFAULT_COMMAND,
+        model: str = DEFAULT_MODEL,
+        timeout: float = DEFAULT_TIMEOUT,
         offline: bool = False,
         runs_dir: Path | None = None,
     ):
@@ -81,53 +96,23 @@ class MythosHarness:
         self.model = model
         self.timeout = timeout
         self.offline = offline
-        self.runs_dir = runs_dir or (REPO_ROOT / "runs" / "mythos")
+        self.runs_dir = runs_dir or default_runs_dir()
 
     # ------------------------------------------------------------------ #
-    # Model plumbing                                                       #
+    # Model plumbing                                                      #
     # ------------------------------------------------------------------ #
 
     def _model(self, prompt: str, *, system_extra: str | None = None) -> str:
-        if self.command in FUGU_API_COMMANDS:
-            return call_fugu_chat(
-                prompt,
-                system_prompt=system_extra,
-                model=self.model,
-                base_url=fugu_base_url_from_env(),
-                timeout=self.timeout,
-            )
-        resolved = _resolve_command(self.command)
-        if "codex" in Path(self.command).name.lower():
-            # Codex OAuth backend: prompt on stdin, system extra folded in.
-            cmd = [resolved, "exec", "--model", self.model, "-"]
-            payload = f"{system_extra}\n\n{prompt}" if system_extra else prompt
-            completed = subprocess.run(
-                cmd, input=payload, text=True, capture_output=True,
-                timeout=self.timeout, check=False,
-            )
-        else:
-            cmd = [
-                resolved,
-                "-p",
-                "--output-format", "text",
-                "--model", self.model,
-            ]
-            if system_extra:
-                cmd += ["--append-system-prompt", system_extra]
-            completed = subprocess.run(
-                cmd, input=prompt, text=True, capture_output=True,
-                timeout=self.timeout, check=False,
-            )
-        if completed.returncode != 0:
-            raise RuntimeError(
-                f"Mythos model command failed (exit {completed.returncode})\n"
-                f"command: {cmd[0]}\n"
-                f"stderr:\n{completed.stderr[-4000:]}"
-            )
-        return completed.stdout
+        return run_model(
+            prompt,
+            system_extra=system_extra,
+            command=self.command,
+            model=self.model,
+            timeout=self.timeout,
+        )
 
     # ------------------------------------------------------------------ #
-    # Charters                                                             #
+    # Charters                                                            #
     # ------------------------------------------------------------------ #
 
     @staticmethod
@@ -149,7 +134,7 @@ class MythosHarness:
         return text.strip()
 
     # ------------------------------------------------------------------ #
-    # Run                                                                  #
+    # Run                                                                 #
     # ------------------------------------------------------------------ #
 
     def run(
@@ -162,6 +147,7 @@ class MythosHarness:
     ) -> dict:
         run_dir = self._create_run_dir(prompt)
         manifest: dict = {
+            "run_id": run_dir.name,
             "prompt": prompt,
             "model": self.model,
             "offline": self.offline,
@@ -183,17 +169,19 @@ class MythosHarness:
                 raw = self._model(stage_prompt, system_extra=CINEMATIC_CHARTER)
                 (run_dir / f"{artifact_name.split('.')[0]}.raw.txt").write_text(
                     raw, encoding="utf-8")
-                artifact = _extract_json_object(raw)
+                artifact = extract_json_object(raw)
             (run_dir / artifact_name).write_text(
                 json.dumps(artifact, indent=2), encoding="utf-8")
             manifest["stages"].append(
                 {"stage": slug, "artifact": artifact_name,
                  "seconds": round(time.time() - started, 2)})
+            self._write_manifest(run_dir, manifest)
             print(f"  [mythos] {slug:<16} -> {artifact_name}")
 
         code_path, scene_name = self._codegen(run_dir, prompt, artifact, manifest)
         ok, failure = self._verify(code_path)
-        manifest["static_check"] = {"passed": ok, "detail": failure[:2000] if failure else None}
+        manifest["static_check"] = {
+            "passed": ok, "detail": failure[:2000] if failure else None}
 
         if render:
             attempt = 0
@@ -210,18 +198,19 @@ class MythosHarness:
                 attempt += 1
                 print(f"  [mythos] repair attempt {attempt}")
                 code_path, scene_name = self._repair(
-                    run_dir, code_path, failure or "unknown failure", attempt, manifest)
+                    run_dir, code_path, failure or "unknown failure",
+                    attempt, manifest)
                 ok, failure = self._verify(code_path)
 
         manifest["scene_file"] = str(code_path)
         manifest["scene_name"] = scene_name
-        (run_dir / "manifest.json").write_text(
-            json.dumps(manifest, indent=2), encoding="utf-8")
+        manifest["completed_utc"] = datetime.now(timezone.utc).isoformat()
+        self._write_manifest(run_dir, manifest)
         print(f"  [mythos] run complete -> {run_dir}")
         return manifest
 
     # ------------------------------------------------------------------ #
-    # Codegen / verify / render / repair                                   #
+    # Codegen / verify / render / repair                                  #
     # ------------------------------------------------------------------ #
 
     def _codegen(self, run_dir: Path, prompt: str, scene_spec: dict,
@@ -237,7 +226,7 @@ class MythosHarness:
             codegen_prompt = (
                 "You are the Mythos scene composer's hands: write the film.\n"
                 "Using the full dossier below (intent through scene spec), write ONE\n"
-                "complete, runnable Manim Community Edition 0.19 Python file that\n"
+                "complete, runnable Manim Community Edition Python file that\n"
                 "implements the shot list with the full Cinematic Charter — headlines\n"
                 "before symbols, camera zooms into terms, plain-language captions,\n"
                 "Mythos palette. The file must be self-contained (inline any helpers),\n"
@@ -247,13 +236,14 @@ class MythosHarness:
             )
             raw = self._model(codegen_prompt, system_extra=CINEMATIC_CHARTER)
             (run_dir / "07_codegen.raw.txt").write_text(raw, encoding="utf-8")
-            code = _extract_python_block(raw)
+            code = extract_python_block(raw)
         code_path = run_dir / "mythos_scene.py"
         code_path.write_text(code, encoding="utf-8")
-        scene_name = _find_scene_class(code)
+        scene_name = find_scene_class(code)
         manifest["stages"].append(
             {"stage": "codegen", "artifact": "mythos_scene.py",
              "seconds": round(time.time() - started, 2)})
+        self._write_manifest(run_dir, manifest)
         print(f"  [mythos] codegen          -> mythos_scene.py ({scene_name})")
         return code_path, scene_name
 
@@ -269,7 +259,8 @@ class MythosHarness:
                 return False, f"charter lint: {message}"
         return True, None
 
-    def _render(self, code_path: Path, scene_name: str, quality: str) -> tuple[int, str]:
+    def _render(self, code_path: Path, scene_name: str,
+                quality: str) -> tuple[int, str]:
         manim = shutil.which("manim") or "manim"
         cmd = [manim, f"-q{quality}", str(code_path), scene_name]
         print(f"  [mythos] rendering: {' '.join(cmd)}")
@@ -282,18 +273,28 @@ class MythosHarness:
         prompt = (
             "The Manim scene below failed. Repair it surgically: preserve the\n"
             "cinematic structure, class name, and Charter rules; fix only what is\n"
-            "broken. Manim CE 0.19 APIs only. Respond with exactly one fenced\n"
+            "broken. Manim CE APIs only. Respond with exactly one fenced\n"
             "python block containing the COMPLETE corrected file.\n\n"
             f"CURRENT FILE:\n{code_path.read_text(encoding='utf-8')}\n\n"
             f"FAILURE OUTPUT (tail):\n{failure[-8000:]}"
         )
         raw = self._model(prompt, system_extra=CINEMATIC_CHARTER)
         (run_dir / f"repair_{attempt}.raw.txt").write_text(raw, encoding="utf-8")
-        code = _extract_python_block(raw)
+        code = extract_python_block(raw)
         code_path.write_text(code, encoding="utf-8")
         manifest["stages"].append({"stage": f"repair_{attempt}",
                                    "artifact": code_path.name})
-        return code_path, _find_scene_class(code)
+        self._write_manifest(run_dir, manifest)
+        return code_path, find_scene_class(code)
+
+    # ------------------------------------------------------------------ #
+    # Bookkeeping                                                         #
+    # ------------------------------------------------------------------ #
+
+    @staticmethod
+    def _write_manifest(run_dir: Path, manifest: dict) -> None:
+        (run_dir / "manifest.json").write_text(
+            json.dumps(manifest, indent=2), encoding="utf-8")
 
     def _create_run_dir(self, prompt: str) -> Path:
         slug = re.sub(r"[^a-z0-9]+", "-", prompt.lower()).strip("-")[:48] or "run"
@@ -304,38 +305,13 @@ class MythosHarness:
 
 
 # ---------------------------------------------------------------------- #
-# Helpers                                                                 #
+# Offline mode                                                            #
 # ---------------------------------------------------------------------- #
-
-_LINT_RULES = [
-    (r"self\.camera\.animate", "never animate self.camera in a ThreeDScene; use move_camera"),
-    (r"from\s+manim\s+import\s+\*\s*$|from manim import \*",
-     None),  # presence checked below via inverse
-]
-# Keep only real rules (the import check is handled separately).
-_LINT_RULES = [r for r in _LINT_RULES if r[1] is not None]
-
-
-def _extract_python_block(text: str) -> str:
-    match = re.search(r"```(?:python|py)?\s*\n(.*?)```", text, flags=re.DOTALL)
-    if match:
-        return match.group(1).strip() + "\n"
-    stripped = text.strip()
-    if stripped.startswith(("from manim", "import", '"""', "#")):
-        return stripped + "\n"
-    raise RuntimeError(f"No python block found in CLI output:\n{text[:800]}")
-
-
-def _find_scene_class(code: str) -> str:
-    match = re.search(r"class\s+(\w+)\s*\(\s*(?:ThreeDScene|MovingCameraScene|Scene)\b", code)
-    if not match:
-        raise RuntimeError("Generated code defines no Scene subclass")
-    return match.group(1)
-
 
 def _offline_artifact(slug: str, prompt: str, prior: dict) -> dict:
     """Deterministic stand-ins so the chain runs without a CLI login."""
-    base = {"stage": slug, "topic": prompt, "offline": True, "prior_keys": sorted(prior)}
+    base = {"stage": slug, "topic": prompt, "offline": True,
+            "prior_keys": sorted(prior)}
     if slug == "cinematographer":
         base["shots"] = [
             {"beat": 1, "move": "HEADLINE", "text": "A deterministic rehearsal."},
@@ -373,9 +349,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("prompt", help="What should the film explain?")
     parser.add_argument("--render", action="store_true", help="Render after codegen")
     parser.add_argument("-q", "--quality", default="l", choices=list("lmhpk"))
-    parser.add_argument("--model", default="claude-fable-5")
-    parser.add_argument("--command", default="claude", help="Model backend: claude (default), fugu-api, or another CLI executable")
-    parser.add_argument("--timeout", type=float, default=900.0)
+    parser.add_argument("--model", default=DEFAULT_MODEL)
+    parser.add_argument("--command", default=DEFAULT_COMMAND,
+                        help="Model backend: claude (default), fugu-api, "
+                             "or another CLI executable")
+    parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     parser.add_argument("--offline", action="store_true",
                         help="Deterministic artifacts; no CLI calls")
     parser.add_argument("--max-repairs", type=int, default=3)

@@ -3,38 +3,50 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "math-to-manim-codex"
-version = "0.1.0"
-description = "Codex/OpenAI Agents SDK pipeline for prompt-to-Manim educational animation."
+name = "math-to-manim"
+version = "1.1.0"
+description = "Ask a question -> get a freakin' movie. The Mythos 6-agent chain turns one sentence into a cinematic Manim film, with a REST API and MCP server."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Math-To-Manim contributors" }]
+authors = [{ name = "Christian H. Cooper" }]
+keywords = ["manim", "animation", "mathematics", "claude", "mcp", "agents"]
 dependencies = [
-  "openai-agents>=0.3.3",
-  "pydantic>=1.10,<3",
-  "pyyaml>=6",
+  "pydantic>=2,<3",
 ]
 
 [project.optional-dependencies]
 dev = [
   "pytest>=8",
+  "httpx>=0.27",
+  "fastapi>=0.110",
+  "uvicorn>=0.29",
+  "mcp>=1.2",
+]
+api = [
+  "fastapi>=0.110",
+  "uvicorn>=0.29",
+]
+mcp = [
+  "mcp>=1.2",
 ]
 render = [
   "manim>=0.19",
 ]
-web = [
-  "fastapi>=0.110",
-  "gradio>=4",
-  "uvicorn>=0.29",
-]
 
 [project.scripts]
-math-to-manim = "math_to_manim.cli:main"
-m2m2 = "math_to_manim.cli:main"
+math-to-manim = "mythos.cli:main"
+m2m = "mythos.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/HarleyCoops/Math-To-Manim"
+Repository = "https://github.com/HarleyCoops/Math-To-Manim"
 
 [tool.setuptools.packages.find]
-include = ["math_to_manim*"]
+include = ["mythos*"]
+
+[tool.setuptools.package-data]
+mythos = ["agents/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
