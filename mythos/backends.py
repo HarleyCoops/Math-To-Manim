@@ -30,6 +30,9 @@ FUGU_DEFAULT_BASE_URL = "https://api.sakana.ai/v1"
 FUGU_API_COMMANDS = {"fugu-api", "sakana-api", "sakaa-api"}
 FUGU_API_KEY_ENV_CANDIDATES = ("FUGU_API_KEY", "SAKANA_API_KEY", "SAKAA_API_KEY")
 
+#: Windows CreateProcess command lines top out near 32k chars; leave headroom.
+_ARGV_PROMPT_LIMIT = 28000
+
 
 def run_model(
     prompt: str,
@@ -55,14 +58,26 @@ def run_model(
         payload = f"{system_extra}\n\n{prompt}" if system_extra else prompt
         completed = subprocess.run(
             cmd, input=payload, text=True, capture_output=True,
+            encoding="utf-8", errors="replace",
             timeout=timeout, check=False,
         )
     else:
         cmd = [resolved, "-p", "--output-format", "text", "--model", model]
         if system_extra:
             cmd += ["--append-system-prompt", system_extra]
+        stdin_prompt: str | None = prompt
+        if os.name == "nt" and len(prompt) < _ARGV_PROMPT_LIMIT:
+            # The Windows Claude CLI can crash reading piped stdin; pass the
+            # prompt as an argument when it fits in the command line.
+            cmd.insert(2, prompt)
+            stdin_prompt = None
+        # This repo runs the chain on the Claude CLI's subscription login.
+        # A stray ANTHROPIC_API_KEY in the environment would silently
+        # override that login (and 401 if stale), so scrub it.
+        env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}
         completed = subprocess.run(
-            cmd, input=prompt, text=True, capture_output=True,
+            cmd, input=stdin_prompt, text=True, capture_output=True,
+            encoding="utf-8", errors="replace", env=env,
             timeout=timeout, check=False,
         )
     if completed.returncode != 0:
@@ -107,12 +122,33 @@ def call_fugu_chat(
     base_url: str,
     timeout: float,
 ) -> str:
-    """Call an OpenAI-compatible chat completion endpoint."""
+    """Call an OpenAI-compatible chat completion endpoint with Fugu keys."""
     api_key, env_name = fugu_api_key_from_env()
     if not api_key:
         names = ", ".join(FUGU_API_KEY_ENV_CANDIDATES)
         raise RuntimeError(f"No Fugu API key found. Set one of: {names}.")
+    return _call_openai_compatible(
+        prompt,
+        system_prompt=system_prompt,
+        model=model,
+        base_url=base_url,
+        timeout=timeout,
+        api_key=api_key,
+        key_env_name=env_name or "FUGU_API_KEY",
+    )
 
+
+def _call_openai_compatible(
+    prompt: str,
+    *,
+    system_prompt: str | None,
+    model: str,
+    base_url: str,
+    timeout: float,
+    api_key: str,
+    key_env_name: str,
+) -> str:
+    """POST to any OpenAI-compatible /chat/completions endpoint."""
     messages: list[dict[str, str]] = []
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
