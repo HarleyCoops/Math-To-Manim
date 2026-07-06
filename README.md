@@ -25,14 +25,10 @@
 <br />
 
 <p align="center">
-  <img src="docs/showcase/assets/associate-family-riso.png" alt="Plate VII: The Associate Family, a cream-paper risograph still of the half-turned minimal surface midway between helicoid and catenoid, in teal ink with vermilion registration marks" width="85%" />
+  <img src="docs/showcase/assets/associate-family-riso.gif" alt="Animated risograph study of the helicoid deforming isometrically into the catenoid through the associate family of minimal surfaces" width="85%" />
 </p>
 
 <p align="center"><em><strong>Plate VII: The Associate Family.</strong> A two-ink risograph study of the associate family of minimal surfaces: the helicoid deforms into the catenoid while intrinsic lengths stay preserved, turning isometry into visible motion.</em></p>
-
-<p align="center">
-  <img src="docs/showcase/assets/associate-family-riso.gif" alt="Animated risograph study of the helicoid deforming isometrically into the catenoid through the associate family of minimal surfaces" width="85%" />
-</p>
 
 <br />
 
