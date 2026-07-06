@@ -1,10 +1,10 @@
 <div align="center">
 
-<a href="https://www.star-history.com/#HarleyCoops/Math-To-Manim&Date">
+<a href="https://www.star-history.com/?repos=HarleyCoops%2FMath-To-Manim&type=date&legend=top-left">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HarleyCoops/Math-To-Manim&type=Date" width="100%" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=HarleyCoops/Math-To-Manim&type=date&theme=dark&legend=top-left&sealed_token=EjITEOSI8nKcGNkepdjUHZ8WTRNOw4dKGtyggkiM_yrNBnjxIr00U2Pgt5DqaUF8Qgx4-WIhM4WdOM2ipFiXTXOJxhJU87yp_iOKrGOHkaIBES1Wrpn1f7i_TMd8chdgnaa09DKge1DJ93Hwe4MmjX0YO1PpzSsDF9ebqWr0MDDTnpRzPNbPUvweMI00" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=HarleyCoops/Math-To-Manim&type=date&legend=top-left&sealed_token=EjITEOSI8nKcGNkepdjUHZ8WTRNOw4dKGtyggkiM_yrNBnjxIr00U2Pgt5DqaUF8Qgx4-WIhM4WdOM2ipFiXTXOJxhJU87yp_iOKrGOHkaIBES1Wrpn1f7i_TMd8chdgnaa09DKge1DJ93Hwe4MmjX0YO1PpzSsDF9ebqWr0MDDTnpRzPNbPUvweMI00" />
+    <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=HarleyCoops/Math-To-Manim&type=date&legend=top-left&sealed_token=EjITEOSI8nKcGNkepdjUHZ8WTRNOw4dKGtyggkiM_yrNBnjxIr00U2Pgt5DqaUF8Qgx4-WIhM4WdOM2ipFiXTXOJxhJU87yp_iOKrGOHkaIBES1Wrpn1f7i_TMd8chdgnaa09DKge1DJ93Hwe4MmjX0YO1PpzSsDF9ebqWr0MDDTnpRzPNbPUvweMI00" width="100%" />
   </picture>
 </a>
 
@@ -21,6 +21,18 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
 [Mythos engine](#the-mythos-engine) · [Reverse reasoning](#the-reverse-reasoning-tree) · [API](#the-api) · [MCP server](#the-mcp-server) · [Motion showcase](docs/showcase/README.md) · [Prime RL](docs/PRIME_INTELLECT_RL.md) · [Roadmap](docs/ROADMAP.md) · [Agent guide](AGENTS.md)
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/associate-family-riso.png" alt="Plate VII: The Associate Family, a cream-paper risograph still of the half-turned minimal surface midway between helicoid and catenoid, in teal ink with vermilion registration marks" width="85%" />
+</p>
+
+<p align="center"><em><strong>Plate VII: The Associate Family.</strong> A two-ink risograph study of the associate family of minimal surfaces: the helicoid deforms into the catenoid while intrinsic lengths stay preserved, turning isometry into visible motion.</em></p>
+
+<p align="center">
+  <img src="docs/showcase/assets/associate-family-riso.gif" alt="Animated risograph study of the helicoid deforming isometrically into the catenoid through the associate family of minimal surfaces" width="85%" />
+</p>
 
 <br />
 

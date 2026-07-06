@@ -27,4 +27,5 @@ artifacts/
 !docs/showcase/assets/*.gif
 *.png
 !docs/assets/*.png
+!docs/showcase/assets/*.png
 *.log
