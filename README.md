@@ -33,6 +33,14 @@
 <br />
 
 <p align="center">
+  <img src="docs/showcase/assets/blueprint-holonomy.gif" alt="DWG 001: Holonomy — a cyanotype blueprint sphere on Prussian-blue paper; an amber vector is parallel-transported around a geodesic octant and returns rotated 90 degrees" width="85%" />
+</p>
+
+<p align="center"><em><strong>DWG 001: Holonomy.</strong> A cyanotype blueprint that performs its own proof: one amber vector is slid — never turned — around a geodesic triangle, and comes home rotated by exactly the area it enclosed. Gauss–Bonnet, drawn as a working drawing. Curvature is what a journey remembers.</em></p>
+
+<br />
+
+<p align="center">
   <img src="docs/showcase/assets/reverse-reasoning-tree.gif" alt="The reverse reasoning tree filmed: a question decomposes backward into glowing prerequisite nodes, bottoms out at known ground, then lights up forward as a curriculum" width="48%" />
   <img src="docs/showcase/assets/mythos-grammar-reel.gif" alt="The Mythos grammar reel: headline before symbols, camera flying into each term of E=mc2, then tilting into a 3D energy surface" width="48%" />
 </p>

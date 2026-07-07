@@ -50,6 +50,26 @@ release — the scenes live in [`examples/mythos/`](../../examples/mythos/).
 
 ---
 
+## The house voices
+
+Beyond the Mythos black-stage cinema, the repo now carries deliberately
+opposed art directions — proof the engine's grammar survives a change of
+costume. Sources live in
+[`examples/mathematics/geometry/`](../../examples/mathematics/geometry/).
+
+<table>
+<tr>
+<td width="50%"><img src="assets/associate-family-riso.gif" alt="Plate VII: the associate family, risograph style" /></td>
+<td width="50%"><img src="assets/blueprint-holonomy.gif" alt="DWG 001: holonomy, cyanotype blueprint style" /></td>
+</tr>
+<tr>
+<td><b>Plate VII — the associate family (risograph)</b><br />The anti-Mythos: flat two-ink print on warm cream, a mid-century textbook plate come alive. The helicoid deforms isometrically into the catenoid; every length on the surface survives the journey.</td>
+<td><b>DWG 001 — holonomy (cyanotype blueprint)</b><br />A working drawing that performs its own proof. One amber vector is slid, never turned, around a geodesic octant — and returns rotated by the area it walled in. Gauss–Bonnet as drafting practice.</td>
+</tr>
+</table>
+
+---
+
 ## Featured reel
 
 <table>
