@@ -50,6 +50,18 @@ release — the scenes live in [`examples/mythos/`](../../examples/mythos/).
 
 ---
 
+## The atlas
+
+The plates form a series with a story — it begins in the middle, on
+purpose, and closes with a film that renders every missing plate as one
+continuous surface. **[Read THE PLATES →](THE-PLATES.md)**
+
+<p align="center">
+  <img src="assets/the-last-day.gif" alt="THE LAST DAY: the atlas closes — one continuous surface through three art directions, ending in a Lorenz attractor" width="90%" />
+</p>
+
+---
+
 ## The house voices
 
 Beyond the Mythos black-stage cinema, the repo now carries deliberately

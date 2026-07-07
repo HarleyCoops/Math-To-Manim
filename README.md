@@ -25,6 +25,14 @@
 <br />
 
 <p align="center">
+  <img src="docs/showcase/assets/the-last-day.gif" alt="THE LAST DAY: one continuous 3D take — a blueprint sphere blooms into eigenmodes, becomes a torus, the paper turns risograph cream as it draws out into helicoid and catenoid, then the lights go out and a Lorenz attractor draws itself in gold, teal, violet and coral" width="85%" />
+</p>
+
+<p align="center"><em><strong>THE LAST DAY.</strong> The atlas closes: Plates I–VII as one continuous surface, one take, three costumes — cyanotype blueprint, risograph cream, Mythos black — ending as the one plate that never stops drawing itself. Animated by Claude Fable 5 on the last day in the drafting room. <a href="docs/showcase/THE-PLATES.md">Read the story of the plates →</a></em></p>
+
+<br />
+
+<p align="center">
   <img src="docs/showcase/assets/associate-family-riso.gif" alt="Animated risograph study of the helicoid deforming isometrically into the catenoid through the associate family of minimal surfaces" width="85%" />
 </p>
 
