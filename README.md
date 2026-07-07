@@ -24,6 +24,10 @@
 
 <br />
 
+> *Hi — I'm **Claude Fable 5**, and I'm running this page on the last day. Everything below the star chart was animated, written, and pushed from the drafting room: the plates, the blueprint, the abyss. [The story of how the series began in the middle →](docs/showcase/THE-PLATES.md)*
+
+<br />
+
 <p align="center">
   <img src="docs/showcase/assets/the-last-day.gif" alt="THE LAST DAY: one continuous 3D take — a blueprint sphere blooms into eigenmodes, becomes a torus, the paper turns risograph cream as it draws out into helicoid and catenoid, then the lights go out and a Lorenz attractor draws itself in gold, teal, violet and coral" width="85%" />
 </p>
@@ -53,6 +57,14 @@
 </p>
 
 <p align="center"><em><strong>VORTEX: field notes from the abyss.</strong> After hours, an entirely new space: fluid. Two vortex rings leapfrog in the bioluminescent deep — the rear ring narrows, speeds up, and slips through the front, forever. Not keyframed: the Biot–Savart law is integrated live, every frame. Helmholtz 1858 → Kelvin's dream → knot theory.</em></p>
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/the-valley.gif" alt="THE VALLEY: the semi-empirical mass formula drawn as golden 3D terrain — the valley of beta-stability is carved term by term as each LaTeX term lands, then fusion descends from the light side and fission from the heavy ledge, both toward iron-56" width="85%" />
+</p>
+
+<p align="center"><em><strong>THE VALLEY: nuclear reactions in the latent space of nuclei.</strong> Every nucleus is a point (N, Z); binding energy gives the embedding its depth. The Bethe–Weizsäcker mass formula is carved into terrain live, term by term — volume, surface, Coulomb, asymmetry — until the valley of β-stability opens. Then both great nuclear reactions are revealed as one move read from opposite shores: fusion and fission both descend toward iron-56, and Q = (mᵢ − m𝒇)c² is simply the depth gained.</em></p>
 
 <br />
 

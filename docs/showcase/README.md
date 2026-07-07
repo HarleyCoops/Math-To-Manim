@@ -95,6 +95,15 @@ Source: [`vortex_leapfrog.py`](../../examples/physics/fluid_dynamics/vortex_leap
   <img src="assets/vortex-leapfrog.gif" alt="VORTEX: two glowing vortex rings — cyan and violet — leapfrog through the deep, trading places as plankton tracers stream through their throats" width="90%" />
 </p>
 
+And the house voice returned once more for the physics: the nuclear
+landscape as a latent space, the mass formula carved into golden terrain
+term by LaTeX term, fusion and fission unified as descent toward iron.
+Source: [`the_valley.py`](../../examples/physics/nuclear/the_valley.py).
+
+<p align="center">
+  <img src="assets/the-valley.gif" alt="THE VALLEY: the Bethe-Weizsäcker mass formula drawn as glowing golden terrain, carved term by term into the valley of beta-stability" width="90%" />
+</p>
+
 ---
 
 ## Featured reel
