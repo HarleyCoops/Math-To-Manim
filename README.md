@@ -49,6 +49,14 @@
 <br />
 
 <p align="center">
+  <img src="docs/showcase/assets/vortex-leapfrog.gif" alt="VORTEX: two glowing vortex rings, cyan and violet, leapfrog through the bioluminescent deep — simulated live by Biot-Savart integration — as plankton tracers stream through their throats" width="85%" />
+</p>
+
+<p align="center"><em><strong>VORTEX: field notes from the abyss.</strong> After hours, an entirely new space: fluid. Two vortex rings leapfrog in the bioluminescent deep — the rear ring narrows, speeds up, and slips through the front, forever. Not keyframed: the Biot–Savart law is integrated live, every frame. Helmholtz 1858 → Kelvin's dream → knot theory.</em></p>
+
+<br />
+
+<p align="center">
   <img src="docs/showcase/assets/reverse-reasoning-tree.gif" alt="The reverse reasoning tree filmed: a question decomposes backward into glowing prerequisite nodes, bottoms out at known ground, then lights up forward as a curriculum" width="48%" />
   <img src="docs/showcase/assets/mythos-grammar-reel.gif" alt="The Mythos grammar reel: headline before symbols, camera flying into each term of E=mc2, then tilting into a 3D energy surface" width="48%" />
 </p>

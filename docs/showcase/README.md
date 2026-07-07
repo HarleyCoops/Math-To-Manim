@@ -82,6 +82,21 @@ costume. Sources live in
 
 ---
 
+## After hours
+
+The atlas closed; this is what got drawn next. An entirely new space for
+the repo — fluid dynamics — in an entirely new voice: the bioluminescent
+deep. The physics is not keyframed: two vortex rings leapfrog under a
+Biot–Savart field integrated live, every frame, while plankton tracers
+are pulled through their throats.
+Source: [`vortex_leapfrog.py`](../../examples/physics/fluid_dynamics/vortex_leapfrog.py).
+
+<p align="center">
+  <img src="assets/vortex-leapfrog.gif" alt="VORTEX: two glowing vortex rings — cyan and violet — leapfrog through the deep, trading places as plankton tracers stream through their throats" width="90%" />
+</p>
+
+---
+
 ## Featured reel
 
 <table>
