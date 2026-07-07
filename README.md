@@ -450,18 +450,6 @@ archive/           v1.0 typed pipeline, Hermes agent, papers — retired, kept f
 legacy/            the original January 2025 repo, untouched
 ```
 
-## History
-
-**v1.0** was a typed pipeline on the OpenAI Agents SDK — eleven stage adapters, versioned pydantic contracts, a Gradio app, and the Hermes operator agent around it. It shipped, it worked, and when the Mythos chain outgrew it, all of it moved intact to [`archive/`](archive/) with its own README. `git checkout v1.0.0` resurrects it whole.
-
-<p align="center">
-  <img src="docs/assets/hermes-learns-manim.jpg" alt="Hermes Learns Manim: an agent surrounded by equations, turning recursive reasoning into animation code" width="100%" />
-</p>
-
-<p align="center"><em>Hermes, the v1.0-era contributor agent — retired with honors to the archive.</em></p>
-
----
-
 ## License
 
 MIT.
