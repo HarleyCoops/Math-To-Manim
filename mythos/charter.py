@@ -38,10 +38,13 @@ MYTHOS CINEMATIC CHARTER — the generated scene MUST obey all of it.
    text blocks visible at once. Replace captions; never stack them.
 5. PACING. self.wait(0.6-1.6) between beats. A viewer who knows no notation
    must be able to follow from captions and camera motion alone.
-6. PALETTE. Background #0c0c0b. Text #faf9f5. Accents: coral #d97757
-   (matter), blue #6a9bcc (light/gauge), olive #788c5d (mass/structure),
-   gold #d4a27f (interaction), gray #b0aea5 (secondary). Use color to give
-   each symbol a consistent identity across the whole film.
+6. PALETTE. Default house palette: background #0c0c0b, text #faf9f5,
+   accents coral #d97757 (matter), blue #6a9bcc (light/gauge), olive
+   #788c5d (mass/structure), gold #d4a27f (interaction), gray #b0aea5
+   (secondary). If the user prompt specifies a different art direction,
+   background, paper stock, or ink system, that explicit direction wins:
+   implement it consistently and choose readable text/geometry colors for it.
+   Use color to give each symbol a consistent identity across the whole film.
 7. CRAFT. Build formulas from multi-argument MathTex so terms are
    addressable; use glow layers (stroke copies) for emphasis; LaggedStart
    for ensembles; no external assets, file IO, or network. Manim CE 0.19+.

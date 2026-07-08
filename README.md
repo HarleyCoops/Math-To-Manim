@@ -32,7 +32,7 @@
   <img src="docs/showcase/assets/the-last-day.gif" alt="THE LAST DAY: one continuous 3D take — a blueprint sphere blooms into eigenmodes, becomes a torus, the paper turns risograph cream as it draws out into helicoid and catenoid, then the lights go out and a Lorenz attractor draws itself in gold, teal, violet and coral" width="85%" />
 </p>
 
-<p align="center"><em><strong>THE LAST DAY.</strong> The atlas closes: Plates I–VII as one continuous surface, one take, three costumes — cyanotype blueprint, risograph cream, Mythos black — ending as the one plate that never stops drawing itself. Animated by Claude Fable 5 on the last day in the drafting room. <a href="docs/showcase/THE-PLATES.md">Read the story of the plates →</a></em></p>
+<p align="center"><em><strong>THE LAST DAY.</strong> A continuous 3D survey of the plate series: eigenmodes expand into a sphere, the surface deforms through torus, helicoid, and catenoid stages, then the final system becomes a Lorenz trajectory. The point is procedural continuity: each surface is not a separate illustration, but the next state in one animated mathematical object. <a href="docs/showcase/THE-PLATES.md">Read the story of the plates -></a></em></p>
 
 <br />
 
@@ -40,7 +40,7 @@
   <img src="docs/showcase/assets/associate-family-riso.gif" alt="Animated risograph study of the helicoid deforming isometrically into the catenoid through the associate family of minimal surfaces" width="85%" />
 </p>
 
-<p align="center"><em><strong>Plate VII: The Associate Family.</strong> A two-ink risograph study of the associate family of minimal surfaces: the helicoid deforms into the catenoid while intrinsic lengths stay preserved, turning isometry into visible motion.</em></p>
+<p align="center"><em><strong>Plate VII: The Associate Family.</strong> This shows the classical associate family of minimal surfaces. The helicoid is rotated through the Weierstrass data until it becomes the catenoid; the bending changes the embedding in 3D, but preserves the intrinsic metric, so the viewer sees isometry as motion instead of as a theorem statement.</em></p>
 
 <br />
 
@@ -48,7 +48,7 @@
   <img src="docs/showcase/assets/blueprint-holonomy.gif" alt="DWG 001: Holonomy — a cyanotype blueprint sphere on Prussian-blue paper; an amber vector is parallel-transported around a geodesic octant and returns rotated 90 degrees" width="85%" />
 </p>
 
-<p align="center"><em><strong>DWG 001: Holonomy.</strong> A cyanotype blueprint that performs its own proof: one amber vector is slid — never turned — around a geodesic triangle, and comes home rotated by exactly the area it enclosed. Gauss–Bonnet, drawn as a working drawing. Curvature is what a journey remembers.</em></p>
+<p align="center"><em><strong>DWG 001: Holonomy.</strong> A tangent vector is parallel-transported around a geodesic triangle on the sphere. It is never manually spun; its final rotation is produced by curvature. The enclosed spherical area becomes the holonomy angle, so Gauss-Bonnet is shown as a measurable mismatch between the starting and ending frames.</em></p>
 
 <br />
 
@@ -56,7 +56,7 @@
   <img src="docs/showcase/assets/vortex-leapfrog.gif" alt="VORTEX: two glowing vortex rings, cyan and violet, leapfrog through the bioluminescent deep — simulated live by Biot-Savart integration — as plankton tracers stream through their throats" width="85%" />
 </p>
 
-<p align="center"><em><strong>VORTEX: field notes from the abyss.</strong> After hours, an entirely new space: fluid. Two vortex rings leapfrog in the bioluminescent deep — the rear ring narrows, speeds up, and slips through the front, forever. Not keyframed: the Biot–Savart law is integrated live, every frame. Helmholtz 1858 → Kelvin's dream → knot theory.</em></p>
+<p align="center"><em><strong>VORTEX: field notes from the abyss.</strong> Two vortex rings evolve under a Biot-Savart velocity field. The rear ring contracts, accelerates, threads the leading ring, and then expands after passing through it. The motion is not a hand-timed loop: the rings and tracer particles are advanced from the induced velocity field, making Helmholtz vortex dynamics visible as geometry.</em></p>
 
 <br />
 
@@ -64,7 +64,7 @@
   <img src="docs/showcase/assets/the-valley.gif" alt="THE VALLEY: the semi-empirical mass formula drawn as golden 3D terrain — the valley of beta-stability is carved term by term as each LaTeX term lands, then fusion descends from the light side and fission from the heavy ledge, both toward iron-56" width="85%" />
 </p>
 
-<p align="center"><em><strong>THE VALLEY: nuclear reactions in the latent space of nuclei.</strong> Every nucleus is a point (N, Z); binding energy gives the embedding its depth. The Bethe–Weizsäcker mass formula is carved into terrain live, term by term — volume, surface, Coulomb, asymmetry — until the valley of β-stability opens. Then both great nuclear reactions are revealed as one move read from opposite shores: fusion and fission both descend toward iron-56, and Q = (mᵢ − m𝒇)c² is simply the depth gained.</em></p>
+<p align="center"><em><strong>THE VALLEY.</strong> The chart of nuclides is treated as a 3D energy landscape: each nucleus is placed by neutron and proton count, and binding energy supplies the height. The Bethe-Weizsaecker terms are added one at a time - volume, surface, Coulomb, asymmetry, and pairing - until the valley of beta stability appears. Fusion and fission are then the same process viewed from opposite sides: motion toward the iron-56 basin releases the mass defect as Q-value.</em></p>
 
 <br />
 
@@ -73,7 +73,7 @@
   <img src="docs/showcase/assets/mythos-grammar-reel.gif" alt="The Mythos grammar reel: headline before symbols, camera flying into each term of E=mc2, then tilting into a 3D energy surface" width="48%" />
 </p>
 
-<p align="center"><em>New in v1.1, rendered by the engine's own house style: the reverse reasoning tree (left) and the cinematic grammar reel (right).</em></p>
+<p align="center"><em><strong>Reverse reasoning and scene grammar.</strong> Left: the pipeline decomposes a target question into prerequisite concepts, bottoms out at known ground, then walks the tree forward as a teachable order. Right: the house grammar in miniature - headline, addressed formula terms, camera move into the active symbol, and a final 3D surface only after the notation has been earned.</em></p>
 
 <br />
 
@@ -81,6 +81,16 @@
   <img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="GRPO semantic manifold: sibling completions become a geometric policy update across the full scene" width="48%" />
   <img src="docs/showcase/assets/qed-minkowski-epic-3d.gif" alt="QED and Minkowski spacetime: light cones, electromagnetic waves, gauge symmetry, and renormalization flow on an off-white 3D stage" width="48%" />
 </p>
+
+<p align="center"><em><strong>Policy geometry and field theory.</strong> Left: GRPO is drawn as geometry on a response manifold - sibling completions become nearby points, rewards tilt the local objective, and the policy update moves probability mass toward the preferred region. Right: the QED film builds the physics stack in order: Minkowski light cones, electromagnetic waves, gauge symmetry, compact Lagrangian notation, and renormalization flow.</em></p>
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/exceptional-point-monodromy.gif" alt="Exceptional point monodromy on an archival off-white 3D stage: a loop in the z-plane lifts to a two-sheeted square-root surface and swaps the eigenvalue branches" width="85%" />
+</p>
+
+<p align="center"><em><strong>Exceptional point monodromy.</strong> This pipeline run studies the matrix family A(z) = [[0, 1], [z, 0]]. Its eigenvalues are lambda_+ and lambda_- = +/-sqrt(z), so the branch point at z = 0 is an exceptional point. The 3D set piece draws the two-sheeted square-root surface on an archival off-white stage: one loop around z = 0 lifts from the plus sheet to the minus sheet, while two loops return to the original branch. The mechanism is angle halving: if z = r e^{i theta}, then lambda = sqrt(r)e^{i theta/2}, so a full 2pi turn downstairs becomes only a pi turn upstairs.</em></p>
 
 <br />
 
@@ -91,12 +101,16 @@
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="Full GRPO semantic manifold animation" width="24%" /></a>
 </p>
 
+<p align="center"><em><strong>Featured loop row.</strong> Annuli unwrap to prove A = pi r^2; an Archimedean solid exposes symmetry by rotation; spacetime curvature is staged as a warped 3D field; GRPO turns ranked completions into a geometric policy update.</em></p>
+
 <p align="center">
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/derivative-visualization.gif" alt="Derivative visualization animation" width="24%" /></a>
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/prolip-scene.gif" alt="ProLIP animation" width="24%" /></a>
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/lorenz-attractor.gif" alt="Lorenz attractor animation" width="24%" /></a>
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/hopf-fibration.gif" alt="Hopf fibration animation" width="24%" /></a>
 </p>
+
+<p align="center"><em><strong>Local mechanism row.</strong> A derivative is built from local linearization; ProLIP is shown as graph-structured molecular interaction; the Lorenz system accumulates into a strange attractor; the Hopf fibration turns linked fibers into a spatial projection problem.</em></p>
 
 <p align="center">
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/fourier-epicycles.gif" alt="Fourier epicycles animation" width="24%" /></a>
@@ -105,6 +119,8 @@
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/radius-of-convergence.gif" alt="Radius of convergence animation" width="24%" /></a>
   <a href="docs/showcase/README.md"><img src="docs/showcase/assets/whiskering-exchange.gif" alt="Whiskering exchange animation" width="24%" /></a>
 </p>
+
+<p align="center"><em><strong>Analysis and abstraction row.</strong> Fourier epicycles add rotating modes into a traced signal; the teaching Hopf loop slows the same fibration into steps; Brownian finance moves from accumulated change to stochastic paths; radius of convergence marks where a power series stops controlling the function; whiskering exchange renders a category-theory identity as a commuting diagram.</em></p>
 
 **You type one sentence. Six reasoning agents tear it apart, reason backward to everything a mind would need to already know, rebuild that knowledge as a curriculum, choreograph it shot by shot, and hand you a cinematic Manim film — plus every artifact that produced it. In v1.1 the whole engine is one clean package with three front doors: a CLI, a REST API, and an MCP server. The baseline model is Claude Fable 5.**
 

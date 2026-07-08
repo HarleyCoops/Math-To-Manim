@@ -44,3 +44,23 @@ def test_charters_ship_with_repo():
     for _, agent_file, _ in STAGES:
         text = MythosHarness.load_charter(agent_file)
         assert len(text) > 100, agent_file
+
+
+def test_offwhite_prompt_rejects_default_dark_background(tmp_path):
+    code_path = tmp_path / "scene.py"
+    code_path.write_text(
+        "from manim import *\n"
+        "class BadPaperScene(ThreeDScene):\n"
+        "    BG = \"#0c0c0b\"\n"
+        "    def construct(self):\n"
+        "        self.camera.background_color = self.BG\n",
+        encoding="utf-8",
+    )
+
+    ok, failure = MythosHarness._verify(
+        code_path,
+        prompt="Use archival off-white paper, never black.",
+    )
+
+    assert ok is False
+    assert "archival/off-white" in failure

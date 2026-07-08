@@ -75,6 +75,14 @@ _LINT_RULES = [
 ]
 
 
+def _requires_light_art_direction(prompt: str) -> bool:
+    text = prompt.lower()
+    positive = ("off-white", "archival", "paper", "warm paper")
+    negative = ("no black", "not black", "never black", "non-black")
+    return any(term in text for term in positive) and any(
+        term in text for term in negative)
+
+
 def default_runs_dir() -> Path:
     load_env_file()
     return Path(os.getenv("M2M2_RUNS_DIR", str(REPO_ROOT / "runs"))) / "mythos"
@@ -179,7 +187,7 @@ class MythosHarness:
             print(f"  [mythos] {slug:<16} -> {artifact_name}")
 
         code_path, scene_name = self._codegen(run_dir, prompt, artifact, manifest)
-        ok, failure = self._verify(code_path)
+        ok, failure = self._verify(code_path, prompt=prompt)
         manifest["static_check"] = {
             "passed": ok, "detail": failure[:2000] if failure else None}
 
@@ -200,7 +208,7 @@ class MythosHarness:
                 code_path, scene_name = self._repair(
                     run_dir, code_path, failure or "unknown failure",
                     attempt, manifest)
-                ok, failure = self._verify(code_path)
+                ok, failure = self._verify(code_path, prompt=prompt)
 
         manifest["scene_file"] = str(code_path)
         manifest["scene_name"] = scene_name
@@ -248,7 +256,7 @@ class MythosHarness:
         return code_path, scene_name
 
     @staticmethod
-    def _verify(code_path: Path) -> tuple[bool, str | None]:
+    def _verify(code_path: Path, *, prompt: str | None = None) -> tuple[bool, str | None]:
         try:
             py_compile.compile(str(code_path), doraise=True)
         except py_compile.PyCompileError as exc:
@@ -257,6 +265,20 @@ class MythosHarness:
         for pattern, message in _LINT_RULES:
             if re.search(pattern, code):
                 return False, f"charter lint: {message}"
+        if prompt and _requires_light_art_direction(prompt):
+            dark_background_patterns = [
+                r"background_color\s*=\s*[\"']#0c0c0b[\"']",
+                r"background_color\s*=\s*BLACK\b",
+                r"\bBG\s*=\s*[\"']#0c0c0b[\"']",
+            ]
+            for pattern in dark_background_patterns:
+                if re.search(pattern, code, flags=re.IGNORECASE):
+                    return False, (
+                        "prompt art-direction lint: this prompt explicitly "
+                        "requires an archival/off-white, non-black background; "
+                        "replace the default dark Mythos background with warm "
+                        "paper and use dark ink text/geometry."
+                    )
         return True, None
 
     def _render(self, code_path: Path, scene_name: str,

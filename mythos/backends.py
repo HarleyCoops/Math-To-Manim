@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
@@ -59,13 +60,30 @@ def run_model(
     resolved = resolve_command(command)
     if "codex" in Path(command).name.lower():
         # Codex OAuth backend: prompt on stdin, system extra folded in.
-        cmd = [resolved, "exec", "--model", model, "-"]
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", delete=False,
+            prefix="mythos-codex-", suffix=".txt",
+        ) as output_file:
+            output_path = Path(output_file.name)
+        cmd = [
+            resolved,
+            "-c", 'service_tier="fast"',
+            "exec",
+            "--model", model,
+            "--output-last-message", str(output_path),
+            "-",
+        ]
         payload = f"{system_extra}\n\n{prompt}" if system_extra else prompt
         completed = subprocess.run(
             cmd, input=payload, text=True, capture_output=True,
             encoding="utf-8", errors="replace",
             timeout=timeout, check=False,
         )
+        if completed.returncode == 0 and output_path.exists():
+            try:
+                return output_path.read_text(encoding="utf-8")
+            finally:
+                output_path.unlink(missing_ok=True)
     else:
         cmd = [resolved, "-p", "--output-format", "text", "--model", model]
         if system_extra:
@@ -182,13 +200,13 @@ def _call_openai_compatible(
         detail = exc.read().decode("utf-8", errors="replace")[-4000:]
         raise RuntimeError(
             "Fugu API call failed\n"
-            f"endpoint: {url}\nmodel: {model}\napi_key_env: {env_name}\n"
+            f"endpoint: {url}\nmodel: {model}\napi_key_env: {key_env_name}\n"
             f"status: {exc.code}\nbody:\n{detail}"
         ) from exc
     except URLError as exc:
         raise RuntimeError(
             "Fugu API call failed before a response was received\n"
-            f"endpoint: {url}\nmodel: {model}\napi_key_env: {env_name}\n"
+            f"endpoint: {url}\nmodel: {model}\napi_key_env: {key_env_name}\n"
             f"reason: {exc.reason}"
         ) from exc
 
