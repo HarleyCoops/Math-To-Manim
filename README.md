@@ -185,23 +185,11 @@ Every text-to-code demo you have seen jumps straight from request to Python. Mat
 
 The pipeline's first move is not "write code" — it is a question: **what would a mind need to already hold for this idea to land?** Then it asks that question again, of each answer, recursively, until it bottoms out at things the viewer already knows. That is the reverse reasoning tree:
 
-```text
-                     "Explain quantum field theory"
-                                  │
-                                  ▼  what must you already know?
-                 ┌────────────────┴────────────────┐
-        special relativity                 quantum mechanics
-                 │                                  │
-        ┌────────┴────────┐                ┌────────┴─────────┐
-   spacetime          Lorentz         wavefunctions       operators
-   intervals        invariance             │                  │
-        │                │            superposition     commutation
-        ▼                ▼                 ▼                  ▼
-   ─────────────  the tree bottoms out at known ground  ─────────────
-                                  │
-                                  ▼  now walk it FORWARD
-      known ground → prerequisites → target concept → the film
-```
+<p align="center">
+  <img src="docs/showcase/assets/reverse-reasoning-tree-diagram.gif" alt="The reverse reasoning tree, animated: the question 'Explain quantum field theory' decomposes backward through special relativity and quantum mechanics — down to spacetime intervals, Lorentz invariance, wavefunctions, operators, superposition, commutation — until it bottoms out at known ground; then a gold pulse walks it forward as a curriculum: known ground → prerequisites → target concept → the film" width="90%" />
+</p>
+
+<p align="center"><sub><i>The engine drawing its own README diagram: the Mythos chain took the tree above as a "README artifact" and the scene-composer rendered it in the house style — <a href="examples/mythos/readme_reverse_tree.py"><code>examples/mythos/readme_reverse_tree.py</code></a>.</i></sub></p>
 
 The tree is built backward from the target and then **walked forward as a curriculum**: the film teaches the leaves first, so that by the time the camera reaches the QED Lagrangian, every symbol on screen has already been earned. That single design decision is why the output feels like teaching instead of decoration.
 
