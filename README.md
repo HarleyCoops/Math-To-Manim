@@ -29,6 +29,31 @@
 <br />
 
 <p align="center">
+  <img src="docs/showcase/assets/traitor-axis.gif" alt="THE TRAITOR AXIS: a coral-and-steel T-handle tumbling against ink-black space — spun about its middle axis it somersaults every 8.2 seconds while the angular-momentum sphere reveals why: polhode loops in blue and gold, the coral separatrix crossing at the saddle, and the simulated spin creeping then sprinting along it" width="85%" />
+</p>
+
+<p align="center"><em><strong>THE TRAITOR AXIS.</strong> One concrete question, computed live: spin a T-handle about each of its three principal axes — why are two spins steady forever while the middle one somersaults on a schedule? Nothing here is keyframed. The moments of inertia (0.50, 0.92, 1.39) are computed from the cylinder geometry; the tumbling is RK4 integration of Euler's rigid-body equations with the orientation advanced by the exponential map; the polhode curves on the angular-momentum sphere are integrated trajectories crossing the analytic separatrix. The payoff is a countdown: a 0.025 rad/s wobble seed growing at &lambda; = &omega;&radic;((I<sub>x</sub>&minus;I<sub>y</sub>)(I<sub>z</sub>&minus;I<sub>x</sub>)/I<sub>y</sub>I<sub>z</sub>) = 1.60 s<sup>&minus;1</sup> predicts the first flip at 3.4 s — the simulation flips at 3.5 s, then every 8.19 s like clockwork. Source: <a href="examples/physics/classical_mechanics/dzhanibekov_traitor_axis.py">dzhanibekov_traitor_axis.py</a>.</em></p>
+
+<details>
+<summary><em>The prompt that became this film</em></summary>
+
+> **THE TRAITOR AXIS — one experiment, three spins, everything computed.**
+>
+> The question: take the T-handle from Dzhanibekov's 1985 Salyut-7 footage — a crossbar and a stem, two dumb steel cylinders — and spin it in zero gravity about each of its three principal axes in turn. Two of those spins hold steady forever. The third somersaults, half-twist after half-twist, on a schedule you could set a watch by. Why? And exactly when?
+>
+> The contract: nothing in this film may be keyframed. Compute the moments of inertia from the cylinder geometry (radii, lengths, masses — show the three numbers). Integrate Euler's rigid-body equations with RK4 and advance the orientation with the exponential map; the tumbling on screen must be the integrator's output. Film all three spin tests against a starfield with the conserved angular momentum drawn as the one fixed arrow in the world: the body flips, L never moves.
+>
+> Then explain it where the explanation actually lives: on the angular-momentum sphere. Energy pins the spin to an ellipsoid, momentum pins it to a sphere; the spin must ride an intersection curve. Draw the polhode families — closed loops around the smallest and largest axes — and through the middle axis the separatrix, the saddle where any wobble grows as e^(&lambda;t). Trace the simulated trajectory live: it should visibly creep near the saddle, then sprint around the sphere — one sprint per somersault.
+>
+> Finish with the countdown: &lambda; = &omega;&radic;((I<sub>x</sub>&minus;I<sub>y</sub>)(I<sub>z</sub>&minus;I<sub>x</sub>)/(I<sub>y</sub>I<sub>z</sub>)). With the film's own numbers, predict the first flip, then cut to the integrator's &omega;-trace and let the measured flips land where the formula said they would — like clockwork. Close on three handles side by side: stable, stable, saddle.
+>
+> Style: Mythos house grammar. Headline before symbols, plain-language captions, camera as narrator, ink-black space; coral for the traitor, blue for the smallest axis, gold for the largest. About 100 seconds. One ThreeDScene.
+
+</details>
+
+<br />
+
+<p align="center">
   <img src="docs/showcase/assets/the-last-day.gif" alt="THE LAST DAY: one continuous 3D take — a blueprint sphere blooms into eigenmodes, becomes a torus, the paper turns risograph cream as it draws out into helicoid and catenoid, then the lights go out and a Lorenz attractor draws itself in gold, teal, violet and coral" width="85%" />
 </p>
 
@@ -206,6 +231,22 @@ The pipeline's first move is not "write code" — it is a question: **what would
 The tree is built backward from the target and then **walked forward as a curriculum**: the film teaches the leaves first, so that by the time the camera reaches the QED Lagrangian, every symbol on screen has already been earned. That single design decision is why the output feels like teaching instead of decoration.
 
 The tree is not a metaphor — it is a file. Every run writes it to disk as `02_knowledge_map.json`, an artifact you can open, inspect, and edit before any code exists.
+
+---
+
+## One engine, every altitude
+
+The reverse reasoning tree has a property that no template system has: **it bottoms out at whatever the asker already knows.** That makes the same six agents serve two people who will never sit in the same classroom:
+
+> *"I'm a single parent and my 6th grader is struggling with greatest common factors and order of operations. She's a visual learner — show it to her."*
+
+The tree bottoms out at multiplication. The film that comes back builds factor trees out of manipulatives, zooms into the shared factor of 12 and 18, color-codes PEMDAS, and ends with two parent check questions on screen. (That's a real run — it's in the ledger as `StructureFirstJourney`.) A photo of the actual textbook problem works too: any MCP client that can see images — Claude Desktop, Cowork — transcribes the problem and hands the sentence to `m2m_create_animation`.
+
+> *"I'm working on my PhD in topology — help me actually see why one loop around the exceptional point swaps the eigenvalue branches."*
+
+Same engine, same charter. The tree now bottoms out at complex multiplication and covering spaces, and the film draws the two-sheeted square-root surface and lets monodromy happen to the camera. (Also a real run — the exceptional point film is three plates up this page.)
+
+Between those two altitudes sit the rest of the plates: derivatives for a first calculus course, the circle-area unwrapping for geometry class, Fourier epicycles for engineers, GRPO policy geometry for ML researchers, the traitor axis for anyone who has ever thrown a tennis racket. The recursion is the teaching tool: **decompose the question backward until it touches what you know, then film the walk forward — and when a step still doesn't land, ask again from that step, and the engine builds the next film one level deeper.**
 
 ---
 
