@@ -1,63 +1,96 @@
-# GPT-5.6 Sol silo
+# GPT-5.6 Sol: Codex CLI-native film silo
 
 ## Boundary
 
-The repository now contains two provider-native products:
+Math-To-Manim has two deliberately independent production systems:
 
-| Silo | Runtime shape | Entry points |
+| Silo | Native runtime | Entry point |
 |---|---|---|
-| `mythos/` | Anthropic-native charter chain through Claude CLI turns | `math-to-manim`, `mythos.api` |
-| `sol/` | OpenAI Responses API, GPT-5.6 Sol, hosted Python, typed scene contract | `math-to-manim-sol`, `sol.api` |
+| `mythos/` | Anthropic charter chain | `math-to-manim` |
+| `sol/` | One long-horizon Codex CLI run using GPT-5.6 Sol | `math-to-manim-sol` |
 
-Neither silo calls the other's provider client, prompts, agents, or
-orchestrator. Improvements can be evaluated independently without collapsing
-both providers into their least-common-denominator abstraction.
+The Sol silo is not a calculator, web API, or adapter around Mythos. It is a
+parallel implementation of the complete Math-To-Manim outcome. It imports no
+Mythos prompt, backend, or orchestrator.
 
-## Sol pipeline
+## Runtime architecture
 
 ```text
-problem
-  -> GPT-5.6 Sol Responses API
-     -> hosted Python calculation and verification
-     -> strict CalculationResult JSON schema
-  -> deterministic Manim compiler
-  -> optional local render
+math-to-manim-sol run <request>
+  -> create isolated runs/sol/<timestamp>-<slug>/ ledger
+  -> codex exec --model gpt-5.6-sol --sandbox workspace-write
+     -> infer intent and learner altitude
+     -> reverse-map prerequisites
+     -> build curriculum and checked math dossier
+     -> storyboard the visual argument
+     -> author one self-contained Manim CE scene
+     -> compile, optionally render, inspect evidence, and repair
+  -> application-side artifact, AST, compilation, and render validation
+  -> bounded Codex repair pass when validation fails
+  -> final manifest
 ```
 
-The former Anthropic pipeline is not modified or deprecated by this work.
+The wrapper owns isolation, the output schema, the run ledger, final static
+checks, and the repair budget. Sol owns the film. This keeps model reasoning in
+one coherent context while retaining a deterministic trust boundary around the
+generated Python and artifacts.
 
-## Native tool choices
+## Authentication
 
-- `gpt-5.6-sol` is explicit so an alias cannot silently change the baseline.
-- The Responses API is the only model endpoint.
-- Code Interpreter is available to every live calculation and the system
-  prompt requires it for nontrivial work.
-- Structured Outputs forms the trust boundary. Sol returns mathematical and
-  visual intent, never executable Manim.
-- The Manim compiler rejects dangerous LaTeX commands and owns all Python.
-- The API sends a stable, privacy-preserving `safety_identifier`.
-- A small AST-based symbolic fallback supports arithmetic, linear equations,
-  and real quadratics for CI and installations without a key.
+The child process removes `OPENAI_API_KEY` from its environment. Authentication
+therefore comes only from the Codex CLI's cached ChatGPT session:
 
-Programmatic Tool Calling is intentionally absent from the first calculator:
-one hosted calculation tool is a direct-call task, and its result needs fresh
-model judgment. It becomes valuable when reference retrieval, asset selection,
-and render inspection form a bounded multi-tool batch.
+```bash
+codex login
+math-to-manim-sol doctor
+```
 
-Multi-agent is also intentionally absent from the core path because the steps
-are sequentially dependent. A future proof-verification mode can use
-independent subagents without changing the calculator contract.
+No API key is accepted or required by the Sol package.
 
 ## Run it
 
 ```bash
-pip install -e ".[api,render]"
-export OPENAI_API_KEY=...
+pip install -e ".[render]"
 
-math-to-manim-sol calculate "solve x^2 - 5x + 6 = 0"
-math-to-manim-sol calculate "solve 3x + 11 = 14" --offline
-math-to-manim-sol serve --port 8656
+# Full live production through Codex CLI
+math-to-manim-sol run \
+  "build a visual proof of why Fourier modes solve the heat equation"
+
+# Ask the same run to render and inspect the film
+math-to-manim-sol run \
+  "explain parallel transport and holonomy on a sphere" \
+  --render -q l --reasoning-effort high --max-repairs 2
+
+# Deterministic contract rehearsal: no model call and no render
+math-to-manim-sol run "rehearse the Sol pipeline" --offline
+
+# Inspect the local ledger
+math-to-manim-sol runs
 ```
 
-The live endpoint is `POST /v1/calculate`. Runs are written to `runs/sol/`;
-the Anthropic ledger remains `runs/mythos/`.
+## Artifact contract
+
+Every run contains:
+
+| Artifact | Purpose |
+|---|---|
+| `01_intent.json` | audience, scope, desired learning outcome |
+| `02_knowledge_map.json` | reverse prerequisite graph |
+| `03_curriculum.json` | forward teaching sequence |
+| `04_math_dossier.json` | definitions, derivations, examples, checks, sources |
+| `05_shot_list.json` | cinematic beats and visual transitions |
+| `06_scene_spec.json` | implementable scene contract |
+| `sol_scene.py` | one self-contained Manim CE scene |
+| `review.json` | validation, render evidence, repairs, limitations |
+| `manifest.json` | wrapper-owned status and attempt ledger |
+
+`--offline` writes the same shape so plumbing and release checks never need a
+model login, network request, or render installation.
+
+## Why this split
+
+Provider-native silos can evolve independently. The Anthropic path can retain
+its explicit agent charters while Sol can exploit the Codex CLI's long-horizon
+tool loop and workspace execution. Shared abstractions are limited to the final
+product expectation—an inspectable Manim film bundle—not the provider control
+plane.

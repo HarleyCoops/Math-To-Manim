@@ -1,7 +1,8 @@
-"""GPT-5.6 Sol-native Math-To-Manim silo."""
+"""Codex CLI-native GPT-5.6 Sol Math-To-Manim silo."""
 
-from sol.models import CalculationRequest, CalculationResponse, CalculationResult
+from sol.harness import SolHarness
+from sol.models import CodexRunResult, RunManifest, RunRequest
 from sol.service import SolService
 
-__all__ = ["CalculationRequest", "CalculationResponse", "CalculationResult", "SolService"]
-__version__ = "0.1.0"
+__all__ = ["CodexRunResult", "RunManifest", "RunRequest", "SolHarness", "SolService"]
+__version__ = "0.2.0"

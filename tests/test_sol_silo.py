@@ -1,52 +1,107 @@
 import json
-import py_compile
+import os
+import subprocess
+from pathlib import Path
 
 import pytest
 
-from sol.client import extract_output_text
-from sol.manim import sanitize_latex
-from sol.models import CalculationRequest
-from sol.offline import UnsupportedCalculation, calculate_locally
+from sol.cli import build_parser
+from sol.client import CodexCli
+from sol.harness import SolHarness
+from sol.models import ARTIFACT_NAMES, RunRequest
 from sol.service import SolService
+from sol.validation import validate_run
 
 
-def test_local_arithmetic():
-    result = calculate_locally("calculate (12 + 3) * 4")
-    assert result.answer == "60"
-    assert result.method == "safe arithmetic evaluation"
-
-
-def test_local_linear_equation():
-    result = calculate_locally("solve 3x + 11 = 14")
-    assert result.answer == "x = 1"
-    assert result.answer_latex == "x=1"
-
-
-def test_local_quadratic_equation():
-    result = calculate_locally("x^2 - 5x + 6 = 0")
-    assert result.answer == "x = 2 or 3"
-
-
-def test_local_engine_rejects_code_execution():
-    with pytest.raises(UnsupportedCalculation):
-        calculate_locally("__import__('os').system('id')")
-
-
-def test_scene_compiler_rejects_dangerous_latex():
-    with pytest.raises(ValueError):
-        sanitize_latex(r"\input{/etc/passwd}")
-
-
-def test_service_writes_typed_bundle(tmp_path):
-    response = SolService(runs_dir=tmp_path).calculate(
-        CalculationRequest(problem="solve 3x + 11 = 14", offline=True)
+def test_offline_run_writes_complete_film_bundle(tmp_path):
+    manifest = SolHarness(runs_dir=tmp_path).run(
+        RunRequest(prompt="explain the heat equation", offline=True)
     )
-    run_dir = tmp_path / response.run_id
-    assert response.engine == "local-symbolic"
-    assert json.loads((run_dir / "result.json").read_text())["answer"] == "x = 1"
-    py_compile.compile(str(run_dir / "sol_scene.py"), doraise=True)
+    run_dir = tmp_path / manifest["run_id"]
+    assert manifest["status"] == "completed"
+    assert manifest["backend"] == "codex-cli"
+    assert all((run_dir / name).is_file() for name in ARTIFACT_NAMES)
+    assert json.loads((run_dir / "02_knowledge_map.json").read_text())["topic"]
+    failures, scene_name, video_path = validate_run(run_dir, require_video=False)
+    assert failures == []
+    assert scene_name == "SolOfflineScene"
+    assert video_path is None
 
 
-def test_extract_responses_output_text():
-    payload = {"output": [{"type": "message", "content": [{"type": "output_text", "text": "{\"ok\":true}"}]}]}
-    assert extract_output_text(payload) == '{"ok":true}'
+def test_codex_command_is_cli_native(monkeypatch, tmp_path):
+    monkeypatch.setattr("sol.client.shutil.which", lambda _: "/usr/bin/codex")
+    client = CodexCli(model="gpt-5.6-sol", reasoning_effort="xhigh")
+    command = client.build_command(
+        cwd=tmp_path,
+        schema_path=tmp_path / "schema.json",
+        output_path=tmp_path / "result.json",
+    )
+    assert command[0] == "/usr/bin/codex"
+    assert "exec" in command
+    assert command[command.index("--model") + 1] == "gpt-5.6-sol"
+    assert command[command.index("--sandbox") + 1] == "workspace-write"
+    assert {"--json", "--output-schema", "--output-last-message", "--cd"} <= set(command)
+    assert 'model_reasoning_effort="xhigh"' in command
+
+
+def test_codex_child_never_receives_api_key(monkeypatch, tmp_path):
+    monkeypatch.setattr("sol.client.shutil.which", lambda _: "/usr/bin/codex")
+    monkeypatch.setenv("OPENAI_API_KEY", "must-not-leak")
+    observed = {}
+
+    def fake_run(command, **kwargs):
+        observed["env"] = kwargs["env"]
+        output = Path(command[command.index("--output-last-message") + 1])
+        output.write_text(json.dumps({
+            "status": "completed",
+            "scene_file": "sol_scene.py",
+            "scene_name": "Example",
+            "artifacts": list(ARTIFACT_NAMES),
+            "rendered": False,
+            "video_path": None,
+            "checks": ["ok"],
+            "notes": [],
+        }))
+        return subprocess.CompletedProcess(command, 0, stdout="{}\n", stderr="")
+
+    monkeypatch.setattr("sol.client.subprocess.run", fake_run)
+    CodexCli().run(
+        "make a film",
+        cwd=tmp_path,
+        schema_path=tmp_path / "schema.json",
+        output_path=tmp_path / "result.json",
+        trace_path=tmp_path / "trace.jsonl",
+    )
+    assert "OPENAI_API_KEY" not in observed["env"]
+    assert os.environ["OPENAI_API_KEY"] == "must-not-leak"
+
+
+def test_validator_blocks_generated_code_with_process_access(tmp_path):
+    for name in ARTIFACT_NAMES:
+        path = tmp_path / name
+        if name == "sol_scene.py":
+            path.write_text("from manim import *\nimport subprocess\nclass Bad(Scene):\n    pass\n")
+        else:
+            path.write_text('{"ok": true}')
+    failures, _, _ = validate_run(tmp_path, require_video=False)
+    assert any("blocked import 'subprocess'" in failure for failure in failures)
+
+
+def test_service_reads_run_ledger(tmp_path):
+    service = SolService(runs_dir=tmp_path)
+    manifest = service.run(RunRequest(prompt="visualize curvature", offline=True))
+    assert service.get_run(manifest["run_id"]).status == "completed"
+    assert service.list_runs(limit=1)[0].run_id == manifest["run_id"]
+    with pytest.raises(ValueError):
+        service.get_run("../escape")
+
+
+def test_cli_surface_has_no_server_or_calculator_commands():
+    parser = build_parser()
+    args = parser.parse_args(["run", "explain eigenvectors", "--offline"])
+    assert args.command == "run"
+    assert args.offline is True
+    with pytest.raises(SystemExit):
+        parser.parse_args(["serve"])
+    with pytest.raises(SystemExit):
+        parser.parse_args(["calculate", "1+1"])

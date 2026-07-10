@@ -1,93 +1,97 @@
-"""GPT-5.6 Sol Responses API client using the hosted Python tool."""
+"""Non-interactive Codex CLI driver using cached ChatGPT authentication."""
 
 from __future__ import annotations
 
 import json
 import os
-from typing import Any
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+import shutil
+import subprocess
+from pathlib import Path
 
-from sol.models import CalculationRequest, CalculationResult
+from sol.models import CodexRunResult
 
-SOL_MODEL = "gpt-5.6-sol"
-RESPONSES_URL = "https://api.openai.com/v1/responses"
-
-SYSTEM_INSTRUCTIONS = """
-You are the mathematical core of Math-To-Manim's GPT-5.6 Sol silo.
-Solve the user's problem, explain it at the requested audience level, and
-design a short visual sequence. Use the python tool for every nontrivial
-calculation and verify the final answer numerically or symbolically.
-
-Do not return executable Python or Manim. The application compiles your typed
-scene plan into reviewed code. Keep visual beats atomic and in logical order.
-Return only the required structured result.
-""".strip()
+DEFAULT_MODEL = os.getenv("M2M_SOL_MODEL", "gpt-5.6-sol")
+DEFAULT_REASONING_EFFORT = os.getenv("M2M_SOL_REASONING", "high")
+DEFAULT_TIMEOUT = float(os.getenv("M2M_SOL_TIMEOUT", "3600"))
+DEFAULT_COMMAND = os.getenv("M2M_SOL_CODEX", "codex")
 
 
-def extract_output_text(payload: dict[str, Any]) -> str:
-    chunks: list[str] = []
-    for item in payload.get("output", []):
-        if not isinstance(item, dict) or item.get("type") != "message":
-            continue
-        for part in item.get("content", []):
-            if isinstance(part, dict) and part.get("type") == "output_text":
-                chunks.append(str(part.get("text", "")))
-    if not chunks:
-        raise RuntimeError("Sol returned no structured output text")
-    return "".join(chunks)
+class CodexCliError(RuntimeError):
+    pass
 
 
-def calculate_with_sol(
-    request: CalculationRequest,
-    *,
-    api_key: str | None = None,
-    safety_identifier: str | None = None,
-    timeout: float = 180.0,
-) -> CalculationResult:
-    key = api_key or os.getenv("OPENAI_API_KEY")
-    if not key:
-        raise RuntimeError("OPENAI_API_KEY is not configured")
+class CodexCli:
+    def __init__(
+        self,
+        *,
+        command: str = DEFAULT_COMMAND,
+        model: str = DEFAULT_MODEL,
+        reasoning_effort: str = DEFAULT_REASONING_EFFORT,
+        timeout: float = DEFAULT_TIMEOUT,
+    ):
+        self.command = command
+        self.model = model
+        self.reasoning_effort = reasoning_effort
+        self.timeout = timeout
 
-    payload: dict[str, Any] = {
-        "model": SOL_MODEL,
-        "reasoning": {"effort": request.reasoning_effort},
-        "instructions": SYSTEM_INSTRUCTIONS,
-        "input": f"Audience: {request.audience}\nProblem: {request.problem}",
-        "tools": [{
-            "type": "code_interpreter",
-            "container": {"type": "auto", "memory_limit": "4g"},
-        }],
-        "tool_choice": "auto",
-        "text": {"format": {
-            "type": "json_schema",
-            "name": "sol_calculation",
-            "strict": True,
-            "schema": CalculationResult.model_json_schema(),
-        }},
-        "include": ["code_interpreter_call.outputs"],
-        "store": False,
-    }
-    if safety_identifier:
-        payload["safety_identifier"] = safety_identifier
+    def resolve(self) -> str:
+        resolved = shutil.which(self.command)
+        if not resolved:
+            raise CodexCliError(
+                f"Codex CLI command {self.command!r} was not found. Install Codex, "
+                "run `codex login`, and retry."
+            )
+        return resolved
 
-    api_request = Request(
-        RESPONSES_URL,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-        method="POST",
-    )
-    try:
-        with urlopen(api_request, timeout=timeout) as response:
-            raw = response.read().decode("utf-8")
-    except HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")[-2000:]
-        raise RuntimeError(f"Sol Responses API failed with status {exc.code}: {detail}") from exc
-    except URLError as exc:
-        raise RuntimeError(f"Sol Responses API could not be reached: {exc.reason}") from exc
+    def build_command(self, *, cwd: Path, schema_path: Path, output_path: Path) -> list[str]:
+        return [
+            self.resolve(),
+            "-c", f'model_reasoning_effort="{self.reasoning_effort}"',
+            "exec",
+            "--model", self.model,
+            "--sandbox", "workspace-write",
+            "--cd", str(cwd),
+            "--json",
+            "--output-schema", str(schema_path),
+            "--output-last-message", str(output_path),
+            "-",
+        ]
 
-    try:
-        response_payload = json.loads(raw)
-        return CalculationResult.model_validate_json(extract_output_text(response_payload))
-    except (json.JSONDecodeError, ValueError) as exc:
-        raise RuntimeError("Sol returned an invalid structured calculation") from exc
+    def run(
+        self,
+        prompt: str,
+        *,
+        cwd: Path,
+        schema_path: Path,
+        output_path: Path,
+        trace_path: Path,
+    ) -> CodexRunResult:
+        command = self.build_command(cwd=cwd, schema_path=schema_path, output_path=output_path)
+        # A stray API key would silently switch billing/auth modes. This silo is
+        # deliberately ChatGPT-login-only, so remove it from the child process.
+        env = {key: value for key, value in os.environ.items() if key != "OPENAI_API_KEY"}
+        completed = subprocess.run(
+            command,
+            input=prompt,
+            text=True,
+            capture_output=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+            timeout=self.timeout,
+            check=False,
+        )
+        trace_path.write_text(completed.stdout, encoding="utf-8")
+        if completed.returncode != 0:
+            detail = (completed.stderr or completed.stdout)[-6000:]
+            raise CodexCliError(
+                f"Codex CLI failed with exit {completed.returncode}. "
+                "Run `codex login` if the cached ChatGPT session expired.\n"
+                f"{detail}"
+            )
+        if not output_path.is_file():
+            raise CodexCliError("Codex CLI completed without writing its structured final message")
+        try:
+            return CodexRunResult.model_validate_json(output_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, ValueError) as exc:
+            raise CodexCliError("Codex CLI returned an invalid final result") from exc
