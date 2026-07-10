@@ -1,0 +1,3 @@
+# Complete Python environment for development plus Manim rendering.
+# Native Cairo/Pango/TeX/FFmpeg packages live in requirements-system.txt.
+-e .[dev,render]

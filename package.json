@@ -1,0 +1,8 @@
+{
+  "name": "math-to-manim-sol-runtime",
+  "private": true,
+  "description": "Pinned Codex CLI runtime for the GPT-5.6 Sol film pipeline",
+  "devDependencies": {
+    "@openai/codex": "0.144.1"
+  }
+}

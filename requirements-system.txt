@@ -1,6 +1,10 @@
-# Ubuntu/Debian packages needed for Manim rendering with MathTex.
-# Install with:
-#   sudo xargs -a requirements-system.txt apt-get install -y
+# Ubuntu/Debian packages needed to build Manim and render MathTex.
+# Install these through scripts/bootstrap-render.sh or scripts/bootstrap-sol.sh.
+build-essential
+pkg-config
+python3-dev
+libcairo2-dev
+libpango1.0-dev
 ffmpeg
 dvisvgm
 texlive-latex-base

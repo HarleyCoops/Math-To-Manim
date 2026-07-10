@@ -305,7 +305,7 @@ The chain: **intent → cartographer → curriculum → math-director → cinema
 | Flagship films | [`examples/mythos/`](examples/mythos/) | QED in 8 acts, the Sound of Spacetime, the reverse reasoning tree, the grammar reel |
 
 ```bash
-pip install -e ".[dev]"
+pip install -r requirements.txt
 
 # the whole chain, one line, Fable 5 as the baseline
 math-to-manim run "explain quantum field theory" --render -q m
@@ -373,10 +373,19 @@ math-to-manim gif <run-id>    # palette-optimized showcase GIF from that run's r
 
 Fable is the house baseline; `codex` and `fugu-api` are explicit escape hatches, never silently chosen. If the Claude CLI is logged out the chain now fails fast with the fix (`claude /login`) instead of dying mid-run.
 
-**Render extras** (FFmpeg + LaTeX are system deps; on Debian/Ubuntu/WSL run [`./scripts/bootstrap-render.sh`](scripts/bootstrap-render.sh)):
+**Render extras** (Cairo/Pango headers, FFmpeg, LaTeX, and `dvisvgm` are system deps; on Debian/Ubuntu/WSL run [`./scripts/bootstrap-render.sh`](scripts/bootstrap-render.sh)):
 
 ```bash
-pip install -e ".[dev,render]"
+./scripts/bootstrap-render.sh
+```
+
+**Complete GPT-5.6 Sol environment** (render stack plus the repository-pinned
+Codex CLI):
+
+```bash
+./scripts/bootstrap-sol.sh
+.venv/bin/codex login
+.venv/bin/math-to-manim-sol doctor
 ```
 
 Every run writes a self-contained bundle:

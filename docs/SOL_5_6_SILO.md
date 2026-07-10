@@ -48,10 +48,35 @@ math-to-manim-sol doctor
 
 No API key is accepted or required by the Sol package.
 
+## Reproducible installation
+
+On Ubuntu, Debian, or WSL, one bootstrap command installs the native
+Cairo/Pango build headers, TeX and `dvisvgm`, FFmpeg, the complete Python
+environment, and the repository-pinned Codex CLI:
+
+```bash
+./scripts/bootstrap-sol.sh
+.venv/bin/codex login
+.venv/bin/math-to-manim-sol doctor
+```
+
+The dependency layers are explicit and independently inspectable:
+
+- `requirements-system.txt`: native build and render packages
+- `requirements.txt`: core development and offline tests
+- `requirements-render.txt`: development plus Manim
+- `requirements-sol.txt`: complete Python side of the Sol pipeline
+- `package.json` and `package-lock.json`: exact Codex CLI runtime
+
+The bootstrap script uses the local `.venv` and `node_modules` trees and links
+the pinned `codex` executable into `.venv/bin`, so activating the environment
+makes both `manim` and `codex` discoverable by the Sol harness.
+
 ## Run it
 
 ```bash
-pip install -e ".[render]"
+./scripts/bootstrap-sol.sh
+source .venv/bin/activate
 
 # Full live production through Codex CLI
 math-to-manim-sol run \

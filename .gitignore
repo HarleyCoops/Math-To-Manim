@@ -5,6 +5,9 @@ __pycache__/
 .mypy_cache/
 .venv/
 venv/
+node_modules/
+.npm-cache/
+.codex-cli/
 .env
 .env.*
 # Claude Code nested worktrees: never commit (often broken gitlinks if admin dir is pruned).

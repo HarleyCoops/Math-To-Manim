@@ -22,6 +22,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Set up Node for the pinned Sol CLI
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
       - name: Install package
         run: |
           python -m pip install --upgrade pip
@@ -40,6 +45,13 @@ jobs:
           math-to-manim serve-api --help
           math-to-manim serve-mcp --help
           math-to-manim runs --help
+
+      - name: Verify the pinned Sol CLI and offline contract
+        run: |
+          npm ci
+          node_modules/.bin/codex --version
+          math-to-manim-sol --version
+          math-to-manim-sol run "CI rehearsal of the Sol film contract" --offline
 
       - name: Offline chain smoke (no model calls)
         run: |
@@ -81,14 +93,10 @@ jobs:
           python-version: "3.12"
 
       - name: Install system render dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg libcairo2-dev libpango1.0-dev texlive-latex-base texlive-latex-extra dvisvgm
+        run: ./scripts/bootstrap-render.sh
 
-      - name: Install render package
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[dev,render]"
+      - name: Verify render package
+        run: .venv/bin/manim --version
 
       - name: Offline chain with a real low-quality render
-        run: math-to-manim run "Explain why derivatives are slopes" --offline --render -q l
+        run: .venv/bin/math-to-manim run "Explain why derivatives are slopes" --offline --render -q l
