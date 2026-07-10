@@ -49,6 +49,7 @@ def test_codex_result_schema_is_strict_for_structured_outputs():
 
     schema = CodexRunResult.model_json_schema()
     assert schema["additionalProperties"] is False
+    assert set(schema["required"]) == set(schema["properties"])
 
 
 def test_codex_failure_preserves_stdout_error_when_stderr_has_warnings(monkeypatch, tmp_path):

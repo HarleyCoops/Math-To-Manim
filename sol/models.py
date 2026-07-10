@@ -37,7 +37,7 @@ class CodexRunResult(BaseModel):
     rendered: bool
     video_path: str | None
     checks: list[str]
-    notes: list[str] = Field(default_factory=list)
+    notes: list[str]
 
 
 class RunManifest(BaseModel):
