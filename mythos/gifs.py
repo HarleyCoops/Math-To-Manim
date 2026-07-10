@@ -25,8 +25,11 @@ def find_scene_mp4(scene_name: str, media_root: Path | None = None) -> Path | No
     root = media_root or (REPO_ROOT / "media" / "videos")
     if not root.exists():
         return None
-    candidates = sorted(root.rglob(f"{scene_name}.mp4"),
-                        key=lambda p: p.stat().st_mtime, reverse=True)
+    candidates = sorted(
+        root.rglob(f"{scene_name}.mp4"),
+        key=lambda p: (p.stat().st_mtime_ns, p.as_posix()),
+        reverse=True,
+    )
     for candidate in candidates:
         if "partial_movie_files" not in candidate.parts:
             return candidate

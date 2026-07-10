@@ -6,15 +6,16 @@ Guidance for AI agents (and humans) working in this repository.
 
 Math-To-Manim contains provider-native silos. The established `mythos/` product
 is the Anthropic-native six-agent chain driven by Claude Fable 5. The parallel
-`sol/` product is a GPT-5.6 Sol-native calculator using the Responses API,
-hosted Python, a strict typed result, and deterministic Manim compilation.
+`sol/` product is a complete GPT-5.6 Sol-native film pipeline driven only by
+the Codex CLI and its cached ChatGPT login. It does not use an API key, an HTTP
+model endpoint, or Mythos orchestration.
 Do not route one provider through the other provider's orchestration layer.
 
 ## Layout
 
 | Path | Role |
 |---|---|
-| `sol/` | Independent GPT-5.6 Sol silo: client, contracts, fallback, compiler, service, API, CLI |
+| `sol/` | Independent GPT-5.6 Sol silo: Codex CLI driver, film contract, harness, validation, run ledger |
 | `docs/SOL_5_6_SILO.md` | Sol architecture and deployment contract |
 | `mythos/agents/*.md` | The six agent charters (single source of truth; mirror to `.claude/agents/` for native Claude Code use) |
 | `mythos/harness.py` | Chain runner: intent → cartographer → curriculum → math-director → cinematographer → scene-composer → codegen → verify → render → repair |
@@ -44,6 +45,8 @@ Do not route one provider through the other provider's orchestration layer.
 6. **Keep the README's showcase GIFs and star chart intact** in any docs work.
 7. **Keep provider silos native.** `sol/` must not import Mythos prompts,
    backends, or orchestration; `mythos/` must not import the Sol client.
+8. **Sol is CLI-only.** Do not add an HTTP API, Responses API client, API-key
+   fallback, or calculator-specific compiler to `sol/`.
 
 ## Quick verification
 
@@ -52,4 +55,6 @@ pip install -e ".[dev]"
 pytest                                        # 29 tests, offline
 math-to-manim run "the heat equation" --offline
 math-to-manim serve-api &  curl localhost:8642/health
+math-to-manim-sol run "why Fourier modes solve the heat equation" --offline
+math-to-manim-sol doctor
 ```
