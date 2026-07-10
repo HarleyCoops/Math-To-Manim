@@ -37,13 +37,15 @@ render = [
 [project.scripts]
 math-to-manim = "mythos.cli:main"
 m2m = "mythos.cli:main"
+math-to-manim-sol = "sol.cli:main"
+m2m-sol = "sol.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/HarleyCoops/Math-To-Manim"
 Repository = "https://github.com/HarleyCoops/Math-To-Manim"
 
 [tool.setuptools.packages.find]
-include = ["mythos*"]
+include = ["mythos*", "sol*"]
 
 [tool.setuptools.package-data]
 mythos = ["agents/*.md"]

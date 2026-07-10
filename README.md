@@ -12,6 +12,11 @@
 
 ### Ask a question -> get a freakin' movie
 
+> **Two native pipelines now live side by side.** `mythos/` remains the
+> Anthropic-native Claude Fable 5 charter chain. `sol/` is a separate GPT-5.6
+> Sol-native calculator built on the Responses API, hosted Python, strict typed
+> outputs, and deterministic Manim compilation. [Read the Sol architecture.](docs/SOL_5_6_SILO.md)
+
 [![v1.1](https://img.shields.io/badge/Release-v1.1.0-d97757)](#whats-new-in-v11)
 [![Claude Fable 5](https://img.shields.io/badge/Claude-Fable%205%20baseline-d97757)](#the-mythos-engine)
 [![REST API](https://img.shields.io/badge/REST-API-6a9bcc)](#the-api)
