@@ -26,6 +26,8 @@ from mythos.backends import (
     FUGU_API_COMMANDS,
     BackendAuthError,
     fugu_api_key_from_env,
+    is_claude_cli_command,
+    model_fallbacks_from_env,
     run_model,
 )
 from mythos.charter import load_env_file, resolve_command
@@ -49,6 +51,11 @@ def run_doctor(command: str = DEFAULT_COMMAND, model: str = DEFAULT_MODEL,
     print("configuration:")
     src = "M2M_MODEL" if os.getenv("M2M_MODEL") else "default"
     print(f"{_INFO}model:          {model}  (from {src})")
+    fallbacks = model_fallbacks_from_env()
+    if is_claude_cli_command(command):
+        chain = " -> ".join([model, *[m for m in fallbacks if m != model]])
+        print(f"{_INFO}fallbacks:      {chain}  "
+              "(same CLI subscription login, no API key)")
     if os.getenv("M2M2_MYTHOS_MODEL"):
         print(f"{_INFO}note: M2M2_MYTHOS_MODEL is set but ignored "
               "(archived-pipeline setting); use M2M_MODEL")
@@ -76,20 +83,30 @@ def run_doctor(command: str = DEFAULT_COMMAND, model: str = DEFAULT_MODEL,
             failures += 1
             print(f"{_BAD}{command!r} not found on PATH")
         if ping:
-            try:
-                out = run_model("Reply with exactly: OK", command=command,
-                                model=model, timeout=120)
-                snippet = (out or "").strip().splitlines()[:1]
-                print(f"{_OK}auth ping succeeded ({snippet})")
-            except BackendAuthError as exc:
+            chain = [model]
+            if is_claude_cli_command(command):
+                chain += [m for m in model_fallbacks_from_env() if m != model]
+            reachable = 0
+            for candidate in chain:
+                try:
+                    run_model("Reply with exactly: OK", command=command,
+                              model=candidate, timeout=120)
+                    reachable += 1
+                    print(f"{_OK}ping {candidate}: responding")
+                except BackendAuthError as exc:
+                    failures += 1
+                    print(f"{_BAD}ping {candidate}: "
+                          f"{str(exc).splitlines()[0]}")
+                    break  # a broken login is broken for every model
+                except Exception as exc:  # noqa: BLE001 — diagnostic surface
+                    print(f"{_INFO}ping {candidate}: unavailable "
+                          f"({type(exc).__name__}: {str(exc).splitlines()[0][:120]})")
+            if reachable == 0 and not failures:
                 failures += 1
-                print(f"{_BAD}auth ping: {str(exc).splitlines()[0]}")
-            except Exception as exc:  # noqa: BLE001 — diagnostic surface
-                failures += 1
-                print(f"{_BAD}auth ping: {type(exc).__name__}: {exc}")
+                print(f"{_BAD}no model in the chain responded")
         else:
-            print(f"{_INFO}auth not verified (rerun with --ping for a live "
-                  "1-line model call)")
+            print(f"{_INFO}auth not verified (rerun with --ping to walk the "
+                  "model chain with 1-line calls)")
 
     print("render toolchain:")
     manim_cmd = resolve_manim()

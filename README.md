@@ -337,6 +337,7 @@ math-to-manim run "Show why the quantum harmonic oscillator only allows discrete
 | Variable | Default | What it does |
 |---|---|---|
 | `M2M_MODEL` | `claude-fable-5` | Baseline model for every reasoning stage |
+| `M2M_MODEL_FALLBACKS` | `claude-opus-4-8,claude-sonnet-5` | Anthropic models tried in order when the baseline fails (overload, not-found, 5xx) — all through the same Claude CLI subscription login, never an API key. Auth failures don't fall back; they fail fast with the fix. Set empty to disable. |
 | `M2M_COMMAND` | `claude` | Backend: `claude` (Claude CLI login), `codex` (Codex CLI), `fugu-api` (OpenAI-compatible HTTP) |
 | `M2M_TIMEOUT` | `900` | Seconds per model call |
 | `M2M_RENDER_TIMEOUT` | `1800` | Wall-clock budget for one manim render |

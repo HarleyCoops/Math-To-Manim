@@ -41,6 +41,9 @@ from mythos.backends import (  # noqa: E402
     DEFAULT_COMMAND,
     DEFAULT_MODEL,
     DEFAULT_TIMEOUT,
+    BackendAuthError,
+    is_claude_cli_command,
+    model_fallbacks_from_env,
     run_model,
 )
 from mythos.charter import (  # noqa: E402
@@ -156,6 +159,7 @@ class MythosHarness:
         render_timeout: float = DEFAULT_RENDER_TIMEOUT,
         offline: bool = False,
         runs_dir: Path | None = None,
+        model_fallbacks: tuple[str, ...] | None = None,
     ):
         self.command = command
         self.model = model
@@ -163,19 +167,73 @@ class MythosHarness:
         self.render_timeout = render_timeout
         self.offline = offline
         self.runs_dir = runs_dir or default_runs_dir()
+        self.model_fallbacks = (tuple(model_fallbacks)
+                                if model_fallbacks is not None
+                                else model_fallbacks_from_env())
+        self.fallbacks_used: list[dict] = []
 
     # ------------------------------------------------------------------ #
     # Model plumbing                                                      #
     # ------------------------------------------------------------------ #
 
     def _model(self, prompt: str, *, system_extra: str | None = None) -> str:
-        return run_model(
-            prompt,
-            system_extra=system_extra,
-            command=self.command,
-            model=self.model,
-            timeout=self.timeout,
-        )
+        """One model call, with an Anthropic fallback ladder on the Claude CLI.
+
+        Auth failures raise immediately (a broken login is broken for every
+        model). Model-specific failures walk M2M_MODEL_FALLBACKS through the
+        same CLI subscription login; the first model that answers becomes the
+        baseline for the rest of the run and the switch is recorded in the
+        manifest.
+        """
+        try:
+            return run_model(
+                prompt,
+                system_extra=system_extra,
+                command=self.command,
+                model=self.model,
+                timeout=self.timeout,
+            )
+        except BackendAuthError:
+            raise
+        except RuntimeError as primary_exc:
+            if not is_claude_cli_command(self.command):
+                raise
+            candidates = [m for m in self.model_fallbacks if m != self.model]
+            if not candidates:
+                raise
+            last_exc: RuntimeError = primary_exc
+            failed = self.model
+            for fallback in candidates:
+                reason = str(last_exc).splitlines()[0][:200]
+                print(f"  [mythos] model {failed!r} failed ({reason}); "
+                      f"falling back to {fallback!r}")
+                try:
+                    output = run_model(
+                        prompt,
+                        system_extra=system_extra,
+                        command=self.command,
+                        model=fallback,
+                        timeout=self.timeout,
+                    )
+                except BackendAuthError:
+                    raise
+                except RuntimeError as exc:
+                    last_exc = exc
+                    failed = fallback
+                    continue
+                self.fallbacks_used.append({
+                    "from": self.model,
+                    "to": fallback,
+                    "reason": str(primary_exc).splitlines()[0][:300],
+                })
+                self.model = fallback  # sticky for the rest of the run
+                return output
+            tried = [self.model, *candidates]
+            raise RuntimeError(
+                "All Anthropic models failed via the Claude CLI "
+                f"(tried, in order: {', '.join(tried)}). Last error:\n"
+                f"{last_exc}"
+            ) from last_exc
 
     # ------------------------------------------------------------------ #
     # Charters                                                            #
@@ -242,6 +300,9 @@ class MythosHarness:
             if retried:
                 stage_record["retried"] = True
             manifest["stages"].append(stage_record)
+            manifest["model"] = self.model  # may have walked the fallback ladder
+            if self.fallbacks_used:
+                manifest["model_fallbacks"] = list(self.fallbacks_used)
             self._write_manifest(run_dir, manifest)
             print(f"  [mythos] {slug:<16} -> {artifact_name}")
 
@@ -276,6 +337,9 @@ class MythosHarness:
 
         manifest["scene_file"] = str(code_path)
         manifest["scene_name"] = scene_name
+        manifest["model"] = self.model  # codegen/repair may have fallen back too
+        if self.fallbacks_used:
+            manifest["model_fallbacks"] = list(self.fallbacks_used)
         manifest["completed_utc"] = datetime.now(timezone.utc).isoformat()
         self._write_manifest(run_dir, manifest)
         print(f"  [mythos] run complete -> {run_dir}")

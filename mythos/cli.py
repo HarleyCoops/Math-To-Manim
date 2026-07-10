@@ -25,11 +25,14 @@ from mythos.backends import DEFAULT_COMMAND, DEFAULT_MODEL, DEFAULT_TIMEOUT
 def _cmd_run(args: argparse.Namespace) -> int:
     from mythos.harness import DEFAULT_RENDER_TIMEOUT, MythosHarness
 
+    fallbacks = (tuple(m.strip() for m in args.fallbacks.split(",") if m.strip())
+                 if args.fallbacks is not None else None)
     harness = MythosHarness(command=args.command, model=args.model,
                             timeout=args.timeout,
                             render_timeout=(args.render_timeout
                                             or DEFAULT_RENDER_TIMEOUT),
-                            offline=args.offline)
+                            offline=args.offline,
+                            model_fallbacks=fallbacks)
     harness.run(args.prompt, render=args.render, quality=args.quality,
                 max_repairs=args.max_repairs)
     return 0
@@ -87,6 +90,10 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--render-timeout", type=float, default=None,
                      help="render wall-clock budget in seconds "
                           "(default: M2M_RENDER_TIMEOUT or 1800)")
+    run.add_argument("--fallbacks", default=None,
+                     help="comma-separated Anthropic fallback models via the "
+                          "same CLI login (default: M2M_MODEL_FALLBACKS or "
+                          "claude-opus-4-8,claude-sonnet-5; '' disables)")
     run.add_argument("--offline", action="store_true")
     run.add_argument("--max-repairs", type=int, default=3)
     run.set_defaults(func=_cmd_run)

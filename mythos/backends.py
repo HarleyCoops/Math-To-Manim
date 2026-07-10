@@ -42,6 +42,35 @@ DEFAULT_MODEL = os.getenv("M2M_MODEL") or "claude-fable-5"
 DEFAULT_COMMAND = os.getenv("M2M_COMMAND", "claude")
 DEFAULT_TIMEOUT = float(os.getenv("M2M_TIMEOUT", "900"))
 
+#: Anthropic models tried, in order, when the primary fails for a
+#: model-specific reason (overload, not-found, 5xx). All of them run through
+#: the same Claude CLI subscription login — no API key involved. Haiku is
+#: deliberately absent: it is below the quality bar for reasoning stages.
+_FALLBACKS_DEFAULT = "claude-opus-4-8,claude-sonnet-5"
+
+
+def model_fallbacks_from_env() -> tuple[str, ...]:
+    """Fallback model ids from M2M_MODEL_FALLBACKS (comma-separated).
+
+    Set it to an empty string to disable fallback entirely.
+    """
+    load_env_file()
+    raw = os.getenv("M2M_MODEL_FALLBACKS")
+    if raw is None:
+        raw = _FALLBACKS_DEFAULT
+    return tuple(m.strip() for m in raw.split(",") if m.strip())
+
+
+def is_claude_cli_command(command: str) -> bool:
+    """True when `command` dispatches to the Claude CLI (subscription login).
+
+    Model fallback only applies here: the codex and fugu-api backends have
+    their own model namespaces and are explicit choices, never fallbacks.
+    """
+    if command in FUGU_API_COMMANDS:
+        return False
+    return "codex" not in Path(command).name.lower()
+
 
 class BackendAuthError(RuntimeError):
     """The model backend is reachable but refuses our credentials."""
