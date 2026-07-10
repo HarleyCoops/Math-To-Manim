@@ -83,10 +83,12 @@ class CodexCli:
         )
         trace_path.write_text(completed.stdout, encoding="utf-8")
         if completed.returncode != 0:
-            detail = (completed.stderr or completed.stdout)[-6000:]
+            streams = [part.strip() for part in (completed.stderr, completed.stdout) if part.strip()]
+            detail = "\n".join(streams)[-6000:]
             raise CodexCliError(
                 f"Codex CLI failed with exit {completed.returncode}. "
-                "Run `codex login` if the cached ChatGPT session expired.\n"
+                "Inspect the preserved trace and diagnostics below; run `codex login` "
+                "only if they identify an authentication failure.\n"
                 f"{detail}"
             )
         if not output_path.is_file():

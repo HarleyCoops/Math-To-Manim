@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 ARTIFACT_NAMES = (
     "01_intent.json",
@@ -28,6 +28,8 @@ class RunRequest(BaseModel):
 
 
 class CodexRunResult(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     status: Literal["completed", "failed"]
     scene_file: str
     scene_name: str

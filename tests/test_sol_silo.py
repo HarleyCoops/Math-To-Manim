@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from sol.cli import build_parser
-from sol.client import CodexCli
+from sol.client import CodexCli, CodexCliError
 from sol.harness import SolHarness
 from sol.models import ARTIFACT_NAMES, RunRequest
 from sol.service import SolService
@@ -42,6 +42,36 @@ def test_codex_command_is_cli_native(monkeypatch, tmp_path):
     assert command[command.index("--sandbox") + 1] == "workspace-write"
     assert {"--json", "--output-schema", "--output-last-message", "--cd"} <= set(command)
     assert 'model_reasoning_effort="xhigh"' in command
+
+
+def test_codex_result_schema_is_strict_for_structured_outputs():
+    from sol.models import CodexRunResult
+
+    schema = CodexRunResult.model_json_schema()
+    assert schema["additionalProperties"] is False
+
+
+def test_codex_failure_preserves_stdout_error_when_stderr_has_warnings(monkeypatch, tmp_path):
+    monkeypatch.setattr("sol.client.shutil.which", lambda _: "/usr/bin/codex")
+
+    def fake_run(command, **kwargs):
+        return subprocess.CompletedProcess(
+            command,
+            1,
+            stdout='{"type":"error","message":"invalid_json_schema"}\n',
+            stderr="non-fatal startup warning\n",
+        )
+
+    monkeypatch.setattr("sol.client.subprocess.run", fake_run)
+    with pytest.raises(CodexCliError, match="invalid_json_schema"):
+        CodexCli().run(
+            "make a film",
+            cwd=tmp_path,
+            schema_path=tmp_path / "schema.json",
+            output_path=tmp_path / "result.json",
+            trace_path=tmp_path / "trace.jsonl",
+        )
+    assert "invalid_json_schema" in (tmp_path / "trace.jsonl").read_text()
 
 
 def test_codex_child_never_receives_api_key(monkeypatch, tmp_path):
