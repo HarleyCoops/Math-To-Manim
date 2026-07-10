@@ -41,6 +41,7 @@ The child process removes `OPENAI_API_KEY` from its environment. Authentication
 therefore comes only from the Codex CLI's cached ChatGPT session:
 
 ```bash
+npm install -g @openai/codex
 codex login
 math-to-manim-sol doctor
 ```

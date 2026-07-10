@@ -98,4 +98,3 @@ Quality: -q{request.quality}
 Validation evidence:
 {evidence}
 """
-

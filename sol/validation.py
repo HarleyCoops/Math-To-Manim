@@ -85,4 +85,3 @@ def validate_run(run_dir: Path, *, require_video: bool) -> tuple[list[str], str 
     elif require_video:
         failures.append("render requested but no MP4 exists inside the run directory")
     return failures, scene_name, video_path
-
