@@ -74,6 +74,41 @@ _LINT_RULES = [
      "never animate self.camera in a ThreeDScene; use move_camera"),
 ]
 
+#: Render wall-clock budget, separate from the per-model-call M2M_TIMEOUT.
+DEFAULT_RENDER_TIMEOUT = float(os.getenv("M2M_RENDER_TIMEOUT", "1800"))
+
+
+class StageValidationError(RuntimeError):
+    """A reasoning stage returned a degenerate artifact twice in a row."""
+
+
+def validate_stage_artifact(slug: str, artifact: dict) -> str | None:
+    """Reject degenerate stage output before it poisons the chain.
+
+    Returns a human-readable problem description, or None when healthy.
+    (A real failure mode: the math-director once returned
+    ``{"formulas": [], "color_identity": {}, "numbers": []}`` — 48 bytes —
+    and every downstream agent faithfully storyboarded an empty film.)
+    """
+    if not isinstance(artifact, dict) or not artifact:
+        return "artifact is not a non-empty JSON object"
+    size = len(json.dumps(artifact))
+    if slug == "math-director":
+        formulas = artifact.get("formulas")
+        if isinstance(formulas, list) and not formulas:
+            return "math dossier has an empty 'formulas' list"
+        if size < 500:
+            return f"math dossier is only {size} bytes"
+    elif slug == "cinematographer":
+        shots = artifact.get("shots")
+        if isinstance(shots, list) and len(shots) < 8:
+            return f"shot list has only {len(shots)} beats"
+        if size < 500:
+            return f"shot list is only {size} bytes"
+    elif size < 200:
+        return f"artifact is only {size} bytes"
+    return None
+
 
 def _requires_light_art_direction(prompt: str) -> bool:
     text = prompt.lower()
@@ -85,7 +120,28 @@ def _requires_light_art_direction(prompt: str) -> bool:
 
 def default_runs_dir() -> Path:
     load_env_file()
-    return Path(os.getenv("M2M2_RUNS_DIR", str(REPO_ROOT / "runs"))) / "mythos"
+    return Path(
+        os.getenv("M2M_RUNS_DIR")
+        or os.getenv("M2M2_RUNS_DIR")
+        or str(REPO_ROOT / "runs")
+    ) / "mythos"
+
+
+def resolve_manim() -> list[str]:
+    """Find the manim entry point, preferring the active interpreter's env.
+
+    Order: M2M_MANIM env override, `<current python> -m manim` when manim is
+    importable, then whatever is on PATH.
+    """
+    override = os.getenv("M2M_MANIM")
+    if override:
+        return [override]
+    try:
+        import manim  # noqa: F401
+        return [sys.executable, "-m", "manim"]
+    except ImportError:
+        pass
+    return [shutil.which("manim") or "manim"]
 
 
 class MythosHarness:
@@ -97,12 +153,14 @@ class MythosHarness:
         command: str = DEFAULT_COMMAND,
         model: str = DEFAULT_MODEL,
         timeout: float = DEFAULT_TIMEOUT,
+        render_timeout: float = DEFAULT_RENDER_TIMEOUT,
         offline: bool = False,
         runs_dir: Path | None = None,
     ):
         self.command = command
         self.model = model
         self.timeout = timeout
+        self.render_timeout = render_timeout
         self.offline = offline
         self.runs_dir = runs_dir or default_runs_dir()
 
@@ -152,12 +210,17 @@ class MythosHarness:
         render: bool = False,
         quality: str = "l",
         max_repairs: int = 3,
+        run_dir_callback=None,
     ) -> dict:
+        prompt = prompt.replace(chr(0xFEFF), "").strip()
         run_dir = self._create_run_dir(prompt)
+        if run_dir_callback is not None:
+            run_dir_callback(run_dir.name)
         manifest: dict = {
             "run_id": run_dir.name,
             "prompt": prompt,
             "model": self.model,
+            "command": self.command,
             "offline": self.offline,
             "created_utc": datetime.now(timezone.utc).isoformat(),
             "stages": [],
@@ -166,23 +229,19 @@ class MythosHarness:
         artifact: dict = {"user_prompt": prompt}
         for slug, agent_file, artifact_name in STAGES:
             started = time.time()
+            retried = False
             if self.offline:
                 artifact = _offline_artifact(slug, prompt, artifact)
             else:
-                charter = self.load_charter(agent_file)
-                stage_prompt = (
-                    f"{charter}\n\nINPUT ARTIFACT JSON:\n"
-                    f"{json.dumps(artifact, indent=2)}{JSON_CONTRACT}"
-                )
-                raw = self._model(stage_prompt, system_extra=CINEMATIC_CHARTER)
-                (run_dir / f"{artifact_name.split('.')[0]}.raw.txt").write_text(
-                    raw, encoding="utf-8")
-                artifact = extract_json_object(raw)
+                artifact, retried = self._run_stage(
+                    slug, agent_file, artifact, run_dir, artifact_name)
             (run_dir / artifact_name).write_text(
                 json.dumps(artifact, indent=2), encoding="utf-8")
-            manifest["stages"].append(
-                {"stage": slug, "artifact": artifact_name,
-                 "seconds": round(time.time() - started, 2)})
+            stage_record = {"stage": slug, "artifact": artifact_name,
+                            "seconds": round(time.time() - started, 2)}
+            if retried:
+                stage_record["retried"] = True
+            manifest["stages"].append(stage_record)
             self._write_manifest(run_dir, manifest)
             print(f"  [mythos] {slug:<16} -> {artifact_name}")
 
@@ -201,6 +260,11 @@ class MythosHarness:
                     if rc == 0:
                         break
                     failure = out
+                    if rc == 124:
+                        # A timeout is a budget problem, not a code problem —
+                        # don't burn model-repair attempts on it.
+                        manifest["render_timed_out"] = True
+                        break
                 if attempt >= max_repairs or self.offline:
                     break
                 attempt += 1
@@ -216,6 +280,47 @@ class MythosHarness:
         self._write_manifest(run_dir, manifest)
         print(f"  [mythos] run complete -> {run_dir}")
         return manifest
+
+    # ------------------------------------------------------------------ #
+    # Stage execution with degenerate-output retry                        #
+    # ------------------------------------------------------------------ #
+
+    def _run_stage(self, slug: str, agent_file: str, prior: dict,
+                   run_dir: Path, artifact_name: str) -> tuple[dict, bool]:
+        """Run one reasoning stage; retry once if the artifact is degenerate."""
+        charter = self.load_charter(agent_file)
+        base_prompt = (
+            f"{charter}\n\nINPUT ARTIFACT JSON:\n"
+            f"{json.dumps(prior, indent=2)}{JSON_CONTRACT}"
+        )
+        raw = self._model(base_prompt, system_extra=CINEMATIC_CHARTER)
+        (run_dir / f"{artifact_name.split('.')[0]}.raw.txt").write_text(
+            raw, encoding="utf-8")
+        artifact = extract_json_object(raw)
+        problem = validate_stage_artifact(slug, artifact)
+        if problem is None:
+            return artifact, False
+
+        print(f"  [mythos] {slug}: degenerate output ({problem}); retrying")
+        retry_prompt = (
+            f"{base_prompt}\n\nPREVIOUS ATTEMPT REJECTED: your last artifact "
+            f"was degenerate ({problem}). The input artifact above contains "
+            "real material — mine it. Return a complete, richly populated "
+            "JSON object this time; empty lists and placeholder text are "
+            "failures."
+        )
+        raw = self._model(retry_prompt, system_extra=CINEMATIC_CHARTER)
+        (run_dir / f"{artifact_name.split('.')[0]}.retry.raw.txt").write_text(
+            raw, encoding="utf-8")
+        artifact = extract_json_object(raw)
+        problem = validate_stage_artifact(slug, artifact)
+        if problem is not None:
+            raise StageValidationError(
+                f"Stage {slug!r} returned a degenerate artifact twice "
+                f"({problem}). Aborting instead of filming an empty story. "
+                f"Inspect {run_dir / artifact_name} and the .raw.txt traces."
+            )
+        return artifact, True
 
     # ------------------------------------------------------------------ #
     # Codegen / verify / render / repair                                  #
@@ -283,11 +388,20 @@ class MythosHarness:
 
     def _render(self, code_path: Path, scene_name: str,
                 quality: str) -> tuple[int, str]:
-        manim = shutil.which("manim") or "manim"
-        cmd = [manim, f"-q{quality}", str(code_path), scene_name]
+        cmd = resolve_manim() + [f"-q{quality}", str(code_path), scene_name]
         print(f"  [mythos] rendering: {' '.join(cmd)}")
-        completed = subprocess.run(cmd, text=True, capture_output=True,
-                                   cwd=str(REPO_ROOT), timeout=self.timeout)
+        try:
+            completed = subprocess.run(
+                cmd, text=True, capture_output=True,
+                cwd=str(REPO_ROOT), timeout=self.render_timeout)
+        except subprocess.TimeoutExpired as exc:
+            partial = (exc.stderr or b"")
+            if isinstance(partial, bytes):
+                partial = partial.decode("utf-8", errors="replace")
+            return 124, (
+                f"render timed out after {self.render_timeout:.0f}s "
+                "(raise M2M_RENDER_TIMEOUT or lower the quality)\n" + partial
+            )
         return completed.returncode, (completed.stderr or "") + (completed.stdout or "")
 
     def _repair(self, run_dir: Path, code_path: Path, failure: str,
@@ -315,8 +429,23 @@ class MythosHarness:
 
     @staticmethod
     def _write_manifest(run_dir: Path, manifest: dict) -> None:
-        (run_dir / "manifest.json").write_text(
-            json.dumps(manifest, indent=2), encoding="utf-8")
+        # Atomic: readers polling the run dir must never see a half-written
+        # manifest (mid-write JSON parse errors were a real observed failure).
+        # On Windows, os.replace onto a file a poller currently holds open
+        # raises PermissionError — retry briefly, then fall back to a direct
+        # write rather than killing the run over a progress file.
+        payload = json.dumps(manifest, indent=2)
+        target = run_dir / "manifest.json"
+        tmp = run_dir / ".manifest.json.tmp"
+        tmp.write_text(payload, encoding="utf-8")
+        for attempt in range(8):
+            try:
+                os.replace(tmp, target)
+                return
+            except PermissionError:
+                time.sleep(0.02 * (attempt + 1))
+        target.write_text(payload, encoding="utf-8")
+        tmp.unlink(missing_ok=True)
 
     def _create_run_dir(self, prompt: str) -> Path:
         slug = re.sub(r"[^a-z0-9]+", "-", prompt.lower()).strip("-")[:48] or "run"

@@ -15,7 +15,9 @@ def main():
     load_dotenv()
     
     prompt_path = os.path.join(root_dir, "Gemini3", "taylor_prompt.txt")
-    image_path = "C:/Users/chris/.gemini/antigravity/brain/ec1ac387-4434-418c-b576-a59ee4ba66f9/uploaded_image_1765652053419.png"
+    # Optional reference image: pass a path via TAYLOR_IMAGE_PATH (or argv[1]).
+    image_path = (sys.argv[1] if len(sys.argv) > 1
+                  else os.getenv("TAYLOR_IMAGE_PATH", ""))
     output_file = os.path.join(root_dir, "Gemini3", "taylor_scene.py")
     
     logger.console.print(f"[bold]Reading prompt from {prompt_path}[/bold]")

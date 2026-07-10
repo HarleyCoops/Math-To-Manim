@@ -24,9 +24,40 @@ from urllib.request import Request, urlopen
 
 from mythos.charter import load_env_file, resolve_command
 
-DEFAULT_MODEL = "claude-fable-5"
-DEFAULT_COMMAND = "claude"
-DEFAULT_TIMEOUT = 900.0
+# ----------------------------------------------------------------------- #
+# Configuration: environment first, sane defaults second.                  #
+#                                                                          #
+#   M2M_MODEL           baseline model id      (default: claude-fable-5)   #
+#   M2M_COMMAND         backend                (default: claude)           #
+#   M2M_TIMEOUT         per-model-call seconds (default: 900)              #
+#                                                                          #
+# Values may live in the environment or in a local (gitignored) .env.      #
+# (The archived pipeline's M2M2_MYTHOS_MODEL is deliberately NOT read:     #
+# it configured a different engine and silently retargeting this one       #
+# to a non-Claude model with the claude backend would be a footgun.)       #
+# ----------------------------------------------------------------------- #
+load_env_file()
+
+DEFAULT_MODEL = os.getenv("M2M_MODEL") or "claude-fable-5"
+DEFAULT_COMMAND = os.getenv("M2M_COMMAND", "claude")
+DEFAULT_TIMEOUT = float(os.getenv("M2M_TIMEOUT", "900"))
+
+
+class BackendAuthError(RuntimeError):
+    """The model backend is reachable but refuses our credentials."""
+
+
+#: Substrings that mark an authentication failure in CLI output.
+_AUTH_MARKERS = (
+    "not logged in",
+    "please run /login",
+    "failed to authenticate",
+    "invalid authentication credentials",
+    "authentication_error",
+    "api error: 401",
+    "http 401",
+    "401 unauthorized",
+)
 
 FUGU_DEFAULT_BASE_URL = "https://api.sakana.ai/v1"
 FUGU_API_COMMANDS = {"fugu-api", "sakana-api", "sakaa-api"}
@@ -110,10 +141,30 @@ def run_model(
                 break
             time.sleep(1.5 * (attempt + 1))
     if completed.returncode != 0:
+        combined = f"{completed.stdout}\n{completed.stderr}".lower()
+        if any(marker in combined for marker in _AUTH_MARKERS):
+            raise BackendAuthError(
+                f"The {Path(cmd[0]).stem!r} backend rejected our credentials.\n"
+                "Fix one of:\n"
+                "  - Claude CLI: run `claude /login` (the chain uses the CLI's "
+                "subscription login; a stale ANTHROPIC_API_KEY is scrubbed on "
+                "purpose)\n"
+                "  - Codex CLI:  run `codex login`\n"
+                "  - Or point M2M_COMMAND / M2M_MODEL at a backend that is "
+                "logged in.\n"
+                f"backend output (tail):\n{combined[-1200:]}"
+            )
         raise RuntimeError(
             f"Mythos model command failed (exit {completed.returncode})\n"
             f"command: {cmd[0]}\n"
             f"stderr:\n{completed.stderr[-4000:]}"
+        )
+    stripped = (completed.stdout or "").strip().lower()
+    if stripped.startswith("not logged in"):
+        raise BackendAuthError(
+            f"The {Path(cmd[0]).stem!r} backend is not logged in. "
+            "Run `claude /login` (or `codex login`), or set "
+            "M2M_COMMAND/M2M_MODEL to a configured backend."
         )
     return completed.stdout
 

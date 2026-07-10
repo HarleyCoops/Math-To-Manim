@@ -3,8 +3,13 @@
     math-to-manim run "explain quantum field theory" --render -q m
     math-to-manim run "the heat equation" --offline
     math-to-manim runs                      # list on-disk runs
+    math-to-manim doctor --ping             # preflight: config, auth, toolchain
     math-to-manim serve-api                 # REST API on :8642
     math-to-manim serve-mcp                 # MCP server on stdio
+
+Configuration comes from the environment (or a local, gitignored .env):
+M2M_MODEL, M2M_COMMAND, M2M_TIMEOUT, M2M_RENDER_TIMEOUT, M2M_RUNS_DIR,
+M2M_MANIM.
 """
 
 from __future__ import annotations
@@ -18,13 +23,22 @@ from mythos.backends import DEFAULT_COMMAND, DEFAULT_MODEL, DEFAULT_TIMEOUT
 
 
 def _cmd_run(args: argparse.Namespace) -> int:
-    from mythos.harness import MythosHarness
+    from mythos.harness import DEFAULT_RENDER_TIMEOUT, MythosHarness
 
     harness = MythosHarness(command=args.command, model=args.model,
-                            timeout=args.timeout, offline=args.offline)
+                            timeout=args.timeout,
+                            render_timeout=(args.render_timeout
+                                            or DEFAULT_RENDER_TIMEOUT),
+                            offline=args.offline)
     harness.run(args.prompt, render=args.render, quality=args.quality,
                 max_repairs=args.max_repairs)
     return 0
+
+
+def _cmd_doctor(args: argparse.Namespace) -> int:
+    from mythos.doctor import run_doctor
+
+    return run_doctor(command=args.command, model=args.model, ping=args.ping)
 
 
 def _cmd_runs(args: argparse.Namespace) -> int:
@@ -70,6 +84,9 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--model", default=DEFAULT_MODEL)
     run.add_argument("--command", default=DEFAULT_COMMAND)
     run.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
+    run.add_argument("--render-timeout", type=float, default=None,
+                     help="render wall-clock budget in seconds "
+                          "(default: M2M_RENDER_TIMEOUT or 1800)")
     run.add_argument("--offline", action="store_true")
     run.add_argument("--max-repairs", type=int, default=3)
     run.set_defaults(func=_cmd_run)
@@ -77,6 +94,14 @@ def build_parser() -> argparse.ArgumentParser:
     runs = sub.add_parser("runs", help="List on-disk runs, newest first")
     runs.add_argument("--limit", type=int, default=20)
     runs.set_defaults(func=_cmd_runs)
+
+    doctor = sub.add_parser(
+        "doctor", help="Preflight: configuration, backend auth, toolchain")
+    doctor.add_argument("--command", default=DEFAULT_COMMAND)
+    doctor.add_argument("--model", default=DEFAULT_MODEL)
+    doctor.add_argument("--ping", action="store_true",
+                        help="make one tiny model call to verify login")
+    doctor.set_defaults(func=_cmd_doctor)
 
     api = sub.add_parser("serve-api", help="Serve the REST API (FastAPI)")
     api.add_argument("--host", default="127.0.0.1")

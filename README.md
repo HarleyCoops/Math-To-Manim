@@ -328,8 +328,23 @@ math-to-manim runs        # inspect the on-disk ledger
 **Make a real film** — needs only a logged-in Claude CLI; the defaults already point at `claude-fable-5`:
 
 ```bash
+math-to-manim doctor --ping   # preflight: config, backend login, manim, ffmpeg, latex
 math-to-manim run "Show why the quantum harmonic oscillator only allows discrete energies: start with a springy potential well, zoom into the wavefunctions, then reveal the ladder of allowed energy levels." --render -q l
 ```
+
+**Configuration** lives in the environment (or a local, gitignored `.env`) — nothing personal is hardcoded:
+
+| Variable | Default | What it does |
+|---|---|---|
+| `M2M_MODEL` | `claude-fable-5` | Baseline model for every reasoning stage |
+| `M2M_COMMAND` | `claude` | Backend: `claude` (Claude CLI login), `codex` (Codex CLI), `fugu-api` (OpenAI-compatible HTTP) |
+| `M2M_TIMEOUT` | `900` | Seconds per model call |
+| `M2M_RENDER_TIMEOUT` | `1800` | Wall-clock budget for one manim render |
+| `M2M_RUNS_DIR` | `runs/` | Where run bundles land (legacy alias: `M2M2_RUNS_DIR`) |
+| `M2M_MANIM` | auto | Manim executable override; otherwise the active env's manim wins over PATH |
+| `FUGU_API_KEY` / `FUGU_BASE_URL` | — | Only for the HTTP backend; keys are read from env, never stamped into artifacts |
+
+Fable is the house baseline; `codex` and `fugu-api` are explicit escape hatches, never silently chosen. If the Claude CLI is logged out the chain now fails fast with the fix (`claude /login`) instead of dying mid-run.
 
 **Render extras** (FFmpeg + LaTeX are system deps; on Debian/Ubuntu/WSL run [`./scripts/bootstrap-render.sh`](scripts/bootstrap-render.sh)):
 
@@ -352,7 +367,7 @@ runs/mythos/<timestamp>-<slug>/
   manifest.json            stages, timing, checks, renders
 ```
 
-The chain reasons in JSON so the artifacts stay legible: prune a branch of `02_knowledge_map.json` mid-run and the rest of the chain inherits your edit; render failures feed a bounded repair loop instead of crashing the run.
+The chain reasons in JSON so the artifacts stay legible: prune a branch of `02_knowledge_map.json` mid-run and the rest of the chain inherits your edit; render failures feed a bounded repair loop instead of crashing the run. Degenerate stage output (an empty math dossier, a five-beat shot list) is rejected and retried once with a corrective nudge — and if it happens twice the chain aborts loudly rather than filming an empty story. Manifests are written atomically after every stage, so polling clients always see valid JSON and live progress.
 
 <p align="center">
   <img src="docs/assets/render-repair-loop.svg" alt="Render validation and bounded repair loop diagram showing static review, render, repair from evidence, and packaged output" width="100%" />

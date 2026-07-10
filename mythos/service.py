@@ -20,7 +20,11 @@ from pathlib import Path
 from typing import Any, Callable
 
 from mythos.backends import DEFAULT_COMMAND, DEFAULT_MODEL, DEFAULT_TIMEOUT
-from mythos.harness import MythosHarness, default_runs_dir
+from mythos.harness import (
+    DEFAULT_RENDER_TIMEOUT,
+    MythosHarness,
+    default_runs_dir,
+)
 
 #: Artifact names a run may contain, in chain order (plus raw traces).
 ARTIFACT_ORDER = [
@@ -82,22 +86,36 @@ class MythosService:
     # ------------------------------------------------------------------ #
 
     def _build_harness(self, options: dict[str, Any]) -> MythosHarness:
-        return self._harness_factory(
+        kwargs: dict[str, Any] = dict(
             command=options.get("command", DEFAULT_COMMAND),
             model=options.get("model", DEFAULT_MODEL),
             timeout=float(options.get("timeout", DEFAULT_TIMEOUT)),
             offline=bool(options.get("offline", False)),
             runs_dir=self.runs_dir,
         )
+        render_timeout = float(
+            options.get("render_timeout", DEFAULT_RENDER_TIMEOUT))
+        try:
+            return self._harness_factory(render_timeout=render_timeout,
+                                         **kwargs)
+        except TypeError:
+            # Custom harness factories (tests) may not accept render_timeout.
+            return self._harness_factory(**kwargs)
 
     def _execute(self, job: Job) -> None:
         harness = self._build_harness(job.options)
+
+        def _record_run_dir(run_id: str) -> None:
+            with self._lock:
+                job.run_id = run_id
+
         try:
             manifest = harness.run(
                 job.prompt,
                 render=bool(job.options.get("render", False)),
                 quality=str(job.options.get("quality", "l")),
                 max_repairs=int(job.options.get("max_repairs", 3)),
+                run_dir_callback=_record_run_dir,
             )
             with self._lock:
                 job.manifest = manifest
@@ -140,8 +158,23 @@ class MythosService:
         return job
 
     def get_job(self, job_id: str) -> Job | None:
+        import json
+
         with self._lock:
-            return self._jobs.get(job_id)
+            job = self._jobs.get(job_id)
+            if job is None:
+                return None
+            if job.status == "running" and job.run_id:
+                # Live progress: surface the on-disk manifest (written
+                # atomically after every stage) instead of waiting for the
+                # chain to finish.
+                manifest_path = self.runs_dir / job.run_id / "manifest.json"
+                try:
+                    job.manifest = json.loads(
+                        manifest_path.read_text(encoding="utf-8"))
+                except (OSError, ValueError):
+                    pass
+            return job
 
     def list_jobs(self) -> list[Job]:
         with self._lock:
