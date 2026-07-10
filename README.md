@@ -166,6 +166,21 @@ v1.1 is the release where the Mythos chain stops being a layer and becomes **the
 | **Offline everything** | The entire chain, the API, and every MCP tool run deterministically with `--offline` — zero model calls, zero render deps. CI proves it on every push. |
 | **New showcase films** | The reverse reasoning tree and the grammar reel, written in the engine's own cinematography grammar and rendered to the GIFs at the top of this page. |
 
+### The hardening update (July 2026)
+
+Every entry below encodes a failure observed in a real run, then fixed:
+
+| Change | What it means |
+|---|---|
+| **Fable-first, with an Anthropic ladder** | `claude-fable-5` is the baseline for every reasoning stage. If it fails for a *model* reason (overload, not-found, 5xx), the chain walks `M2M_MODEL_FALLBACKS` — `claude-opus-4-8`, then `claude-sonnet-5` — through the **same Claude CLI subscription login, never an API key**. The first model that answers sticks for the rest of the run, and the manifest records the switch. |
+| **Auth fails fast** | A logged-out CLI used to die opaquely mid-chain. Now it raises immediately with the fix (`claude /login`) — and never wastes fallback attempts, because a broken login is broken for every model. |
+| **Self-defending chain** | Degenerate stage output (a 48-byte math dossier once storyboarded an *empty film*) is rejected, retried once with a corrective nudge, and aborts loudly on the second offense. |
+| **Truthful, live manifests** | Manifests are written atomically after every stage (Windows-safe), so `m2m_get_job` and `GET /v1/jobs/{id}` stream real per-stage progress instead of silence until the end. |
+| **Render budget** | Renders get their own `M2M_RENDER_TIMEOUT` (default 1800 s); a timeout no longer kills the job or burns model-repair attempts on a budget problem. |
+| **`math-to-manim doctor`** | Preflight before you spend 30 minutes: configuration and where each value came from, backend login (`--ping` walks the whole model ladder with 1-line calls), manim/ffmpeg/latex, runs-dir writability. |
+| **`math-to-manim gif`** | One command from a run id (or any `.mp4`) to a palette-optimized showcase GIF — the exact recipe behind every GIF on this page. |
+| **Config from env, never from code** | All knobs live in the environment or a gitignored `.env` (see [Configuration](#quickstart)); the audit removed the last hardcoded personal path. |
+
 ---
 
 ## The morning it started
@@ -258,6 +273,8 @@ Between those two altitudes sit the rest of the plates: derivatives for a first 
 
 **This repo is built around Claude Fable 5.** The six agents are Claude Code subagents; the harness drives them headlessly through the Claude CLI with `claude-fable-5` as the baseline; every frame is written with the camera as narrator — plain-language headlines before symbols, flights into the exact term being explained, pull-backs to restore context, true-3D set pieces.
 
+Behind Fable stands an all-Anthropic ladder on the same CLI subscription login: if the baseline fails for a model-specific reason, the chain quietly steps down to `claude-opus-4-8`, then `claude-sonnet-5`, sticks with the first model that answers, and writes the switch into the run's manifest. No API key is involved at any rung — and a logged-out CLI fails fast with the fix instead of failing slow with a mystery.
+
 The chain: **intent → cartographer → curriculum → math-director → cinematographer → scene-composer**, then codegen → static checks → render → self-repair.
 
 | Agent | Question it answers | Artifact |
@@ -276,7 +293,8 @@ The chain: **intent → cartographer → curriculum → math-director → cinema
 | Camera grammar | [`mythos/cinematography.py`](mythos/cinematography.py) | `headline`, `zoom_to`, `pull_back`, `term_tour`, `tilt_to_3d`, glows — the Mythos house style, Anthropic palette |
 | Cinematic Charter | [`mythos/charter.py`](mythos/charter.py) | The visual contract injected into every generation |
 | Service core | [`mythos/service.py`](mythos/service.py) | Job orchestration shared by the CLI, the API, and the MCP server |
-| Backends | [`mythos/backends.py`](mythos/backends.py) | Claude CLI (default) · Codex CLI · any OpenAI-compatible endpoint |
+| Backends | [`mythos/backends.py`](mythos/backends.py) | Claude CLI (default, with the Anthropic fallback ladder) · Codex CLI · any OpenAI-compatible endpoint — the last two are explicit choices, never fallbacks |
+| Preflight | [`mythos/doctor.py`](mythos/doctor.py) | `math-to-manim doctor --ping`: config provenance, login, the model ladder, render toolchain |
 | Flagship films | [`examples/mythos/`](examples/mythos/) | QED in 8 acts, the Sound of Spacetime, the reverse reasoning tree, the grammar reel |
 
 ```bash
@@ -289,7 +307,7 @@ math-to-manim run "explain quantum field theory" --render -q m
 manim -qh examples/mythos/qft_cinematic.py QFTCinematicJourney
 ```
 
-The model backend is a seam, not a marriage: `--model` overrides the model, `--command fugu-api` routes the same chain through an OpenAI-compatible endpoint, and `--command codex` uses the Codex CLI. The v1.0 typed pipeline that these seams grew out of is preserved in [`archive/codex-pipeline/`](archive/).
+The model backend is a seam, not a marriage: `--model` overrides the baseline, `--fallbacks "a,b"` reshapes the Anthropic ladder (empty disables it), `--command fugu-api` routes the same chain through an OpenAI-compatible endpoint, and `--command codex` uses the Codex CLI. Codex and fugu are escape hatches you choose on purpose — the chain never falls back across backends on its own. The v1.0 typed pipeline that these seams grew out of is preserved in [`archive/codex-pipeline/`](archive/).
 
 <p align="center">
   <img src="docs/assets/mythos-qft-term-tour.png" alt="Camera inside the QED Lagrangian: the Dirac term spotlit with a plain-language caption" width="49%" />
@@ -328,8 +346,9 @@ math-to-manim runs        # inspect the on-disk ledger
 **Make a real film** — needs only a logged-in Claude CLI; the defaults already point at `claude-fable-5`:
 
 ```bash
-math-to-manim doctor --ping   # preflight: config, backend login, manim, ffmpeg, latex
+math-to-manim doctor --ping   # preflight: config, login, the model ladder, manim, ffmpeg, latex
 math-to-manim run "Show why the quantum harmonic oscillator only allows discrete energies: start with a springy potential well, zoom into the wavefunctions, then reveal the ladder of allowed energy levels." --render -q l
+math-to-manim gif <run-id>    # palette-optimized showcase GIF from that run's render
 ```
 
 **Configuration** lives in the environment (or a local, gitignored `.env`) — nothing personal is hardcoded:
@@ -434,13 +453,19 @@ Claude Desktop / Claude Code config:
 
 | Tool | What it does |
 |---|---|
-| `m2m_create_animation` | One sentence in; starts the 6-agent chain as a background job |
-| `m2m_get_job` | Poll a job until the chain completes |
+| `m2m_create_animation` | One sentence in; starts the 6-agent chain as a background job (model/backend default to the server's env — Fable with the Anthropic ladder) |
+| `m2m_get_job` | Poll a job — now reports **live per-stage progress** from the atomically-written manifest, not silence until the end |
 | `m2m_list_runs` | The on-disk run ledger, newest first |
 | `m2m_get_run` | Full manifest + artifact listing for one run |
 | `m2m_get_artifact` | Read any artifact: the reverse reasoning tree, the shot list, … |
 | `m2m_get_scene_code` | The generated Manim scene, ready to render |
 | `m2m_cinematic_charter` | The house-style contract, so an assistant can write scenes directly |
+
+Need a headless client instead of a chat window? [`scripts/drive_mcp_pipeline.py`](scripts/drive_mcp_pipeline.py) is the reference: it spawns `serve-mcp` over stdio, submits one prompt, polls to completion, and logs JSONL you can tail from another terminal:
+
+```bash
+python scripts/drive_mcp_pipeline.py "why does a spinning T-handle flip itself?" --render -q l --log runs/drive.log
+```
 
 That last tool is the quiet superpower: an MCP client that already writes code can pull the Cinematic Charter and the [cinematography grammar](mythos/cinematography.py) and compose Mythos-style scenes itself, using the chain only when it wants the full reasoning treatment.
 

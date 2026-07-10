@@ -44,6 +44,13 @@ def _cmd_doctor(args: argparse.Namespace) -> int:
     return run_doctor(command=args.command, model=args.model, ping=args.ping)
 
 
+def _cmd_gif(args: argparse.Namespace) -> int:
+    from mythos.gifs import make_gif
+
+    make_gif(args.target, args.output, fps=args.fps, width=args.width)
+    return 0
+
+
 def _cmd_runs(args: argparse.Namespace) -> int:
     from mythos.service import MythosService
 
@@ -109,6 +116,17 @@ def build_parser() -> argparse.ArgumentParser:
     doctor.add_argument("--ping", action="store_true",
                         help="make one tiny model call to verify login")
     doctor.set_defaults(func=_cmd_doctor)
+
+    gif = sub.add_parser(
+        "gif", help="Palette-optimized GIF from a run id or an .mp4 "
+                    "(the showcase recipe)")
+    gif.add_argument("target", help="run id under runs/mythos/ or a path "
+                                    "to a rendered .mp4")
+    gif.add_argument("-o", "--output", default=None,
+                     help="output path (default: next to the source)")
+    gif.add_argument("--fps", type=int, default=12)
+    gif.add_argument("--width", type=int, default=640)
+    gif.set_defaults(func=_cmd_gif)
 
     api = sub.add_parser("serve-api", help="Serve the REST API (FastAPI)")
     api.add_argument("--host", default="127.0.0.1")
