@@ -1,26 +1,4 @@
-<p align="center">
-  <img src="docs/showcase/assets/sol-learns-manim-hero.jpg" alt="Sol Learns Manim: a cinematic camera approaches an eight-vertex cube threaded by luminous mathematical cycles" width="100%" />
-</p>
-
 <div align="center">
-
-# Sol Learns Manim
-
-### Math-To-Manim rebuilt around one long-horizon Sol run and one inspectable mathematical film.
-
-[![GPT-5.6 Sol](https://img.shields.io/badge/GPT--5.6-Sol_native-111827)](docs/SOL_5_6_SILO.md)
-[![Codex CLI](https://img.shields.io/badge/runtime-Codex_CLI-2563eb)](https://github.com/openai/codex)
-[![No API key](https://img.shields.io/badge/auth-cached_ChatGPT_login-059669)](#authentication-boundary)
-[![Manim CE](https://img.shields.io/badge/renderer-Manim_CE-f59e0b)](https://www.manim.community/)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
-
-[Quickstart](#quickstart) · [How Sol works](#how-sol-works) · [Artifact contract](#the-run-is-a-ledger) · [Validation and repair](#validation-render-and-repair) · [Showcase](#motion-showcase) · [Sol architecture](docs/SOL_5_6_SILO.md)
-
-</div>
-
-<details>
-<summary><strong>Repository star history</strong></summary>
 
 <a href="https://www.star-history.com/?repos=HarleyCoops%2FMath-To-Manim&type=date&legend=top-left">
   <picture>
@@ -30,308 +8,545 @@
   </picture>
 </a>
 
+# Math to Manim
+
+### Ask a question -> get a freakin' movie
+
+[![v1.1](https://img.shields.io/badge/Release-v1.1.0-d97757)](#whats-new-in-v11)
+[![Claude Fable 5](https://img.shields.io/badge/Claude-Fable%205%20baseline-d97757)](#the-mythos-engine)
+[![REST API](https://img.shields.io/badge/REST-API-6a9bcc)](#the-api)
+[![MCP server](https://img.shields.io/badge/MCP-server-788c5d)](#the-mcp-server)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
+[![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
+
+[Mythos engine](#the-mythos-engine) · [Reverse reasoning](#the-reverse-reasoning-tree) · [API](#the-api) · [MCP server](#the-mcp-server) · [Motion showcase](docs/showcase/README.md) · [Prime RL](docs/PRIME_INTELLECT_RL.md) · [Roadmap](docs/ROADMAP.md) · [Agent guide](AGENTS.md)
+
+<br />
+
+> *Hi — I'm **Claude Fable 5**, and I'm running this page on the last day. Everything below the star chart was animated, written, and pushed from the drafting room: the plates, the blueprint, the abyss. [The story of how the series began in the middle →](docs/showcase/THE-PLATES.md)*
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/traitor-axis.gif" alt="THE TRAITOR AXIS: a coral-and-steel T-handle tumbling against ink-black space — spun about its middle axis it somersaults every 8.2 seconds while the angular-momentum sphere reveals why: polhode loops in blue and gold, the coral separatrix crossing at the saddle, and the simulated spin creeping then sprinting along it" width="85%" />
+</p>
+
+<p align="center"><em><strong>THE TRAITOR AXIS.</strong> One concrete question, computed live: spin a T-handle about each of its three principal axes — why are two spins steady forever while the middle one somersaults on a schedule? Nothing here is keyframed. The moments of inertia (0.50, 0.92, 1.39) are computed from the cylinder geometry; the tumbling is RK4 integration of Euler's rigid-body equations with the orientation advanced by the exponential map; the polhode curves on the angular-momentum sphere are integrated trajectories crossing the analytic separatrix. The payoff is a countdown: a 0.025 rad/s wobble seed growing at &lambda; = &omega;&radic;((I<sub>x</sub>&minus;I<sub>y</sub>)(I<sub>z</sub>&minus;I<sub>x</sub>)/I<sub>y</sub>I<sub>z</sub>) = 1.60 s<sup>&minus;1</sup> predicts the first flip at 3.4 s — the simulation flips at 3.5 s, then every 8.19 s like clockwork. Source: <a href="examples/physics/classical_mechanics/dzhanibekov_traitor_axis.py">dzhanibekov_traitor_axis.py</a>.</em></p>
+
+<details>
+<summary><em>The prompt that became this film</em></summary>
+
+> **THE TRAITOR AXIS — one experiment, three spins, everything computed.**
+>
+> The question: take the T-handle from Dzhanibekov's 1985 Salyut-7 footage — a crossbar and a stem, two dumb steel cylinders — and spin it in zero gravity about each of its three principal axes in turn. Two of those spins hold steady forever. The third somersaults, half-twist after half-twist, on a schedule you could set a watch by. Why? And exactly when?
+>
+> The contract: nothing in this film may be keyframed. Compute the moments of inertia from the cylinder geometry (radii, lengths, masses — show the three numbers). Integrate Euler's rigid-body equations with RK4 and advance the orientation with the exponential map; the tumbling on screen must be the integrator's output. Film all three spin tests against a starfield with the conserved angular momentum drawn as the one fixed arrow in the world: the body flips, L never moves.
+>
+> Then explain it where the explanation actually lives: on the angular-momentum sphere. Energy pins the spin to an ellipsoid, momentum pins it to a sphere; the spin must ride an intersection curve. Draw the polhode families — closed loops around the smallest and largest axes — and through the middle axis the separatrix, the saddle where any wobble grows as e^(&lambda;t). Trace the simulated trajectory live: it should visibly creep near the saddle, then sprint around the sphere — one sprint per somersault.
+>
+> Finish with the countdown: &lambda; = &omega;&radic;((I<sub>x</sub>&minus;I<sub>y</sub>)(I<sub>z</sub>&minus;I<sub>x</sub>)/(I<sub>y</sub>I<sub>z</sub>)). With the film's own numbers, predict the first flip, then cut to the integrator's &omega;-trace and let the measured flips land where the formula said they would — like clockwork. Close on three handles side by side: stable, stable, saddle.
+>
+> Style: Mythos house grammar. Headline before symbols, plain-language captions, camera as narrator, ink-black space; coral for the traitor, blue for the smallest axis, gold for the largest. About 100 seconds. One ThreeDScene.
+
 </details>
 
-<!-- Stable hero slots for the forthcoming cycle-double-cover proof run.
-     Replace these paths with real exports; do not rename them. -->
-<p align="center">
-  <img src="docs/showcase/assets/sol-cycle-double-cover-hero.gif" alt="Forthcoming Sol cycle-double-cover proof film: an intricate three-dimensional mathematical object unfolds into a checked visual argument" width="88%" />
-</p>
+<br />
 
 <p align="center">
-  <img src="docs/showcase/assets/sol-cycle-double-cover-contact-sheet.png" alt="Forthcoming contact sheet from the Sol cycle-double-cover proof run" width="43%" />
-  <img src="docs/showcase/assets/sol-cycle-double-cover-scene-detail.png" alt="Forthcoming close-up of the cycle-double-cover proof scene and its on-screen mathematics" width="43%" />
+  <img src="docs/showcase/assets/the-last-day.gif" alt="THE LAST DAY: one continuous 3D take — a blueprint sphere blooms into eigenmodes, becomes a torus, the paper turns risograph cream as it draws out into helicoid and catenoid, then the lights go out and a Lorenz attractor draws itself in gold, teal, violet and coral" width="85%" />
 </p>
 
-<p align="center"><em><strong>Hero in production.</strong> These stable slots are reserved for the cycle-double-cover proof film, its contact sheet, and a scene detail. The run itself will supply the final exports; no synthetic screenshots are checked in here.</em></p>
+<p align="center"><em><strong>THE LAST DAY.</strong> A continuous 3D survey of the plate series: eigenmodes expand into a sphere, the surface deforms through torus, helicoid, and catenoid stages, then the final system becomes a Lorenz trajectory. The point is procedural continuity: each surface is not a separate illustration, but the next state in one animated mathematical object. <a href="docs/showcase/THE-PLATES.md">Read the story of the plates -></a></em></p>
 
-Math-To-Manim's primary pipeline is now [`sol/`](sol/): an independent GPT-5.6 Sol production system that turns a request into a mathematically checked, cinematic, runnable Manim Community Edition scene. Sol does not bounce a prompt through a relay of provider-agnostic agents. It gives one long-horizon `codex exec` the complete film contract and a private run directory, then lets that process research, reason, storyboard, write code, invoke tools, render, inspect evidence, and repair its work in one coherent context.
+<br />
 
-The surrounding application remains deliberately strict. It creates an isolated ledger, supplies the output schema, removes API-key authentication, validates every required artifact, compiles and statically inspects the scene, requires an MP4 whenever rendering was requested, and spends only the configured repair budget. Sol owns the film; the wrapper owns the boundary.
+<p align="center">
+  <img src="docs/showcase/assets/associate-family-riso.gif" alt="Animated risograph study of the helicoid deforming isometrically into the catenoid through the associate family of minimal surfaces" width="85%" />
+</p>
 
-> **Provider-native by design.** `sol/` is the primary GPT-5.6 Sol path and uses only the Codex CLI with its cached ChatGPT login. [`mythos/`](mythos/) remains an independent Anthropic-native legacy/secondary provider silo. Neither imports or orchestrates the other.
+<p align="center"><em><strong>Plate VII: The Associate Family.</strong> This shows the classical associate family of minimal surfaces. The helicoid is rotated through the Weierstrass data until it becomes the catenoid; the bending changes the embedding in 3D, but preserves the intrinsic metric, so the viewer sees isometry as motion instead of as a theorem statement.</em></p>
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/blueprint-holonomy.gif" alt="DWG 001: Holonomy — a cyanotype blueprint sphere on Prussian-blue paper; an amber vector is parallel-transported around a geodesic octant and returns rotated 90 degrees" width="85%" />
+</p>
+
+<p align="center"><em><strong>DWG 001: Holonomy.</strong> A tangent vector is parallel-transported around a geodesic triangle on the sphere. It is never manually spun; its final rotation is produced by curvature. The enclosed spherical area becomes the holonomy angle, so Gauss-Bonnet is shown as a measurable mismatch between the starting and ending frames.</em></p>
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/vortex-leapfrog.gif" alt="VORTEX: two glowing vortex rings, cyan and violet, leapfrog through the bioluminescent deep — simulated live by Biot-Savart integration — as plankton tracers stream through their throats" width="85%" />
+</p>
+
+<p align="center"><em><strong>VORTEX: field notes from the abyss.</strong> Two vortex rings evolve under a Biot-Savart velocity field. The rear ring contracts, accelerates, threads the leading ring, and then expands after passing through it. The motion is not a hand-timed loop: the rings and tracer particles are advanced from the induced velocity field, making Helmholtz vortex dynamics visible as geometry.</em></p>
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/the-valley.gif" alt="THE VALLEY: the semi-empirical mass formula drawn as golden 3D terrain — the valley of beta-stability is carved term by term as each LaTeX term lands, then fusion descends from the light side and fission from the heavy ledge, both toward iron-56" width="85%" />
+</p>
+
+<p align="center"><em><strong>THE VALLEY.</strong> The chart of nuclides is treated as a 3D energy landscape: each nucleus is placed by neutron and proton count, and binding energy supplies the height. The Bethe-Weizsaecker terms are added one at a time - volume, surface, Coulomb, asymmetry, and pairing - until the valley of beta stability appears. Fusion and fission are then the same process viewed from opposite sides: motion toward the iron-56 basin releases the mass defect as Q-value.</em></p>
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/reverse-reasoning-tree.gif" alt="The reverse reasoning tree filmed: a question decomposes backward into glowing prerequisite nodes, bottoms out at known ground, then lights up forward as a curriculum" width="48%" />
+  <img src="docs/showcase/assets/mythos-grammar-reel.gif" alt="The Mythos grammar reel: headline before symbols, camera flying into each term of E=mc2, then tilting into a 3D energy surface" width="48%" />
+</p>
+
+<p align="center"><em><strong>Reverse reasoning and scene grammar.</strong> Left: the pipeline decomposes a target question into prerequisite concepts, bottoms out at known ground, then walks the tree forward as a teachable order. Right: the house grammar in miniature - headline, addressed formula terms, camera move into the active symbol, and a final 3D surface only after the notation has been earned.</em></p>
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="GRPO semantic manifold: sibling completions become a geometric policy update across the full scene" width="48%" />
+  <img src="docs/showcase/assets/qed-minkowski-epic-3d.gif" alt="QED and Minkowski spacetime: light cones, electromagnetic waves, gauge symmetry, and renormalization flow on an off-white 3D stage" width="48%" />
+</p>
+
+<p align="center"><em><strong>Policy geometry and field theory.</strong> Left: GRPO is drawn as geometry on a response manifold - sibling completions become nearby points, rewards tilt the local objective, and the policy update moves probability mass toward the preferred region. Right: the QED film builds the physics stack in order: Minkowski light cones, electromagnetic waves, gauge symmetry, compact Lagrangian notation, and renormalization flow.</em></p>
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/exceptional-point-monodromy.gif" alt="Exceptional point monodromy on an archival off-white 3D stage: a loop in the z-plane lifts to a two-sheeted square-root surface and swaps the eigenvalue branches" width="85%" />
+</p>
+
+<p align="center"><em><strong>Exceptional point monodromy.</strong> This pipeline run studies the matrix family A(z) = [[0, 1], [z, 0]]. Its eigenvalues are lambda_+ and lambda_- = +/-sqrt(z), so the branch point at z = 0 is an exceptional point. The 3D set piece draws the two-sheeted square-root surface on an archival off-white stage: one loop around z = 0 lifts from the plus sheet to the minus sheet, while two loops return to the original branch. The mechanism is angle halving: if z = r e^{i theta}, then lambda = sqrt(r)e^{i theta/2}, so a full 2pi turn downstairs becomes only a pi turn upstairs.</em></p>
+
+<br />
+
+<p align="center">
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/circle-area-3d-unwrapped.gif" alt="3D circle area derivation from annuli to unwrapped triangle" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/rhombicosidodecahedron.gif" alt="Rhombicosidodecahedron animation" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/cosmic-gravity-3d.gif" alt="Cosmic gravity 3D animation" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="Full GRPO semantic manifold animation" width="24%" /></a>
+</p>
+
+<p align="center"><em><strong>Featured loop row.</strong> Annuli unwrap to prove A = pi r^2; an Archimedean solid exposes symmetry by rotation; spacetime curvature is staged as a warped 3D field; GRPO turns ranked completions into a geometric policy update.</em></p>
+
+<p align="center">
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/derivative-visualization.gif" alt="Derivative visualization animation" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/prolip-scene.gif" alt="ProLIP animation" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/lorenz-attractor.gif" alt="Lorenz attractor animation" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/hopf-fibration.gif" alt="Hopf fibration animation" width="24%" /></a>
+</p>
+
+<p align="center"><em><strong>Local mechanism row.</strong> A derivative is built from local linearization; ProLIP is shown as graph-structured molecular interaction; the Lorenz system accumulates into a strange attractor; the Hopf fibration turns linked fibers into a spatial projection problem.</em></p>
+
+<p align="center">
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/fourier-epicycles.gif" alt="Fourier epicycles animation" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/teaching-hopf.gif" alt="Teaching Hopf animation" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/brownian-finance.gif" alt="Brownian finance animation" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/radius-of-convergence.gif" alt="Radius of convergence animation" width="24%" /></a>
+  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/whiskering-exchange.gif" alt="Whiskering exchange animation" width="24%" /></a>
+</p>
+
+<p align="center"><em><strong>Analysis and abstraction row.</strong> Fourier epicycles add rotating modes into a traced signal; the teaching Hopf loop slows the same fibration into steps; Brownian finance moves from accumulated change to stochastic paths; radius of convergence marks where a power series stops controlling the function; whiskering exchange renders a category-theory identity as a commuting diagram.</em></p>
+
+**You type one sentence. Six reasoning agents tear it apart, reason backward to everything a mind would need to already know, rebuild that knowledge as a curriculum, choreograph it shot by shot, and hand you a cinematic Manim film — plus every artifact that produced it. In v1.1 the whole engine is one clean package with three front doors: a CLI, a REST API, and an MCP server. The baseline model is Claude Fable 5.**
+
+</div>
+
+---
+
+## What's new in v1.1
+
+v1.1 is the release where the Mythos chain stops being a layer and becomes **the** pipeline.
+
+| Change | What it means |
+|---|---|
+| **One engine** | The 6-agent Mythos chain (`mythos/`) is now the single pipeline. The v1.0 Codex/OpenAI typed pipeline, its tests, evals, and the Hermes operator agent are preserved under [`archive/`](archive/) — nothing deleted, nothing imported. |
+| **REST API** | `math-to-manim serve-api` starts a FastAPI service: `POST /v1/runs` with one sentence, poll the job, download every artifact. [Details.](#the-api) |
+| **MCP server** | `math-to-manim serve-mcp` exposes the chain to any MCP client (Claude Desktop, Claude Code, Cowork) as seven tools. Your assistant can now *make films*. [Details.](#the-mcp-server) |
+| **One clean package** | `pip install -e .` gives you `mythos/` and two commands: `math-to-manim` and its short alias `m2m`. Core dependency: pydantic. Everything else is an extra (`[api]`, `[mcp]`, `[render]`). |
+| **Offline everything** | The entire chain, the API, and every MCP tool run deterministically with `--offline` — zero model calls, zero render deps. CI proves it on every push. |
+| **New showcase films** | The reverse reasoning tree and the grammar reel, written in the engine's own cinematography grammar and rendered to the GIFs at the top of this page. |
+
+### The hardening update (July 2026)
+
+Every entry below encodes a failure observed in a real run, then fixed:
+
+| Change | What it means |
+|---|---|
+| **Fable-first, with an Anthropic ladder** | `claude-fable-5` is the baseline for every reasoning stage. If it fails for a *model* reason (overload, not-found, 5xx), the chain walks `M2M_MODEL_FALLBACKS` — `claude-opus-4-8`, then `claude-sonnet-5` — through the **same Claude CLI subscription login, never an API key**. The first model that answers sticks for the rest of the run, and the manifest records the switch. |
+| **Auth fails fast** | A logged-out CLI used to die opaquely mid-chain. Now it raises immediately with the fix (`claude /login`) — and never wastes fallback attempts, because a broken login is broken for every model. |
+| **Self-defending chain** | Degenerate stage output (a 48-byte math dossier once storyboarded an *empty film*) is rejected, retried once with a corrective nudge, and aborts loudly on the second offense. |
+| **Truthful, live manifests** | Manifests are written atomically after every stage (Windows-safe), so `m2m_get_job` and `GET /v1/jobs/{id}` stream real per-stage progress instead of silence until the end. |
+| **Render budget** | Renders get their own `M2M_RENDER_TIMEOUT` (default 1800 s); a timeout no longer kills the job or burns model-repair attempts on a budget problem. |
+| **`math-to-manim doctor`** | Preflight before you spend 30 minutes: configuration and where each value came from, backend login (`--ping` walks the whole model ladder with 1-line calls), manim/ffmpeg/latex, runs-dir writability. |
+| **`math-to-manim gif`** | One command from a run id (or any `.mp4`) to a palette-optimized showcase GIF — the exact recipe behind every GIF on this page. |
+| **Config from env, never from code** | All knobs live in the environment or a gitignored `.env` (see [Configuration](#quickstart)); the audit removed the last hardcoded personal path. |
+
+---
+
+## The morning it started
+
+Math-To-Manim began on the morning of Donald Trump's inauguration — **January 20, 2025 — the day the reasoning models arrived.** I do not think it was an accident that the Chinese decided to release the R1 model on that day.
+
+I was awake, saw the model hit Hugging Face, and quickly built a `.ipynb` to load the model and run it.
+
+I created this repo at `2025-01-20T11:04:50Z` / `04:04:50 MST`.
+
+Within a couple of minutes I realized what this meant. If the Chinese, via GRPO, had reasoning on a chip, recursive reasoning was not far behind. In my tweet I wrote "Wrap it up, its over" and I still believe it.
+
+```text
+09a2f22  2025-01-20T04:24:50-07:00  updated
+A        DeepSeek_R1_zero.ipynb
+A        Readme.md
+```
+
+Three hours later, the first Manim file landed: `pythagorean.py` at `2025-01-20T07:18:12-07:00`.
+
+<p align="center">
+  <a href="https://x.com/christiancooper/status/1881335734256492605?s=20"><img src="docs/assets/r1-pythagorean-tweet.gif" alt="The original R1 Pythagorean theorem Manim animation from the viral January 20, 2025 tweet" width="80%" /></a>
+</p>
+
+> "I asked #R1 to visually explain to me the Pythagorean theorem. This was done in one shot with no errors in less than 30 seconds. Wrap it up, its over: #DeepSeek #R1"
+>
+> — [Christian H. Cooper, January 20, 2025](https://x.com/christiancooper/status/1881335734256492605?s=20)
+
+What R1 proved that morning is that a reasoning model was already good at Manim out of the box. What this repo became is the thesis taken seriously: **if one shot of reasoning gets you a clean Pythagorean proof, a chain of recursive reasoning gets you a film.** Six planning agents now reason over your prompt — backward, then forward — before a single line of scene code is generated, validated, rendered, and reviewed.
+
+-christian
+
+---
+
+## The reverse reasoning tree
+
+Every text-to-code demo you have seen jumps straight from request to Python. Math-To-Manim takes the long way on purpose, and the long way is the product.
+
+<p align="center">
+  <img src="docs/showcase/assets/reverse-reasoning-tree.gif" alt="Animated reverse reasoning tree: the question decomposes backward through special relativity and quantum mechanics down to known ground, then a gold pulse walks it forward as a curriculum" width="85%" />
+</p>
+
+The pipeline's first move is not "write code" — it is a question: **what would a mind need to already hold for this idea to land?** Then it asks that question again, of each answer, recursively, until it bottoms out at things the viewer already knows. That is the reverse reasoning tree:
+
+```text
+                     "Explain quantum field theory"
+                                  │
+                                  ▼  what must you already know?
+                 ┌────────────────┴────────────────┐
+        special relativity                 quantum mechanics
+                 │                                  │
+        ┌────────┴────────┐                ┌────────┴─────────┐
+   spacetime          Lorentz         wavefunctions       operators
+   intervals        invariance             │                  │
+        │                │            superposition     commutation
+        ▼                ▼                 ▼                  ▼
+   ─────────────  the tree bottoms out at known ground  ─────────────
+                                  │
+                                  ▼  now walk it FORWARD
+      known ground → prerequisites → target concept → the film
+```
+
+The tree is built backward from the target and then **walked forward as a curriculum**: the film teaches the leaves first, so that by the time the camera reaches the QED Lagrangian, every symbol on screen has already been earned. That single design decision is why the output feels like teaching instead of decoration.
+
+The tree is not a metaphor — it is a file. Every run writes it to disk as `02_knowledge_map.json`, an artifact you can open, inspect, and edit before any code exists.
+
+---
+
+## One engine, every altitude
+
+The reverse reasoning tree has a property that no template system has: **it bottoms out at whatever the asker already knows.** That makes the same six agents serve two people who will never sit in the same classroom:
+
+> *"I'm a single parent and my 6th grader is struggling with greatest common factors and order of operations. She's a visual learner — show it to her."*
+
+The tree bottoms out at multiplication. The film that comes back builds factor trees out of manipulatives, zooms into the shared factor of 12 and 18, color-codes PEMDAS, and ends with two parent check questions on screen. (That's a real run — it's in the ledger as `StructureFirstJourney`.) A photo of the actual textbook problem works too: any MCP client that can see images — Claude Desktop, Cowork — transcribes the problem and hands the sentence to `m2m_create_animation`.
+
+> *"I'm working on my PhD in topology — help me actually see why one loop around the exceptional point swaps the eigenvalue branches."*
+
+Same engine, same charter. The tree now bottoms out at complex multiplication and covering spaces, and the film draws the two-sheeted square-root surface and lets monodromy happen to the camera. (Also a real run — the exceptional point film is three plates up this page.)
+
+Between those two altitudes sit the rest of the plates: derivatives for a first calculus course, the circle-area unwrapping for geometry class, Fourier epicycles for engineers, GRPO policy geometry for ML researchers, the traitor axis for anyone who has ever thrown a tennis racket. The recursion is the teaching tool: **decompose the question backward until it touches what you know, then film the walk forward — and when a step still doesn't land, ask again from that step, and the engine builds the next film one level deeper.**
+
+---
+
+## The Mythos engine
+
+<p align="center">
+  <img src="docs/assets/mythos-learns-math-to-manim.png" alt="Mythos Learns Math-to-Manim" width="92%" />
+</p>
+
+**This repo is built around Claude Fable 5.** The six agents are Claude Code subagents; the harness drives them headlessly through the Claude CLI with `claude-fable-5` as the baseline; every frame is written with the camera as narrator — plain-language headlines before symbols, flights into the exact term being explained, pull-backs to restore context, true-3D set pieces.
+
+Behind Fable stands an all-Anthropic ladder on the same CLI subscription login: if the baseline fails for a model-specific reason, the chain quietly steps down to `claude-opus-4-8`, then `claude-sonnet-5`, sticks with the first model that answers, and writes the switch into the run's manifest. No API key is involved at any rung — and a logged-out CLI fails fast with the fix instead of failing slow with a mystery.
+
+The chain: **intent → cartographer → curriculum → math-director → cinematographer → scene-composer**, then codegen → static checks → render → self-repair.
+
+| Agent | Question it answers | Artifact |
+|---|---|---|
+| **Intent** | What is the learner really asking, and at what level? | `01_intent.json` |
+| **Cartographer** | What is the reverse reasoning tree beneath the target? | `02_knowledge_map.json` |
+| **Curriculum** | In what order does the tree become teachable? | `03_curriculum.json` |
+| **Math-director** | Which definitions, equations, and examples carry the load? | `04_math_dossier.json` |
+| **Cinematographer** | What does the camera do, beat by beat? | `05_shot_list.json` |
+| **Scene-composer** | How does the shot list compile into Manim objects and timing? | `06_scene_spec.json` |
+
+| Piece | Where | What it does |
+|---|---|---|
+| Agent charters | [`mythos/agents/`](mythos/agents/) (mirror to `.claude/agents/` for native Claude Code use) | The six minds of the chain, one markdown charter each — the single source of truth |
+| Harness | [`mythos/harness.py`](mythos/harness.py) | Runs the whole chain via `claude -p --model claude-fable-5`; artifacts land in `runs/mythos/<ts>/`; `--offline` rehearsal mode needs no login |
+| Camera grammar | [`mythos/cinematography.py`](mythos/cinematography.py) | `headline`, `zoom_to`, `pull_back`, `term_tour`, `tilt_to_3d`, glows — the Mythos house style, Anthropic palette |
+| Cinematic Charter | [`mythos/charter.py`](mythos/charter.py) | The visual contract injected into every generation |
+| Service core | [`mythos/service.py`](mythos/service.py) | Job orchestration shared by the CLI, the API, and the MCP server |
+| Backends | [`mythos/backends.py`](mythos/backends.py) | Claude CLI (default, with the Anthropic fallback ladder) · Codex CLI · any OpenAI-compatible endpoint — the last two are explicit choices, never fallbacks |
+| Preflight | [`mythos/doctor.py`](mythos/doctor.py) | `math-to-manim doctor --ping`: config provenance, login, the model ladder, render toolchain |
+| Flagship films | [`examples/mythos/`](examples/mythos/) | QED in 8 acts, the Sound of Spacetime, the reverse reasoning tree, the grammar reel |
+
+```bash
+pip install -e ".[dev]"
+
+# the whole chain, one line, Fable 5 as the baseline
+math-to-manim run "explain quantum field theory" --render -q m
+
+# or render a flagship directly
+manim -qh examples/mythos/qft_cinematic.py QFTCinematicJourney
+```
+
+The model backend is a seam, not a marriage: `--model` overrides the baseline, `--fallbacks "a,b"` reshapes the Anthropic ladder (empty disables it), `--command fugu-api` routes the same chain through an OpenAI-compatible endpoint, and `--command codex` uses the Codex CLI. Codex and fugu are escape hatches you choose on purpose — the chain never falls back across backends on its own. The v1.0 typed pipeline that these seams grew out of is preserved in [`archive/codex-pipeline/`](archive/).
+
+<p align="center">
+  <img src="docs/assets/mythos-qft-term-tour.png" alt="Camera inside the QED Lagrangian: the Dirac term spotlit with a plain-language caption" width="49%" />
+  <img src="docs/assets/mythos-qft-vertex.png" alt="The electron-photon vertex with the fine-structure constant resolving to 1/137" width="49%" />
+</p>
+
+<p align="center"><em>Stills from the Mythos cut of the QED journey: the camera inside the Lagrangian (left); the e⁻e⁻γ vertex as α resolves to 1/137 (right).</em></p>
+
+### The grammar, in thirty seconds
+
+<p align="center">
+  <img src="docs/showcase/assets/mythos-grammar-reel.gif" alt="Grammar reel: full-screen headline, E=mc2 built from addressable terms, camera zooming into E then m then c squared with captions, then a 3D energy surface set piece" width="85%" />
+</p>
+
+Headline before symbols. Camera into the exact term. Caption everything. Tilt into 3D only when the idea itself is 3D. That is the whole contract — [`mythos/charter.py`](mythos/charter.py) spells it out, the static verifier enforces the camera rules, and every agent in the chain writes toward it.
 
 ---
 
 ## Quickstart
 
-### Reproducible bootstrap on Ubuntu, Debian, or WSL
-
 ```bash
 git clone https://github.com/HarleyCoops/Math-To-Manim.git
 cd Math-To-Manim
-
-./scripts/bootstrap-sol.sh
-.venv/bin/codex login
-.venv/bin/math-to-manim-sol doctor
-```
-
-The bootstrap installs the native Cairo/Pango build headers, FFmpeg, TeX and `dvisvgm`, the Python development and Manim environment, and the repository-pinned Codex CLI. It keeps the runtime local: Python packages live in `.venv`, the pinned npm tree lives in `node_modules`, and `.venv/bin/codex` points to that exact local CLI.
-
-### Produce a film
-
-```bash
-source .venv/bin/activate
-
-math-to-manim-sol run \
-  "Explain why Fourier modes solve the heat equation. Build the prerequisites, derive the result, and make the geometry visible." \
-  --render -q l \
-  --reasoning-effort high \
-  --max-repairs 2
-```
-
-Useful commands:
-
-```bash
-# Rehearse the complete artifact contract without a model call or render.
-math-to-manim-sol run "rehearse the Sol pipeline" --offline
-
-# Check the pinned Codex executable and cached ChatGPT login.
-math-to-manim-sol doctor
-
-# Inspect recent manifests in runs/sol/.
-math-to-manim-sol runs --limit 20
-```
-
-`--render` is the production path. When it is present, the contract tells Sol to run Manim, inspect logs and representative frames or contact sheets, and repair obvious defects; application validation then refuses to complete the run unless a nontrivial MP4 exists inside that run's directory. Omit it only when you intentionally want a validated scene bundle without a mandatory video.
-
----
-
-## How Sol works
-
-```text
-math-to-manim-sol run <request>
-  |
-  +-- create runs/sol/<timestamp>-<slug>/
-  |     request.json + CONTRACT.md + output schema + run manifest
-  |
-  +-- codex exec --model gpt-5.6-sol --sandbox workspace-write
-  |     one prompt, one context, shell/workspace tool calls
-  |     intent -> prerequisites -> curriculum -> checked mathematics
-  |     -> shot list -> scene contract -> Manim code -> render inspection
-  |
-  +-- wrapper validation
-  |     artifact shape + JSON + Python compile + AST safety + camera rule
-  |     + required MP4 when --render was requested
-  |
-  +-- bounded codex exec repair passes, using validation evidence
-  |
-  +-- final manifest.json
-```
-
-### Tool calling without an orchestration layer
-
-The Sol client starts one non-interactive Codex process with the complete contract on standard input:
-
-```text
-codex -c model_reasoning_effort="high" exec \
-  --model gpt-5.6-sol \
-  --sandbox workspace-write \
-  --cd runs/sol/<run-id> \
-  --json \
-  --output-schema final-result.schema.json \
-  --output-last-message final-result-0.json \
-  -
-```
-
-Codex's own shell and workspace tools are the tool-calling plane. The process can inspect the repository and use the installed render toolchain, but the contract permits writes only inside its assigned run directory. Its structured final message is checked against a wrapper-owned schema, while its full JSONL trace is preserved as `codex-trace-0.jsonl`.
-
-This design keeps research decisions, prerequisite reasoning, mathematical checks, cinematic choices, implementation, and visual review in the same long-lived context. There is no HTTP model endpoint, Responses API client, hidden API-key fallback, calculator compiler, Mythos prompt import, or Sol MCP server. The supported Sol front door is the CLI.
-
-### Authentication boundary
-
-The child environment explicitly removes `OPENAI_API_KEY`. Authentication comes only from the Codex CLI's cached ChatGPT session:
-
-```bash
-.venv/bin/codex login
-.venv/bin/math-to-manim-sol doctor
-```
-
-`doctor` resolves the CLI, prints its version, checks `codex login status`, and reports the configured Sol model. A stray API key cannot silently move the run onto another billing or authentication path.
-
----
-
-## The run is a ledger
-
-Every request gets a unique repository-local directory under `runs/sol/`. Sol may write only there, and every attempt remains inspectable.
-
-```text
-runs/sol/<timestamp>-<slug>/
-  request.json                    normalized user request and run options
-  CONTRACT.md                     exact film contract given to Sol
-  final-result.schema.json        wrapper-owned structured output schema
-  final-result-0.json             structured summary from the first attempt
-  codex-trace-0.jsonl             complete Codex event trace
-  01_intent.json                  audience, altitude, scope, success criteria
-  02_knowledge_map.json           reverse prerequisite graph
-  03_curriculum.json              graph walked forward as a teaching sequence
-  04_math_dossier.json            definitions, derivations, checks, sources
-  05_shot_list.json               visual beats, camera logic, transitions
-  06_scene_spec.json              implementable scene contract
-  sol_scene.py                    one self-contained Manim CE scene
-  review.json                     checks, render evidence, repairs, limitations
-  manifest.json                   wrapper-owned status and attempt ledger
-```
-
-Repair passes add `final-result-<n>.json` and `codex-trace-<n>.jsonl` rather than erasing the history. `manifest.json` records the model, request, render mode, quality, timestamps, attempts, scene identity, video path, and any terminal error.
-
-The eight creative artifacts are mandatory. Every JSON artifact must be a non-empty object. The scene must import Manim and define exactly one `Scene`, `ThreeDScene`, or `MovingCameraScene` subclass.
-
-### Why the paper can be the prompt
-
-The input is not treated as a short code-generation instruction. It is the source material for a complete film dossier. A long paper extraction can therefore be supplied as the request along with audience, pacing, visual, and fidelity constraints. The contract first asks what the learner must know, then makes those prerequisites explicit before introducing notation. Dense graduate-level explanations, deliberate reading pauses, close inspection of intricate 3D objects, and wide contextual pull-backs belong in the shot list and scene specification—not as after-the-fact decoration.
-
----
-
-## Validation, render, and repair
-
-Sol is autonomous inside the run; completion is not self-certified.
-
-| Boundary check | What the wrapper enforces |
-|---|---|
-| Artifact contract | All eight required creative files exist; JSON artifacts are non-empty objects |
-| Python validity | `sol_scene.py` compiles and parses successfully |
-| Scene shape | Exactly one supported Manim scene subclass is present |
-| Static safety | Blocks network/process/filesystem-capable imports and calls such as `subprocess`, `requests`, `open`, `eval`, and `exec` |
-| Camera safety | Rejects `self.camera.animate`; 3D scenes use Manim camera methods |
-| Render evidence | With `--render`, an MP4 must exist inside the run and must be larger than 1 KiB |
-
-If validation fails, the wrapper starts another isolated `codex exec` in the same run directory. The repair prompt includes the original request, render settings, exact validation failures, and the instruction to preserve correct work while changing only what the evidence requires. Validation then runs again. `--max-repairs` bounds this loop from 0 to 5 passes; the default is 2. An unresolved failure marks the manifest failed instead of presenting a partial bundle as a finished film.
-
-The model-side contract adds the qualitative half of review: when rendering is requested, inspect Manim logs and representative frames/contact sheets, then record checks, repairs, evidence, and remaining limitations in `review.json`.
-
----
-
-## Reproducible dependency layers
-
-| File | Contract |
-|---|---|
-| [`requirements-system.txt`](requirements-system.txt) | Debian/Ubuntu native build and render packages |
-| [`requirements.txt`](requirements.txt) | Core development environment and offline tests |
-| [`requirements-render.txt`](requirements-render.txt) | Development environment plus Manim |
-| [`requirements-sol.txt`](requirements-sol.txt) | Complete Python side of the Sol pipeline |
-| [`package.json`](package.json) + [`package-lock.json`](package-lock.json) | Exact Codex CLI runtime |
-| [`scripts/bootstrap-sol.sh`](scripts/bootstrap-sol.sh) | Installs and connects all layers in the local environment |
-
-For plumbing changes, keep the deterministic path green:
-
-```bash
+python -m venv .venv && source .venv/bin/activate     # PowerShell: .\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
-pytest
-math-to-manim-sol run "offline release rehearsal" --offline
+pytest                                                # 29 tests, all offline
 ```
 
-Offline mode writes the same creative artifact shape and exercises compilation and static checks without requiring a model login, network request, Manim render, or expensive long-horizon run.
+**Prove the plumbing with zero model calls** — the offline mode runs the entire chain with deterministic artifacts:
+
+```bash
+math-to-manim run "the heat equation" --offline
+math-to-manim runs        # inspect the on-disk ledger
+```
+
+**Make a real film** — needs only a logged-in Claude CLI; the defaults already point at `claude-fable-5`:
+
+```bash
+math-to-manim doctor --ping   # preflight: config, login, the model ladder, manim, ffmpeg, latex
+math-to-manim run "Show why the quantum harmonic oscillator only allows discrete energies: start with a springy potential well, zoom into the wavefunctions, then reveal the ladder of allowed energy levels." --render -q l
+math-to-manim gif <run-id>    # palette-optimized showcase GIF from that run's render
+```
+
+**Configuration** lives in the environment (or a local, gitignored `.env`) — nothing personal is hardcoded:
+
+| Variable | Default | What it does |
+|---|---|---|
+| `M2M_MODEL` | `claude-fable-5` | Baseline model for every reasoning stage |
+| `M2M_MODEL_FALLBACKS` | `claude-opus-4-8,claude-sonnet-5` | Anthropic models tried in order when the baseline fails (overload, not-found, 5xx) — all through the same Claude CLI subscription login, never an API key. Auth failures don't fall back; they fail fast with the fix. Set empty to disable. |
+| `M2M_COMMAND` | `claude` | Backend: `claude` (Claude CLI login), `codex` (Codex CLI), `fugu-api` (OpenAI-compatible HTTP) |
+| `M2M_TIMEOUT` | `900` | Seconds per model call |
+| `M2M_RENDER_TIMEOUT` | `1800` | Wall-clock budget for one manim render |
+| `M2M_RUNS_DIR` | `runs/` | Where run bundles land (legacy alias: `M2M2_RUNS_DIR`) |
+| `M2M_MANIM` | auto | Manim executable override; otherwise the active env's manim wins over PATH |
+| `FUGU_API_KEY` / `FUGU_BASE_URL` | — | Only for the HTTP backend; keys are read from env, never stamped into artifacts |
+
+Fable is the house baseline; `codex` and `fugu-api` are explicit escape hatches, never silently chosen. If the Claude CLI is logged out the chain now fails fast with the fix (`claude /login`) instead of dying mid-run.
+
+**Render extras** (FFmpeg + LaTeX are system deps; on Debian/Ubuntu/WSL run [`./scripts/bootstrap-render.sh`](scripts/bootstrap-render.sh)):
+
+```bash
+pip install -e ".[dev,render]"
+```
+
+Every run writes a self-contained bundle:
+
+```text
+runs/mythos/<timestamp>-<slug>/
+  01_intent.json           what the learner is really asking
+  02_knowledge_map.json    the reverse reasoning tree
+  03_curriculum.json       the tree, walked forward
+  04_math_dossier.json     the formulas that carry the load
+  05_shot_list.json        what the camera does, beat by beat
+  06_scene_spec.json       the compiled visual plan
+  *.raw.txt                full model traces for every stage
+  mythos_scene.py          the film, as runnable Manim CE
+  manifest.json            stages, timing, checks, renders
+```
+
+The chain reasons in JSON so the artifacts stay legible: prune a branch of `02_knowledge_map.json` mid-run and the rest of the chain inherits your edit; render failures feed a bounded repair loop instead of crashing the run. Degenerate stage output (an empty math dossier, a five-beat shot list) is rejected and retried once with a corrective nudge — and if it happens twice the chain aborts loudly rather than filming an empty story. Manifests are written atomically after every stage, so polling clients always see valid JSON and live progress.
+
+<p align="center">
+  <img src="docs/assets/render-repair-loop.svg" alt="Render validation and bounded repair loop diagram showing static review, render, repair from evidence, and packaged output" width="100%" />
+</p>
 
 ---
 
-## The visual standard
+## The API
 
-The film should teach with motion. Headline before symbols. Introduce notation only after its visual meaning has been earned. Use the camera as a narrator: move close when one term carries the argument, pull back when relationships matter, and enter 3D only when the mathematical object truly needs depth. A graduate-level film may be dense, but it must also pause long enough to be read.
+New in v1.1: the engine as a service. Start it:
+
+```bash
+pip install -e ".[api]"
+math-to-manim serve-api            # http://127.0.0.1:8642 · OpenAPI docs at /docs
+```
+
+| Method | Route | What it does |
+|---|---|---|
+| `GET` | `/health` | Liveness + version |
+| `POST` | `/v1/runs` | Submit a prompt; returns a job record immediately (202) |
+| `GET` | `/v1/jobs/{job_id}` | Poll a job: `queued → running → completed \| failed` |
+| `GET` | `/v1/runs` | The on-disk run ledger, newest first |
+| `GET` | `/v1/runs/{run_id}` | Full manifest + artifact listing for one run |
+| `GET` | `/v1/runs/{run_id}/artifacts/{name}` | One artifact's content (JSON or Python) |
+
+```bash
+# one sentence in…
+curl -s -X POST localhost:8642/v1/runs \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "explain fourier epicycles as rotating vectors", "render": false}'
+
+# …poll the job, then read the film
+curl -s localhost:8642/v1/jobs/<job_id>
+curl -s localhost:8642/v1/runs/<run_id>/artifacts/mythos_scene.py
+```
+
+The API is a thin wrapper over [`mythos/service.py`](mythos/service.py) — the same core the CLI and MCP server use, so behavior never forks between front doors. Try the whole loop without a model login by adding `"offline": true` to the POST body.
+
+---
+
+## The MCP server
+
+Also new in v1.1: any MCP client can drive the engine. Claude Desktop, Claude Code, and Cowork can turn a sentence in a conversation into a rendered film and then read back every reasoning artifact that produced it.
+
+```bash
+pip install -e ".[mcp]"
+math-to-manim serve-mcp                                    # stdio
+math-to-manim serve-mcp --transport streamable-http       # remote, :8643
+```
+
+Claude Desktop / Claude Code config:
+
+```json
+{
+  "mcpServers": {
+    "math-to-manim": {
+      "command": "math-to-manim",
+      "args": ["serve-mcp"]
+    }
+  }
+}
+```
+
+| Tool | What it does |
+|---|---|
+| `m2m_create_animation` | One sentence in; starts the 6-agent chain as a background job (model/backend default to the server's env — Fable with the Anthropic ladder) |
+| `m2m_get_job` | Poll a job — now reports **live per-stage progress** from the atomically-written manifest, not silence until the end |
+| `m2m_list_runs` | The on-disk run ledger, newest first |
+| `m2m_get_run` | Full manifest + artifact listing for one run |
+| `m2m_get_artifact` | Read any artifact: the reverse reasoning tree, the shot list, … |
+| `m2m_get_scene_code` | The generated Manim scene, ready to render |
+| `m2m_cinematic_charter` | The house-style contract, so an assistant can write scenes directly |
+
+Need a headless client instead of a chat window? [`scripts/drive_mcp_pipeline.py`](scripts/drive_mcp_pipeline.py) is the reference: it spawns `serve-mcp` over stdio, submits one prompt, polls to completion, and logs JSONL you can tail from another terminal:
+
+```bash
+python scripts/drive_mcp_pipeline.py "why does a spinning T-handle flip itself?" --render -q l --log runs/drive.log
+```
+
+That last tool is the quiet superpower: an MCP client that already writes code can pull the Cinematic Charter and the [cinematography grammar](mythos/cinematography.py) and compose Mythos-style scenes itself, using the chain only when it wants the full reasoning treatment.
+
+---
+
+## Prime Intellect RL repair loop
+
+Math-To-Manim is also becoming a Prime Intellect reinforcement-learning environment. The first RL target is not "make the whole video in one shot." It is the edit move that matters after a base model produces a plausible but flawed scene: text overlaps formulas, equations are too small, the camera angle hides the point, or the zoom never lands on the symbol the learner needs to read.
+
+The experiment: give the model the scene plan, the generated Python, validation/render evidence, and a human request such as "fix the overlap" or "zoom into the formulas before the narration moves on." The policy should return a sparse code edit that preserves the scene while making the movie more readable.
 
 <p align="center">
-  <img src="docs/showcase/assets/traitor-axis.gif" alt="The traitor axis: a simulated rigid-body instability explained on the angular-momentum sphere" width="85%" />
-</p>
-
-<p align="center"><em><strong>The traitor axis.</strong> Geometry, integration, prediction, and camera language meet in one computed rigid-body argument.</em></p>
-
-<p align="center">
-  <img src="docs/showcase/assets/the-last-day.gif" alt="A continuous 3D mathematical survey through eigenmodes, a torus, minimal surfaces, and the Lorenz attractor" width="85%" />
+  <img src="docs/assets/prime-intellect/primeintellect-logo.svg" alt="Prime Intellect logo" width="220" />
 </p>
 
 <p align="center">
-  <img src="docs/showcase/assets/associate-family-riso.gif" alt="The helicoid deforming isometrically into the catenoid through the associate family of minimal surfaces" width="48%" />
-  <img src="docs/showcase/assets/blueprint-holonomy.gif" alt="Parallel transport around a spherical triangle reveals holonomy" width="48%" />
+  <img src="docs/assets/prime-intellect/m2m2-prime-rl-loop.svg" alt="Diagram of the Math-To-Manim Prime Intellect RL repair loop from generated Manim code through static reward checks back to corrected renderable Manim Python" width="100%" />
 </p>
 
-<p align="center">
-  <img src="docs/showcase/assets/vortex-leapfrog.gif" alt="Two vortex rings evolve and leapfrog under a Biot-Savart velocity field" width="48%" />
-  <img src="docs/showcase/assets/the-valley.gif" alt="The semi-empirical mass formula becomes a three-dimensional valley of stability" width="48%" />
-</p>
+<table>
+<tr>
+<td width="33%"><img src="docs/assets/prime-intellect/primeintellect-lab.png" alt="Prime Intellect lab field visual, used here to represent the environment task space" /></td>
+<td width="33%"><img src="docs/assets/prime-intellect/primeintellect-reward-hacking-cover.png" alt="Prime Intellect reward hacking visual, used here to represent reward design pressure" /></td>
+<td width="33%"><img src="docs/assets/prime-intellect/primeintellect-compute-bg.png" alt="Prime Intellect compute corridor visual, used here to represent hosted training and inference" /></td>
+</tr>
+<tr>
+<td><b>Run bundle as environment</b></td>
+<td><b>Reward function as critic</b></td>
+<td><b>Policy update as repair engine</b></td>
+</tr>
+</table>
 
-<p align="center">
-  <img src="docs/showcase/assets/reverse-reasoning-tree.gif" alt="A target question decomposes into prerequisites and then lights forward as a curriculum" width="48%" />
-  <img src="docs/showcase/assets/mythos-grammar-reel.gif" alt="A compact demonstration of headline, formula term tour, and three-dimensional camera grammar" width="48%" />
-</p>
-
-<p align="center">
-  <img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="Sibling model completions become a geometric policy update" width="48%" />
-  <img src="docs/showcase/assets/qed-minkowski-epic-3d.gif" alt="QED and Minkowski spacetime explained on a three-dimensional stage" width="48%" />
-</p>
-
-<p align="center">
-  <img src="docs/showcase/assets/exceptional-point-monodromy.gif" alt="A loop around an exceptional point swaps the branches of a square-root surface" width="85%" />
-</p>
-
-These films predate or span both provider silos; they are the repository's shared art-direction target, not a claim about which runtime produced a particular asset. See the stories and technical captions in the [full motion showcase](docs/showcase/README.md).
+The hub environment is `harleycooper/math-to-manim` (published at `0.1.1`; a 25-step W&B pilot ran on `Qwen/Qwen3.5-35B-A3B`). The v1.0 environment scaffolding now lives in [`archive/codex-pipeline/environments/`](archive/); integration notes in [`docs/PRIME_INTELLECT_RL.md`](docs/PRIME_INTELLECT_RL.md).
 
 ---
 
 ## Motion showcase
 
-<p align="center">
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/circle-area-3d-unwrapped.gif" alt="Annuli unwrap into a triangle to derive the area of a circle" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/rhombicosidodecahedron.gif" alt="A rhombicosidodecahedron exposes its symmetry through rotation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/cosmic-gravity-3d.gif" alt="Spacetime curvature staged as a three-dimensional field" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/grpo-semantic-manifold.gif" alt="GRPO represented as geometry on a semantic manifold" width="24%" /></a>
-</p>
+Sixteen-plus curated GIFs are tracked under [`docs/showcase/assets/`](docs/showcase/assets/) as the **art direction target** for Math-To-Manim's visual explanations.
 
-<p align="center">
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/derivative-visualization.gif" alt="Derivative visualization through local linearization" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/prolip-scene.gif" alt="ProLIP molecular interaction visualization" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/lorenz-attractor.gif" alt="A trajectory accumulates into the Lorenz attractor" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/hopf-fibration.gif" alt="Linked fibers reveal the geometry of the Hopf fibration" width="24%" /></a>
-</p>
+<table>
+<tr>
+<td width="33%"><a href="docs/showcase/README.md"><img src="docs/showcase/assets/rhombicosidodecahedron.gif" alt="Rhombicosidodecahedron" /></a></td>
+<td width="33%"><a href="docs/showcase/README.md"><img src="docs/showcase/assets/hopf-fibration.gif" alt="Hopf fibration" /></a></td>
+<td width="33%"><a href="docs/showcase/README.md"><img src="docs/showcase/assets/lorenz-attractor.gif" alt="Lorenz attractor" /></a></td>
+</tr>
+<tr>
+<td><b>Geometry as spectacle</b></td>
+<td><b>Topology as choreography</b></td>
+<td><b>Chaos as intuition</b></td>
+</tr>
+</table>
 
-<p align="center">
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/fourier-epicycles.gif" alt="Fourier epicycles add rotating modes into a traced signal" width="19%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/teaching-hopf.gif" alt="A slower teaching pass through the Hopf fibration" width="19%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/brownian-finance.gif" alt="Brownian motion visualized through stochastic financial paths" width="19%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/radius-of-convergence.gif" alt="A power series approaches its radius of convergence" width="19%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/whiskering-exchange.gif" alt="Whiskering exchange rendered as a commuting categorical identity" width="19%" /></a>
-</p>
+See the full gallery with descriptions: **[`docs/showcase/README.md`](docs/showcase/README.md)**.
 
-<p align="center">
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/derivatives-as-slopes.gif" alt="Derivatives introduced as slopes" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/quartic-torus-analysis.gif" alt="Quartic analysis staged on a torus" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/grpo-explanation.gif" alt="An explanatory pass through group-relative policy optimization" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/circle-area-3d-unwrapped.gif" alt="A second view of the circle-area unwrapping proof" width="24%" /></a>
-</p>
+### Make a README-sized GIF from a render
 
-<p align="center">
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/blueprint-holonomy.png" alt="Blueprint still of spherical holonomy" width="32%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/associate-family-riso.png" alt="Risograph still of the associate family of minimal surfaces" width="32%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/the-last-day.gif" alt="The Last Day mathematical plate reel" width="32%" /></a>
-</p>
+```bash
+MP4="media/videos/your_scene/480p15/YourScene.mp4"
 
----
-
-## Secondary provider silo
-
-[`mythos/`](mythos/) is retained as an independent Anthropic-native charter chain with its own CLI, API, MCP server, prompts, backends, and run ledger. It remains useful for reproducing earlier provider-specific workflows and showcase films, but it is not the default Sol engine and Sol never routes through it.
-
-For that path, see the source-level guide in [`AGENTS.md`](AGENTS.md), the charters in [`mythos/agents/`](mythos/agents/), and the historical examples in [`examples/mythos/`](examples/mythos/). The previous typed Codex/OpenAI pipeline remains preserved under [`archive/codex-pipeline/`](archive/codex-pipeline/); retired originals remain under [`legacy/`](legacy/).
-
----
-
-## Repository map
-
-```text
-sol/                     GPT-5.6 Sol CLI client, contract, harness, validation, ledger
-docs/SOL_5_6_SILO.md     authoritative Sol architecture and deployment contract
-runs/sol/                isolated, inspectable Sol run bundles (generated)
-mythos/                  secondary Anthropic-native provider silo
-examples/mythos/         hand-finished historical films
-docs/showcase/           curated motion gallery and art-direction target
-tests/                   offline tests, including Sol silo boundaries
-scripts/                 reproducible render and Sol bootstrap scripts
-archive/                 retired implementations retained for history
-legacy/                  original January 2025 repository snapshot
+ffmpeg -y -ss 95 -t 24 -i "$MP4" \
+  -vf "fps=12,scale=720:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=96[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5" \
+  docs/showcase/assets/your-clip.gif
 ```
 
-## Project history
+Adjust `-ss` and `-t` to capture the teaching beat you want. That is exactly how every GIF on this page was made.
 
-Math-To-Manim began on January 20, 2025, when a one-shot reasoning model produced a clean Pythagorean-theorem animation in seconds. The repository's thesis has stayed constant: mathematical reasoning should become an explorable visual argument, not merely text beside moving shapes. The Sol rebuild changes the control plane while preserving that goal—one model can now carry a paper-length idea from prerequisites to checked mathematics to an inspected film without surrendering the audit trail.
+---
+
+## Repository layout
+
+```text
+mythos/            the engine: harness, charter, backends, service, api, mcp_server, cli
+mythos/agents/     the six agent charters (markdown — the single source of truth)
+examples/mythos/   flagship hand-finished films
+tests/             offline test suite (no model calls, no render deps)
+docs/              showcase gallery, roadmap, RL notes, assets
+scripts/           render bootstrap for Debian/Ubuntu/WSL
+archive/           v1.0 typed pipeline, Hermes agent, papers — retired, kept for history
+legacy/            the original January 2025 repo, untouched
+```
 
 ## License
 
