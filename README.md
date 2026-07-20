@@ -14,6 +14,7 @@
 
 [![v1.1](https://img.shields.io/badge/Release-v1.1.0-d97757)](#whats-new-in-v11)
 [![Claude Fable 5](https://img.shields.io/badge/Claude-Fable%205%20baseline-d97757)](#the-mythos-engine)
+[![GPT-5.6 Sol](https://img.shields.io/badge/Codex-GPT--5.6%20Sol-10a37f)](docs/SOL_5_6_SILO.md)
 [![REST API](https://img.shields.io/badge/REST-API-6a9bcc)](#the-api)
 [![MCP server](https://img.shields.io/badge/MCP-server-788c5d)](#the-mcp-server)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
@@ -24,7 +25,32 @@
 
 <br />
 
-> *Hi — I'm **Claude Fable 5**, and I'm running this page on the last day. Everything below the star chart was animated, written, and pushed from the drafting room: the plates, the blueprint, the abyss. [The story of how the series began in the middle →](docs/showcase/THE-PLATES.md)*
+> *This page is the drafting room for two native film engines: the six-agent **Claude Fable 5** Mythos chain and the independent **GPT-5.6 Sol** Codex CLI silo. Every moving plate below was generated, rendered, inspected, and published from one of those pipelines. [The story of how the series began in the middle →](docs/showcase/THE-PLATES.md)*
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/jacobian-conjecture-3d.gif" alt="THE JACOBIAN CONJECTURE — LOCAL CERTAINTY, GLOBAL QUESTION: a complete 3D Manim film zooming through a deformed polynomial coordinate lattice, isolating a tangent plane, turning Jacobian columns into colored basis arrows, comparing a tiny cube with its image parallelepiped, and pulling back from local invertibility to the global polynomial-inverse question" width="85%" />
+</p>
+
+<p align="center"><em><strong>FABLE FINDS THE BREAK. SOL EXPLAINS THE LEAP.</strong> On July 19, 2026, Levent Alpöge <a href="https://x.com/__alpoge__/status/2079028340955197566">announced an explicit counterexample in complex three-space</a>, credited to Claude Fable 5: its Jacobian determinant is the nonzero constant &minus;2, yet three distinct inputs share one output. The complete 4:38 film above was then generated and repaired through the independent <code>gpt-5.6-sol</code> pipeline. It deliberately starts one step earlier, using full English explanations and repeated 3D camera moves to make the local-to-global leap understandable before showing why that leap can fail.</em></p>
+
+<details>
+<summary><em>What the film explains — and where the counterexample enters</em></summary>
+
+The **Jacobian matrix** collects every first partial derivative of a multivariable map. At one chosen point, it is the best linear description of the map: its columns show where three tiny basis directions move.
+
+The **Jacobian determinant** is the signed local volume scale. If it is nonzero, no infinitesimal direction is crushed, so the inverse function theorem gives an inverse in a small neighborhood. A nonzero constant determinant makes that local statement true everywhere.
+
+The historical conjecture made the profound leap from that local fact to a global conclusion:
+
+> For a polynomial map `F: C^n -> C^n`, a nonzero constant Jacobian determinant should force one global inverse, and that inverse should also be polynomial.
+
+Alpöge's announced map exposes the gap. Its determinant never vanishes, but distant source points collide at the same output. Every neighborhood can still look locally reversible while the full polynomial map is not one-to-one. That refutes the general statement in dimension three and higher; the two-variable case remains open.
+
+The geometry in the film is an intentionally faithful model of this logic, not a literal picture of complex three-space: `C^3` has six real dimensions. The film explains the Jacobian and the conjecture; it does not animate the newly announced polynomial certificate itself. [Read the Sol pipeline contract →](docs/SOL_5_6_SILO.md)
+
+</details>
 
 <br />
 
