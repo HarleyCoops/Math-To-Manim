@@ -1,6 +1,7 @@
 import io
 import json
 import subprocess
+import sys
 import threading
 from pathlib import Path
 
@@ -11,7 +12,14 @@ from sol.cli import build_parser
 from sol.client import CodexCli
 from sol.harness import SolHarness
 from sol.models import ARTIFACT_NAMES, RunRequest, StageRunResult
+from sol.rendering import (
+    RenderOutcome,
+    build_manim_command,
+    find_final_video,
+    render_environment,
+)
 from sol.staged import StagedPipeline, stage_input_hash
+from sol.validation import validate_run
 
 
 def _completed_result() -> dict:
@@ -187,6 +195,7 @@ class FakeStageClient:
 
     def __init__(self):
         self.calls: list[tuple[str, str | None]] = []
+        self.prompts: list[str] = []
 
     def run(
         self,
@@ -208,6 +217,7 @@ class FakeStageClient:
         )
         stage = next(stage for stage in AGENT_STAGES if stage.name == role)
         self.calls.append((role, session_id))
+        self.prompts.append(prompt)
         if event_sink:
             event_sink(
                 {
@@ -308,3 +318,238 @@ def test_cli_parses_resume_and_status_commands():
     assert status.command == "status"
     with pytest.raises(SystemExit):
         parser.parse_args(["resume", "run", "--from", "unknown"])
+
+
+def test_manim_command_uses_active_python_and_run_local_media(tmp_path):
+    command = build_manim_command(
+        tmp_path,
+        scene_name="ErdosScene",
+        quality="l",
+    )
+
+    assert command[:3] == [sys.executable, "-m", "manim"]
+    assert "-ql" in command
+    assert command[command.index("--media_dir") + 1] == str(tmp_path / "media")
+    assert command[-2:] == ["sol_scene.py", "ErdosScene"]
+
+
+def test_render_environment_keeps_miktex_writes_inside_run(tmp_path):
+    env = render_environment(tmp_path, {"PATH": "example"})
+
+    assert env["PATH"] == "example"
+    assert env["MIKTEX_USERCONFIG"].startswith(str(tmp_path))
+    assert env["MIKTEX_USERDATA"].startswith(str(tmp_path))
+    assert env["MIKTEX_USERINSTALL"].startswith(str(tmp_path))
+
+
+def test_final_video_selection_ignores_partial_movie_fragments(tmp_path):
+    partial = (
+        tmp_path
+        / "media"
+        / "videos"
+        / "scene"
+        / "480p15"
+        / "partial_movie_files"
+        / "Example"
+        / "fragment.mp4"
+    )
+    final = tmp_path / "media" / "videos" / "scene" / "480p15" / "Example.mp4"
+    partial.parent.mkdir(parents=True)
+    final.parent.mkdir(parents=True, exist_ok=True)
+    partial.write_bytes(b"x" * 2048)
+    final.write_bytes(b"y" * 4096)
+
+    assert find_final_video(tmp_path) == final
+
+
+def test_run_validator_reports_final_video_not_partial_fragment(tmp_path):
+    for name in ARTIFACT_NAMES:
+        path = tmp_path / name
+        if name == "sol_scene.py":
+            path.write_text(
+                "from manim import *\n\nclass ExampleScene(Scene):\n    pass\n",
+                encoding="utf-8",
+            )
+        else:
+            path.write_text('{"ok": true}', encoding="utf-8")
+    partial = (
+        tmp_path
+        / "media"
+        / "videos"
+        / "scene"
+        / "480p15"
+        / "partial_movie_files"
+        / "ExampleScene"
+        / "fragment.mp4"
+    )
+    final = tmp_path / "media" / "videos" / "scene" / "480p15" / "ExampleScene.mp4"
+    partial.parent.mkdir(parents=True)
+    final.parent.mkdir(parents=True, exist_ok=True)
+    partial.write_bytes(b"x" * 2048)
+    final.write_bytes(b"y" * 4096)
+
+    failures, _, video_path = validate_run(tmp_path, require_video=True)
+
+    assert failures == []
+    assert video_path == "media\\videos\\scene\\480p15\\ExampleScene.mp4"
+
+
+def test_scene_repair_prompt_reuses_thread_and_includes_render_evidence(tmp_path):
+    client = FakeStageClient()
+    request = RunRequest(prompt="explain a theorem")
+    pipeline = StagedPipeline(client=client)
+    pipeline.run(tmp_path, request)
+    initial = len(client.calls)
+
+    pipeline.run(
+        tmp_path,
+        request,
+        from_stage="scene-composer",
+        feedback={"scene-composer": "MathTex failed at line 81"},
+    )
+
+    assert client.calls[initial:] == [
+        ("scene-composer", "thread-scene-composer")
+    ]
+    assert "MathTex failed at line 81" in client.prompts[-1]
+
+
+def test_render_review_returns_to_saved_cinematographer_thread(tmp_path):
+    class ReviewClient(FakeStageClient):
+        def run(self, prompt, **kwargs):
+            if "render-review continuation" not in prompt:
+                return super().run(prompt, **kwargs)
+            session_id = kwargs["session_id"]
+            self.calls.append(("cinematographer-review", session_id))
+            self.prompts.append(prompt)
+            if kwargs["event_sink"]:
+                kwargs["event_sink"](
+                    {
+                        "type": "thread.started",
+                        "thread_id": session_id,
+                    }
+                )
+            review = {
+                "status": "approved",
+                "defects": [],
+                "observations": ["off-white 3D composition is readable"],
+                "evidence": ["review_frames/contact_sheet.png"],
+            }
+            (kwargs["cwd"] / "review.json").write_text(
+                json.dumps(review),
+                encoding="utf-8",
+            )
+            result = StageRunResult(
+                status="completed",
+                role="cinematographer",
+                artifacts=["review.json"],
+                summary="render approved",
+                checks=["contact sheet inspected"],
+                notes=[],
+            )
+            kwargs["output_path"].write_text(
+                result.model_dump_json(),
+                encoding="utf-8",
+            )
+            kwargs["trace_path"].touch(exist_ok=True)
+            return result
+
+    client = ReviewClient()
+    request = RunRequest(prompt="explain a theorem", render=True)
+    pipeline = StagedPipeline(client=client)
+    pipeline.run(tmp_path, request)
+    review_dir = tmp_path / "review_frames"
+    review_dir.mkdir()
+    contact_sheet = review_dir / "contact_sheet.png"
+    contact_sheet.write_bytes(b"image")
+
+    review = pipeline.review_render(
+        tmp_path,
+        request,
+        evidence_paths=[contact_sheet],
+    )
+
+    assert review["status"] == "approved"
+    assert client.calls[-1] == (
+        "cinematographer-review",
+        "thread-cinematographer",
+    )
+
+
+def test_harness_renders_then_reviews_with_saved_cinematographer(
+    monkeypatch,
+    tmp_path,
+):
+    class ReviewClient(FakeStageClient):
+        def run(self, prompt, **kwargs):
+            if "render-review continuation" not in prompt:
+                return super().run(prompt, **kwargs)
+            self.calls.append(("cinematographer-review", kwargs["session_id"]))
+            self.prompts.append(prompt)
+            (kwargs["cwd"] / "review.json").write_text(
+                json.dumps(
+                    {
+                        "status": "approved",
+                        "defects": [],
+                        "observations": ["accepted"],
+                        "evidence": ["review_frames/contact_sheet.png"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            result = StageRunResult(
+                status="completed",
+                role="cinematographer",
+                artifacts=["review.json"],
+                summary="approved",
+                checks=["visual review"],
+                notes=[],
+            )
+            kwargs["output_path"].write_text(result.model_dump_json(), encoding="utf-8")
+            kwargs["trace_path"].touch(exist_ok=True)
+            return result
+
+    calls: list[str] = []
+
+    def fake_preflight():
+        calls.append("preflight")
+        return ["Manim: test"]
+
+    def fake_render(run_dir, *, scene_name, quality):
+        calls.append(f"render:{scene_name}:{quality}")
+        video = run_dir / "media" / "videos" / "scene" / "480p15" / "ExampleScene.mp4"
+        video.parent.mkdir(parents=True)
+        video.write_bytes(b"v" * 4096)
+        review_dir = run_dir / "review_frames"
+        review_dir.mkdir()
+        frame = review_dir / "frame_01.png"
+        sheet = review_dir / "contact_sheet.png"
+        frame.write_bytes(b"frame")
+        sheet.write_bytes(b"sheet")
+        return RenderOutcome(
+            video_path=video,
+            stdout_path=run_dir / "render_stdout.log",
+            stderr_path=run_dir / "render_stderr.log",
+            frame_paths=(frame,),
+            contact_sheet_path=sheet,
+        )
+
+    monkeypatch.setattr("sol.harness.preflight_render", fake_preflight, raising=False)
+    monkeypatch.setattr("sol.harness.render_scene", fake_render, raising=False)
+    client = ReviewClient()
+
+    manifest = SolHarness(runs_dir=tmp_path, client=client).run(
+        RunRequest(
+            prompt="explain a theorem",
+            render=True,
+            max_repairs=1,
+        )
+    )
+
+    assert manifest["status"] == "completed"
+    assert manifest["video_path"].endswith("ExampleScene.mp4")
+    assert calls == ["preflight", "render:ExampleScene:l"]
+    assert client.calls[-1] == (
+        "cinematographer-review",
+        "thread-cinematographer",
+    )

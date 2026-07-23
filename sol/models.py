@@ -61,6 +61,7 @@ class StageRecord(BaseModel):
     result_path: str
     event_count: int = 0
     attempts: int = 0
+    followups: list[dict] = Field(default_factory=list)
     started_utc: str | None = None
     completed_utc: str | None = None
     error: str | None = None

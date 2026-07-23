@@ -107,6 +107,7 @@ class StagedPipeline:
         request: RunRequest,
         *,
         from_stage: str | None = None,
+        feedback: dict[str, str] | None = None,
     ) -> CodexRunResult:
         run_dir = Path(run_dir)
         stages_dir = run_dir / "stages"
@@ -125,6 +126,7 @@ class StagedPipeline:
             schema_path,
             forced,
             {},
+            feedback,
         )
 
         def curriculum_lane() -> dict[str, str]:
@@ -136,6 +138,7 @@ class StagedPipeline:
                 schema_path,
                 forced,
                 intent,
+                feedback,
             )
             curriculum = self._run_stage(
                 stage_by_name("curriculum"),
@@ -145,6 +148,7 @@ class StagedPipeline:
                 schema_path,
                 forced,
                 cartographer,
+                feedback,
             )
             return {**cartographer, **curriculum}
 
@@ -159,6 +163,7 @@ class StagedPipeline:
                 schema_path,
                 forced,
                 intent,
+                feedback,
             )
             curriculum = curriculum_future.result()
             math_dossier = math_future.result()
@@ -171,6 +176,7 @@ class StagedPipeline:
             schema_path,
             forced,
             {**curriculum, **math_dossier},
+            feedback,
         )
         self._run_stage(
             stage_by_name("scene-composer"),
@@ -180,6 +186,7 @@ class StagedPipeline:
             schema_path,
             forced,
             cinematographer,
+            feedback,
         )
 
         review_path = run_dir / "review.json"
@@ -207,6 +214,108 @@ class StagedPipeline:
             notes=[],
         )
 
+    def review_render(
+        self,
+        run_dir: Path,
+        request: RunRequest,
+        *,
+        evidence_paths: list[Path],
+    ) -> dict:
+        run_dir = Path(run_dir)
+        stage = stage_by_name("cinematographer")
+        record_path = run_dir / _record_relative(5, stage)
+        record = _load_record(record_path)
+        if record is None or not record.thread_id:
+            raise RuntimeError("cinematographer thread is unavailable for render review")
+        attempt = len(record.followups) + 1
+        stages_dir = run_dir / "stages"
+        schema_path = stages_dir / "stage-result.schema.json"
+        trace_path = stages_dir / f"05-cinematographer-review-{attempt}.jsonl"
+        result_path = stages_dir / f"05-cinematographer-review-{attempt}-result.json"
+        evidence = "\n".join(
+            f"- {path.relative_to(run_dir)}" for path in evidence_paths
+        )
+        prompt = f"""This is a render-review continuation of your saved
+cinematographer role in the staged GPT-5.6 Sol film pipeline.
+
+Inspect these representative images from the rendered film:
+{evidence}
+
+Compare them against the original request:
+<request>
+{request.prompt}
+</request>
+
+Check mathematical fidelity, off-white continuity, true 3D depth and parallax,
+camera framing, whitespace, complete readable LaTeX, text density, clipping,
+and whether the final tableau works at README scale. Write only review.json as
+a non-empty JSON object with exactly these top-level fields:
+- status: "approved" or "needs_repair"
+- defects: a JSON array of concrete timestamp/frame-linked defects
+- observations: a JSON array of visual findings
+- evidence: a JSON array of inspected relative paths
+
+Do not modify the scene, shot list, or any other artifact. Finish with the
+strict structured stage summary required by the supplied schema, using role
+"cinematographer" and artifacts ["review.json"].
+"""
+        started = _now()
+        followup = {
+            "kind": "render-review",
+            "status": "running",
+            "trace_path": str(trace_path.relative_to(run_dir)),
+            "result_path": str(result_path.relative_to(run_dir)),
+            "started_utc": started,
+        }
+        record.followups.append(followup)
+        record.attempts += 1
+        _write_json_atomic(record_path, record.model_dump_json(indent=2))
+
+        def consume_event(event: dict) -> None:
+            record.event_count += 1
+            if event.get("type") == "thread.started" and event.get("thread_id"):
+                record.thread_id = str(event["thread_id"])
+            _write_json_atomic(record_path, record.model_dump_json(indent=2))
+
+        try:
+            result = self.client.run(
+                prompt,
+                cwd=run_dir,
+                schema_path=schema_path,
+                output_path=result_path,
+                trace_path=trace_path,
+                event_sink=consume_event,
+                session_id=record.thread_id,
+                reasoning_effort=stage.reasoning_effort,
+                result_model=StageRunResult,
+            )
+            if (
+                not isinstance(result, StageRunResult)
+                or result.status != "completed"
+                or result.role != "cinematographer"
+                or result.artifacts != ["review.json"]
+            ):
+                raise RuntimeError("cinematographer returned an invalid review summary")
+            review_path = run_dir / "review.json"
+            review = json.loads(review_path.read_text(encoding="utf-8"))
+            if not isinstance(review, dict) or review.get("status") not in {
+                "approved",
+                "needs_repair",
+            }:
+                raise RuntimeError("review.json has an invalid status")
+            if not isinstance(review.get("defects"), list):
+                raise RuntimeError("review.json defects must be a list")
+            followup["status"] = "completed"
+            followup["completed_utc"] = _now()
+        except Exception as exc:
+            followup["status"] = "failed"
+            followup["completed_utc"] = _now()
+            followup["error"] = f"{type(exc).__name__}: {exc}"
+            _write_json_atomic(record_path, record.model_dump_json(indent=2))
+            raise
+        _write_json_atomic(record_path, record.model_dump_json(indent=2))
+        return review
+
     def _run_stage(
         self,
         stage: AgentStage,
@@ -216,6 +325,7 @@ class StagedPipeline:
         schema_path: Path,
         forced: set[str],
         upstream_hashes: dict[str, str],
+        feedback: dict[str, str] | None,
     ) -> dict[str, str]:
         input_hash = stage_input_hash(stage, request, upstream_hashes)
         record_path = run_dir / _record_relative(index, stage)
@@ -263,7 +373,12 @@ class StagedPipeline:
 
         try:
             result = self.client.run(
-                build_stage_prompt(stage, request, run_dir=run_dir),
+                build_stage_prompt(
+                    stage,
+                    request,
+                    run_dir=run_dir,
+                    feedback=(feedback or {}).get(stage.name),
+                ),
                 cwd=run_dir,
                 schema_path=schema_path,
                 output_path=result_path,

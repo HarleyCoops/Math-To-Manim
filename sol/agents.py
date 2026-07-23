@@ -98,7 +98,13 @@ def stage_by_name(name: str) -> AgentStage:
     raise ValueError(f"unknown Sol stage: {name}")
 
 
-def build_stage_prompt(stage: AgentStage, request: RunRequest, *, run_dir: Path) -> str:
+def build_stage_prompt(
+    stage: AgentStage,
+    request: RunRequest,
+    *,
+    run_dir: Path,
+    feedback: str | None = None,
+) -> str:
     by_name = {item.name: item for item in AGENT_STAGES}
     upstream = [
         artifact
@@ -107,6 +113,11 @@ def build_stage_prompt(stage: AgentStage, request: RunRequest, *, run_dir: Path)
     ]
     upstream_text = "\n".join(f"- {name}" for name in upstream) or "- none"
     outputs = "\n".join(f"- {name}" for name in stage.artifacts)
+    repair = (
+        f"\n<repair_evidence>\n{feedback}\n</repair_evidence>\n"
+        if feedback
+        else ""
+    )
     return f"""You are the {stage.name} specialist in the staged GPT-5.6 Sol
 Math-To-Manim film pipeline.
 
@@ -127,6 +138,7 @@ Do not write any other file. Do not modify repository source or git state.
 <request>
 {request.prompt}
 </request>
+{repair}
 
 Every JSON artifact must be a non-empty UTF-8 JSON object. Preserve complete
 LaTeX strings. Finish with only the structured stage summary required by the

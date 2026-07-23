@@ -9,6 +9,7 @@ import re
 from pathlib import Path
 
 from sol.models import ARTIFACT_NAMES
+from sol.rendering import find_final_video
 
 _BLOCKED_IMPORTS = {"os", "subprocess", "socket", "requests", "urllib", "httpx", "shutil"}
 _BLOCKED_CALLS = {"eval", "exec", "compile", "open", "__import__"}
@@ -77,10 +78,10 @@ def validate_run(run_dir: Path, *, require_video: bool) -> tuple[list[str], str 
         failures.extend(scene_failures)
 
     video_path = None
-    videos = sorted(run_dir.glob("**/*.mp4"))
-    if videos:
-        video_path = str(videos[-1].relative_to(run_dir))
-        if videos[-1].stat().st_size < 1024:
+    video = find_final_video(run_dir)
+    if video:
+        video_path = str(video.relative_to(run_dir))
+        if video.stat().st_size < 1024:
             failures.append("rendered video is unexpectedly small")
     elif require_video:
         failures.append("render requested but no MP4 exists inside the run directory")

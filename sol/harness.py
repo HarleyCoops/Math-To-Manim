@@ -8,9 +8,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from sol.client import DEFAULT_MODEL, CodexCli
-from sol.contract import SOL_FILM_CONTRACT, build_prompt, build_repair_prompt
+from sol.contract import SOL_FILM_CONTRACT
 from sol.models import CodexRunResult, RunManifest, RunRequest
 from sol.offline import write_offline_bundle
+from sol.rendering import RenderError, preflight_render, render_scene
 from sol.staged import StagedPipeline, write_offline_stage_records
 from sol.validation import validate_run
 
@@ -70,12 +71,21 @@ class SolHarness:
         schema_path.write_text(json.dumps(CodexRunResult.model_json_schema(), indent=2), encoding="utf-8")
 
         try:
+            pipeline = StagedPipeline(client=self.client)
+            if request.render and not request.offline:
+                manifest.attempts.append(
+                    {
+                        "mode": "render-preflight",
+                        "status": "completed",
+                        "checks": preflight_render(),
+                    }
+                )
             if request.offline:
                 result = write_offline_bundle(run_dir, request)
                 manifest.stage_records = write_offline_stage_records(run_dir, request)
                 manifest.attempts.append({"attempt": 0, "mode": "offline", "status": "completed"})
             else:
-                result = StagedPipeline(client=self.client).run(run_dir, request)
+                result = pipeline.run(run_dir, request)
                 manifest.stage_records = [
                     str(path.relative_to(run_dir)).replace("\\", "/")
                     for path in sorted((run_dir / "stages").glob("[0-9][0-9]-*.json"))
@@ -87,40 +97,120 @@ class SolHarness:
 
             failures, scene_name, video_path = validate_run(
                 run_dir,
-                require_video=request.render and request.offline,
+                require_video=False,
             )
             repair = 0
-            while (
-                failures
-                and not request.offline
-                and manifest.execution_mode == "monolithic"
-                and repair < request.max_repairs
-            ):
+            while failures and not request.offline and repair < request.max_repairs:
                 repair += 1
-                repair_prompt = build_repair_prompt(
+                evidence = "\n".join(f"- {failure}" for failure in failures)
+                result = pipeline.run(
+                    run_dir,
                     request,
-                    repo_root=REPO_ROOT,
-                    run_dir=run_dir,
-                    failures=failures,
-                    attempt=repair,
+                    from_stage="scene-composer",
+                    feedback={"scene-composer": evidence},
                 )
-                result = self.client.run(
-                    repair_prompt,
-                    cwd=run_dir,
-                    schema_path=schema_path,
-                    output_path=run_dir / f"final-result-{repair}.json",
-                    trace_path=run_dir / f"codex-trace-{repair}.jsonl",
+                manifest.attempts.append(
+                    {
+                        "attempt": repair,
+                        "mode": "scene-composer-static-repair",
+                        "status": result.status,
+                        "input_failures": failures,
+                    }
                 )
-                manifest.attempts.append({
-                    "attempt": repair,
-                    "mode": "codex-cli-repair",
-                    "status": result.status,
-                    "input_failures": failures,
-                })
-                failures, scene_name, video_path = validate_run(run_dir, require_video=request.render)
+                failures, scene_name, video_path = validate_run(
+                    run_dir,
+                    require_video=False,
+                )
 
             if failures:
                 raise RuntimeError("run bundle validation failed: " + "; ".join(failures))
+            if request.render and not request.offline:
+                if not scene_name:
+                    raise RuntimeError("render requested but no scene class was found")
+                render_repairs = 0
+                while True:
+                    try:
+                        outcome = render_scene(
+                            run_dir,
+                            scene_name=scene_name,
+                            quality=request.quality,
+                        )
+                        evidence_paths = list(outcome.frame_paths)
+                        if outcome.contact_sheet_path:
+                            evidence_paths.append(outcome.contact_sheet_path)
+                        if not evidence_paths:
+                            raise RenderError(
+                                "render completed without representative frame evidence"
+                            )
+                        review = pipeline.review_render(
+                            run_dir,
+                            request,
+                            evidence_paths=evidence_paths,
+                        )
+                    except RenderError as exc:
+                        if render_repairs >= request.max_repairs:
+                            raise
+                        render_repairs += 1
+                        pipeline.run(
+                            run_dir,
+                            request,
+                            from_stage="scene-composer",
+                            feedback={"scene-composer": str(exc)},
+                        )
+                        failures, scene_name, _ = validate_run(
+                            run_dir,
+                            require_video=False,
+                        )
+                        if failures or not scene_name:
+                            raise RuntimeError(
+                                "scene-composer repair failed: " + "; ".join(failures)
+                            )
+                        manifest.attempts.append(
+                            {
+                                "attempt": render_repairs,
+                                "mode": "scene-composer-render-repair",
+                                "status": "completed",
+                                "input_failure": str(exc),
+                            }
+                        )
+                        continue
+                    if review["status"] == "approved":
+                        manifest.attempts.append(
+                            {
+                                "mode": "wrapper-render-and-cinematographer-review",
+                                "status": "completed",
+                                "evidence": [
+                                    str(path.relative_to(run_dir))
+                                    for path in evidence_paths
+                                ],
+                            }
+                        )
+                        break
+                    if render_repairs >= request.max_repairs:
+                        raise RuntimeError(
+                            "visual review still requires repair: "
+                            + json.dumps(review.get("defects", []))
+                        )
+                    render_repairs += 1
+                    pipeline.run(
+                        run_dir,
+                        request,
+                        from_stage="scene-composer",
+                        feedback={
+                            "scene-composer": json.dumps(
+                                review.get("defects", []),
+                                ensure_ascii=False,
+                            )
+                        },
+                    )
+                failures, scene_name, video_path = validate_run(
+                    run_dir,
+                    require_video=True,
+                )
+                if failures:
+                    raise RuntimeError(
+                        "rendered run bundle validation failed: " + "; ".join(failures)
+                    )
             manifest.status = "completed"
             manifest.scene_file = "sol_scene.py"
             manifest.scene_name = scene_name or result.scene_name
