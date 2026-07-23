@@ -1,3 +1,4 @@
+import io
 import json
 import os
 import subprocess
@@ -74,15 +75,19 @@ def test_codex_result_schema_is_strict_for_structured_outputs():
 def test_codex_failure_preserves_stdout_error_when_stderr_has_warnings(monkeypatch, tmp_path):
     monkeypatch.setattr("sol.client.shutil.which", lambda _: "/usr/bin/codex")
 
-    def fake_run(command, **kwargs):
-        return subprocess.CompletedProcess(
-            command,
-            1,
-            stdout='{"type":"error","message":"invalid_json_schema"}\n',
-            stderr="non-fatal startup warning\n",
-        )
+    class FailedProcess:
+        stdin = io.StringIO()
+        stdout = io.StringIO('{"type":"error","message":"invalid_json_schema"}\n')
+        stderr = io.StringIO("non-fatal startup warning\n")
+        returncode = 1
 
-    monkeypatch.setattr("sol.client.subprocess.run", fake_run)
+        def wait(self, timeout=None):
+            return self.returncode
+
+        def kill(self):
+            self.returncode = -9
+
+    monkeypatch.setattr("sol.client.subprocess.Popen", lambda command, **kwargs: FailedProcess())
     with pytest.raises(CodexCliError, match="invalid_json_schema"):
         CodexCli().run(
             "make a film",
@@ -99,7 +104,19 @@ def test_codex_child_never_receives_api_key(monkeypatch, tmp_path):
     monkeypatch.setenv("OPENAI_API_KEY", "must-not-leak")
     observed = {}
 
-    def fake_run(command, **kwargs):
+    class SuccessfulProcess:
+        stdin = io.StringIO()
+        stdout = io.StringIO("{}\n")
+        stderr = io.StringIO("")
+        returncode = 0
+
+        def wait(self, timeout=None):
+            return self.returncode
+
+        def kill(self):
+            self.returncode = -9
+
+    def fake_popen(command, **kwargs):
         observed["env"] = kwargs["env"]
         output = Path(command[command.index("--output-last-message") + 1])
         output.write_text(json.dumps({
@@ -112,9 +129,9 @@ def test_codex_child_never_receives_api_key(monkeypatch, tmp_path):
             "checks": ["ok"],
             "notes": [],
         }))
-        return subprocess.CompletedProcess(command, 0, stdout="{}\n", stderr="")
+        return SuccessfulProcess()
 
-    monkeypatch.setattr("sol.client.subprocess.run", fake_run)
+    monkeypatch.setattr("sol.client.subprocess.Popen", fake_popen)
     CodexCli().run(
         "make a film",
         cwd=tmp_path,

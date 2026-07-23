@@ -6,7 +6,9 @@ import json
 import os
 import shutil
 import subprocess
+import threading
 from pathlib import Path
+from typing import Callable
 
 from sol.models import CodexRunResult
 
@@ -44,12 +46,23 @@ class CodexCli:
             )
         return resolved
 
-    def build_command(self, *, cwd: Path, schema_path: Path, output_path: Path) -> list[str]:
-        return [
+    def build_command(
+        self,
+        *,
+        cwd: Path,
+        schema_path: Path,
+        output_path: Path,
+        session_id: str | None = None,
+    ) -> list[str]:
+        command = [
             self.resolve(),
             "-c", FAST_SERVICE_TIER,
             "-c", f'model_reasoning_effort="{self.reasoning_effort}"',
             "exec",
+        ]
+        if session_id:
+            command.extend(["resume", session_id])
+        command.extend([
             "--model", self.model,
             "--sandbox", "workspace-write",
             "--cd", str(cwd),
@@ -57,7 +70,8 @@ class CodexCli:
             "--output-schema", str(schema_path),
             "--output-last-message", str(output_path),
             "-",
-        ]
+        ])
+        return command
 
     def run(
         self,
@@ -67,28 +81,85 @@ class CodexCli:
         schema_path: Path,
         output_path: Path,
         trace_path: Path,
+        event_sink: Callable[[dict], None] | None = None,
+        session_id: str | None = None,
     ) -> CodexRunResult:
-        command = self.build_command(cwd=cwd, schema_path=schema_path, output_path=output_path)
+        command = self.build_command(
+            cwd=cwd,
+            schema_path=schema_path,
+            output_path=output_path,
+            session_id=session_id,
+        )
         # A stray API key would silently switch billing/auth modes. This silo is
         # deliberately ChatGPT-login-only, so remove it from the child process.
         env = {key: value for key, value in os.environ.items() if key != "OPENAI_API_KEY"}
-        completed = subprocess.run(
+        process = subprocess.Popen(
             command,
-            input=prompt,
             text=True,
-            capture_output=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             encoding="utf-8",
             errors="replace",
             env=env,
-            timeout=self.timeout,
-            check=False,
         )
-        trace_path.write_text(completed.stdout, encoding="utf-8")
-        if completed.returncode != 0:
-            streams = [part.strip() for part in (completed.stderr, completed.stdout) if part.strip()]
+        if process.stdin is None or process.stdout is None or process.stderr is None:
+            process.kill()
+            raise CodexCliError("Codex CLI did not expose the required process streams")
+
+        stderr_parts: list[str] = []
+        reader_errors: list[Exception] = []
+
+        def read_stdout() -> None:
+            try:
+                with trace_path.open("w", encoding="utf-8") as trace:
+                    for line in process.stdout:
+                        trace.write(line)
+                        trace.flush()
+                        if event_sink is None:
+                            continue
+                        try:
+                            event = json.loads(line)
+                        except json.JSONDecodeError:
+                            continue
+                        if isinstance(event, dict):
+                            event_sink(event)
+            except Exception as exc:  # surfaced after both streams are drained
+                reader_errors.append(exc)
+
+        def read_stderr() -> None:
+            try:
+                stderr_parts.extend(process.stderr)
+            except Exception as exc:  # surfaced after both streams are drained
+                reader_errors.append(exc)
+
+        stdout_thread = threading.Thread(target=read_stdout, daemon=True)
+        stderr_thread = threading.Thread(target=read_stderr, daemon=True)
+        stdout_thread.start()
+        stderr_thread.start()
+        process.stdin.write(prompt)
+        process.stdin.close()
+        try:
+            returncode = process.wait(timeout=self.timeout)
+        except subprocess.TimeoutExpired as exc:
+            process.kill()
+            process.wait()
+            stdout_thread.join()
+            stderr_thread.join()
+            raise CodexCliError(
+                f"Codex CLI exceeded the {self.timeout:g}-second timeout"
+            ) from exc
+        stdout_thread.join()
+        stderr_thread.join()
+        if reader_errors:
+            raise CodexCliError(f"Codex CLI stream reader failed: {reader_errors[0]}")
+        if returncode != 0:
+            stdout = trace_path.read_text(encoding="utf-8") if trace_path.is_file() else ""
+            stderr = "".join(stderr_parts)
+            streams = [part.strip() for part in (stderr, stdout) if part.strip()]
             detail = "\n".join(streams)[-6000:]
             raise CodexCliError(
-                f"Codex CLI failed with exit {completed.returncode}. "
+                f"Codex CLI failed with exit {returncode}. "
                 "Inspect the preserved trace and diagnostics below; run `codex login` "
                 "only if they identify an authentication failure.\n"
                 f"{detail}"
