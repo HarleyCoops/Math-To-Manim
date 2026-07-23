@@ -153,4 +153,3 @@ rendering.
   session resumption, and provider isolation.
 - A staged live run of the existing Erdős 1038 prompt produces a validated
   off-white true-3D film and review evidence.
-

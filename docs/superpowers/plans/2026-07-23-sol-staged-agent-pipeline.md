@@ -115,4 +115,3 @@
 - [ ] Produce and inspect the curated GIF, then add the README feature without disturbing the star chart or existing showcase.
 - [ ] Run the entire pytest suite, `git diff --check`, media probes, and repository status review.
 - [ ] Commit only source, tests, docs, curated media, and README changes.
-

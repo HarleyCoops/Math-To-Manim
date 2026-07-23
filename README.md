@@ -30,31 +30,6 @@
 <br />
 
 <p align="center">
-  <img src="docs/showcase/assets/jacobian-conjecture-3d.gif" alt="THE JACOBIAN CONJECTURE — LOCAL CERTAINTY, GLOBAL QUESTION: a complete 3D Manim film zooming through a deformed polynomial coordinate lattice, isolating a tangent plane, turning Jacobian columns into colored basis arrows, comparing a tiny cube with its image parallelepiped, and pulling back from local invertibility to the global polynomial-inverse question" width="85%" />
-</p>
-
-<p align="center"><em><strong>FABLE FINDS THE BREAK. SOL EXPLAINS THE LEAP.</strong> On July 19, 2026, Levent Alpöge <a href="https://x.com/__alpoge__/status/2079028340955197566">announced an explicit counterexample in complex three-space</a>, credited to Claude Fable 5: its Jacobian determinant is the nonzero constant &minus;2, yet three distinct inputs share one output. The complete 4:38 film above was then generated and repaired through the independent <code>gpt-5.6-sol</code> pipeline. It deliberately starts one step earlier, using full English explanations and repeated 3D camera moves to make the local-to-global leap understandable before showing why that leap can fail.</em></p>
-
-<details>
-<summary><em>What the film explains — and where the counterexample enters</em></summary>
-
-The **Jacobian matrix** collects every first partial derivative of a multivariable map. At one chosen point, it is the best linear description of the map: its columns show where three tiny basis directions move.
-
-The **Jacobian determinant** is the signed local volume scale. If it is nonzero, no infinitesimal direction is crushed, so the inverse function theorem gives an inverse in a small neighborhood. A nonzero constant determinant makes that local statement true everywhere.
-
-The historical conjecture made the profound leap from that local fact to a global conclusion:
-
-> For a polynomial map `F: C^n -> C^n`, a nonzero constant Jacobian determinant should force one global inverse, and that inverse should also be polynomial.
-
-Alpöge's announced map exposes the gap. Its determinant never vanishes, but distant source points collide at the same output. Every neighborhood can still look locally reversible while the full polynomial map is not one-to-one. That refutes the general statement in dimension three and higher; the two-variable case remains open.
-
-The geometry in the film is an intentionally faithful model of this logic, not a literal picture of complex three-space: `C^3` has six real dimensions. The film explains the Jacobian and the conjecture; it does not animate the newly announced polynomial certificate itself. [Read the Sol pipeline contract →](docs/SOL_5_6_SILO.md)
-
-</details>
-
-<br />
-
-<p align="center">
   <a href="docs/showcase/assets/erdos-1038-potential-landscape.mp4">
     <img src="docs/showcase/assets/erdos-1038-potential-landscape.gif" alt="Erdős Problem 1038 shown as an archival off-white three-dimensional landscape: a certified valley narrows to the lower limit, endpoint root towers reveal the upper limit, and the final tableau compares both answers" width="90%" />
   </a>
@@ -88,6 +63,31 @@ approached forever but never attained by a finite polynomial, and an upper
 value reached exactly by piling the roots at the endpoints.
 
 <p align="center"><em><a href="docs/showcase/assets/erdos-1038-potential-landscape.mp4">Watch the complete 79-second film</a> · <a href="docs/prompts/erdos-1038-off-white-3d.md">Read the complete Sol production prompt</a></em></p>
+
+<br />
+
+<p align="center">
+  <img src="docs/showcase/assets/jacobian-conjecture-3d.gif" alt="THE JACOBIAN CONJECTURE — LOCAL CERTAINTY, GLOBAL QUESTION: a complete 3D Manim film zooming through a deformed polynomial coordinate lattice, isolating a tangent plane, turning Jacobian columns into colored basis arrows, comparing a tiny cube with its image parallelepiped, and pulling back from local invertibility to the global polynomial-inverse question" width="85%" />
+</p>
+
+<p align="center"><em><strong>FABLE FINDS THE BREAK. SOL EXPLAINS THE LEAP.</strong> On July 19, 2026, Levent Alpöge <a href="https://x.com/__alpoge__/status/2079028340955197566">announced an explicit counterexample in complex three-space</a>, credited to Claude Fable 5: its Jacobian determinant is the nonzero constant &minus;2, yet three distinct inputs share one output. The complete 4:38 film above was then generated and repaired through the independent <code>gpt-5.6-sol</code> pipeline. It deliberately starts one step earlier, using full English explanations and repeated 3D camera moves to make the local-to-global leap understandable before showing why that leap can fail.</em></p>
+
+<details>
+<summary><em>What the film explains — and where the counterexample enters</em></summary>
+
+The **Jacobian matrix** collects every first partial derivative of a multivariable map. At one chosen point, it is the best linear description of the map: its columns show where three tiny basis directions move.
+
+The **Jacobian determinant** is the signed local volume scale. If it is nonzero, no infinitesimal direction is crushed, so the inverse function theorem gives an inverse in a small neighborhood. A nonzero constant determinant makes that local statement true everywhere.
+
+The historical conjecture made the profound leap from that local fact to a global conclusion:
+
+> For a polynomial map `F: C^n -> C^n`, a nonzero constant Jacobian determinant should force one global inverse, and that inverse should also be polynomial.
+
+Alpöge's announced map exposes the gap. Its determinant never vanishes, but distant source points collide at the same output. Every neighborhood can still look locally reversible while the full polynomial map is not one-to-one. That refutes the general statement in dimension three and higher; the two-variable case remains open.
+
+The geometry in the film is an intentionally faithful model of this logic, not a literal picture of complex three-space: `C^3` has six real dimensions. The film explains the Jacobian and the conjecture; it does not animate the newly announced polynomial certificate itself. [Read the Sol pipeline contract →](docs/SOL_5_6_SILO.md)
+
+</details>
 
 <br />
 
