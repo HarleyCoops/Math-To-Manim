@@ -55,6 +55,43 @@ The geometry in the film is an intentionally faithful model of this logic, not a
 <br />
 
 <p align="center">
+  <a href="docs/showcase/assets/erdos-1038-potential-landscape.mp4">
+    <img src="docs/showcase/assets/erdos-1038-potential-landscape.gif" alt="Erdős Problem 1038 shown as an archival off-white three-dimensional landscape: a certified valley narrows to the lower limit, endpoint root towers reveal the upper limit, and the final tableau compares both answers" width="90%" />
+  </a>
+</p>
+
+<p align="center"><strong>ERDŐS 1038: THE POTENTIAL LANDSCAPE</strong></p>
+
+A polynomial is usually introduced as a line of symbols, but it can also be
+seen as a landscape made by its roots. Imagine every root pressing into a
+flexible sheet stretched above the number line. Taken together, the roots
+raise and lower that sheet. The transparent plane in the film marks zero:
+wherever the landscape falls beneath it, the polynomial has size less than
+one. The footprint under the plane is therefore the exact set whose width the
+problem asks us to measure.
+
+That turns the question into something physical: how should the roots be
+arranged to make the submerged footprint as narrow as possible, or as wide as
+possible? For the narrow side, clusters of roots can be gathered toward their
+centres without making the footprint larger. Repeating that idea leads toward
+an increasingly fine, one-sided distribution of roots. No finite polynomial
+quite reaches the limiting shape, but a sequence of them gets arbitrarily
+close. Its width is **1.834430475762661…**—the certified floor shown by the
+curved 3D valley.
+
+The widest case is beautifully simpler. Put the roots at the two endpoints,
+−1 and +1, in equal numbers. This produces the family
+**f(x) = (x² − 1)ᵐ**, and the region where the polynomial is smaller than one
+runs from −√2 to +√2. Its width is therefore **2√2**. So the film ends by
+contrasting two different kinds of extreme: a lower value that can be
+approached forever but never attained by a finite polynomial, and an upper
+value reached exactly by piling the roots at the endpoints.
+
+<p align="center"><em><a href="docs/showcase/assets/erdos-1038-potential-landscape.mp4">Watch the complete 79-second film</a> · <a href="docs/prompts/erdos-1038-off-white-3d.md">Read the complete Sol production prompt</a></em></p>
+
+<br />
+
+<p align="center">
   <img src="docs/showcase/assets/traitor-axis.gif" alt="THE TRAITOR AXIS: a coral-and-steel T-handle tumbling against ink-black space — spun about its middle axis it somersaults every 8.2 seconds while the angular-momentum sphere reveals why: polhode loops in blue and gold, the coral separatrix crossing at the saddle, and the simulated spin creeping then sprinting along it" width="85%" />
 </p>
 
