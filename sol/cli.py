@@ -7,7 +7,7 @@ import os
 import subprocess
 
 from sol import __version__
-from sol.client import CodexCli, CodexCliError
+from sol.client import CodexCli, CodexCliError, FAST_SERVICE_TIER
 from sol.models import RunRequest
 from sol.service import SolService
 
@@ -51,7 +51,11 @@ def _doctor() -> int:
         [executable, "--version"], capture_output=True, text=True, env=env, check=False
     )
     login = subprocess.run(
-        [executable, "login", "status"], capture_output=True, text=True, env=env, check=False
+        [executable, "-c", FAST_SERVICE_TIER, "login", "status"],
+        capture_output=True,
+        text=True,
+        env=env,
+        check=False,
     )
     print((version.stdout or version.stderr).strip())
     print((login.stdout or login.stderr).strip())

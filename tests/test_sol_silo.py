@@ -42,6 +42,25 @@ def test_codex_command_is_cli_native(monkeypatch, tmp_path):
     assert command[command.index("--sandbox") + 1] == "workspace-write"
     assert {"--json", "--output-schema", "--output-last-message", "--cd"} <= set(command)
     assert 'model_reasoning_effort="xhigh"' in command
+    assert 'service_tier="fast"' in command
+
+
+def test_doctor_overrides_invalid_global_service_tier(monkeypatch):
+    observed = []
+
+    monkeypatch.setattr("sol.cli.CodexCli.resolve", lambda self: "codex")
+
+    def fake_run(command, **kwargs):
+        observed.append(command)
+        return subprocess.CompletedProcess(command, 0, stdout="ok\n", stderr="")
+
+    monkeypatch.setattr("sol.cli.subprocess.run", fake_run)
+
+    from sol.cli import main
+
+    assert main(["doctor"]) == 0
+    login_command = next(command for command in observed if "login" in command)
+    assert 'service_tier="fast"' in login_command
 
 
 def test_codex_result_schema_is_strict_for_structured_outputs():

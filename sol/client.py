@@ -14,6 +14,7 @@ DEFAULT_MODEL = os.getenv("M2M_SOL_MODEL", "gpt-5.6-sol")
 DEFAULT_REASONING_EFFORT = os.getenv("M2M_SOL_REASONING", "high")
 DEFAULT_TIMEOUT = float(os.getenv("M2M_SOL_TIMEOUT", "3600"))
 DEFAULT_COMMAND = os.getenv("M2M_SOL_CODEX", "codex")
+FAST_SERVICE_TIER = 'service_tier="fast"'
 
 
 class CodexCliError(RuntimeError):
@@ -46,6 +47,7 @@ class CodexCli:
     def build_command(self, *, cwd: Path, schema_path: Path, output_path: Path) -> list[str]:
         return [
             self.resolve(),
+            "-c", FAST_SERVICE_TIER,
             "-c", f'model_reasoning_effort="{self.reasoning_effort}"',
             "exec",
             "--model", self.model,
