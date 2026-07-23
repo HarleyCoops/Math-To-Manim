@@ -11,6 +11,7 @@ from sol.client import DEFAULT_MODEL, CodexCli
 from sol.contract import SOL_FILM_CONTRACT, build_prompt, build_repair_prompt
 from sol.models import CodexRunResult, RunManifest, RunRequest
 from sol.offline import write_offline_bundle
+from sol.staged import StagedPipeline, write_offline_stage_records
 from sol.validation import validate_run
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -59,6 +60,7 @@ class SolHarness:
             render_requested=request.render,
             quality=request.quality,
             created_utc=now,
+            execution_mode="staged",
         )
         manifest_path = run_dir / "manifest.json"
         self._write_manifest(manifest_path, manifest)
@@ -70,21 +72,30 @@ class SolHarness:
         try:
             if request.offline:
                 result = write_offline_bundle(run_dir, request)
+                manifest.stage_records = write_offline_stage_records(run_dir, request)
                 manifest.attempts.append({"attempt": 0, "mode": "offline", "status": "completed"})
             else:
-                prompt = build_prompt(request, repo_root=REPO_ROOT, run_dir=run_dir)
-                result = self.client.run(
-                    prompt,
-                    cwd=run_dir,
-                    schema_path=schema_path,
-                    output_path=run_dir / "final-result-0.json",
-                    trace_path=run_dir / "codex-trace-0.jsonl",
+                result = StagedPipeline(client=self.client).run(run_dir, request)
+                manifest.stage_records = [
+                    str(path.relative_to(run_dir)).replace("\\", "/")
+                    for path in sorted((run_dir / "stages").glob("[0-9][0-9]-*.json"))
+                    if not path.name.endswith("-result.json")
+                ]
+                manifest.attempts.append(
+                    {"attempt": 0, "mode": "codex-cli-staged", "status": result.status}
                 )
-                manifest.attempts.append({"attempt": 0, "mode": "codex-cli", "status": result.status})
 
-            failures, scene_name, video_path = validate_run(run_dir, require_video=request.render)
+            failures, scene_name, video_path = validate_run(
+                run_dir,
+                require_video=request.render and request.offline,
+            )
             repair = 0
-            while failures and not request.offline and repair < request.max_repairs:
+            while (
+                failures
+                and not request.offline
+                and manifest.execution_mode == "monolithic"
+                and repair < request.max_repairs
+            ):
                 repair += 1
                 repair_prompt = build_repair_prompt(
                     request,
@@ -122,5 +133,44 @@ class SolHarness:
             self._write_manifest(manifest_path, manifest)
             raise
 
+        self._write_manifest(manifest_path, manifest)
+        return manifest.model_dump()
+
+    def resume(self, run_id: str, *, from_stage: str | None = None) -> dict:
+        if Path(run_id).name != run_id:
+            raise ValueError("run_id must be a single directory name")
+        run_dir = self.runs_dir / run_id
+        request_path = run_dir / "request.json"
+        manifest_path = run_dir / "manifest.json"
+        if not request_path.is_file() or not manifest_path.is_file():
+            raise FileNotFoundError(f"unknown Sol run: {run_id}")
+        request = RunRequest.model_validate_json(request_path.read_text(encoding="utf-8"))
+        manifest = RunManifest.model_validate_json(manifest_path.read_text(encoding="utf-8"))
+        manifest.status = "running"
+        manifest.error = None
+        self._write_manifest(manifest_path, manifest)
+        try:
+            result = StagedPipeline(client=self.client).run(
+                run_dir,
+                request,
+                from_stage=from_stage,
+            )
+            failures, scene_name, video_path = validate_run(
+                run_dir,
+                require_video=request.render,
+            )
+            if failures:
+                raise RuntimeError("run bundle validation failed: " + "; ".join(failures))
+            manifest.status = "completed"
+            manifest.scene_file = result.scene_file
+            manifest.scene_name = scene_name or result.scene_name
+            manifest.video_path = video_path or result.video_path
+            manifest.completed_utc = datetime.now(timezone.utc).isoformat()
+        except Exception as exc:
+            manifest.status = "failed"
+            manifest.error = f"{type(exc).__name__}: {exc}"
+            manifest.completed_utc = datetime.now(timezone.utc).isoformat()
+            self._write_manifest(manifest_path, manifest)
+            raise
         self._write_manifest(manifest_path, manifest)
         return manifest.model_dump()

@@ -35,6 +35,24 @@ def build_parser() -> argparse.ArgumentParser:
     runs = sub.add_parser("runs", help="List recent Sol run manifests")
     runs.add_argument("--limit", type=int, default=20)
 
+    resume = sub.add_parser("resume", help="Resume a staged Sol run")
+    resume.add_argument("run_id")
+    resume.add_argument(
+        "--from",
+        dest="from_stage",
+        choices=[
+            "intent",
+            "cartographer",
+            "curriculum",
+            "math-director",
+            "cinematographer",
+            "scene-composer",
+        ],
+    )
+
+    status = sub.add_parser("status", help="Show one Sol run manifest")
+    status.add_argument("run_id")
+
     sub.add_parser("doctor", help="Check the Codex executable and cached ChatGPT login")
     return parser
 
@@ -85,6 +103,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "runs":
         for manifest in service.list_runs(limit=max(1, args.limit)):
             print(f"{manifest.run_id}\t{manifest.status}\t{manifest.prompt}")
+        return 0
+    if args.command == "resume":
+        import json
+
+        print(json.dumps(service.resume(args.run_id, from_stage=args.from_stage), indent=2))
+        return 0
+    if args.command == "status":
+        print(service.get_run(args.run_id).model_dump_json(indent=2))
         return 0
     return _doctor()
 

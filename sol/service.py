@@ -18,6 +18,9 @@ class SolService:
     def run(self, request: RunRequest) -> dict:
         return self.harness.run(request)
 
+    def resume(self, run_id: str, *, from_stage: str | None = None) -> dict:
+        return self.harness.resume(run_id, from_stage=from_stage)
+
     def get_run(self, run_id: str) -> RunManifest:
         if Path(run_id).name != run_id:
             raise ValueError("run_id must be a single directory name")

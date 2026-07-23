@@ -1,11 +1,17 @@
 import io
 import json
 import subprocess
+import threading
 from pathlib import Path
 
+import pytest
+
 from sol.agents import AGENT_STAGES, build_stage_prompt
+from sol.cli import build_parser
 from sol.client import CodexCli
+from sol.harness import SolHarness
 from sol.models import ARTIFACT_NAMES, RunRequest, StageRunResult
+from sol.staged import StagedPipeline, stage_input_hash
 
 
 def _completed_result() -> dict:
@@ -140,3 +146,165 @@ def test_stage_result_schema_is_strict():
 
     assert schema["additionalProperties"] is False
     assert set(schema["required"]) == set(schema["properties"])
+
+
+def test_offline_run_records_all_six_stages(tmp_path):
+    manifest = SolHarness(runs_dir=tmp_path).run(
+        RunRequest(prompt="explain a theorem", offline=True)
+    )
+    run_dir = tmp_path / manifest["run_id"]
+
+    assert manifest["execution_mode"] == "staged"
+    assert manifest["stage_records"] == [
+        f"stages/{index:02d}-{stage.name}.json"
+        for index, stage in enumerate(AGENT_STAGES, start=1)
+    ]
+    for relative in manifest["stage_records"]:
+        record = json.loads((run_dir / relative).read_text(encoding="utf-8"))
+        assert record["status"] == "completed"
+        assert record["input_hash"]
+        assert record["artifact_hashes"]
+        assert record["thread_id"] is None
+
+
+def test_stage_hash_changes_with_upstream_artifact():
+    request = RunRequest(prompt="explain a theorem")
+    stage = next(item for item in AGENT_STAGES if item.name == "curriculum")
+
+    first = stage_input_hash(stage, request, {"02_knowledge_map.json": "aaa"})
+    second = stage_input_hash(stage, request, {"02_knowledge_map.json": "bbb"})
+
+    assert first != second
+    assert first == stage_input_hash(
+        stage,
+        request,
+        {"02_knowledge_map.json": "aaa"},
+    )
+
+
+class FakeStageClient:
+    model = "gpt-5.6-sol"
+
+    def __init__(self):
+        self.calls: list[tuple[str, str | None]] = []
+
+    def run(
+        self,
+        prompt,
+        *,
+        cwd,
+        schema_path,
+        output_path,
+        trace_path,
+        event_sink=None,
+        session_id=None,
+        reasoning_effort=None,
+        result_model=None,
+    ):
+        role = next(
+            stage.name
+            for stage in AGENT_STAGES
+            if f"You are the {stage.name} specialist" in prompt
+        )
+        stage = next(stage for stage in AGENT_STAGES if stage.name == role)
+        self.calls.append((role, session_id))
+        if event_sink:
+            event_sink(
+                {
+                    "type": "thread.started",
+                    "thread_id": session_id or f"thread-{role}",
+                }
+            )
+        for artifact in stage.artifacts:
+            path = cwd / artifact
+            if artifact.endswith(".json"):
+                path.write_text(
+                    json.dumps({"role": role, "content": ["checked"]}),
+                    encoding="utf-8",
+                )
+            else:
+                path.write_text(
+                    "from manim import *\n\nclass ExampleScene(Scene):\n    pass\n",
+                    encoding="utf-8",
+                )
+        result = StageRunResult(
+            status="completed",
+            role=role,
+            artifacts=list(stage.artifacts),
+            summary=f"{role} complete",
+            checks=["artifact written"],
+            notes=[],
+        )
+        output_path.write_text(result.model_dump_json(), encoding="utf-8")
+        trace_path.touch(exist_ok=True)
+        return result
+
+
+def test_staged_pipeline_caches_completed_agents_and_resumes_from_named_stage(tmp_path):
+    client = FakeStageClient()
+    request = RunRequest(prompt="explain a theorem")
+    pipeline = StagedPipeline(client=client)
+
+    pipeline.run(tmp_path, request)
+    assert {role for role, _ in client.calls} == {
+        stage.name for stage in AGENT_STAGES
+    }
+    assert all(
+        json.loads(path.read_text(encoding="utf-8"))["thread_id"]
+        for path in (tmp_path / "stages").glob("[0-9][0-9]-*.json")
+        if not path.name.endswith("-result.json")
+    )
+
+    initial_call_count = len(client.calls)
+    pipeline.run(tmp_path, request)
+    assert len(client.calls) == initial_call_count
+
+    pipeline.run(tmp_path, request, from_stage="cinematographer")
+    resumed = client.calls[initial_call_count:]
+    assert [role for role, _ in resumed] == [
+        "cinematographer",
+        "scene-composer",
+    ]
+    assert resumed[0][1] == "thread-cinematographer"
+    assert resumed[1][1] == "thread-scene-composer"
+
+
+def test_staged_pipeline_runs_independent_branches_in_parallel(tmp_path):
+    class ParallelClient(FakeStageClient):
+        def __init__(self):
+            super().__init__()
+            self.branch_barrier = threading.Barrier(2)
+
+        def run(self, prompt, **kwargs):
+            role = next(
+                stage.name
+                for stage in AGENT_STAGES
+                if f"You are the {stage.name} specialist" in prompt
+            )
+            if role in {"cartographer", "math-director"}:
+                self.branch_barrier.wait(timeout=2)
+            return super().run(prompt, **kwargs)
+
+    client = ParallelClient()
+
+    StagedPipeline(client=client).run(
+        tmp_path,
+        RunRequest(prompt="explain a theorem"),
+    )
+
+    assert client.branch_barrier.n_waiting == 0
+
+
+def test_cli_parses_resume_and_status_commands():
+    parser = build_parser()
+
+    resume = parser.parse_args(
+        ["resume", "20260723-example", "--from", "cinematographer"]
+    )
+    status = parser.parse_args(["status", "20260723-example"])
+
+    assert resume.command == "resume"
+    assert resume.from_stage == "cinematographer"
+    assert status.command == "status"
+    with pytest.raises(SystemExit):
+        parser.parse_args(["resume", "run", "--from", "unknown"])

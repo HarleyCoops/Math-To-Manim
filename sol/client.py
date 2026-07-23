@@ -10,6 +10,8 @@ import threading
 from pathlib import Path
 from typing import Callable
 
+from pydantic import BaseModel
+
 from sol.models import CodexRunResult
 
 DEFAULT_MODEL = os.getenv("M2M_SOL_MODEL", "gpt-5.6-sol")
@@ -53,11 +55,13 @@ class CodexCli:
         schema_path: Path,
         output_path: Path,
         session_id: str | None = None,
+        reasoning_effort: str | None = None,
     ) -> list[str]:
+        effort = reasoning_effort or self.reasoning_effort
         command = [
             self.resolve(),
             "-c", FAST_SERVICE_TIER,
-            "-c", f'model_reasoning_effort="{self.reasoning_effort}"',
+            "-c", f'model_reasoning_effort="{effort}"',
             "exec",
         ]
         if session_id:
@@ -83,12 +87,15 @@ class CodexCli:
         trace_path: Path,
         event_sink: Callable[[dict], None] | None = None,
         session_id: str | None = None,
-    ) -> CodexRunResult:
+        reasoning_effort: str | None = None,
+        result_model: type[BaseModel] = CodexRunResult,
+    ) -> BaseModel:
         command = self.build_command(
             cwd=cwd,
             schema_path=schema_path,
             output_path=output_path,
             session_id=session_id,
+            reasoning_effort=reasoning_effort,
         )
         # A stray API key would silently switch billing/auth modes. This silo is
         # deliberately ChatGPT-login-only, so remove it from the child process.
@@ -167,6 +174,6 @@ class CodexCli:
         if not output_path.is_file():
             raise CodexCliError("Codex CLI completed without writing its structured final message")
         try:
-            return CodexRunResult.model_validate_json(output_path.read_text(encoding="utf-8"))
+            return result_model.model_validate_json(output_path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, ValueError) as exc:
             raise CodexCliError("Codex CLI returned an invalid final result") from exc
