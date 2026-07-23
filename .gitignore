@@ -26,6 +26,7 @@ artifacts/
 *.mp4
 *.gif
 # Curated README/showcase GIFs are tracked.
+!docs/showcase/assets/*.mp4
 !docs/assets/*.gif
 !docs/showcase/assets/*.gif
 *.png
