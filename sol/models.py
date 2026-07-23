@@ -40,6 +40,32 @@ class CodexRunResult(BaseModel):
     notes: list[str]
 
 
+class StageRunResult(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    status: Literal["completed", "failed"]
+    role: str
+    artifacts: list[str]
+    summary: str
+    checks: list[str]
+    notes: list[str]
+
+
+class StageRecord(BaseModel):
+    name: str
+    status: Literal["pending", "running", "completed", "failed", "cached"]
+    input_hash: str
+    artifact_hashes: dict[str, str] = Field(default_factory=dict)
+    thread_id: str | None = None
+    trace_path: str
+    result_path: str
+    event_count: int = 0
+    attempts: int = 0
+    started_utc: str | None = None
+    completed_utc: str | None = None
+    error: str | None = None
+
+
 class RunManifest(BaseModel):
     run_id: str
     prompt: str
@@ -55,4 +81,6 @@ class RunManifest(BaseModel):
     scene_file: str | None = None
     scene_name: str | None = None
     video_path: str | None = None
+    execution_mode: Literal["monolithic", "staged"] = "monolithic"
+    stage_records: list[str] = Field(default_factory=list)
     error: str | None = None
