@@ -10,7 +10,7 @@
 
 # Math to Manim
 
-### Ask a question -> get a freakin' movie
+### Ask a question. Get a visual explainer.
 
 [![v1.1](https://img.shields.io/badge/Release-v1.1.0-d97757)](#whats-new-in-v11)
 [![Claude Fable 5](https://img.shields.io/badge/Claude-Fable%205%20baseline-d97757)](#the-mythos-engine)
@@ -40,7 +40,7 @@
 A polynomial is usually introduced as a line of symbols, but it can also be
 seen as a landscape made by its roots. Imagine every root pressing into a
 flexible sheet stretched above the number line. Taken together, the roots
-raise and lower that sheet. The transparent plane in the film marks zero:
+raise and lower that sheet. The transparent plane in the explainer marks zero:
 wherever the landscape falls beneath it, the polynomial has size less than
 one. The footprint under the plane is therefore the exact set whose width the
 problem asks us to measure.
@@ -62,7 +62,7 @@ contrasting two different kinds of extreme: a lower value that can be
 approached forever but never attained by a finite polynomial, and an upper
 value reached exactly by piling the roots at the endpoints.
 
-<p align="center"><em><a href="docs/showcase/assets/erdos-1038-potential-landscape.mp4">Watch the complete 79-second film</a> · <a href="docs/prompts/erdos-1038-off-white-3d.md">Read the complete Sol production prompt</a></em></p>
+<p align="center"><em><a href="docs/showcase/assets/erdos-1038-potential-landscape.mp4">Watch the complete 79 second visual explainer</a> · <a href="docs/prompts/erdos-1038-off-white-3d.md">Read the complete Sol production prompt</a></em></p>
 
 <br />
 
@@ -70,24 +70,7 @@ value reached exactly by piling the roots at the endpoints.
   <img src="docs/showcase/assets/jacobian-conjecture-3d.gif" alt="THE JACOBIAN CONJECTURE — LOCAL CERTAINTY, GLOBAL QUESTION: a complete 3D Manim film zooming through a deformed polynomial coordinate lattice, isolating a tangent plane, turning Jacobian columns into colored basis arrows, comparing a tiny cube with its image parallelepiped, and pulling back from local invertibility to the global polynomial-inverse question" width="85%" />
 </p>
 
-<p align="center"><em><strong>FABLE FINDS THE BREAK. SOL EXPLAINS THE LEAP.</strong> On July 19, 2026, Levent Alpöge <a href="https://x.com/__alpoge__/status/2079028340955197566">announced an explicit counterexample in complex three-space</a>, credited to Claude Fable 5: its Jacobian determinant is the nonzero constant &minus;2, yet three distinct inputs share one output. The complete 4:38 film above was then generated and repaired through the independent <code>gpt-5.6-sol</code> pipeline. It deliberately starts one step earlier, using full English explanations and repeated 3D camera moves to make the local-to-global leap understandable before showing why that leap can fail.</em></p>
-
-<details>
-<summary><em>What the film explains — and where the counterexample enters</em></summary>
-
-The **Jacobian matrix** collects every first partial derivative of a multivariable map. At one chosen point, it is the best linear description of the map: its columns show where three tiny basis directions move.
-
-The **Jacobian determinant** is the signed local volume scale. If it is nonzero, no infinitesimal direction is crushed, so the inverse function theorem gives an inverse in a small neighborhood. A nonzero constant determinant makes that local statement true everywhere.
-
-The historical conjecture made the profound leap from that local fact to a global conclusion:
-
-> For a polynomial map `F: C^n -> C^n`, a nonzero constant Jacobian determinant should force one global inverse, and that inverse should also be polynomial.
-
-Alpöge's announced map exposes the gap. Its determinant never vanishes, but distant source points collide at the same output. Every neighborhood can still look locally reversible while the full polynomial map is not one-to-one. That refutes the general statement in dimension three and higher; the two-variable case remains open.
-
-The geometry in the film is an intentionally faithful model of this logic, not a literal picture of complex three-space: `C^3` has six real dimensions. The film explains the Jacobian and the conjecture; it does not animate the newly announced polynomial certificate itself. [Read the Sol pipeline contract →](docs/SOL_5_6_SILO.md)
-
-</details>
+<p align="center"><em><strong>THE JACOBIAN CONJECTURE.</strong> This explainer separates local certainty from global truth. A small cube becomes a parallelepiped, making the Jacobian determinant visible as local volume change. The camera then pulls back to show why a map can be reversible nearby without being reversible everywhere.</em></p>
 
 <br />
 
@@ -95,122 +78,35 @@ The geometry in the film is an intentionally faithful model of this logic, not a
   <img src="docs/showcase/assets/traitor-axis.gif" alt="THE TRAITOR AXIS: a coral-and-steel T-handle tumbling against ink-black space — spun about its middle axis it somersaults every 8.2 seconds while the angular-momentum sphere reveals why: polhode loops in blue and gold, the coral separatrix crossing at the saddle, and the simulated spin creeping then sprinting along it" width="85%" />
 </p>
 
-<p align="center"><em><strong>THE TRAITOR AXIS.</strong> One concrete question, computed live: spin a T-handle about each of its three principal axes — why are two spins steady forever while the middle one somersaults on a schedule? Nothing here is keyframed. The moments of inertia (0.50, 0.92, 1.39) are computed from the cylinder geometry; the tumbling is RK4 integration of Euler's rigid-body equations with the orientation advanced by the exponential map; the polhode curves on the angular-momentum sphere are integrated trajectories crossing the analytic separatrix. The payoff is a countdown: a 0.025 rad/s wobble seed growing at &lambda; = &omega;&radic;((I<sub>x</sub>&minus;I<sub>y</sub>)(I<sub>z</sub>&minus;I<sub>x</sub>)/I<sub>y</sub>I<sub>z</sub>) = 1.60 s<sup>&minus;1</sup> predicts the first flip at 3.4 s — the simulation flips at 3.5 s, then every 8.19 s like clockwork. Source: <a href="examples/physics/classical_mechanics/dzhanibekov_traitor_axis.py">dzhanibekov_traitor_axis.py</a>.</em></p>
-
-<details>
-<summary><em>The prompt that became this film</em></summary>
-
-> **THE TRAITOR AXIS — one experiment, three spins, everything computed.**
->
-> The question: take the T-handle from Dzhanibekov's 1985 Salyut-7 footage — a crossbar and a stem, two dumb steel cylinders — and spin it in zero gravity about each of its three principal axes in turn. Two of those spins hold steady forever. The third somersaults, half-twist after half-twist, on a schedule you could set a watch by. Why? And exactly when?
->
-> The contract: nothing in this film may be keyframed. Compute the moments of inertia from the cylinder geometry (radii, lengths, masses — show the three numbers). Integrate Euler's rigid-body equations with RK4 and advance the orientation with the exponential map; the tumbling on screen must be the integrator's output. Film all three spin tests against a starfield with the conserved angular momentum drawn as the one fixed arrow in the world: the body flips, L never moves.
->
-> Then explain it where the explanation actually lives: on the angular-momentum sphere. Energy pins the spin to an ellipsoid, momentum pins it to a sphere; the spin must ride an intersection curve. Draw the polhode families — closed loops around the smallest and largest axes — and through the middle axis the separatrix, the saddle where any wobble grows as e^(&lambda;t). Trace the simulated trajectory live: it should visibly creep near the saddle, then sprint around the sphere — one sprint per somersault.
->
-> Finish with the countdown: &lambda; = &omega;&radic;((I<sub>x</sub>&minus;I<sub>y</sub>)(I<sub>z</sub>&minus;I<sub>x</sub>)/(I<sub>y</sub>I<sub>z</sub>)). With the film's own numbers, predict the first flip, then cut to the integrator's &omega;-trace and let the measured flips land where the formula said they would — like clockwork. Close on three handles side by side: stable, stable, saddle.
->
-> Style: Mythos house grammar. Headline before symbols, plain-language captions, camera as narrator, ink-black space; coral for the traitor, blue for the smallest axis, gold for the largest. About 100 seconds. One ThreeDScene.
-
-</details>
+<p align="center"><em><strong>THE TRAITOR AXIS.</strong> This explainer teaches why two ways of spinning an object remain steady while the middle axis flips. A computed handle and its momentum sphere move together, letting the learner connect each somersault to the unstable path in the equations. <a href="examples/physics/classical_mechanics/dzhanibekov_traitor_axis.py">Explore the source scene.</a></em></p>
 
 <br />
 
 <p align="center">
-  <img src="docs/showcase/assets/the-last-day.gif" alt="THE LAST DAY: one continuous 3D take — a blueprint sphere blooms into eigenmodes, becomes a torus, the paper turns risograph cream as it draws out into helicoid and catenoid, then the lights go out and a Lorenz attractor draws itself in gold, teal, violet and coral" width="85%" />
+  <img src="docs/showcase/assets/vortex-leapfrog.gif" alt="Two glowing vortex rings pass through each other while tracer particles reveal the surrounding flow" width="85%" />
 </p>
 
-<p align="center"><em><strong>THE LAST DAY.</strong> A continuous 3D survey of the plate series: eigenmodes expand into a sphere, the surface deforms through torus, helicoid, and catenoid stages, then the final system becomes a Lorenz trajectory. The point is procedural continuity: each surface is not a separate illustration, but the next state in one animated mathematical object. <a href="docs/showcase/THE-PLATES.md">Read the story of the plates -></a></em></p>
+<p align="center"><em><strong>VORTEX LEAPFROG.</strong> This explainer teaches how one vortex ring can pass through another. The rings contract, accelerate, pass, and expand under a computed velocity field while tracer particles make the invisible flow visible.</em></p>
 
 <br />
 
 <p align="center">
-  <img src="docs/showcase/assets/associate-family-riso.gif" alt="Animated risograph study of the helicoid deforming isometrically into the catenoid through the associate family of minimal surfaces" width="85%" />
+  <img src="docs/showcase/assets/the-valley.gif" alt="The valley of nuclear stability appears as a three dimensional energy landscape" width="85%" />
 </p>
 
-<p align="center"><em><strong>Plate VII: The Associate Family.</strong> This shows the classical associate family of minimal surfaces. The helicoid is rotated through the Weierstrass data until it becomes the catenoid; the bending changes the embedding in 3D, but preserves the intrinsic metric, so the viewer sees isometry as motion instead of as a theorem statement.</em></p>
+<p align="center"><em><strong>THE VALLEY OF STABILITY.</strong> This explainer turns nuclear binding energy into terrain. Fusion and fission begin on opposite sides, then both move toward the same stable basin near iron, making two difficult processes feel like one geometric idea.</em></p>
 
 <br />
 
 <p align="center">
-  <img src="docs/showcase/assets/blueprint-holonomy.gif" alt="DWG 001: Holonomy — a cyanotype blueprint sphere on Prussian-blue paper; an amber vector is parallel-transported around a geodesic octant and returns rotated 90 degrees" width="85%" />
+  <img src="docs/showcase/assets/exceptional-point-monodromy.gif" alt="A loop around an exceptional point moves between two sheets of a square root surface" width="85%" />
 </p>
 
-<p align="center"><em><strong>DWG 001: Holonomy.</strong> A tangent vector is parallel-transported around a geodesic triangle on the sphere. It is never manually spun; its final rotation is produced by curvature. The enclosed spherical area becomes the holonomy angle, so Gauss-Bonnet is shown as a measurable mismatch between the starting and ending frames.</em></p>
+<p align="center"><em><strong>EXCEPTIONAL POINT MONODROMY.</strong> This explainer shows why one loop around a branch point swaps two eigenvalues. The path lifts onto a two sheeted square root surface, so the learner can watch one branch become the other.</em></p>
 
 <br />
 
-<p align="center">
-  <img src="docs/showcase/assets/vortex-leapfrog.gif" alt="VORTEX: two glowing vortex rings, cyan and violet, leapfrog through the bioluminescent deep — simulated live by Biot-Savart integration — as plankton tracers stream through their throats" width="85%" />
-</p>
-
-<p align="center"><em><strong>VORTEX: field notes from the abyss.</strong> Two vortex rings evolve under a Biot-Savart velocity field. The rear ring contracts, accelerates, threads the leading ring, and then expands after passing through it. The motion is not a hand-timed loop: the rings and tracer particles are advanced from the induced velocity field, making Helmholtz vortex dynamics visible as geometry.</em></p>
-
-<br />
-
-<p align="center">
-  <img src="docs/showcase/assets/the-valley.gif" alt="THE VALLEY: the semi-empirical mass formula drawn as golden 3D terrain — the valley of beta-stability is carved term by term as each LaTeX term lands, then fusion descends from the light side and fission from the heavy ledge, both toward iron-56" width="85%" />
-</p>
-
-<p align="center"><em><strong>THE VALLEY.</strong> The chart of nuclides is treated as a 3D energy landscape: each nucleus is placed by neutron and proton count, and binding energy supplies the height. The Bethe-Weizsaecker terms are added one at a time - volume, surface, Coulomb, asymmetry, and pairing - until the valley of beta stability appears. Fusion and fission are then the same process viewed from opposite sides: motion toward the iron-56 basin releases the mass defect as Q-value.</em></p>
-
-<br />
-
-<p align="center">
-  <img src="docs/showcase/assets/reverse-reasoning-tree.gif" alt="The reverse reasoning tree filmed: a question decomposes backward into glowing prerequisite nodes, bottoms out at known ground, then lights up forward as a curriculum" width="48%" />
-  <img src="docs/showcase/assets/mythos-grammar-reel.gif" alt="The Mythos grammar reel: headline before symbols, camera flying into each term of E=mc2, then tilting into a 3D energy surface" width="48%" />
-</p>
-
-<p align="center"><em><strong>Reverse reasoning and scene grammar.</strong> Left: the pipeline decomposes a target question into prerequisite concepts, bottoms out at known ground, then walks the tree forward as a teachable order. Right: the house grammar in miniature - headline, addressed formula terms, camera move into the active symbol, and a final 3D surface only after the notation has been earned.</em></p>
-
-<br />
-
-<p align="center">
-  <img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="GRPO semantic manifold: sibling completions become a geometric policy update across the full scene" width="48%" />
-  <img src="docs/showcase/assets/qed-minkowski-epic-3d.gif" alt="QED and Minkowski spacetime: light cones, electromagnetic waves, gauge symmetry, and renormalization flow on an off-white 3D stage" width="48%" />
-</p>
-
-<p align="center"><em><strong>Policy geometry and field theory.</strong> Left: GRPO is drawn as geometry on a response manifold - sibling completions become nearby points, rewards tilt the local objective, and the policy update moves probability mass toward the preferred region. Right: the QED film builds the physics stack in order: Minkowski light cones, electromagnetic waves, gauge symmetry, compact Lagrangian notation, and renormalization flow.</em></p>
-
-<br />
-
-<p align="center">
-  <img src="docs/showcase/assets/exceptional-point-monodromy.gif" alt="Exceptional point monodromy on an archival off-white 3D stage: a loop in the z-plane lifts to a two-sheeted square-root surface and swaps the eigenvalue branches" width="85%" />
-</p>
-
-<p align="center"><em><strong>Exceptional point monodromy.</strong> This pipeline run studies the matrix family A(z) = [[0, 1], [z, 0]]. Its eigenvalues are lambda_+ and lambda_- = +/-sqrt(z), so the branch point at z = 0 is an exceptional point. The 3D set piece draws the two-sheeted square-root surface on an archival off-white stage: one loop around z = 0 lifts from the plus sheet to the minus sheet, while two loops return to the original branch. The mechanism is angle halving: if z = r e^{i theta}, then lambda = sqrt(r)e^{i theta/2}, so a full 2pi turn downstairs becomes only a pi turn upstairs.</em></p>
-
-<br />
-
-<p align="center">
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/circle-area-3d-unwrapped.gif" alt="3D circle area derivation from annuli to unwrapped triangle" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/rhombicosidodecahedron.gif" alt="Rhombicosidodecahedron animation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/cosmic-gravity-3d.gif" alt="Cosmic gravity 3D animation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="Full GRPO semantic manifold animation" width="24%" /></a>
-</p>
-
-<p align="center"><em><strong>Featured loop row.</strong> Annuli unwrap to prove A = pi r^2; an Archimedean solid exposes symmetry by rotation; spacetime curvature is staged as a warped 3D field; GRPO turns ranked completions into a geometric policy update.</em></p>
-
-<p align="center">
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/derivative-visualization.gif" alt="Derivative visualization animation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/prolip-scene.gif" alt="ProLIP animation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/lorenz-attractor.gif" alt="Lorenz attractor animation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/hopf-fibration.gif" alt="Hopf fibration animation" width="24%" /></a>
-</p>
-
-<p align="center"><em><strong>Local mechanism row.</strong> A derivative is built from local linearization; ProLIP is shown as graph-structured molecular interaction; the Lorenz system accumulates into a strange attractor; the Hopf fibration turns linked fibers into a spatial projection problem.</em></p>
-
-<p align="center">
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/fourier-epicycles.gif" alt="Fourier epicycles animation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/teaching-hopf.gif" alt="Teaching Hopf animation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/brownian-finance.gif" alt="Brownian finance animation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/radius-of-convergence.gif" alt="Radius of convergence animation" width="24%" /></a>
-  <a href="docs/showcase/README.md"><img src="docs/showcase/assets/whiskering-exchange.gif" alt="Whiskering exchange animation" width="24%" /></a>
-</p>
-
-<p align="center"><em><strong>Analysis and abstraction row.</strong> Fourier epicycles add rotating modes into a traced signal; the teaching Hopf loop slows the same fibration into steps; Brownian finance moves from accumulated change to stochastic paths; radius of convergence marks where a power series stops controlling the function; whiskering exchange renders a category-theory identity as a commuting diagram.</em></p>
-
-**You type one sentence. Six reasoning agents tear it apart, reason backward to everything a mind would need to already know, rebuild that knowledge as a curriculum, choreograph it shot by shot, and hand you a cinematic Manim film — plus every artifact that produced it. In v1.1 the whole engine is one clean package with three front doors: a CLI, a REST API, and an MCP server. The baseline model is Claude Fable 5.**
+<p align="center"><strong><a href="docs/showcase/README.md">Explore every visual explainer in the motion showcase</a></strong></p>
 
 </div>
 

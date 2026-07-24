@@ -30,4 +30,4 @@ def test_erdos_1038_readme_media_and_explanation_are_complete():
     assert "landscape made by its roots" in text
     assert "1.834430475762661" in text
     assert "2√2" in text
-    assert "Watch the complete 79-second film" in text
+    assert "Watch the complete 79 second visual explainer" in text
