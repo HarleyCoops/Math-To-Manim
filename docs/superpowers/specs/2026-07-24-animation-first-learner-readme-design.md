@@ -153,6 +153,13 @@ native implementations:
 
 Neither implementation routes through the other.
 
+Add a related architecture note after the two native implementations:
+
+> Kimi uses an agent architecture that is different enough to warrant its own
+> repository. Explore [Kimi K3 Manim](https://github.com/HarleyCoops/KimiK3Manim).
+
+Do not imply that Kimi is a third implementation inside this repository.
+
 ### Make Your First Explainer
 
 Present the easiest conversational path first.
@@ -249,8 +256,9 @@ Automated checks should verify:
 8. MCP setup and a natural language usage example are present.
 9. At least one eighth grade example is present.
 10. The product definition and Manim credit are present.
-11. Prose added or rewritten by this change contains no dash punctuation.
-12. Existing offline tests pass.
+11. The Kimi K3 Manim repository is linked with an accurate separation note.
+12. Prose added or rewritten by this change contains no dash punctuation.
+13. Existing offline tests pass.
 
 ## Success Criteria
 
@@ -263,4 +271,5 @@ A new reader should be able to answer these questions without searching:
 5. How do I use it from an assistant through MCP?
 6. How do I use it from a terminal?
 7. What is the difference between Mythos and Sol?
-8. Where can I find every older animation?
+8. Why does the Kimi architecture live in a separate repository?
+9. Where can I find every older animation?
