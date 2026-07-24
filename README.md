@@ -190,6 +190,73 @@ homework question is enough. The pipeline expands it into a teaching plan.
 8. **Render, inspect, and repair.** Produce the explainer, review the evidence,
    and correct visible defects.
 
+## Make Your First Explainer
+
+The easiest path is a conversation with an assistant that can use MCP.
+
+```bash
+pip install -e ".[mcp]"
+math-to-manim serve-mcp
+```
+
+Add the server to your MCP client:
+
+```json
+{
+  "mcpServers": {
+    "math-to-manim": {
+      "command": "math-to-manim",
+      "args": ["serve-mcp"]
+    }
+  }
+}
+```
+
+Once the server is connected, type this in your assistant:
+
+> Use Math To Manim to create a visual explainer for my eighth grade student.
+> Explain why solving an equation means doing the same thing to both sides.
+> Use a balance scale, solve 3x + 5 = 20, and end with one practice question.
+
+You do not need to memorize tool names. The assistant starts the explainer.
+The assistant reports progress. The assistant can inspect every reasoning artifact.
+The final scene and render remain in the local run directory.
+
+## Choose A Native Pipeline
+
+Math To Manim contains two complete and independent ways to create a visual
+explainer. Choose the command line account you already use.
+Neither pipeline routes through the other.
+
+### Mythos
+
+Mythos uses the Claude CLI and a six agent charter chain. It reasons through
+learner intent, prerequisite mapping, curriculum, mathematics, camera
+direction, and scene composition.
+
+```bash
+math-to-manim doctor --ping
+math-to-manim run "Explain fractions with a folding paper model for a sixth grade learner." --render -q m
+```
+
+### Sol
+
+Sol uses the logged in Codex CLI and durable specialist stages. Each role saves
+its artifact and session so the run can be inspected, resumed, and repaired by
+the responsible specialist.
+
+```bash
+math-to-manim-sol doctor
+math-to-manim-sol run "Explain fractions with a folding paper model for a sixth grade learner."
+```
+
+Read the [complete Sol contract](docs/SOL_5_6_SILO.md).
+
+### Kimi
+
+Kimi uses an agent architecture that is different enough to warrant its own repository.
+Explore [Kimi K3 Manim](https://github.com/HarleyCoops/KimiK3Manim).
+
 ---
 
 ## What's new in v1.1

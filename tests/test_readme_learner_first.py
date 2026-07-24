@@ -78,3 +78,26 @@ def test_reasoning_flow_uses_learning_order():
 
     positions = [text.index(stage) for stage in stages]
     assert positions == sorted(positions)
+
+
+def test_mcp_onboarding_includes_setup_and_conversation():
+    text = readme_text()
+
+    assert "## Make Your First Explainer" in text
+    assert 'pip install -e ".[mcp]"' in text
+    assert '"args": ["serve-mcp"]' in text
+    assert "Use Math To Manim to create a visual explainer" in text
+    assert "The assistant starts the explainer" in text
+    assert "The assistant reports progress" in text
+    assert "The assistant can inspect every reasoning artifact" in text
+
+
+def test_native_pipelines_and_related_kimi_repo_are_clear():
+    text = readme_text()
+
+    assert "## Choose A Native Pipeline" in text
+    assert "math-to-manim run" in text
+    assert "math-to-manim-sol run" in text
+    assert "Neither pipeline routes through the other" in text
+    assert "https://github.com/HarleyCoops/KimiK3Manim" in text
+    assert "different enough to warrant its own repository" in text
