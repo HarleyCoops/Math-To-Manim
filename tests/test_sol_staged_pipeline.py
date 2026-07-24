@@ -391,7 +391,7 @@ def test_run_validator_reports_final_video_not_partial_fragment(tmp_path):
     failures, _, video_path = validate_run(tmp_path, require_video=True)
 
     assert failures == []
-    assert video_path == "media\\videos\\scene\\480p15\\ExampleScene.mp4"
+    assert video_path == "media/videos/scene/480p15/ExampleScene.mp4"
 
 
 def test_scene_repair_prompt_reuses_thread_and_includes_render_evidence(tmp_path):

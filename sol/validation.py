@@ -80,7 +80,7 @@ def validate_run(run_dir: Path, *, require_video: bool) -> tuple[list[str], str 
     video_path = None
     video = find_final_video(run_dir)
     if video:
-        video_path = str(video.relative_to(run_dir))
+        video_path = video.relative_to(run_dir).as_posix()
         if video.stat().st_size < 1024:
             failures.append("rendered video is unexpectedly small")
     elif require_video:
