@@ -1,0 +1,9 @@
+{
+  "shots": [
+    {"id": "terrain", "camera": "orbit the potential surface"},
+    {"id": "atomization", "camera": "push into one component"},
+    {"id": "certified-floor", "camera": "travel along the raised valley"},
+    {"id": "endpoint-maximum", "camera": "pull back to the final tableau"}
+  ],
+  "camera_call_count_planned": 4
+}

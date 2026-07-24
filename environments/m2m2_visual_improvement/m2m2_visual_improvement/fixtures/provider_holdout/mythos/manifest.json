@@ -1,0 +1,9 @@
+{
+  "run_id": "provider-holdout-mythos-structure-first",
+  "prompt": "Explain greatest common factors and order of operations to a grade 6 visual learner using GCF(12,18) and 3+4x2.",
+  "offline": false,
+  "scene_file": "mythos_scene.py",
+  "scene_name": "StructureFirstJourney",
+  "completed_utc": "2026-07-09T00:00:00+00:00",
+  "static_check": []
+}

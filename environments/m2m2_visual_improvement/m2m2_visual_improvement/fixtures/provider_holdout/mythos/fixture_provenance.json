@@ -1,0 +1,14 @@
+{
+  "sanitized_excerpt": true,
+  "source_run_id": "20260709-123347-i-m-a-single-parent-and-my-6th-grader-is-struggl",
+  "source_sha256": {
+    "01_intent.json": "f8d401adee9f601d7e94a2669286b6904628980a81dbefdea67b51d08ae07080",
+    "02_knowledge_map.json": "8fe7075cc7e169791cf015a84863d8982e6e3d952d40173aa71a26e9c79a870a",
+    "03_curriculum.json": "8e80cb9f8e085d51cf08eb95b19e610f612bb3307fc047aaa1dacd73e485969a",
+    "04_math_dossier.json": "89b441476ad839a5e1c9819abe41efacf6e27082f9d9d299ab0a8570c949916b",
+    "05_shot_list.json": "96bcc5798f0cc33c73769bdbb5daab451b4561ee57eeb80388f633237149c2ab",
+    "06_scene_spec.json": "d164c3c28c1720afff4acadb0cd5a7331f1acb4b5aaa02d2c03f40d4ea13e7a4",
+    "manifest.json": "ae3ed3d68127cc9db68e987ef593c54c1402c8d9e54ce5bec5102033c6e1380b",
+    "mythos_scene.py": "854d8924dc61f85aafafb8fe9fd6f50158e394b05f4b312dc929985fc88d2c06"
+  }
+}
