@@ -24,6 +24,15 @@ test = [
 [tool.setuptools.packages.find]
 include = ["m2m2_visual_improvement*"]
 
+[tool.setuptools.package-data]
+m2m2_visual_improvement = [
+  "data/*.json",
+  "data/*.jsonl",
+  "fixtures/micro_scenes/*.md",
+  "fixtures/provider_holdout/*/*.json",
+  "fixtures/provider_holdout/*/*.py",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
