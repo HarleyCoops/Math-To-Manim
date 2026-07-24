@@ -101,3 +101,52 @@ def test_native_pipelines_and_related_kimi_repo_are_clear():
     assert "Neither pipeline routes through the other" in text
     assert "https://github.com/HarleyCoops/KimiK3Manim" in text
     assert "different enough to warrant its own repository" in text
+
+
+def prose_without_code_or_links(text: str) -> str:
+    alt_text = " ".join(re.findall(r'alt="([^"]*)"', text))
+    prose = re.sub(r"```.*?```", "", text, flags=re.DOTALL)
+    prose = re.sub(r"`[^`]*`", "", prose)
+    prose = re.sub(r"<[^>]+>", "", prose)
+    prose = re.sub(r"\]\([^)]+\)", "]", prose)
+    return f"{prose}\n{alt_text}"
+
+
+def test_legacy_root_material_is_removed():
+    text = readme_text()
+    forbidden = [
+        "docs/showcase/assets/the-last-day.gif",
+        "docs/showcase/assets/associate-family-riso.gif",
+        "docs/showcase/assets/blueprint-holonomy.gif",
+        "docs/showcase/assets/reverse-reasoning-tree.gif",
+        "docs/showcase/assets/mythos-grammar-reel.gif",
+        "## What's new in v1.1",
+        "## The morning it started",
+        "## Motion showcase",
+    ]
+    for item in forbidden:
+        assert item not in text
+
+
+def test_technical_reference_remains_complete():
+    text = readme_text()
+    required = [
+        "## Installation",
+        "## Run Artifacts",
+        "## MCP Reference",
+        "## REST API",
+        "## Configuration",
+        "## Testing",
+        "## Repository Layout",
+        "## License",
+    ]
+    for heading in required:
+        assert heading in text
+
+
+def test_written_prose_contains_no_dash_punctuation():
+    prose = prose_without_code_or_links(readme_text())
+
+    assert "—" not in prose
+    assert "–" not in prose
+    assert re.search(r"(?<=[A-Za-z])-(?=[A-Za-z])", prose) is None
