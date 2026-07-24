@@ -20,6 +20,7 @@ runs/
 # Local-only experiment graveyard (never tracked).
 archive/local/
 uv.lock
+!environments/m2m2_visual_improvement/uv.lock
 media/
 output/
 artifacts/
