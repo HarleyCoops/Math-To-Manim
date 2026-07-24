@@ -112,6 +112,86 @@ value reached exactly by piling the roots at the endpoints.
 
 ---
 
+## What Is Math To Manim
+
+Math To Manim turns a math or physics question into a carefully reasoned visual explanation.
+It works backward to identify what the learner needs to know, rebuilds those
+ideas in teaching order, checks the mathematics, and animates the explanation
+in Manim.
+
+[Manim](https://docs.manim.community/en/stable/) is the open source animation
+engine originally created by Grant Sanderson for 3Blue1Brown. It powers many
+of the most recognizable math and physics animations online. This project
+uses the edition maintained by the Manim community.
+
+The reasoning process is the product. Math To Manim does not jump directly
+from a sentence to Python. It first decides what must be understood, what must
+be shown, and in what order each idea should appear.
+
+## What Can I Ask
+
+### Middle School Arithmetic
+
+> Explain why a negative number times a negative number becomes positive to
+> an eighth grade student. Use a number line, one everyday analogy, and one
+> worked example.
+
+### Geometry
+
+> Show why the Pythagorean theorem works without assuming advanced algebra.
+> Build the squares on all three sides and rearrange their areas.
+
+### Introductory Algebra
+
+> Teach slope using three ramps. Explain rise over run, compare steepness,
+> then solve one line equation.
+
+### High School Physics
+
+> Explain conservation of momentum using two carts that collide. Show the
+> momentum arrows before and after impact.
+
+### University Mathematics
+
+> Explain Fourier series as rotating vectors that rebuild a signal. Begin
+> with a circle and add one frequency at a time.
+
+### Research Mathematics
+
+> Show why one loop around an exceptional point swaps the eigenvalue branches.
+> Assume I know complex numbers but not covering spaces.
+
+### A Useful Prompt Recipe
+
+> Explain [topic] to [learner]. Assume they already know [starting point].
+> Use [visual metaphor or physical model]. Work through [specific example].
+> End with [summary or check question].
+
+You can name the learner's age, prior knowledge, pace, preferred visual model,
+worked example, notation level, and final comprehension check. A simple
+homework question is enough. The pipeline expands it into a teaching plan.
+
+## How The Reasoning Pipeline Works
+
+1. **Understand the learner.** Identify the real question, the audience, and
+   the intended depth.
+2. **Find the missing prerequisites.** Work backward until every branch reaches
+   ideas the learner already knows.
+3. **Build the teaching sequence.** Walk those ideas forward in the order that
+   makes the final concept feel earned.
+4. **Choose the mathematics.** Select the definitions, equations, examples,
+   and checks that carry the explanation.
+5. **Plan the visuals.** Decide what appears on screen, what changes, and where
+   the camera guides attention.
+6. **Compose the Manim scene.** Turn the teaching plan into complete,
+   addressable visual objects and timing.
+7. **Validate the result.** Check code structure, mathematical presentation,
+   readability, and camera rules.
+8. **Render, inspect, and repair.** Produce the explainer, review the evidence,
+   and correct visible defects.
+
+---
+
 ## What's new in v1.1
 
 v1.1 is the release where the Mythos chain stops being a layer and becomes **the** pipeline.
