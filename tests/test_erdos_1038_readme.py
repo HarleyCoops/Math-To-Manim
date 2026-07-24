@@ -15,7 +15,7 @@ def test_erdos_1038_is_the_first_readme_animation():
     )
     assert "api.star-history.com/chart" in text
     assert "docs/showcase/assets/jacobian-conjecture-3d.gif" in text
-    assert "docs/showcase/assets/traitor-axis.gif" in text
+    assert "docs/showcase/assets/traitor-axis.gif" not in text
 
 
 def test_erdos_1038_readme_media_and_explanation_are_complete():

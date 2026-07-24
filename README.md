@@ -81,38 +81,6 @@ value reached exactly by piling the roots at the endpoints.
 
 <br />
 
-<p align="center">
-  <img src="docs/showcase/assets/traitor-axis.gif" alt="A computed handle tumbles beside its momentum sphere and reveals why the middle axis is unstable" width="85%" />
-</p>
-
-<p align="center"><em><strong>THE TRAITOR AXIS.</strong> This explainer teaches why two ways of spinning an object remain steady while the middle axis flips. A computed handle and its momentum sphere move together, letting the learner connect each somersault to the unstable path in the equations. <a href="examples/physics/classical_mechanics/dzhanibekov_traitor_axis.py">Explore the source scene.</a></em></p>
-
-<br />
-
-<p align="center">
-  <img src="docs/showcase/assets/vortex-leapfrog.gif" alt="Two glowing vortex rings pass through each other while tracer particles reveal the surrounding flow" width="85%" />
-</p>
-
-<p align="center"><em><strong>VORTEX LEAPFROG.</strong> This explainer teaches how one vortex ring can pass through another. The rings contract, accelerate, pass, and expand under a computed velocity field while tracer particles make the invisible flow visible.</em></p>
-
-<br />
-
-<p align="center">
-  <img src="docs/showcase/assets/the-valley.gif" alt="The valley of nuclear stability appears as a three dimensional energy landscape" width="85%" />
-</p>
-
-<p align="center"><em><strong>THE VALLEY OF STABILITY.</strong> This explainer turns nuclear binding energy into terrain. Fusion and fission begin on opposite sides, then both move toward the same stable basin near iron, making two difficult processes feel like one geometric idea.</em></p>
-
-<br />
-
-<p align="center">
-  <img src="docs/showcase/assets/exceptional-point-monodromy.gif" alt="A loop around an exceptional point moves between two sheets of a square root surface" width="85%" />
-</p>
-
-<p align="center"><em><strong>EXCEPTIONAL POINT MONODROMY.</strong> This explainer shows why one loop around a branch point swaps two eigenvalues. The path lifts onto a two sheeted square root surface, so the learner can watch one branch become the other.</em></p>
-
-<br />
-
 <p align="center"><strong><a href="docs/showcase/README.md">Explore every visual explainer in the motion showcase</a></strong></p>
 
 </div>

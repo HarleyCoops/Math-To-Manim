@@ -7,6 +7,9 @@ README = Path("README.md")
 FEATURED_EXPLAINERS = [
     "docs/showcase/assets/erdos-1038-potential-landscape.gif",
     "docs/showcase/assets/jacobian-conjecture-3d.gif",
+]
+
+REMOVED_MYTHOS_SHOWCASE = [
     "docs/showcase/assets/traitor-axis.gif",
     "docs/showcase/assets/vortex-leapfrog.gif",
     "docs/showcase/assets/the-valley.gif",
@@ -26,7 +29,7 @@ def test_featured_explainers_are_first_and_in_order():
     text = readme_text()
     references = local_gif_references(text)
 
-    assert references[:6] == FEATURED_EXPLAINERS
+    assert references == FEATURED_EXPLAINERS
     assert "api.star-history.com/chart" in text
     assert "Ask a question. Get a visual explainer." in text
     assert "docs/showcase/README.md" in text
@@ -35,6 +38,21 @@ def test_featured_explainers_are_first_and_in_order():
 def test_every_featured_explainer_asset_exists():
     for asset in FEATURED_EXPLAINERS:
         assert Path(asset).is_file()
+
+
+def test_old_mythos_showcase_is_absent_from_root_readme():
+    text = readme_text()
+
+    for asset in REMOVED_MYTHOS_SHOWCASE:
+        assert asset not in text
+
+    for title in [
+        "THE TRAITOR AXIS",
+        "VORTEX LEAPFROG",
+        "THE VALLEY OF STABILITY",
+        "EXCEPTIONAL POINT MONODROMY",
+    ]:
+        assert title not in text
 
 
 def test_product_definition_and_manim_credit_are_present():
