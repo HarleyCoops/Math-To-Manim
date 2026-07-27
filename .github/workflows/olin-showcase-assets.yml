@@ -1,0 +1,68 @@
+name: Olin showcase assets
+
+on:
+  push:
+    branches:
+      - claude/olin-3d-space-animation-48eigb
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    if: github.event.head_commit.message == 'Complete Olin Mythos showcase'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install repository render toolchain
+        run: ./scripts/bootstrap-render.sh
+
+      - name: Render the accepted production scene
+        run: |
+          .venv/bin/manim -ql --disable_caching \
+            examples/mythos/olin_off_white_3d_space.py \
+            OlinOffWhite3DSpace
+
+      - name: Package the full film and showcase loop
+        run: |
+          film=media/videos/olin_off_white_3d_space/480p15/OlinOffWhite3DSpace.mp4
+          full=docs/showcase/assets/olin-off-white-3d-space.mp4
+          loop=docs/showcase/assets/olin-off-white-3d-space.gif
+          highlight="${RUNNER_TEMP}/olin-off-white-highlight.mp4"
+
+          ffmpeg -y -loglevel error -i "$film" -map 0:v:0 -an \
+            -c:v copy -movflags +faststart "$full"
+          ffmpeg -y -loglevel error -ss 29.2 -i "$film" -t 17 -an \
+            -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p \
+            -movflags +faststart "$highlight"
+          .venv/bin/math-to-manim gif "$highlight" -o "$loop" \
+            --fps 10 --width 720
+
+      - name: Verify and commit only the showcase assets
+        run: |
+          .venv/bin/python -m pytest -q tests/test_olin_off_white_3d_scene.py
+          git diff --check
+          ffprobe -v error \
+            -show_entries stream=codec_name,width,height,pix_fmt,r_frame_rate \
+            -show_entries format=duration,size \
+            -of default=noprint_wrappers=1 \
+            docs/showcase/assets/olin-off-white-3d-space.mp4
+          ffprobe -v error \
+            -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames \
+            -show_entries format=duration,size \
+            -of default=noprint_wrappers=1 \
+            docs/showcase/assets/olin-off-white-3d-space.gif
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            docs/showcase/assets/olin-off-white-3d-space.mp4 \
+            docs/showcase/assets/olin-off-white-3d-space.gif
+          git commit -m "Add Olin showcase render assets"
+          git push origin HEAD:claude/olin-3d-space-animation-48eigb

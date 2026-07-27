@@ -74,6 +74,39 @@ value reached exactly by piling the roots at the endpoints.
 <br />
 
 <p align="center">
+  <a href="docs/showcase/assets/olin-off-white-3d-space.mp4">
+    <img src="docs/showcase/assets/olin-off-white-3d-space.gif" alt="Ten thousand points rise from a flat generative drawing into an off white three dimensional space while preserving the original shadow" width="90%" />
+  </a>
+</p>
+
+<p align="center"><strong>OLIN: THE SPACE INSIDE A TWEET</strong></p>
+
+A tiny program draws ten thousand points by passing each one through five
+linked quantities: \(k\), \(e\), \(d\), \(c\), and \(q\). The final screen
+coordinates are only a flat pair,
+\((u,v)=(q+40\cos c,\;q\sin c+35d)\). A picture with two coordinates does not
+determine one unique object in three dimensions, so the film explores two
+different ways to reveal the space suggested by the code.
+
+The first construction is the exact lift
+\(E(i,t)=(u,\;40\sin c,\;v)\). It adds a hidden depth coordinate while
+leaving \(u\) and \(v\) untouched. Look straight down that hidden direction
+and every point lands exactly on the original drawing. This makes \(E\) a
+faithful spatial source for the flat shadow.
+
+The film then explores
+\(C(i,t)=((40+q)\cos c,\;(40+q)\sin c,\;35d)\). Here \(c\) turns each point
+around a vertical axis, \(q\) changes its radius, and \(35d\) sets its height.
+This is an alternate cylindrical interpretation, not another exact lift.
+Its projection does not reproduce the original drawing. The distinction
+matters: \(E\) preserves what the code drew, while \(C\) asks what other
+spatial form the same ingredients can suggest.
+
+<p align="center"><em><a href="docs/showcase/assets/olin-off-white-3d-space.mp4">Watch the complete Olin visual explainer</a> · <a href="docs/prompts/olin-off-white-3d-space.md">Read the corrected Mythos production prompt</a> · <a href="examples/mythos/olin_off_white_3d_space.py">Inspect the Manim scene</a></em></p>
+
+<br />
+
+<p align="center">
   <img src="docs/showcase/assets/jacobian-conjecture-3d.gif" alt="A deformed coordinate lattice reveals local volume change before the camera pulls back to the global map" width="85%" />
 </p>
 

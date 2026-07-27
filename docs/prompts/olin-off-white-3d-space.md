@@ -41,19 +41,40 @@ and lands on the canvas at
 Read the chain out loud, in order: a carrier wave \(k\), a ladder coordinate
 \(e\), a distance-with-breath \(d=\sqrt{k^2+e^2}+\text{breath}-4\), a spin
 angle \(c=d-t\) that turns distance into rotation, and a flourish \(q\) that
-swings hardest where \(y\) is largest. The pair \((q\sin c,\,35d)\) is a
-height; the pair \((q+40\cos c)\) is a swing. The tweet is drawing the flat
-shadow of a rotating three-dimensional object it never constructs.
-
-The film's job is to construct it. Lift every sample into genuine 3D with
-the cylindrical interpretation the formulas suggest:
+swings hardest where \(y\) is largest. After removing the canvas offset,
+write
 \[
-P(i,t)=\Bigl(\,(40+q)\cos c,\;\;(40+q)\sin c,\;\;35\,d\,\Bigr),
+u=x-200=q+40\cos c,
+\qquad
+v=y_{\mathrm{screen}}=q\sin c+35d.
+\]
+The tweet supplies only \((u,v)\), so it does not determine a unique 3D
+object. The film must distinguish an exact shadow-preserving embedding from a
+separate cylindrical interpretation.
+
+First lift every sample into genuine 3D with
+\[
+E(i,t)=\Bigl(q+40\cos c,\;40\sin c,\;q\sin c+35d\Bigr).
+\]
+The middle coordinate restores hidden depth while leaving the visible
+coordinates untouched:
+\[
+\pi_{xz}\!\left(E(i,t)\right)
+=\Bigl(q+40\cos c,\;q\sin c+35d\Bigr)=(u,v).
+\]
+This is an exact statement: an orthographic view down the \(y\)-axis
+reproduces the centered tweet coordinates.
+
+Only after proving that correspondence, show the more symmetric cylindrical
+interpretation suggested by the formulas:
+\[
+C(i,t)=\Bigl((40+q)\cos c,\;(40+q)\sin c,\;35d\Bigr),
 \]
 so the swing term \(40\cos c\) becomes a full revolution around the vertical
-axis, \(q\) stays the radial breath, and \(35d\) becomes true height. State
-honestly, in one caption, that the lift is the natural reading, not the only
-one: the tweet itself only ever draws the shadow.
+axis, \(q\) becomes radial breath, and \(35d\) becomes true height. State
+honestly, in one caption, that \(C\) is a cylindrical reinterpretation, not
+the tweet's literal shadow source: unlike \(E\), \(C\) does not project back
+to the tweet coordinates.
 
 Beat plan:
 
@@ -62,17 +83,24 @@ Beat plan:
 2. "Ten thousand points, one recipe." Walk the definition chain
    \(k\to e\to d\to c\to q\) as addressable MathTex, zooming into each term
    while a caption says what it does in plain words.
-3. "The flat shadow." Plot the exact original: all \(10^4\) points at the
-   tweet's own screen coordinates, animated over \(t\), as a living 2D
-   drawing in dark sepia ink on off-white.
-4. "Lift it into space." Morph the shadow into the cylindrical lift
-   \(P(i,t)\): the same points leave the page and become a rotating
-   three-dimensional shell.
-5. "The space breathes." Let \(t\) run while the camera orbits: the
+3. "The flat shadow." Plot the exact original at the tweet's own screen
+   coordinates in dark sepia ink on off-white. Show all \(10^4\) points at
+   one full-density reference frame, then animate a deterministic,
+   evenly-spaced subset of at most 6000 samples over \(t\) using the exact
+   same coordinate formula.
+4. "Lift it exactly." Morph the shadow into \(E(i,t)\): the same visible
+   coordinates leave the page only along the hidden \(y\)-axis. Orbit the
+   camera, then return to the orthographic \(xz\) view so the points collapse
+   exactly onto the tweet.
+5. "A cylindrical reading." Deform \(E\) into \(C\) only after the exact
+   projection has been earned. Label the change as an interpretation. Let
+   \(t\) run while the camera orbits: the
    \(\sin(e/9+t/2)\) term inhales and exhales the whole structure with
    period \(4\pi\) while \(c=d-t\) spins it.
-6. "Shadow and space together." Final master tableau: the 3D shell, its
-   flat shadow, and the compact formula chain on one off-white frame.
+6. "Shadow and space together." Final master tableau: the exact lift \(E\),
+   its \(xz\) projection, and the compact formula chain on one off-white
+   frame. A small label may identify \(C\) as the alternate cylindrical
+   reading, but it must not imply that \(C\)'s projection is the tweet.
 
 Hard production contract:
 
@@ -84,9 +112,11 @@ Hard production contract:
   `set_camera_orientation()`. Never call `.animate` on `self.camera`.
 - Point clouds must be vectorized: compute all sample positions with numpy
   arrays and draw them as point-cloud mobjects (`PMobject`/`PGroup`), never
-  as thousands of individual `Dot` VMobjects. Cap any animated cloud at
-  6000 points and precompute what can be precomputed, so a low-quality
-  render finishes inside the render budget.
+  as thousands of individual `Dot` VMobjects. The one static full-density
+  shadow keyframe may contain all 10,000 samples. Every animated cloud must
+  use the same deterministic, evenly-spaced subset of at most 6000 samples.
+  Precompute what can be precomputed so a low-quality render finishes inside
+  the render budget.
 - Set every frame to archival off-white near `#f3ecd8`. This is an
   off-white film: the background is paper, never black, and there is no
   dark fallback between beats. Ink the points and text in dark sepia
@@ -102,14 +132,17 @@ Hard production contract:
   captions; never stack them.
 - Geometry must carry the argument; do not place paragraphs on screen.
 - Keep labels readable at a 720-pixel-wide README size.
-- End on a strong off-white 3D master frame containing the breathing shell,
-  its shadow, and the formula chain.
+- End on a strong off-white 3D master frame containing the exact lift, its
+  shadow, and the formula chain.
 
 Render and inspect the film. The result is acceptable only when:
 
 - the background remains off-white throughout with no stars or dark flashes;
 - perspective, depth, and parallax make the lift unmistakably 3D;
-- the flat shadow beat matches the tweet's actual coordinates;
+- the flat shadow beat matches the tweet's actual coordinates and the
+  orthographic \(xz\) view of \(E\) reproduces them exactly;
+- the film labels \(C\) as an alternate cylindrical interpretation and never
+  presents its projection as the tweet;
 - the definition chain appears accurately with complete LaTeX;
 - camera pull-backs create whitespace;
 - the final frame works as a README showcase image.
