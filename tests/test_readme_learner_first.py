@@ -3,9 +3,11 @@ from pathlib import Path
 
 
 README = Path("README.md")
+SHOWCASE = Path("docs/showcase/README.md")
 
 FEATURED_EXPLAINERS = [
     "docs/showcase/assets/erdos-1038-potential-landscape.gif",
+    "docs/showcase/assets/olin-off-white-3d-space.gif",
     "docs/showcase/assets/jacobian-conjecture-3d.gif",
 ]
 
@@ -38,6 +40,38 @@ def test_featured_explainers_are_first_and_in_order():
 def test_every_featured_explainer_asset_exists():
     for asset in FEATURED_EXPLAINERS:
         assert Path(asset).is_file()
+
+
+def test_olin_feature_links_the_film_prompt_and_scene():
+    text = readme_text()
+
+    required = [
+        'href="docs/showcase/assets/olin-off-white-3d-space.mp4"',
+        'src="docs/showcase/assets/olin-off-white-3d-space.gif"',
+        'href="docs/prompts/olin-off-white-3d-space.md"',
+        'href="examples/mythos/olin_off_white_3d_space.py"',
+        "The first construction is the exact lift",
+        "This is an alternate cylindrical interpretation",
+        "Its projection does not reproduce the original drawing",
+    ]
+    for item in required:
+        assert item in text
+
+
+def test_olin_showcase_links_the_film_and_lists_the_asset():
+    text = SHOWCASE.read_text(encoding="utf-8")
+
+    required = [
+        'href="assets/olin-off-white-3d-space.mp4"',
+        'src="assets/olin-off-white-3d-space.gif"',
+        "[corrected Mythos prompt](../prompts/olin-off-white-3d-space.md)",
+        "[Manim scene](../../examples/mythos/olin_off_white_3d_space.py)",
+        "| `assets/olin-off-white-3d-space.gif` | Generative art / geometry |",
+        "exact lift",
+        "alternate interpretation",
+    ]
+    for item in required:
+        assert item in text
 
 
 def test_old_mythos_showcase_is_absent_from_root_readme():
