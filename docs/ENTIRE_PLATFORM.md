@@ -23,6 +23,7 @@ GitHub. Git LFS remains on GitHub.
 | Code, PRs, releases | `https://github.com/HarleyCoops/Math-To-Manim` | Public |
 | Permanent checkpoints | `https://github.com/HarleyCoops/math-to-manim-checkpoints` | Private |
 | Regional Git mirror | `entire://aws-us-east-2.entire.io/gh/harleycoops/math-to-manim` | ENTIRE-authenticated |
+| Private checkpoint mirror | `entire://aws-us-east-2.entire.io/gh/harleycoops/math-to-manim-checkpoints` | ENTIRE-authenticated |
 
 The permanent metadata ref is `refs/heads/entire/checkpoints/v1`. It must exist
 in the private checkpoint repository and must never exist in the public source
@@ -116,6 +117,19 @@ git ls-remote origin "refs/heads/entire/checkpoints/v1"
 The first command must print one ref. The second must print nothing. ENTIRE
 redaction is a safety net, not permission to place credentials or private
 files in agent context. Never push local `entire/*` shadow refs manually.
+
+The private checkpoint repository is also mirrored in US East. ENTIRE v0.9.0
+derives a structured checkpoint remote using the transport of the source push:
+when code is pushed through an `entire://` source mirror, it tries the matching
+`entire://` checkpoint URL. Both mirrors are therefore required for automatic
+checkpoint sync on mirror pushes. If checkpoint sync ever warns while the code
+push succeeds, retry explicitly through the GitHub transport context:
+
+```powershell
+entire hooks git pre-push origin
+```
+
+Then repeat both private-positive and public-negative ref checks above.
 
 ## Historical development sessions
 
