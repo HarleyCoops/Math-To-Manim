@@ -1,0 +1,6 @@
+tmp/
+settings.local.json
+metadata/
+logs/
+m2m-sessions/
+redactors/local/

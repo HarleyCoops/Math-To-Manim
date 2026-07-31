@@ -1,0 +1,25 @@
+{
+  "enabled": true,
+  "external_agents": true,
+  "strategy_options": {
+    "checkpoint_remote": {
+      "provider": "github",
+      "repo": "HarleyCoops/math-to-manim-checkpoints"
+    }
+  },
+  "absolute_git_hook_path": true,
+  "telemetry": false,
+  "redaction": {
+    "pii": {
+      "enabled": true,
+      "email": true,
+      "phone": true,
+      "address": false
+    }
+  },
+  "checkpoints": {
+    "primary": {
+      "type": "git-branch"
+    }
+  }
+}
