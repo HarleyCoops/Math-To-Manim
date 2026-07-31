@@ -14,7 +14,11 @@
       "enabled": true,
       "email": true,
       "phone": true,
-      "address": false
+      "address": false,
+      "custom_patterns": {
+        "openai_style_token": "sk-[A-Za-z0-9_-]{20,}",
+        "bearer_token": "(?i)\\bBearer\\s+[A-Za-z0-9._-]{20,}\\b"
+      }
     }
   },
   "checkpoints": {

@@ -23,11 +23,21 @@ def test_entire_routes_checkpoints_privately() -> None:
         "provider": "github",
         "repo": "HarleyCoops/math-to-manim-checkpoints",
     }
-    assert settings["redaction"]["pii"] == {
+    pii = settings["redaction"]["pii"]
+    assert {
+        "enabled": pii["enabled"],
+        "email": pii["email"],
+        "phone": pii["phone"],
+        "address": pii["address"],
+    } == {
         "enabled": True,
         "email": True,
         "phone": True,
         "address": False,
+    }
+    assert pii["custom_patterns"] == {
+        "openai_style_token": r"sk-[A-Za-z0-9_-]{20,}",
+        "bearer_token": r"(?i)\bBearer\s+[A-Za-z0-9._-]{20,}\b",
     }
 
 
