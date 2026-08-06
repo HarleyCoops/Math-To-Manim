@@ -4,6 +4,10 @@ Guidance for AI agents (and humans) working in this repository.
 
 ## What this repo is
 
+Math-To-Manim turns a natural-language prompt into a rendered Manim film through a
+six-role reasoning chain, and carries the RL and evaluation substrate used to
+improve that chain over time.
+
 Math-To-Manim contains provider-native silos. The established `mythos/` product
 is the Anthropic-native six-agent chain driven by Claude Fable 5. The parallel
 `sol/` product is a complete GPT-5.6 Sol-native film pipeline driven only by
@@ -29,7 +33,34 @@ Do not route one provider through the other provider's orchestration layer.
 | `examples/mythos/` | Flagship hand-finished films (QFT, Sound of Spacetime) |
 | `docs/showcase/` | Curated GIF gallery — the art-direction target |
 | `tests/` | Offline test suite (no model calls, no render needed) |
-| `archive/`, `legacy/` | Retired code. Do not import from it; do not "fix" it. |
+| `archive/codex-pipeline/` | Prime Intellect Verifiers RL environment, static reward scoring, and prompt eval suite |
+| `archive/paper_visualizations/` | Rendered paper-to-film corpora used as reference and eval material |
+| `legacy/Math-To-Manim/` | Prior-generation pipelines (KimiK2.5Swarm, Gemini3) kept for RL and comparison work |
+
+## Archive and legacy
+
+`archive/` and `legacy/` are not dead weight. They hold the reinforcement-learning
+and evaluation substrate for this project, plus the prior-generation pipelines the
+current silos are measured against:
+
+| Path | What it holds |
+|---|---|
+| `archive/codex-pipeline/environments/math_to_manim/` | `m2m2_visual_repair`, a Verifiers RL environment: `environment.py`, `scoring.py` (weighted static reward over format, schema, parse, static validation, safety, acceptance terms, and layout risk), training/inference/orchestration configs, and `data/repair_tasks.jsonl` |
+| `archive/codex-pipeline/evals/prompt_suite.yaml` | Rubric-scored prompt eval cases (concept coverage, prerequisite ordering, visual feasibility, narrative alignment, artifact contract) |
+| `archive/codex-pipeline/prompts/`, `math_to_manim/` | The staged artifact schemas and prompts those evals score against |
+| `archive/paper_visualizations/` | Rendered film corpora — reference output and eval material |
+| `legacy/Math-To-Manim/` | Earlier provider pipelines retained for RL baselines and cross-generation comparison |
+
+Rules for working in them:
+
+1. **Do not import `archive/` or `legacy/` from `mythos/` or `sol/`.** The runtime
+   path stays clean; the RL and eval code depends on the silos, never the reverse.
+2. **Do not casually refactor them.** Reward functions and task datasets are
+   experiment inputs — changing scoring silently invalidates prior runs. Version
+   the schema instead of editing in place.
+3. **Their artifact schemas have drifted** from what `mythos/` and `sol/` emit
+   today. Treat that gap as real work to be done deliberately, not a bug to patch
+   on the way past.
 
 ## Working rules
 
