@@ -3,6 +3,7 @@ import json
 import subprocess
 import sys
 import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -66,9 +67,21 @@ def test_codex_streams_jsonl_events_to_trace_and_sink(monkeypatch, tmp_path):
             self.returncode = 0
 
         def wait(self, timeout=None):
-            observed["trace_during_wait"] = (
-                tmp_path / "trace.jsonl"
-            ).read_text(encoding="utf-8")
+            # CodexCli streams stdout to the trace from a daemon thread it only
+            # joins after wait() returns, so nothing orders that thread against
+            # this call. Poll instead of reading once: the point of the
+            # assertion is that the trace fills during the run rather than
+            # afterwards, and a bare read just races the reader thread.
+            trace = tmp_path / "trace.jsonl"
+            deadline = time.monotonic() + 10.0
+            text = ""
+            while time.monotonic() < deadline:
+                if trace.is_file():
+                    text = trace.read_text(encoding="utf-8")
+                    if "thread.started" in text:
+                        break
+                time.sleep(0.01)
+            observed["trace_during_wait"] = text
             return self.returncode
 
         def kill(self):

@@ -22,14 +22,14 @@ dev = [
   "httpx>=0.27",
   "fastapi>=0.110",
   "uvicorn>=0.29",
-  "mcp>=1.2",
+  "mcp>=1.2,<2",
 ]
 api = [
   "fastapi>=0.110",
   "uvicorn>=0.29",
 ]
 mcp = [
-  "mcp>=1.2",
+  "mcp>=1.2,<2",
 ]
 render = [
   "manim>=0.19",

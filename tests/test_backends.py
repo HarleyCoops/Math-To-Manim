@@ -35,6 +35,13 @@ def test_openai_compatible_httperror_reports_key_env(monkeypatch):
         def read(self):
             return b'{"error":"bad auth"}'
 
+        def close(self):
+            # HTTPError wraps fp in a finalizer that calls close() on GC. Without
+            # this, the AttributeError surfaces as an unraisable exception inside
+            # whatever unrelated test happens to be running when the collector
+            # gets to it.
+            pass
+
     def raise_httperror(*args, **kwargs):
         raise HTTPError(
             url="https://example.test/v1/chat/completions",
