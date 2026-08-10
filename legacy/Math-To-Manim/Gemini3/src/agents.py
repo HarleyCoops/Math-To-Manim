@@ -1,4 +1,5 @@
 from google.adk.agents import Agent
+from google.genai import types
 from .core import get_model_config
 
 # --- System Instructions ---
@@ -84,50 +85,89 @@ Guidelines:
 
 # --- Agent Factories ---
 
+SAFETY_CATEGORIES = (
+    types.HarmCategory.HARM_CATEGORY_HARASSMENT,
+    types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+)
+
+
+def create_safe_generate_content_config(**overrides):
+    """Build a fresh Gemini config with explicit content filters enabled."""
+    return types.GenerateContentConfig(
+        safety_settings=[
+            types.SafetySetting(
+                category=category,
+                threshold=types.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+            )
+            for category in SAFETY_CATEGORIES
+        ],
+        **overrides,
+    )
+
+
 def create_concept_analyzer():
     config = get_model_config()
     return Agent(
         name="ConceptAnalyzer",
         model=config["model"],
-        instruction=CONCEPT_ANALYZER_PROMPT
+        description="Identifies the requested concept, audience, difficulty, and mathematical domain.",
+        instruction=CONCEPT_ANALYZER_PROMPT,
+        generate_content_config=create_safe_generate_content_config(),
     )
+
 
 def create_prerequisite_explorer():
     config = get_model_config()
     return Agent(
         name="PrerequisiteExplorer",
         model=config["model"],
-        instruction=PREREQUISITE_EXPLORER_PROMPT
+        description="Builds a prerequisite DAG from foundational knowledge to the target concept.",
+        instruction=PREREQUISITE_EXPLORER_PROMPT,
+        generate_content_config=create_safe_generate_content_config(),
     )
+
 
 def create_mathematical_enricher():
     config = get_model_config()
     return Agent(
         name="MathematicalEnricher",
         model=config["model"],
-        instruction=MATHEMATICAL_ENRICHER_PROMPT
+        description="Adds rigorous definitions, equations, and theorems to each prerequisite node.",
+        instruction=MATHEMATICAL_ENRICHER_PROMPT,
+        generate_content_config=create_safe_generate_content_config(),
     )
+
 
 def create_visual_designer():
     config = get_model_config()
     return Agent(
         name="VisualDesigner",
         model=config["model"],
-        instruction=VISUAL_DESIGNER_PROMPT
+        description="Turns the enriched knowledge tree into a Manim-only visual storyboard.",
+        instruction=VISUAL_DESIGNER_PROMPT,
+        generate_content_config=create_safe_generate_content_config(),
     )
+
 
 def create_narrative_composer():
     config = get_model_config()
     return Agent(
         name="NarrativeComposer",
         model=config["model"],
-        instruction=NARRATIVE_COMPOSER_PROMPT
+        description="Composes the storyboard and mathematics into a detailed animation prompt.",
+        instruction=NARRATIVE_COMPOSER_PROMPT,
+        generate_content_config=create_safe_generate_content_config(),
     )
+
 
 def create_code_generator():
     config = get_model_config()
     return Agent(
         name="CodeGenerator",
         model=config["model"],
-        instruction=CODE_GENERATOR_PROMPT
+        description="Generates complete Manim Community Edition code from the animation prompt.",
+        instruction=CODE_GENERATOR_PROMPT,
+        generate_content_config=create_safe_generate_content_config(),
     )
