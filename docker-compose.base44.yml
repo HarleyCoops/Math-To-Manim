@@ -1,0 +1,23 @@
+# Base44 dev runbook for Math-To-Manim.
+# Brings up the FastAPI REST API (mythos.api) in dev mode on host port 3000.
+# The API boots without external credentials; model backends (claude/codex/fugu-api)
+# are only contacted when a non-offline run is submitted.
+services:
+  api:
+    image: python:3.12-slim
+    working_dir: /app
+    environment:
+      # Local-infra/config only; no external secrets required to boot the API.
+      - M2M_RUNS_DIR=/app/runs
+      - BASE44_PUBLIC_HOST_SUFFIX=${BASE44_PUBLIC_HOST_SUFFIX}
+    volumes:
+      # Bind-mount the cloned source so edits appear live (uvicorn --reload).
+      - .:/app
+    ports:
+      - "3000:3000"
+    command: >
+      bash -lc "
+      pip install -e '.[dev]' 2>&1 | tail -n 5 &&
+      exec uvicorn mythos.api:app --host 0.0.0.0 --port 3000 --reload
+      "
+    restart: unless-stopped
