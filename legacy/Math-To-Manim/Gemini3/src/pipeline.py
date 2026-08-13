@@ -10,6 +10,7 @@ from google.genai.types import Content, Part
 
 from .core import logger
 from .agents import (
+    create_safe_generate_content_config,
     create_concept_analyzer,
     create_prerequisite_explorer,
     create_mathematical_enricher,
@@ -36,9 +37,9 @@ def run_agent_sync(agent: Agent, input_text: Any) -> str:
         response = client.models.generate_content(
             model=agent.model,
             contents=input_text,
-            config={
-                "system_instruction": agent.instruction,
-            }
+            config=create_safe_generate_content_config(
+                system_instruction=agent.instruction,
+            ),
         )
         
         if response.text:
