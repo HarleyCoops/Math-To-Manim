@@ -11,7 +11,7 @@ The Mythos engine turns one sentence into a cinematic Manim film through a
 - ``mythos.backends``: model backends (Claude CLI, Codex CLI, OpenAI-compatible)
 - ``mythos.service``: job orchestration shared by every front door
 - ``mythos.api``: the REST API (FastAPI)
-- ``mythos.mcp_server``: the MCP server (FastMCP)
+- ``mythos.mcp_server``: the official MCP Python SDK 2.x server
 - ``mythos.cli``: the ``math-to-manim`` command
 """
 

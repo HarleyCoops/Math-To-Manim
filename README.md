@@ -207,6 +207,15 @@ pip install -e ".[mcp]"
 math-to-manim serve-mcp
 ```
 
+The server uses the official MCP Python SDK 2.x API and speaks the current MCP
+protocol over stdio. For a local network endpoint instead, run:
+
+```bash
+math-to-manim serve-mcp --transport streamable-http --port 8643
+```
+
+The Streamable HTTP endpoint is `http://127.0.0.1:8643/mcp`.
+
 Add the server to your MCP client:
 
 ```json

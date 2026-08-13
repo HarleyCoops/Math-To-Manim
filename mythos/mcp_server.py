@@ -25,18 +25,24 @@ import json
 from typing import Any, Literal, Optional
 
 try:
-    from mcp.server.fastmcp import FastMCP
+    from mcp.server import MCPServer
+    from mcp.types import ToolAnnotations
     from pydantic import BaseModel, ConfigDict, Field
 except ImportError as exc:  # pragma: no cover
     raise RuntimeError(
         "The MCP server requires the 'mcp' extra: pip install -e '.[mcp]'"
     ) from exc
 
+from mythos import __version__
 from mythos.backends import DEFAULT_COMMAND, DEFAULT_MODEL
 from mythos.charter import CINEMATIC_CHARTER
 from mythos.service import MythosService
 
-mcp = FastMCP("math_to_manim_mcp")
+mcp = MCPServer(
+    "math_to_manim_mcp",
+    description="Turn a mathematics question into an inspectable Mythos Manim run.",
+    version=__version__,
+)
 _service = MythosService()
 
 
@@ -112,13 +118,13 @@ class ListRunsInput(BaseModel):
 
 @mcp.tool(
     name="m2m_create_animation",
-    annotations={
-        "title": "Create Math Animation",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": True,
-    },
+    annotations=ToolAnnotations(
+        title="Create Math Animation",
+        read_only_hint=False,
+        destructive_hint=False,
+        idempotent_hint=False,
+        open_world_hint=True,
+    ),
 )
 def m2m_create_animation(params: CreateAnimationInput) -> str:
     """Start a Mythos animation run: six reasoning agents turn one sentence
@@ -150,13 +156,13 @@ def m2m_create_animation(params: CreateAnimationInput) -> str:
 
 @mcp.tool(
     name="m2m_get_job",
-    annotations={
-        "title": "Get Animation Job Status",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Animation Job Status",
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
 )
 def m2m_get_job(job_id: str) -> str:
     """Poll one background animation job by id (from m2m_create_animation).
@@ -175,13 +181,13 @@ def m2m_get_job(job_id: str) -> str:
 
 @mcp.tool(
     name="m2m_list_runs",
-    annotations={
-        "title": "List Animation Runs",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="List Animation Runs",
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
 )
 def m2m_list_runs(params: ListRunsInput) -> str:
     """List on-disk animation runs, newest first.
@@ -195,13 +201,13 @@ def m2m_list_runs(params: ListRunsInput) -> str:
 
 @mcp.tool(
     name="m2m_get_run",
-    annotations={
-        "title": "Get Animation Run Details",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Animation Run Details",
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
 )
 def m2m_get_run(params: RunIdInput) -> str:
     """Full manifest and artifact listing for one run.
@@ -219,13 +225,13 @@ def m2m_get_run(params: RunIdInput) -> str:
 
 @mcp.tool(
     name="m2m_get_artifact",
-    annotations={
-        "title": "Read Run Artifact",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Read Run Artifact",
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
 )
 def m2m_get_artifact(params: ArtifactInput) -> str:
     """Read one artifact from a run: the intent (01), the reverse reasoning
@@ -243,13 +249,13 @@ def m2m_get_artifact(params: ArtifactInput) -> str:
 
 @mcp.tool(
     name="m2m_get_scene_code",
-    annotations={
-        "title": "Get Generated Manim Scene",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Generated Manim Scene",
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
 )
 def m2m_get_scene_code(params: RunIdInput) -> str:
     """Shortcut: return the generated Manim scene file for a run, ready to
@@ -266,13 +272,13 @@ def m2m_get_scene_code(params: RunIdInput) -> str:
 
 @mcp.tool(
     name="m2m_cinematic_charter",
-    annotations={
-        "title": "Get the Mythos Cinematic Charter",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get the Mythos Cinematic Charter",
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
 )
 def m2m_cinematic_charter() -> str:
     """The Mythos Cinematic Charter: the visual contract every generated
@@ -291,8 +297,11 @@ def main(transport: str = "stdio", port: int = 8643) -> None:
     if transport == "stdio":
         mcp.run()
     else:
-        mcp.settings.port = port
-        mcp.run(transport="streamable-http")
+        mcp.run(
+            transport="streamable-http",
+            host="127.0.0.1",
+            port=port,
+        )
 
 
 if __name__ == "__main__":
