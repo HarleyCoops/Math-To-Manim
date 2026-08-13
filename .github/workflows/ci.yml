@@ -32,6 +32,20 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev]"
 
+      - name: Verify MCP 2 dependency surface
+        run: |
+          python - <<'PY'
+          from importlib.metadata import version
+          from importlib.util import find_spec
+          from mcp.server import MCPServer
+
+          major = int(version("mcp").split(".", 1)[0])
+          assert major == 2, version("mcp")
+          assert find_spec("mcp.server.fastmcp") is None
+          assert MCPServer.__name__ == "MCPServer"
+          print("mcp:", version("mcp"))
+          PY
+
       - name: Run unit tests
         run: python -m pytest -q
 

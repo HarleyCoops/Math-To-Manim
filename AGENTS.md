@@ -24,7 +24,7 @@ Do not route one provider through the other provider's orchestration layer.
 | `mythos/cinematography.py` | The visual grammar library scenes import |
 | `mythos/service.py` | Job orchestration shared by all front doors |
 | `mythos/api.py` | REST API (FastAPI) — `math-to-manim serve-api` |
-| `mythos/mcp_server.py` | MCP server (FastMCP) — `math-to-manim serve-mcp` |
+| `mythos/mcp_server.py` | Official MCP Python SDK 2.x server — `math-to-manim serve-mcp` |
 | `mythos/cli.py` | The `math-to-manim` command |
 | `examples/mythos/` | Flagship hand-finished films (QFT, Sound of Spacetime) |
 | `docs/showcase/` | Curated GIF gallery — the art-direction target |
