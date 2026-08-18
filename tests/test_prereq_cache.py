@@ -5,6 +5,8 @@ from __future__ import annotations
 import importlib
 
 from mythos.prereq_cache import PrerequisiteCache
+from mythos.service import MythosService
+from mythos.settings import PipelineSettings
 from sol import prereq_cache as sol_prereq_cache
 
 
@@ -49,3 +51,15 @@ def test_knowledge_map_ingest_and_sol_copy(tmp_path):
     sol.ingest_knowledge_map("heat equation", KNOWLEDGE_MAP)
     assert sol.get("heat equation") == mythos.get("heat equation")
     assert (tmp_path / "sol" / "_cache" / "prerequisites.json").is_file()
+
+
+def test_pipeline_settings_ttl_from_env(monkeypatch):
+    monkeypatch.setenv("M2M_PREREQ_CACHE_TTL_DAYS", "14")
+    assert PipelineSettings.from_env().prereq_cache_ttl_days == 14
+
+
+def test_service_loads_cache_on_start(tmp_path):
+    primed = PrerequisiteCache.for_runs_dir(tmp_path / "runs")
+    primed.put("heat equation", ["Fourier series"])
+    service = MythosService(runs_dir=tmp_path / "runs")
+    assert service.prereq_cache.get("heat equation") == ["Fourier series"]

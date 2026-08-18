@@ -11,9 +11,11 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
+import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -517,6 +519,57 @@ def _run_chktex(text: str) -> list[LatexIssue]:
     return issues
 
 
+def _run_lualatex(text: str) -> list[LatexIssue]:
+    if os.getenv("M2M_LATEX_DEEP_CHECK", "").strip().lower() not in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }:
+        return []
+    binary = shutil.which("lualatex")
+    if binary is None:
+        return []
+    wrapper = (
+        "\\documentclass{article}\n"
+        "\\usepackage{amsmath,amssymb}\n"
+        "\\begin{document}\n"
+        f"${text}$\n"
+        "\\end{document}\n"
+    )
+    try:
+        with tempfile.TemporaryDirectory(prefix="m2m-latex-") as tmp:
+            tex = Path(tmp) / "fragment.tex"
+            tex.write_text(wrapper, encoding="utf-8")
+            completed = subprocess.run(
+                [
+                    binary,
+                    "--halt-on-error",
+                    "--interaction=nonstopmode",
+                    tex.name,
+                ],
+                cwd=tmp,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=30,
+                check=False,
+            )
+    except (OSError, subprocess.TimeoutExpired):
+        return []
+    if completed.returncode == 0:
+        return []
+    log = (completed.stdout or "") + (completed.stderr or "")
+    issues: list[LatexIssue] = []
+    for raw in log.splitlines():
+        if raw.startswith("!"):
+            issues.append(LatexIssue(1, "warning", f"lualatex: {raw[1:].strip()}"))
+    if not issues:
+        issues.append(LatexIssue(1, "warning", "lualatex: compile failed"))
+    return issues
+
+
 def validate_latex_report(latex: str, *, math_fragment: bool = True) -> LatexReport:
     """Return the historical ``{valid, errors, warnings}`` MCP-compatible report."""
     issues = parse_latex(latex, math_fragment=math_fragment)
@@ -527,6 +580,7 @@ def validate_latex_report(latex: str, *, math_fragment: bool = True) -> LatexRep
             issues.append(LatexIssue(issue.line, "warning", issue.message))
         else:
             issues.append(issue)
+    issues.extend(_run_lualatex(latex))
     errors = [issue.as_text() for issue in issues if issue.severity == "error"]
     warnings = [issue.as_text() for issue in issues if issue.severity != "error"]
     return LatexReport(

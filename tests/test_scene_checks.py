@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from mythos.charter import find_scene_class
 from mythos.scene_checks import (
     iter_known_scene_bases,
@@ -67,13 +69,13 @@ def test_latex_report_keeps_legacy_json_shape():
     assert report["errors"] == []
 
 
-def test_threedscene_and_other_scene_bases_are_accepted():
-    for base in iter_known_scene_bases():
-        source = _scene("        self.wait(0.1)\n", base=base)
-        report = validate_manim_code_report(source)
-        assert report.valid, (base, report.errors)
-        assert report.scene_names == ["Demo"]
-        assert find_scene_class(source) == "Demo"
+@pytest.mark.parametrize("base", list(iter_known_scene_bases()))
+def test_scene_base_is_accepted(base: str):
+    source = _scene("        self.wait(0.1)\n", base=base)
+    report = validate_manim_code_report(source)
+    assert report.valid, (base, report.errors)
+    assert report.scene_names == ["Demo"]
+    assert find_scene_class(source) == "Demo"
 
 
 def test_attribute_scene_base_is_accepted():
@@ -111,3 +113,26 @@ def test_fstring_mathtex_is_not_flagged():
     source = _scene("        piece = r'x'\n        eq = MathTex(f'{piece}^2')\n")
     report = validate_manim_code_report(source)
     assert report.suggestions == []
+
+
+def test_lualatex_fallback_stays_quiet_unless_enabled(monkeypatch):
+    monkeypatch.delenv("M2M_LATEX_DEEP_CHECK", raising=False)
+    report = validate_latex_report(r"\frac{a}{b}")
+    assert report.valid is True
+    assert not any("lualatex" in item for item in report.warnings)
+
+
+def test_lualatex_fallback_records_compile_failure(monkeypatch):
+    from types import SimpleNamespace
+
+    from mythos import scene_checks
+
+    monkeypatch.setenv("M2M_LATEX_DEEP_CHECK", "1")
+    monkeypatch.setattr(scene_checks.shutil, "which", lambda name: "/usr/bin/lualatex")
+
+    def fake_run(*args, **kwargs):
+        return SimpleNamespace(returncode=1, stdout="! Missing $ inserted.\n", stderr="")
+
+    monkeypatch.setattr(scene_checks.subprocess, "run", fake_run)
+    report = validate_latex_report(r"\frac{a}{b}")
+    assert any("lualatex" in item for item in report.warnings)

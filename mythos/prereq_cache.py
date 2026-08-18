@@ -15,16 +15,14 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-DEFAULT_TTL_DAYS = 30
+from mythos.settings import DEFAULT_PREREQ_CACHE_TTL_DAYS, PipelineSettings
+
+DEFAULT_TTL_DAYS = DEFAULT_PREREQ_CACHE_TTL_DAYS
 CACHE_SCHEMA_VERSION = 1
 
 
 def _ttl_days() -> int:
-    raw = os.getenv("M2M_PREREQ_CACHE_TTL_DAYS", str(DEFAULT_TTL_DAYS))
-    try:
-        return max(1, int(raw))
-    except ValueError:
-        return DEFAULT_TTL_DAYS
+    return PipelineSettings.from_env().prereq_cache_ttl_days
 
 
 def _now() -> datetime:
