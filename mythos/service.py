@@ -25,6 +25,8 @@ from mythos.harness import (
     MythosHarness,
     default_runs_dir,
 )
+from mythos.prereq_cache import PrerequisiteCache
+from mythos.settings import PipelineSettings
 
 #: Artifact names a run may contain, in chain order (plus raw traces).
 ARTIFACT_ORDER = [
@@ -35,6 +37,7 @@ ARTIFACT_ORDER = [
     "05_shot_list.json",
     "06_scene_spec.json",
     "mythos_scene.py",
+    "validation.json",
     "manifest.json",
 ]
 
@@ -80,6 +83,13 @@ class MythosService:
         self._harness_factory = harness_factory or MythosHarness
         self._jobs: dict[str, Job] = {}
         self._lock = threading.Lock()
+        self.settings = PipelineSettings.from_env()
+        # Load on MCP / API / CLI service start so prerequisite trees survive
+        # process restarts (WAR-1530).
+        self.prereq_cache = PrerequisiteCache.for_runs_dir(
+            self.runs_dir,
+            ttl_days=self.settings.prereq_cache_ttl_days,
+        )
 
     # ------------------------------------------------------------------ #
     # Job lifecycle                                                       #

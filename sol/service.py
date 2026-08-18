@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from sol.harness import SolHarness, default_runs_dir
+from sol.manifest_schema import migrate_manifest
 from sol.models import RunManifest, RunRequest
 
 
@@ -27,7 +28,8 @@ class SolService:
         manifest_path = self.runs_dir / run_id / "manifest.json"
         if not manifest_path.is_file():
             raise FileNotFoundError(f"unknown Sol run: {run_id}")
-        return RunManifest.model_validate_json(manifest_path.read_text(encoding="utf-8"))
+        payload = migrate_manifest(json.loads(manifest_path.read_text(encoding="utf-8")))
+        return RunManifest.model_validate(payload)
 
     def list_runs(self, *, limit: int = 20) -> list[RunManifest]:
         if not self.runs_dir.exists():
@@ -35,7 +37,8 @@ class SolService:
         manifests: list[RunManifest] = []
         for path in sorted(self.runs_dir.glob("*/manifest.json"), reverse=True):
             try:
-                manifests.append(RunManifest.model_validate_json(path.read_text(encoding="utf-8")))
+                payload = migrate_manifest(json.loads(path.read_text(encoding="utf-8")))
+                manifests.append(RunManifest.model_validate(payload))
             except (OSError, ValueError, json.JSONDecodeError):
                 continue
             if len(manifests) >= limit:

@@ -16,6 +16,8 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from mythos.scene_checks import find_scene_class as _find_scene_class_ast
+
 #: The visual contract injected into every Mythos generation.
 CINEMATIC_CHARTER = """\
 MYTHOS CINEMATIC CHARTER — the generated scene MUST obey all of it.
@@ -133,9 +135,4 @@ def extract_python_block(text: str) -> str:
 
 def find_scene_class(code: str) -> str:
     """Return the name of the Scene subclass defined in generated code."""
-    match = re.search(
-        r"class\s+(\w+)\s*\(\s*(?:ThreeDScene|MovingCameraScene|Scene)\b", code
-    )
-    if not match:
-        raise RuntimeError("Generated code defines no Scene subclass")
-    return match.group(1)
+    return _find_scene_class_ast(code)

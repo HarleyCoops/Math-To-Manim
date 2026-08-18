@@ -239,6 +239,20 @@ You do not need to memorize tool names. The assistant starts the explainer.
 The assistant reports progress. The assistant can inspect every reasoning artifact.
 The final scene and render remain in the local run directory.
 
+A login free rehearsal of the same path:
+
+```bash
+python -m venv .venv
+pip install -e ".[dev]"
+math-to-manim run "the heat equation" --offline
+```
+
+That writes `runs/mythos/<timestamp>-the-heat-equation/mythos_scene.py`,
+`validation.json`, and `manifest.json`. Add `--render -q l` after
+`pip install -e ".[render]"` if you want the MP4 inside that same run
+directory. The live layout is `runs/mythos/` or `runs/sol/`, not
+`output/<run>/scene.py`.
+
 ## Choose A Native Pipeline
 
 Math To Manim contains two complete and independent ways to create a visual
@@ -274,6 +288,10 @@ Read the [complete Sol contract](docs/SOL_5_6_SILO.md).
 Kimi uses an agent architecture that is different enough to warrant its own repository.
 Explore [Kimi K3 Manim](https://github.com/HarleyCoops/KimiK3Manim).
 
+Hermes Agent is not a supported generate path. The supported operator
+surfaces are Mythos, Sol, and the MCP or REST front doors. Archived
+Hermes notes live under `archive/` and `docs/HERMES_LEARNS_MANIM.md`.
+
 ---
 
 ## Installation
@@ -289,6 +307,12 @@ python -m pytest -q
 Use `math-to-manim doctor --ping` for Mythos. Use
 `math-to-manim-sol doctor` for Sol. Run the appropriate check before a live
 request so login and rendering problems appear immediately.
+
+Static checks parse `MathTex` and `Tex` fragments in process. If `chktex`
+is on `PATH`, the verifier also consults it. If `M2M_LATEX_DEEP_CHECK` is
+set and `lualatex` is on `PATH`, fragments are compiled with
+`lualatex --halt-on-error --interaction=nonstopmode`. Both tools are
+optional and not required for `pytest`.
 
 ## Run Artifacts
 
@@ -375,6 +399,8 @@ Mythos reads configuration from the environment or a local `.env` file.
 | `M2M_RENDER_TIMEOUT` | `1800` | Sets the render budget in seconds |
 | `M2M_RUNS_DIR` | `runs/` | Selects the local run directory |
 | `M2M_MANIM` | automatic | Overrides the Manim executable |
+| `M2M_PREREQ_CACHE_TTL_DAYS` | `30` | Sets how long cached prerequisite trees stay valid |
+| `M2M_LATEX_DEEP_CHECK` | unset | When set, also asks `lualatex --halt-on-error` to compile fragments |
 
 Read the [Sol contract](docs/SOL_5_6_SILO.md) for its Codex CLI login, staged
 sessions, resume command, manifest, and environment.

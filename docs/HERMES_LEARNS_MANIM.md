@@ -1,5 +1,11 @@
 # Hermes learns Manim
 
+This document is a launch concept, not a supported setup guide. Math To
+Manim generates films through Mythos (`math-to-manim`) and Sol
+(`math-to-manim-sol`). Hermes Agent is not a runtime dependency and is
+not a generate path. Do not treat the commands below as a first-run
+install.
+
 Launch concept for showing M2M2 as a living demo of Hermes Agent using native tools to make mathematical animation.
 
 ## One-line launch frame

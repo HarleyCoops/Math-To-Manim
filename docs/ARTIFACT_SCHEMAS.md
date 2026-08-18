@@ -226,6 +226,10 @@ scores:
 failures: []
 ```
 
+Live run ledgers (`runs/mythos/*/manifest.json` and
+`runs/sol/*/manifest.json`) now carry `schema_version` and seed
+`validation.json`. See [manifest-schema.md](manifest-schema.md).
+
 ## Compatibility Notes
 
 - Artifacts should be serializable as JSON and readable as YAML fixtures.
