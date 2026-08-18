@@ -274,6 +274,10 @@ Read the [complete Sol contract](docs/SOL_5_6_SILO.md).
 Kimi uses an agent architecture that is different enough to warrant its own repository.
 Explore [Kimi K3 Manim](https://github.com/HarleyCoops/KimiK3Manim).
 
+Hermes Agent is not a supported generate path. The supported operator
+surfaces are Mythos, Sol, and the MCP or REST front doors. Archived
+Hermes notes live under `archive/` and `docs/HERMES_LEARNS_MANIM.md`.
+
 ---
 
 ## Installation
@@ -289,6 +293,10 @@ python -m pytest -q
 Use `math-to-manim doctor --ping` for Mythos. Use
 `math-to-manim-sol doctor` for Sol. Run the appropriate check before a live
 request so login and rendering problems appear immediately.
+
+Static checks parse `MathTex` and `Tex` fragments in process. If `chktex`
+is on `PATH`, the verifier also consults it. `chktex` is optional and not
+required for `pytest`.
 
 ## Run Artifacts
 

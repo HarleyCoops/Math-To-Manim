@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from sol.models import ARTIFACT_NAMES, CodexRunResult, RunRequest
+from sol.scene_checks import validation_from_scene
 
 
 def write_offline_bundle(run_dir: Path, request: RunRequest) -> CodexRunResult:
@@ -13,6 +14,11 @@ def write_offline_bundle(run_dir: Path, request: RunRequest) -> CodexRunResult:
         path = run_dir / name
         if name == "sol_scene.py":
             path.write_text(_OFFLINE_SCENE, encoding="utf-8")
+        elif name == "validation.json":
+            path.write_text(
+                json.dumps(validation_from_scene(_OFFLINE_SCENE), indent=2),
+                encoding="utf-8",
+            )
         elif name == "review.json":
             path.write_text(json.dumps({
                 "offline": True,

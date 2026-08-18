@@ -49,6 +49,9 @@ jobs:
       - name: Run unit tests
         run: python -m pytest -q
 
+      - name: Integration smoke (skips without manim and ffmpeg)
+        run: python -m pytest -q tests/integration
+
       - name: Compile package
         run: python -m compileall -q mythos
 
@@ -114,3 +117,6 @@ jobs:
 
       - name: Offline chain with a real low-quality render
         run: .venv/bin/math-to-manim run "Explain why derivatives are slopes" --offline --render -q l
+
+      - name: Init-to-render pytest smoke
+        run: .venv/bin/python -m pytest -q tests/integration/test_e2e_smoke.py

@@ -14,6 +14,7 @@ ARTIFACT_NAMES = (
     "05_shot_list.json",
     "06_scene_spec.json",
     "sol_scene.py",
+    "validation.json",
     "review.json",
 )
 
@@ -68,6 +69,7 @@ class StageRecord(BaseModel):
 
 
 class RunManifest(BaseModel):
+    schema_version: int = 2
     run_id: str
     prompt: str
     model: str
@@ -84,4 +86,6 @@ class RunManifest(BaseModel):
     video_path: str | None = None
     execution_mode: Literal["monolithic", "staged"] = "monolithic"
     stage_records: list[str] = Field(default_factory=list)
+    artifacts: dict[str, str] = Field(default_factory=dict)
+    status_detail: dict[str, str] = Field(default_factory=dict)
     error: str | None = None

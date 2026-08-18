@@ -35,6 +35,7 @@ ARTIFACT_ORDER = [
     "05_shot_list.json",
     "06_scene_spec.json",
     "mythos_scene.py",
+    "validation.json",
     "manifest.json",
 ]
 
