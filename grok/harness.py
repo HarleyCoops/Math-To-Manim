@@ -187,6 +187,11 @@ class GrokHarness:
             self._write_manifest(run_dir / "manifest.json", manifest)
             print(f"  [grok] {stage.name:16} -> {stage.artifact}")
 
+        scene_source = (run_dir / "grok_scene.py").read_text(encoding="utf-8")
+        (run_dir / "validation.json").write_text(
+            json.dumps(verify_scene_report(scene_source), indent=2),
+            encoding="utf-8",
+        )
         review = {
             "offline": False,
             "model": self.client.model,
