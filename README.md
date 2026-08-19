@@ -18,17 +18,16 @@
 [![License MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
 [Featured explainers](#featured-visual-explainers) ·
+[The idea](#what-is-math-to-manim) ·
 [What you can ask](#what-can-i-ask) ·
-[How the reasoning works](#how-the-reasoning-pipeline-works) ·
-[First run](#make-your-first-explainer) ·
-[Custom bot](#make-a-custom-bot) ·
-[Technical reference](#installation)
+[How the film is earned](#how-the-picture-is-earned) ·
+[Start here](#make-your-first-explainer) ·
+[Your own bot](#make-a-custom-bot)
 
 <br />
 
-> *Math To Manim turns a math or physics question into a carefully reasoned
-> visual explanation. It finds what the learner needs to know, teaches those
-> ideas in order, checks the mathematics, and builds the explanation in Manim.*
+> *You ask a question. Grok walks backward from the claim you will believe
+> when the lights come up, then films the walk forward.*
 
 <br />
 
@@ -121,241 +120,131 @@ spatial form the same ingredients can suggest.
 ## What Is Math To Manim
 
 Math To Manim turns a math or physics question into a carefully reasoned visual explanation.
-It works backward to identify what the learner needs to know, rebuilds those
-ideas in teaching order, checks the mathematics, and animates the explanation
-in Manim.
+A learner asks. Grok does not start with the formula. Grok starts with the
+thing you will believe at the end, then walks backward until it reaches what
+you already know, then films the walk forward.
+
+That walk is reverse thinking. The film is not a lecture with pictures glued
+on. The picture is the argument.
 
 [Manim](https://docs.manim.community/en/stable/) is the open source animation
 engine originally created by Grant Sanderson for 3Blue1Brown. It powers many
 of the most recognizable math and physics animations online. This project
-uses the edition maintained by the Manim community.
+uses the edition maintained by the Manim community. Grok 4.6 is the mind
+that decides what must be understood, what must be shown, and in what order
+each idea should appear.
 
-The reasoning process is the product. Math To Manim does not jump directly
-from a sentence to Python. It first decides what must be understood, what must
-be shown, and in what order each idea should appear.
-
-The public way to run that process is Grok 4.6 through the xAI Responses API.
-Grok reads a question or a photographed homework page, works backward from
-the core claim, then walks forward into a Manim film.
+A sentence is enough. A photographed page is enough. The product is the
+reasoning that turns either one into a film.
 
 ## What Can I Ask
 
-### Middle School Arithmetic
+Photograph tonight's middle school worksheet. Grok reads the page the way a
+patient tutor would, then treats it as one claim. Ninety seconds later an
+eighth grade student can watch why a negative number times a negative number
+becomes positive, a number line folding through an everyday analogy and one
+worked example that finally stays put.
 
-> Explain why a negative number times a negative number becomes positive to
-> an eighth grade student. Use a number line, one everyday analogy, and one
-> worked example.
+Ask the Pythagorean theorem to stop being a chant. Build the squares on all
+three sides and let the areas rearrange until the right triangle has earned
+its name.
 
-### Geometry
+Text a sentence from the kitchen table. Teach slope using three ramps.
+Rise over run becomes steepness you can compare, then one line equation that
+no longer feels like a trick.
 
-> Show why the Pythagorean theorem works without assuming advanced algebra.
-> Build the squares on all three sides and rearrange their areas.
+Open a high school physics book to the collision you have never seen drawn.
+Two carts meet. Ask for conservation of momentum as something visible. It
+is not a slogan. It is arrows that refuse to vanish, before and after impact. Or let a cart kiss a spring and
+earn a 3D set piece: mass, speed, and stiffness becoming a compression you
+can walk around.
 
-### Introductory Algebra
+Ask for Fourier series as rotating vectors that rebuild a signal. Begin with
+a circle. Add one frequency at a time. Watch a messy wave remember that it
+was only ever a choir of spins.
 
-> Teach slope using three ramps. Explain rise over run, compare steepness,
-> then solve one line equation.
+Then go further. Show why one loop around an exceptional point swaps the eigenvalue branches.
+The camera can follow a swap that a chalkboard can only name. A landscape of
+roots, like the Erdős film above, is the same invitation at research scale:
+a question that looked like symbols becomes a place.
 
-### High School Physics
+If you want to steer the voice, whisper a recipe. Explain the topic to the
+person in the room. Assume they already know the last honest starting point.
+Name a picture they can hold. Work one example. End with a check they can
+answer out loud.
 
-> Explain conservation of momentum using two carts that collide. Show the
-> momentum arrows before and after impact.
+## How The Picture Is Earned
 
-### University Mathematics
+The method is reverse thinking. We do not start with the formula. We start
+with the solved insight, walk back to the learner, then walk forward into
+light.
 
-> Explain Fourier series as rotating vectors that rebuild a signal. Begin
-> with a circle and add one frequency at a time.
+**Understand the learner.** Who is watching. What they fear. What they will
+believe when the film is over. If a homework photo is attached, Grok uses
+vision here and writes no code.
 
-### Research Mathematics
+**Find the missing prerequisites.** Work backward from the claim. Depth 0 is
+the target. Every edge is something that must be true the moment before.
+The spine starts where the audience already stands.
 
-> Show why one loop around an exceptional point swaps the eigenvalue branches.
-> Assume I know complex numbers but not covering spaces.
+**Build the teaching sequence.** Now, and only now, walk forward. Each act
+opens on a question the last act planted. One new idea per act. Curiosity
+is the only legal segue.
 
-### A Useful Prompt Recipe
+**Choose the mathematics.** The sandbox solves the homework and the physics.
+Units are checked. The numbers on screen are earned, not guessed.
 
-> Explain [topic] to [learner]. Assume they already know [starting point].
-> Use [visual metaphor or physical model]. Work through [specific example].
-> End with [summary or check question].
+**Plan the visuals.** Headlines before symbols. A camera score. One to three
+art direction stills so the film has a weather. 3D when space is the idea.
 
-You can name the learner's age, prior knowledge, pace, preferred visual model,
-worked example, notation level, and final comprehension check. A simple
-homework question is enough. The pipeline expands it into a teaching plan.
+**Compose the Manim scene.** One spatial argument. The camera moves by
+turning to look, never by sliding itself like a sticker.
 
-A photographed worksheet is also enough. Pass `--image` and Grok reads the
-page, then treats it as a film about one claim.
+**Validate the result.** The reverse tree, the scene, and the camera rules
+have to agree.
 
-## How The Reasoning Pipeline Works
-
-The method is reverse thinking. Grok starts from the solved insight and walks
-back to what the learner already knows. Only then does it walk forward into
-the film. The stages below are that story with Grok names and xAI tools.
-
-1. **Understand the learner.** The `intent` stage names the audience, the
-   core claim, the scope, and the one big zoom. If a homework photo is
-   attached, Grok uses vision. No code is written here.
-2. **Find the missing prerequisites.** The `cartographer` builds a reverse
-   knowledge tree. Depth 0 is the target claim. Edges are prerequisites.
-   The spine starts at assumed foundations. Optional web search is allowed
-   only for a canonical name, never for a lesson plan.
-3. **Build the teaching sequence.** The `curriculum` stage is the first
-   forward pass. Each act teaches one idea and hands a question to the next.
-   This stage uses no tools.
-4. **Choose the mathematics.** The `math-director` must use the code
-   interpreter to solve homework and physics numbers, check units, and
-   verify LaTeX. Web search is allowed only for a cited constant.
-5. **Plan the visuals.** The `cinematographer` writes the shot list and
-   generates one to three art direction stills. X search is only a visual
-   seed, never a source for the math.
-6. **Compose the Manim scene.** The `composer` writes a `ThreeDScene`
-   contract and the Python file. Camera moves use `move_camera` or
-   `set_camera_orientation` only. Grok calls a local verify function
-   before the file is trusted.
-7. **Validate the result.** The harness checks the reverse tree, code
-   structure, and camera rules.
-8. **Render, inspect, and repair.** Produce the explainer, review the
-   evidence, and correct visible defects.
-
-A worksheet is a film about one claim. Solved numbers come from the sandbox.
-Use 3D when space is the idea.
+**Render, inspect, and repair.** Then the explainer exists.
 
 ## Make Your First Explainer
 
+Get an [xAI key](https://docs.x.ai/developers/models/grok-4.6). Set
+`XAI_API_KEY`. That is the whole door.
+
 ```bash
-python -m venv .venv
 pip install -e ".[dev,grok,render]"
-export XAI_API_KEY=your_xai_key
 math-to-manim-grok doctor
-```
-
-Doctor checks that `XAI_API_KEY` is set. It never prints the key. It also
-reports the model (`grok-4.6` by default) and the reasoning effort.
-
-A login free rehearsal of the same path writes a full run with zero xAI
-calls. Use this in CI:
-
-```bash
-math-to-manim-grok run "the heat equation" --offline
-```
-
-That writes `runs/grok/<timestamp>-the-heat-equation/grok_scene.py`,
-`validation.json`, `traces/`, and `manifest.json`.
-
-A live run actually calls Grok:
-
-```bash
 math-to-manim-grok run "the heat equation"
+```
+
+Doctor checks the key. It never prints the key. Then feed Grok a sentence
+from tonight's homework, or a physics question you have never seen drawn.
+
+```bash
 math-to-manim-grok run "A 3 kg cart at 4 m/s hits a spring k=200. How far does it compress?"
 math-to-manim-grok run "solve the problem on this page" --image homework.jpg
 ```
 
-Add `--render -q l` after `pip install -e ".[render]"` if you want the MP4
-inside that same run directory.
-
-Get an API key from [xAI](https://docs.x.ai/developers/models/grok-4.6).
-Optional environment variables are `XAI_MODEL` and `XAI_REASONING_EFFORT`
-(`low`, `medium`, `high`, or `xhigh`).
+To rehearse the path with no live call, add `--offline`. The film still
+lands in `runs/grok/`. Add `--render` when you want the MP4 in that same
+folder.
 
 ## Make A Custom Bot
 
-The product is the stage charters in `grok/agents`. Edit those markdown
-files to change what the film argues, how reverse thinking works, which
-xAI tools a stage may call, and the JSON each stage must emit.
+You are not reading an API catalog. You are casting a crew.
 
-A custom bot just for Manim explainer videos is a charter edit, not a new
-application. Keep reverse thinking intact: cartography stays reverse,
-curriculum stays the first forward pass, and the sandbox still owns the
-numbers. Then run `math-to-manim-grok` as usual.
+Each file in `grok/agents` is a voice on the set: the one who names the
+claim, the one who walks backward, the one who walks forward, the one who
+solves in the sandbox, the one who sees, the one who films. Edit those
+stage voices and you have a bot that only knows how to make Manim explainer
+films.
 
-Read the [Grok 4.6 silo contract](docs/GROK_4_6_SILO.md) for the tool map,
-artifact list, and forbidden moves.
+Keep reverse thinking intact. Cartography stays reverse. The first forward
+pass stays a sequence of questions. The sandbox still owns the numbers.
+Then ask Grok another problem.
 
----
-
-## Installation
-
-```bash
-git clone https://github.com/HarleyCoops/Math-To-Manim.git
-cd Math-To-Manim
-python -m venv .venv
-pip install -e ".[dev,grok,render]"
-python -m pytest -q
-```
-
-Run `math-to-manim-grok doctor` before a live request so a missing key
-appears immediately.
-
-Static checks parse `MathTex` and `Tex` fragments in process. If `chktex`
-is on `PATH`, the verifier also consults it. If `M2M_LATEX_DEEP_CHECK` is
-set and `lualatex` is on `PATH`, fragments are compiled with
-`lualatex --halt-on-error --interaction=nonstopmode`. Both tools are
-optional and not required for `pytest`.
-
-## Run Artifacts
-
-Every run keeps its reasoning, scene source, validation evidence, thinking
-traces, tool calls, and manifest inside the repository. Grok writes to
-`runs/grok/`. Open the intermediate JSON when you want to understand or
-revise how the explainer was built.
-
-The artifacts tell a readable story:
-
-```text
-learner intent
-      ↓
-prerequisite map
-      ↓
-teaching sequence
-      ↓
-mathematics and examples
-      ↓
-visual plan
-      ↓
-Manim scene
-      ↓
-validation, render, and repair evidence
-```
-
-## Configuration
-
-Grok reads configuration from the environment or a local `.env` file.
-
-| Variable | Default | Purpose |
-|---|---|---|
-| `XAI_API_KEY` | unset | Authenticates live Responses API calls |
-| `XAI_MODEL` | `grok-4.6` | Selects the Grok model |
-| `XAI_REASONING_EFFORT` | `high` | Sets thinking depth (`low` `medium` `high` `xhigh`) |
-| `XAI_BASE_URL` | `https://api.x.ai/v1` | Selects the xAI endpoint |
-| `XAI_TIMEOUT` | `900` | Sets the model call budget in seconds |
-
-## Testing
-
-```bash
-python -m pytest -q
-math-to-manim-grok run "the heat equation" --offline
-```
-
-Offline runs validate the complete artifact shape without model calls or an
-expensive render. Pytest never calls xAI.
-
-## More From The Project
-
-The [motion showcase](docs/showcase/README.md) preserves every visual study and
-older animation. The [Prime Intellect notes](docs/PRIME_INTELLECT_RL.md)
-describe reinforcement learning work for visual repair. The
-[roadmap](docs/ROADMAP.md) tracks future work. The [agent guide](AGENTS.md)
-defines repository boundaries and verification rules. Related work on a
-different architecture lives at [Kimi K3 Manim](https://github.com/HarleyCoops/KimiK3Manim).
-
-## Repository Layout
-
-```text
-grok/              Grok 4.6 reasoning chain, xAI client, and CLI
-grok/agents/       Stage charters: thinking, tools, JSON, forbidden moves
-docs/GROK_4_6_SILO.md
-docs/showcase/     Complete visual archive
-tests/             Offline repository tests
-runs/              Local reasoning and render artifacts
-```
+The [Grok contract](docs/GROK_4_6_SILO.md) is backstage, for when you want
+the tool map. The [motion showcase](docs/showcase/README.md) is the rest of
+the finished light.
 
 ## License
 

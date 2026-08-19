@@ -156,7 +156,6 @@ def test_readme_features_grok_only():
     assert "Grok 4.6" in text
     assert "math-to-manim-grok run" in text
     assert "reverse thinking" in text
-    assert "https://github.com/HarleyCoops/KimiK3Manim" in text
 
 
 def prose_without_code_or_links(text: str) -> str:
@@ -184,19 +183,25 @@ def test_legacy_root_material_is_removed():
         assert item not in text
 
 
-def test_technical_reference_remains_complete():
+def test_front_page_stays_a_story():
     text = readme_text()
-    required = [
+
+    assert "## Make A Custom Bot" in text
+    assert "## License" in text
+    assert "docs/GROK_4_6_SILO.md" in text
+    for heading in [
         "## Installation",
         "## Run Artifacts",
         "## Configuration",
         "## Testing",
         "## Repository Layout",
-        "## License",
-        "## Make A Custom Bot",
-    ]
-    for heading in required:
-        assert heading in text
+        "## MCP Reference",
+        "## REST API",
+    ]:
+        assert heading not in text
+    assert "| Variable | Default | Purpose |" not in text
+    assert "| Method | Route | Purpose |" not in text
+    assert "| Tool | Purpose |" not in text
 
 
 def test_written_prose_contains_no_dash_punctuation():
