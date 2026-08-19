@@ -148,11 +148,25 @@ def test_native_pipelines_and_related_kimi_repo_are_clear():
     text = readme_text()
 
     assert "## Choose A Native Pipeline" in text
+    assert "math-to-manim-grok run" in text
     assert "math-to-manim run" in text
     assert "math-to-manim-sol run" in text
     assert "Neither pipeline routes through the other" in text
     assert "https://github.com/HarleyCoops/KimiK3Manim" in text
     assert "different enough to warrant its own repository" in text
+
+
+def test_grok_learns_manim_hero_and_chain_are_present():
+    text = readme_text()
+
+    assert "docs/showcase/assets/grok-learns-manim.png" in text
+    assert "docs/showcase/assets/grok-learns-manim-chain.png" in text
+    assert Path("docs/showcase/assets/grok-learns-manim.png").is_file()
+    assert Path("docs/showcase/assets/grok-learns-manim-chain.png").is_file()
+    assert "## Grok Learns Manim" in text
+    assert "xAI Responses" in text
+    assert "Starts the Grok reasoning chain" in text
+    assert "runs/grok/" in text
 
 
 def prose_without_code_or_links(text: str) -> str:

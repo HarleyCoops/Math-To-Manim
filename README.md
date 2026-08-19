@@ -12,6 +12,7 @@
 
 ### Ask a question. Get a visual explainer.
 
+[![Grok 4.6](https://img.shields.io/badge/Grok-4.6-1d9bf0)](#grok-learns-manim)
 [![Claude Fable 5](https://img.shields.io/badge/Claude-Fable%205%20Mythos-d97757)](#mythos)
 [![GPT 5.6 Sol](https://img.shields.io/badge/Codex-GPT--5.6%20Sol-10a37f)](#sol)
 [![MCP server](https://img.shields.io/badge/MCP-server-788c5d)](#make-your-first-explainer)
@@ -19,9 +20,20 @@
 [![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
 [![License MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
+<p align="center">
+  <img src="docs/showcase/assets/grok-learns-manim.png" alt="Grok Learns Manim: a mint seal of formulas around a watching student" width="100%" />
+</p>
+
+<p align="center"><strong>GROK LEARNS MANIM</strong></p>
+
+Grok 4.6 now owns the public film chain. You ask a question or photograph a
+page. Grok walks backward from the claim you will believe when the lights
+come up, then films the walk forward in Manim.
+
 [Featured explainers](#featured-visual-explainers) ·
 [What you can ask](#what-can-i-ask) ·
 [How the reasoning works](#how-the-reasoning-pipeline-works) ·
+[Grok Learns Manim](#grok-learns-manim) ·
 [MCP setup](#make-your-first-explainer) ·
 [Native pipelines](#choose-a-native-pipeline) ·
 [Technical reference](#installation)
@@ -127,6 +139,11 @@ It works backward to identify what the learner needs to know, rebuilds those
 ideas in teaching order, checks the mathematics, and animates the explanation
 in Manim.
 
+The public chain is now Grok 4.6. A sentence is enough. A photographed page
+is enough. Grok does not jump from a topic name to Python. Grok names the
+claim you will believe at the end, walks back to what you already know, then
+films that walk as one spatial argument.
+
 [Manim](https://docs.manim.community/en/stable/) is the open source animation
 engine originally created by Grant Sanderson for 3Blue1Brown. It powers many
 of the most recognizable math and physics animations online. This project
@@ -178,6 +195,7 @@ be shown, and in what order each idea should appear.
 You can name the learner's age, prior knowledge, pace, preferred visual model,
 worked example, notation level, and final comprehension check. A simple
 homework question is enough. The pipeline expands it into a teaching plan.
+Photograph the page if you would rather show the problem than type it.
 
 ## How The Reasoning Pipeline Works
 
@@ -198,9 +216,75 @@ homework question is enough. The pipeline expands it into a teaching plan.
 8. **Render, inspect, and repair.** Produce the explainer, review the evidence,
    and correct visible defects.
 
+That order is reverse thinking. Depth 0 is the claim. Every earlier depth is
+a foundation the learner already owns. The film is not a lecture with pictures
+glued on. The picture is the argument.
+
+## Grok Learns Manim
+
+<p align="center">
+  <img src="docs/showcase/assets/grok-learns-manim-chain.png" alt="Six Grok stages glow as cards in front of a heat surface" width="92%" />
+</p>
+
+Grok 4.6 is a complete native film silo. It talks only to the xAI Responses
+API. It reads its own charters. It writes inspectable runs under `runs/grok/`.
+It does not import Mythos prompts or the Sol client. It is not routed through
+the Mythos harness.
+
+The six hops stay separate on purpose. Grok does not flatten the job into one
+think then write prompt. Tools change what later stages are allowed to do.
+They do not change the teaching method.
+
+| Stage | What Grok does | Tools |
+|---|---|---|
+| Intent | Names the audience, the core claim, and the one big zoom. Vision reads a photographed page here. | none |
+| Cartographer | Builds a reverse prerequisite tree. Search is only for canonical names. | `web_search` |
+| Curriculum | First forward pass. Curiosity is the only legal segue. | none |
+| Math director | Solves the homework in a sandbox. Numbers on screen are earned. | `code_interpreter`, `web_search` |
+| Cinematographer | Writes the camera score and one to three art direction stills. | `image_generation`, `x_search` |
+| Composer | Writes `grok_scene.py` and compiles it in the same turn. | local `verify_scene` |
+
+Composer is not a seventh codegen charter. Mythos splits spec from codegen
+because that hop cannot execute local checks. Grok can, so the loop closes
+here. Failed scenes go back to composer for repair.
+
+A live run looks like this:
+
+```text
+math-to-manim-grok run "the heat equation"
+  -> create runs/grok/<timestamp>-<slug>/
+  -> six Responses calls to grok-4.6, each with stage tools
+  -> traces, stills, reverse tree, and grok_scene.py
+  -> local compile, AST, and camera checks
+  -> optional manim render
+  -> manifest.json
+```
+
+Get an [xAI key](https://docs.x.ai/developers/models/grok-4.6). Set
+`XAI_API_KEY`. Doctor checks the key and never prints it.
+
+```bash
+pip install -e ".[dev,grok,render]"
+math-to-manim-grok doctor
+math-to-manim-grok run "the heat equation"
+math-to-manim-grok run "A 3 kg cart at 4 m/s hits a spring k=200. How far does it compress?"
+math-to-manim-grok run "solve the problem on this page" --image homework.jpg
+```
+
+Add `--offline` to rehearse the same artifact shape with zero xAI calls.
+Add `--render -q l` when you want the MP4 in that same run folder.
+
+The charters in `grok/agents/` are the product. Edit those voices and you
+have a bot that only knows how to make Manim explainer films. Keep reverse
+thinking intact. Cartography stays reverse. The first forward pass stays a
+sequence of questions. The sandbox still owns the numbers.
+
+Read the [complete Grok contract](docs/GROK_4_6_SILO.md).
+
 ## Make Your First Explainer
 
-The easiest path is a conversation with an assistant that can use MCP.
+The easiest conversation path is an assistant that can use MCP. Those tools
+now run the Grok chain.
 
 ```bash
 pip install -e ".[mcp]"
@@ -244,20 +328,30 @@ A login free rehearsal of the same path:
 ```bash
 python -m venv .venv
 pip install -e ".[dev]"
-math-to-manim run "the heat equation" --offline
+math-to-manim-grok run "the heat equation" --offline
 ```
 
-That writes `runs/mythos/<timestamp>-the-heat-equation/mythos_scene.py`,
+That writes `runs/grok/<timestamp>-the-heat-equation/grok_scene.py`,
 `validation.json`, and `manifest.json`. Add `--render -q l` after
 `pip install -e ".[render]"` if you want the MP4 inside that same run
-directory. The live layout is `runs/mythos/` or `runs/sol/`, not
-`output/<run>/scene.py`.
+directory. The live layout is `runs/grok/`, `runs/mythos/`, or `runs/sol/`,
+not `output/<run>/scene.py`.
 
 ## Choose A Native Pipeline
 
-Math To Manim contains two complete and independent ways to create a visual
+Math To Manim contains three complete and independent ways to create a visual
 explainer. Choose the command line account you already use.
 Neither pipeline routes through the other.
+
+### Grok
+
+Grok uses the xAI Responses API and the six stage charter chain above.
+Vision, sandbox math, stills, and local compile are native Grok tools.
+
+```bash
+math-to-manim-grok doctor
+math-to-manim-grok run "Explain fractions with a folding paper model for a sixth grade learner." --render -q m
+```
 
 ### Mythos
 
@@ -289,7 +383,7 @@ Kimi uses an agent architecture that is different enough to warrant its own repo
 Explore [Kimi K3 Manim](https://github.com/HarleyCoops/KimiK3Manim).
 
 Hermes Agent is not a supported generate path. The supported operator
-surfaces are Mythos, Sol, and the MCP or REST front doors. Archived
+surfaces are Grok, Mythos, Sol, and the MCP or REST front doors. Archived
 Hermes notes live under `archive/` and `docs/HERMES_LEARNS_MANIM.md`.
 
 ---
@@ -300,13 +394,13 @@ Hermes notes live under `archive/` and `docs/HERMES_LEARNS_MANIM.md`.
 git clone https://github.com/HarleyCoops/Math-To-Manim.git
 cd Math-To-Manim
 python -m venv .venv
-pip install -e ".[dev,render,mcp,api]"
+pip install -e ".[dev,render,mcp,api,grok]"
 python -m pytest -q
 ```
 
-Use `math-to-manim doctor --ping` for Mythos. Use
-`math-to-manim-sol doctor` for Sol. Run the appropriate check before a live
-request so login and rendering problems appear immediately.
+Use `math-to-manim-grok doctor` for Grok. Use `math-to-manim doctor --ping`
+for Mythos. Use `math-to-manim-sol doctor` for Sol. Run the appropriate
+check before a live request so login and rendering problems appear immediately.
 
 Static checks parse `MathTex` and `Tex` fragments in process. If `chktex`
 is on `PATH`, the verifier also consults it. If `M2M_LATEX_DEEP_CHECK` is
@@ -317,9 +411,9 @@ optional and not required for `pytest`.
 ## Run Artifacts
 
 Every run keeps its reasoning, scene source, validation evidence, and manifest
-inside the repository. Mythos writes to `runs/mythos/`. Sol writes to
-`runs/sol/`. Open the intermediate JSON when you want to understand or revise
-how the explainer was built.
+inside the repository. Grok writes to `runs/grok/`. Mythos writes to
+`runs/mythos/`. Sol writes to `runs/sol/`. Open the intermediate JSON when
+you want to understand or revise how the explainer was built.
 
 The artifacts tell a readable story:
 
@@ -339,20 +433,24 @@ Manim scene
 validation, render, and repair evidence
 ```
 
+A Grok run also keeps `traces/<stage>.json` for thinking summaries and tool
+calls, plus any generated stills under `stills/`.
+
 ## MCP Reference
 
 These tools are available to assistants and integrations. A learner can simply
-ask for an explainer in ordinary language.
+ask for an explainer in ordinary language. Each tool runs or inspects the
+Grok chain.
 
 | Tool | Purpose |
 |---|---|
-| `m2m_create_animation` | Starts the Mythos reasoning chain as a background job |
+| `m2m_create_animation` | Starts the Grok reasoning chain as a background job |
 | `m2m_get_job` | Reports live progress for each reasoning stage |
-| `m2m_list_runs` | Lists local runs with the newest first |
+| `m2m_list_runs` | Lists local Grok runs with the newest first |
 | `m2m_get_run` | Returns the manifest and artifact list for one run |
 | `m2m_get_artifact` | Reads a reasoning artifact such as the prerequisite map |
 | `m2m_get_scene_code` | Returns the generated Manim scene |
-| `m2m_cinematic_charter` | Returns the visual composition contract |
+| `m2m_cinematic_charter` | Returns the Grok visual composition contract |
 
 For a headless client, use the reference driver:
 
@@ -388,6 +486,16 @@ curl -s -X POST localhost:8642/v1/runs \
 
 ## Configuration
 
+Grok reads configuration from the environment.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `XAI_API_KEY` | unset | Required for live Grok runs. Doctor never prints it. |
+| `XAI_MODEL` | `grok-4.6` | Responses API model name |
+| `XAI_REASONING_EFFORT` | `high` | `low`, `medium`, `high`, or `xhigh` |
+| `XAI_BASE_URL` | `https://api.x.ai/v1` | Override only for tests |
+| `XAI_TIMEOUT` | `900` | Seconds for one Responses call |
+
 Mythos reads configuration from the environment or a local `.env` file.
 
 | Variable | Default | Purpose |
@@ -409,12 +517,13 @@ sessions, resume command, manifest, and environment.
 
 ```bash
 python -m pytest -q
+math-to-manim-grok run "the heat equation" --offline
 math-to-manim run "the heat equation" --offline
 math-to-manim-sol run "the heat equation" --offline
 ```
 
 Offline runs validate the complete artifact shape without model calls or an
-expensive render.
+expensive render. Pytest never calls xAI.
 
 ## More From The Project
 
@@ -427,10 +536,11 @@ defines repository boundaries and verification rules.
 ## Repository Layout
 
 ```text
-mythos/            Claude CLI reasoning chain, service, API, MCP, and CLI
+grok/              Grok 4.6 Responses chain, CLI, MCP tools, and run ledger
+mythos/            Claude CLI reasoning chain, service, API, and CLI
 sol/               Codex CLI specialist pipeline
 examples/mythos/   Hand finished Mythos examples
-docs/showcase/     Complete visual archive
+docs/showcase/     Complete visual archive and Grok Learns Manim posters
 tests/             Offline repository tests
 runs/              Local reasoning and render artifacts
 archive/           Retired implementations kept for history

@@ -3,8 +3,8 @@
 ## Boundary
 
 Math-To-Manim contains three deliberately independent production systems.
-The public README features only Grok. Mythos and Sol remain supported in
-code and keep their own CLIs.
+The public README leads with Grok Learns Manim. Mythos and Sol remain
+supported in code and keep their own CLIs.
 
 | Silo | Native runtime | Entry point |
 |---|---|---|
