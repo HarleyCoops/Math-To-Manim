@@ -4,9 +4,8 @@ Guidance for AI agents (and humans) working in this repository.
 
 ## What this repo is
 
-Math-To-Manim contains provider-native silos. The public README features
-only the Grok-native chain. The established `mythos/` product remains the
-Anthropic-native six-agent chain driven by Claude Fable 5. The parallel
+Math-To-Manim contains provider-native silos. The established `mythos/` product
+remains the Anthropic-native six-agent chain driven by Claude Fable 5. The parallel
 `sol/` product remains a complete GPT-5.6 Sol-native film pipeline driven
 only by the Codex CLI and its cached ChatGPT login. The `grok/` product is
 a complete Grok 4.6 film pipeline driven only by the xAI Responses API.
@@ -34,8 +33,7 @@ Do not route one provider through another provider's orchestration layer.
 | `tests/` | Offline test suite (no model calls, no render needed) |
 | `archive/`, `legacy/` | Retired code. Do not import from it; do not "fix" it. |
 
-The README is Grok-facing. `mythos/` and `sol/` remain supported in code,
-tests, and their own CLIs. They are unmentioned in the README on purpose.
+The root README is the prior product page again; Grok docs live in `docs/GROK_4_6_SILO.md`.
 
 ## Working rules
 
