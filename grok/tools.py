@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import binascii
 import json
 from pathlib import Path
 
@@ -23,10 +24,15 @@ def write_stills(run_dir: Path, images: list[dict]) -> list[str]:
     written: list[str] = []
     for index, image in enumerate(images, start=1):
         raw = image.get("result")
-        if not raw:
+        if not raw or not isinstance(raw, str):
             continue
+        if raw.startswith("data:") and "," in raw:
+            raw = raw.split(",", 1)[1]
         path = stills_dir / f"{index:02d}.jpg"
-        path.write_bytes(base64.b64decode(raw))
+        try:
+            path.write_bytes(base64.b64decode(raw, validate=False))
+        except (ValueError, binascii.Error):
+            continue
         meta = {
             "filename": path.name,
             "prompt": image.get("prompt"),

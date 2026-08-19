@@ -5,12 +5,81 @@ from __future__ import annotations
 import ast
 import json
 import py_compile
+import re
 from pathlib import Path
 
 from grok.models import ARTIFACT_NAMES
 
 _BLOCKED_IMPORTS = {"os", "subprocess", "socket", "requests", "urllib", "httpx", "shutil"}
 _BLOCKED_CALLS = {"eval", "exec", "compile", "open", "__import__"}
+
+
+def _as_bool(value):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        lowered = value.strip().lower()
+        if lowered in {"true", "yes", "1"}:
+            return True
+        if lowered in {"false", "no", "0"}:
+            return False
+    if isinstance(value, (int, float)) and value in {0, 1}:
+        return bool(value)
+    return value
+
+
+def _as_int(value):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    if isinstance(value, str) and value.strip().lstrip("-").isdigit():
+        return int(value.strip())
+    return value
+
+
+def normalize_reverse_tree(payload: dict) -> dict:
+    """Coerce common live Grok shapes into the reverse-tree contract."""
+    if not isinstance(payload, dict):
+        return {}
+    data = dict(payload)
+    nodes = data.get("nodes")
+    if isinstance(nodes, dict):
+        nodes = list(nodes.values())
+    normalized_nodes: list[dict] = []
+    for node in nodes or []:
+        if not isinstance(node, dict):
+            continue
+        item = dict(node)
+        item["depth"] = _as_int(item.get("depth"))
+        if "assumed" in item:
+            item["assumed"] = _as_bool(item.get("assumed"))
+        normalized_nodes.append(item)
+    data["nodes"] = normalized_nodes
+
+    edges = data.get("edges") or []
+    normalized_edges: list[list] = []
+    for edge in edges:
+        if isinstance(edge, (list, tuple)) and len(edge) == 2:
+            normalized_edges.append([edge[0], edge[1]])
+        elif isinstance(edge, dict):
+            src = edge.get("from") or edge.get("from_id") or edge.get("src")
+            dst = edge.get("to") or edge.get("to_id") or edge.get("dst")
+            if src and dst:
+                normalized_edges.append([src, dst])
+    data["edges"] = normalized_edges
+
+    spine = data.get("spine")
+    if isinstance(spine, str):
+        data["spine"] = [part.strip() for part in re.split(r"[\s,]+", spine) if part.strip()]
+
+    if not (isinstance(data.get("target"), str) and data["target"].strip()):
+        zero = next((node for node in normalized_nodes if node.get("depth") == 0), None)
+        if zero:
+            data["target"] = str(zero.get("name") or zero.get("id") or "").strip()
+    return data
 
 
 def validate_reverse_tree(payload: dict) -> list[str]:
@@ -177,7 +246,7 @@ def validate_run(run_dir: Path, *, require_video: bool = False) -> tuple[list[st
             if not isinstance(payload, dict) or not payload:
                 failures.append(f"{name}: expected a non-empty JSON object")
             if name == "02_knowledge_map.json":
-                failures.extend(validate_reverse_tree(payload))
+                failures.extend(validate_reverse_tree(normalize_reverse_tree(payload)))
 
     scene_path = run_dir / "grok_scene.py"
     scene_name = None

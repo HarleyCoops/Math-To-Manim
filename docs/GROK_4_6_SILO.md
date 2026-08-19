@@ -69,8 +69,9 @@ math-to-manim-grok run "A 3 kg cart at 4 m/s hits a spring k=200. How far does i
 math-to-manim-grok run "solve this worksheet" --image homework.jpg
 ```
 
-Doctor prints that the key is set, plus model and effort. It never prints
-the key.
+Doctor checks that the key is set, then makes a tiny live Responses ping
+when the key is present. A present-but-invalid key is a failure. It never
+prints the key.
 
 ## Offline versus live
 

@@ -9,13 +9,13 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-from grok.charters import STAGES, load_charter
+from grok.charters import STAGES, VERIFY_SCENE_TOOL, load_charter
 from grok.client import XAIClient, XAIClientError
-from grok.jsonutil import extract_json_object, extract_python_block
+from grok.jsonutil import extract_json_object, extract_scene_source
 from grok.models import ARTIFACT_NAMES, RunManifest, RunRequest
 from grok.offline import write_offline_bundle
 from grok.tools import verify_scene, write_stills
-from grok.validation import validate_run, verify_scene_report
+from grok.validation import normalize_reverse_tree, validate_run, verify_scene_report
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -141,22 +141,23 @@ class GrokHarness:
             )
             payload = result.payload if result.payload and "raw_text" not in result.payload else None
             if payload is None and result.text.strip():
-                payload = extract_json_object(result.text)
-            if payload is None:
+                try:
+                    payload = extract_json_object(result.text)
+                except (ValueError, json.JSONDecodeError) as exc:
+                    raise XAIClientError(f"stage {stage.name} did not return JSON") from exc
+            if not isinstance(payload, dict) or not payload:
                 raise XAIClientError(f"stage {stage.name} did not return JSON")
+            if stage.name == "cartographer":
+                payload = normalize_reverse_tree(payload)
             artifact_path = run_dir / stage.artifact
             artifact_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
             prior[stage.artifact] = payload
 
             if stage.name == "composer":
-                source = payload.get("source") if isinstance(payload.get("source"), str) else None
-                if not source:
-                    try:
-                        source = extract_python_block(result.text)
-                    except ValueError:
-                        source = None
-                if not source:
-                    raise XAIClientError("composer did not return grok_scene.py source")
+                try:
+                    source = extract_scene_source(payload, result.text, result.tool_calls)
+                except ValueError as exc:
+                    raise XAIClientError("composer did not return grok_scene.py source") from exc
                 (run_dir / "grok_scene.py").write_text(source, encoding="utf-8")
 
             stills = write_stills(run_dir, result.images)
@@ -213,13 +214,13 @@ class GrokHarness:
                 + "\n\nCURRENT FILE:\n"
                 + source
             ),
-            tools=(),
+            tools=(VERIFY_SCENE_TOOL,),
             function_handlers={"verify_scene": verify_scene},
         )
-        payload = result.payload
-        repaired = payload.get("source") if isinstance(payload.get("source"), str) else None
-        if not repaired:
-            repaired = extract_python_block(result.text)
+        try:
+            repaired = extract_scene_source(result.payload, result.text, result.tool_calls)
+        except ValueError as exc:
+            raise XAIClientError("composer repair did not return grok_scene.py source") from exc
         (run_dir / "grok_scene.py").write_text(repaired, encoding="utf-8")
         (run_dir / "traces" / "repair.json").write_text(
             json.dumps({"tool_calls": result.tool_calls, "thinking": result.thinking}, indent=2),

@@ -39,7 +39,7 @@ def build_parser() -> argparse.ArgumentParser:
     status = sub.add_parser("status", help="Show one Grok run manifest")
     status.add_argument("run_id")
 
-    sub.add_parser("doctor", help="Check XAI_API_KEY without printing it")
+    sub.add_parser("doctor", help="Live-ping xAI when XAI_API_KEY is set, without printing it")
     return parser
 
 
@@ -47,15 +47,21 @@ def _doctor() -> int:
     ok, detail = api_key_status()
     model = os.getenv("XAI_MODEL", DEFAULT_MODEL)
     effort = os.getenv("XAI_REASONING_EFFORT", DEFAULT_REASONING_EFFORT)
+    key = os.getenv("XAI_API_KEY", "")
     if not ok:
         print(f"not ready: {detail}")
         return 1
-    key = os.getenv("XAI_API_KEY", "")
+    client = XAIClient()
+    ok, detail = client.ping()
     if key and key in detail:
         print("not ready: doctor refused to describe the key")
         return 1
+    if not ok:
+        print(f"not ready: {detail}")
+        print(f"endpoint: {client.base_url}/responses")
+        return 1
     print(f"ready: {detail}; model={model}; reasoning_effort={effort}")
-    print(f"endpoint: {XAIClient().base_url}/responses")
+    print(f"endpoint: {client.base_url}/responses")
     return 0
 
 

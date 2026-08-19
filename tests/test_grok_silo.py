@@ -6,12 +6,21 @@ import pytest
 
 from grok.charters import STAGES, load_charter
 from grok.cli import build_parser, main
-from grok.client import XAIClient, api_key_status, collect_text, user_content
+from grok.client import (
+    XAIClient,
+    XAIClientError,
+    api_key_status,
+    collect_function_calls,
+    collect_text,
+    user_content,
+)
 from grok.harness import GrokHarness
+from grok.jsonutil import extract_json_object, extract_python_block, extract_scene_source
 from grok.models import ARTIFACT_NAMES, RunRequest, StageCallResult
 from grok.offline import _OFFLINE_SCENE, reverse_tree_for
 from grok.service import GrokService
-from grok.validation import validate_reverse_tree, validate_run
+from grok.tools import verify_scene
+from grok.validation import normalize_reverse_tree, validate_reverse_tree, validate_run
 
 
 GROK_DIR = Path("grok")
@@ -38,11 +47,16 @@ def test_offline_cartographer_is_a_reverse_tree():
     assert validate_reverse_tree(tree) == []
     target_ids = [node["id"] for node in tree["nodes"] if node["depth"] == 0]
     assert target_ids == ["claim"]
-    assert tree["nodes"][0]["depth"] == 0 or any(node["depth"] == 0 for node in tree["nodes"])
+    claim = next(node for node in tree["nodes"] if node["id"] == "claim")
+    assert claim["depth"] == 0
+    assert claim["assumed"] is False
     start = next(node for node in tree["nodes"] if node["id"] == tree["spine"][0])
     assert start["assumed"] is True
+    assert tree["spine"][-1] == "claim"
+    depths = {node["id"]: node["depth"] for node in tree["nodes"]}
+    spine_depths = [depths[node_id] for node_id in tree["spine"]]
+    assert spine_depths == sorted(spine_depths, reverse=True)
     for src, dst in tree["edges"]:
-        depths = {node["id"]: node["depth"] for node in tree["nodes"]}
         assert depths[src] > depths[dst]
 
 
@@ -85,16 +99,46 @@ def test_doctor_checks_key_without_printing_it(monkeypatch, capsys):
     secret = "xai-super-secret-value-do-not-leak"
     monkeypatch.setenv("XAI_API_KEY", secret)
     monkeypatch.setenv("XAI_MODEL", "grok-4.6")
+    monkeypatch.setattr(
+        XAIClient,
+        "ping",
+        lambda self: (True, "XAI_API_KEY is set; live ping succeeded"),
+    )
     assert main(["doctor"]) == 0
     output = capsys.readouterr().out
     assert secret not in output
     assert "XAI_API_KEY is set" in output
+    assert "live ping succeeded" in output
     assert "grok-4.6" in output
     monkeypatch.delenv("XAI_API_KEY")
     assert main(["doctor"]) == 1
     failure = capsys.readouterr().out
     assert "not ready" in failure
     assert secret not in failure
+
+
+def test_doctor_fails_on_rejected_key_without_printing_it(monkeypatch, capsys):
+    secret = "xai-invalid-key-must-stay-hidden"
+    monkeypatch.setenv("XAI_API_KEY", secret)
+
+    def fake_post(self, payload, previous_response_id=None):
+        raise XAIClientError("xAI Responses API failed (401): invalid api key")
+
+    monkeypatch.setattr(XAIClient, "post", fake_post)
+    assert main(["doctor"]) == 1
+    output = capsys.readouterr().out
+    assert secret not in output
+    assert "not ready" in output
+    assert "key rejected" in output
+
+
+def test_doctor_does_not_ping_when_key_missing(monkeypatch, capsys):
+    monkeypatch.delenv("XAI_API_KEY", raising=False)
+    called = []
+    monkeypatch.setattr(XAIClient, "ping", lambda self: called.append(True) or (True, "should not run"))
+    assert main(["doctor"]) == 1
+    assert called == []
+    assert "not ready" in capsys.readouterr().out
 
 
 def test_api_key_status_never_returns_the_secret():
@@ -114,7 +158,8 @@ def test_client_builds_responses_payload_without_network(tmp_path):
     )
     assert payload["model"] == "grok-4.6"
     assert payload["reasoning"]["effort"] == "xhigh"
-    assert payload["input"][0]["role"] == "system"
+    assert payload["instructions"] == "charter"
+    assert payload["input"][0]["role"] == "user"
     assert payload["tool_choice"] == "required"
     assert {"type": "code_interpreter"} in payload["tools"]
 
@@ -252,3 +297,200 @@ def test_offline_scene_obeys_camera_rule(tmp_path):
     source = (tmp_path / manifest["run_id"] / "grok_scene.py").read_text(encoding="utf-8")
     assert "self.camera.animate" not in source
     assert "move_camera" in source or "set_camera_orientation" in source
+    failures, scene_name, _ = validate_run(tmp_path / manifest["run_id"], require_video=False)
+    assert failures == []
+    assert scene_name == "GrokOfflineStory"
+
+
+def test_cli_offline_homework_run(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr("grok.cli.GrokService", lambda: GrokService(runs_dir=tmp_path))
+    prompt = "A 3 kg cart at 4 m/s hits a spring k=200. How far does it compress?"
+    assert main(["run", prompt, "--offline"]) == 0
+    printed = json.loads(capsys.readouterr().out)
+    run_dir = tmp_path / printed["run_id"]
+    failures, scene_name, _ = validate_run(run_dir, require_video=False)
+    assert failures == []
+    assert scene_name == "GrokOfflineStory"
+    tree = json.loads((run_dir / "02_knowledge_map.json").read_text(encoding="utf-8"))
+    assert validate_reverse_tree(tree) == []
+    source = (run_dir / "grok_scene.py").read_text(encoding="utf-8")
+    compile(source, str(run_dir / "grok_scene.py"), "exec")
+
+
+def test_reverse_tree_rejects_a_forward_lesson_plan():
+    forward = {
+        "target": "springs",
+        "nodes": [
+            {"id": "intro", "depth": 0, "assumed": True, "name": "start here"},
+            {"id": "claim", "depth": 1, "assumed": False, "name": "later"},
+        ],
+        "edges": [["intro", "claim"]],
+        "spine": ["intro", "claim"],
+    }
+    failures = validate_reverse_tree(forward)
+    assert any("depth 0" in item or "assumed" in item or "prerequisite" in item for item in failures)
+
+
+def test_reverse_tree_rejects_missing_depth_zero():
+    tree = reverse_tree_for("the heat equation")
+    for node in tree["nodes"]:
+        if node["depth"] == 0:
+            node["depth"] = 1
+    failures = validate_reverse_tree(tree)
+    assert any("depth 0" in item for item in failures)
+
+
+def test_normalize_live_cartographer_shapes():
+    messy = {
+        "nodes": [
+            {"id": "claim", "name": "energy balance", "depth": "0", "assumed": "false"},
+            {"id": "energy", "name": "KE = PE", "depth": "1", "assumed": "false"},
+            {"id": "symbols", "name": "givens", "depth": "2", "assumed": "true"},
+        ],
+        "edges": [
+            {"from": "energy", "to": "claim"},
+            {"from_id": "symbols", "to_id": "energy"},
+        ],
+        "spine": "symbols energy claim",
+    }
+    cleaned = normalize_reverse_tree(messy)
+    assert validate_reverse_tree(cleaned) == []
+    assert cleaned["nodes"][0]["depth"] == 0
+    assert cleaned["nodes"][0]["assumed"] is False
+    assert cleaned["edges"][0] == ["energy", "claim"]
+    assert cleaned["spine"] == ["symbols", "energy", "claim"]
+    assert "energy balance" in cleaned["target"]
+
+
+def test_extract_json_object_reads_nested_fenced_json():
+    text = 'Here you go:\n```json\n{"a": {"b": [1, 2]}, "s": "x{y}"}\n```\n'
+    assert extract_json_object(text) == {"a": {"b": [1, 2]}, "s": "x{y}"}
+
+
+def test_extract_json_object_reads_source_field_with_braces():
+    scene = "from manim import *\n\nclass Demo(ThreeDScene):\n    def construct(self):\n        x = {1, 2}\n"
+    blob = json.dumps({"scene_name": "Demo", "source": scene})
+    parsed = extract_json_object(f"```json\n{blob}\n```")
+    assert parsed["scene_name"] == "Demo"
+    assert "class Demo" in parsed["source"]
+
+
+def test_extract_python_block_ignores_json_fence():
+    scene = "from manim import *\n\nclass Demo(ThreeDScene):\n    def construct(self):\n        self.wait()\n"
+    text = f"```json\n{{\"scene_name\": \"Demo\"}}\n```\n\n```python\n{scene}```\n"
+    assert "class Demo" in extract_python_block(text)
+    with pytest.raises(ValueError):
+        extract_python_block('```json\n{"scene_name": "Demo"}\n```\n')
+
+
+def test_extract_scene_source_from_verify_scene_args():
+    source = extract_scene_source(
+        {"scene_name": "Demo"},
+        "no python here",
+        [{"name": "verify_scene", "arguments": json.dumps({"source": _OFFLINE_SCENE})}],
+    )
+    assert "class GrokOfflineStory" in source
+
+
+def test_validate_run_rejects_uncompilable_scene(tmp_path):
+    bundle = GrokHarness(runs_dir=tmp_path).run(RunRequest(prompt="the heat equation", offline=True))
+    run_dir = tmp_path / bundle["run_id"]
+    (run_dir / "grok_scene.py").write_text("class Broken(ThreeDScene)\n    pass\n", encoding="utf-8")
+    failures, scene_name, _ = validate_run(run_dir, require_video=False)
+    assert scene_name is None
+    assert any("compilation" in item or "syntax" in item for item in failures)
+
+
+def test_client_function_loop_returns_final_json(monkeypatch):
+    scene_json = json.dumps({"scene_name": "GrokOfflineStory", "source": _OFFLINE_SCENE})
+    responses = [
+        {
+            "id": "resp-1",
+            "status": "completed",
+            "output": [
+                {
+                    "type": "function_call",
+                    "call_id": "call-1",
+                    "name": "verify_scene",
+                    "arguments": json.dumps({"source": _OFFLINE_SCENE}),
+                }
+            ],
+        },
+        {
+            "id": "resp-2",
+            "status": "completed",
+            "output": [
+                {
+                    "type": "message",
+                    "content": [{"type": "output_text", "text": scene_json}],
+                }
+            ],
+        },
+    ]
+    posted = []
+
+    def fake_post(self, payload, previous_response_id=None):
+        posted.append({"payload": payload, "previous": previous_response_id})
+        return responses[len(posted) - 1]
+
+    monkeypatch.setattr(XAIClient, "post", fake_post)
+    client = XAIClient(api_key="xai-test-key")
+    result = client.complete(
+        instructions="composer",
+        text="write the scene",
+        tools=({"type": "function", "name": "verify_scene"},),
+        function_handlers={"verify_scene": verify_scene},
+    )
+    assert result.payload["scene_name"] == "GrokOfflineStory"
+    assert "class GrokOfflineStory" in result.payload["source"]
+    assert posted[1]["previous"] == "resp-1"
+    assert posted[1]["payload"]["input"][0]["type"] == "function_call_output"
+    assert posted[1]["payload"]["input"][0]["call_id"] == "call-1"
+    output = json.loads(posted[1]["payload"]["input"][0]["output"])
+    assert output["passed"] is True
+
+
+def test_client_continues_incomplete_response(monkeypatch):
+    responses = [
+        {"id": "resp-1", "status": "incomplete", "output": []},
+        {
+            "id": "resp-2",
+            "status": "completed",
+            "output": [
+                {"type": "message", "content": [{"type": "output_text", "text": '{"ok": true}'}]}
+            ],
+        },
+    ]
+    posted = []
+
+    def fake_post(self, payload, previous_response_id=None):
+        posted.append(previous_response_id)
+        return responses[len(posted) - 1]
+
+    monkeypatch.setattr(XAIClient, "post", fake_post)
+    result = XAIClient(api_key="xai-test-key").complete(instructions="intent", text="go")
+    assert result.payload == {"ok": True}
+    assert posted == [None, "resp-1"]
+
+
+def test_collect_function_calls_reads_nested_tool_call():
+    calls = collect_function_calls(
+        {
+            "output": [
+                {
+                    "type": "tool_call",
+                    "id": "tc-1",
+                    "function": {"name": "verify_scene", "arguments": '{"source": "x"}'},
+                }
+            ]
+        }
+    )
+    assert calls[0]["name"] == "verify_scene"
+    assert calls[0]["call_id"] == "tc-1"
+
+
+def test_client_ping_payload_is_tiny():
+    payload = XAIClient(api_key="xai-test-key").ping_payload()
+    assert payload["input"] == "Reply with the single word pong."
+    assert payload["max_output_tokens"] == 16
+    assert payload["reasoning"]["effort"] == "low"
