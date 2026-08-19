@@ -132,30 +132,27 @@ def test_reasoning_flow_uses_learning_order():
     assert positions == sorted(positions)
 
 
-def test_grok_onboarding_includes_key_doctor_and_first_run():
+def test_mcp_onboarding_includes_setup_and_conversation():
     text = readme_text()
 
     assert "## Make Your First Explainer" in text
-    assert 'pip install -e ".[dev,grok,render]"' in text
-    assert "XAI_API_KEY" in text
-    assert "math-to-manim-grok doctor" in text
-    assert "math-to-manim-grok run" in text
-    assert "--offline" in text
-    assert "--image" in text
-    assert "It never prints the key" in text
+    assert 'pip install -e ".[mcp]"' in text
+    assert '"args": ["serve-mcp"]' in text
+    assert "Use Math To Manim to create a visual explainer" in text
+    assert "The assistant starts the explainer" in text
+    assert "The assistant reports progress" in text
+    assert "The assistant can inspect every reasoning artifact" in text
 
 
-def test_readme_features_grok_only():
+def test_native_pipelines_and_related_kimi_repo_are_clear():
     text = readme_text()
 
-    assert "## Choose A Native Pipeline" not in text
-    assert "math-to-manim-sol" not in text
-    assert "Neither pipeline routes through the other" not in text
-    assert "Claude CLI" not in text
-    assert "Codex" not in text
-    assert "Grok 4.6" in text
-    assert "math-to-manim-grok run" in text
-    assert "reverse thinking" in text
+    assert "## Choose A Native Pipeline" in text
+    assert "math-to-manim run" in text
+    assert "math-to-manim-sol run" in text
+    assert "Neither pipeline routes through the other" in text
+    assert "https://github.com/HarleyCoops/KimiK3Manim" in text
+    assert "different enough to warrant its own repository" in text
 
 
 def prose_without_code_or_links(text: str) -> str:
@@ -183,25 +180,20 @@ def test_legacy_root_material_is_removed():
         assert item not in text
 
 
-def test_front_page_stays_a_story():
+def test_technical_reference_remains_complete():
     text = readme_text()
-
-    assert "## Make A Custom Bot" in text
-    assert "## License" in text
-    assert "docs/GROK_4_6_SILO.md" in text
-    for heading in [
+    required = [
         "## Installation",
         "## Run Artifacts",
+        "## MCP Reference",
+        "## REST API",
         "## Configuration",
         "## Testing",
         "## Repository Layout",
-        "## MCP Reference",
-        "## REST API",
-    ]:
-        assert heading not in text
-    assert "| Variable | Default | Purpose |" not in text
-    assert "| Method | Route | Purpose |" not in text
-    assert "| Tool | Purpose |" not in text
+        "## License",
+    ]
+    for heading in required:
+        assert heading in text
 
 
 def test_written_prose_contains_no_dash_punctuation():
