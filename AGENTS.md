@@ -33,7 +33,7 @@ Do not route one provider through another provider's orchestration layer.
 | `tests/` | Offline test suite (no model calls, no render needed) |
 | `archive/`, `legacy/` | Retired code. Do not import from it; do not "fix" it. |
 
-The root README is the prior product page again; Grok docs live in `docs/GROK_4_6_SILO.md`.
+The public README leads with Grok Learns Manim. The Grok contract lives in `docs/GROK_4_6_SILO.md`.
 
 ## Working rules
 
