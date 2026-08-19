@@ -55,7 +55,8 @@ The root README is the prior product page again; Grok docs live in `docs/GROK_4_
    fallback, or calculator-specific compiler to `sol/`.
 9. **Grok is xAI-only.** Do not route Grok through `mythos/harness.py`. Live
    calls use `XAI_API_KEY` and `https://api.x.ai/v1`. Pytest makes no live
-   xAI calls.
+   xAI calls. `math-to-manim-grok doctor` live-pings xAI when the key is
+   set and never prints the key.
 
 ## Quick verification
 

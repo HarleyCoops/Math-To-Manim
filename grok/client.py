@@ -10,6 +10,7 @@ import base64
 import json
 import mimetypes
 import os
+import re
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -21,10 +22,27 @@ DEFAULT_BASE_URL = os.getenv("XAI_BASE_URL", "https://api.x.ai/v1")
 DEFAULT_MODEL = os.getenv("XAI_MODEL", "grok-4.6")
 DEFAULT_REASONING_EFFORT = os.getenv("XAI_REASONING_EFFORT", "high")
 DEFAULT_TIMEOUT = float(os.getenv("XAI_TIMEOUT", "900"))
+PING_TIMEOUT = 30.0
+PING_PROMPT = "Reply with the single word pong."
+
+_SERVER_TOOL_TYPES = {
+    "web_search_call",
+    "x_search_call",
+    "code_interpreter_call",
+    "image_generation_call",
+    "function_call",
+    "tool_call",
+}
 
 
 class XAIClientError(RuntimeError):
     pass
+
+
+def redact_secret(text: str, secret: str | None) -> str:
+    if not text or not secret or not secret.strip():
+        return text
+    return text.replace(secret.strip(), "[redacted]")
 
 
 def api_key_status(key: str | None = None) -> tuple[bool, str]:
@@ -65,17 +83,27 @@ def collect_text(payload: dict) -> str:
     for item in payload.get("output") or []:
         if not isinstance(item, dict):
             continue
-        if item.get("type") == "message":
-            for block in item.get("content") or []:
-                if isinstance(block, dict) and block.get("type") in {"output_text", "text"}:
+        kind = item.get("type")
+        if kind == "message":
+            content = item.get("content")
+            if isinstance(content, str) and content.strip():
+                parts.append(content)
+                continue
+            for block in content or []:
+                if isinstance(block, str) and block.strip():
+                    parts.append(block)
+                elif isinstance(block, dict) and block.get("type") in {"output_text", "text"}:
                     if block.get("text"):
                         parts.append(str(block["text"]))
-        elif item.get("type") == "output_text" and item.get("text"):
+        elif kind in {"output_text", "text"} and item.get("text"):
             parts.append(str(item["text"]))
     if parts:
         return "\n".join(parts)
-    if isinstance(payload.get("output_text"), str):
-        return payload["output_text"]
+    output_text = payload.get("output_text")
+    if isinstance(output_text, str):
+        return output_text
+    if isinstance(output_text, dict) and output_text.get("text"):
+        return str(output_text["text"])
     return ""
 
 
@@ -84,13 +112,35 @@ def collect_thinking(payload: dict) -> list[str]:
     for item in payload.get("output") or []:
         if not isinstance(item, dict):
             continue
-        if item.get("type") in {"reasoning", "reasoning_summary"}:
-            for block in item.get("content") or []:
+        if item.get("type") not in {"reasoning", "reasoning_summary"}:
+            continue
+        for block in item.get("content") or []:
+            if isinstance(block, dict) and block.get("text"):
+                traces.append(str(block["text"]))
+            elif isinstance(block, str) and block.strip():
+                traces.append(block)
+        summary = item.get("summary")
+        if isinstance(summary, list):
+            for block in summary:
                 if isinstance(block, dict) and block.get("text"):
                     traces.append(str(block["text"]))
-            if item.get("summary"):
-                traces.append(str(item["summary"]))
+                elif isinstance(block, str) and block.strip():
+                    traces.append(block)
+        elif summary:
+            traces.append(str(summary))
     return traces
+
+
+def _function_fields(item: dict) -> dict:
+    nested = item.get("function") if isinstance(item.get("function"), dict) else {}
+    return {
+        "type": item.get("type") or "function_call",
+        "id": item.get("id") or item.get("call_id"),
+        "call_id": item.get("call_id") or item.get("id"),
+        "name": item.get("name") or nested.get("name"),
+        "arguments": item.get("arguments") if item.get("arguments") is not None else nested.get("arguments"),
+        "status": item.get("status"),
+    }
 
 
 def collect_tool_calls(payload: dict) -> list[dict]:
@@ -99,47 +149,56 @@ def collect_tool_calls(payload: dict) -> list[dict]:
         if not isinstance(item, dict):
             continue
         kind = item.get("type")
-        if kind in {
-            "web_search_call",
-            "x_search_call",
-            "code_interpreter_call",
-            "image_generation_call",
-            "function_call",
-        }:
-            record = {
-                "type": kind,
-                "id": item.get("id") or item.get("call_id"),
-                "name": item.get("name"),
-                "arguments": item.get("arguments"),
-                "status": item.get("status"),
-            }
-            if kind == "image_generation_call":
-                record["prompt"] = item.get("prompt")
-                record["has_result"] = bool(item.get("result"))
-            calls.append(record)
+        if kind not in _SERVER_TOOL_TYPES:
+            continue
+        record = _function_fields(item)
+        if kind == "image_generation_call":
+            record["prompt"] = item.get("prompt")
+            record["has_result"] = bool(item.get("result"))
+        calls.append(record)
     return calls
 
 
 def collect_images(payload: dict) -> list[dict]:
     images: list[dict] = []
     for item in payload.get("output") or []:
-        if isinstance(item, dict) and item.get("type") == "image_generation_call" and item.get("result"):
-            images.append(
-                {
-                    "id": item.get("id"),
-                    "prompt": item.get("prompt"),
-                    "result": item.get("result"),
-                }
-            )
+        if not isinstance(item, dict) or item.get("type") != "image_generation_call":
+            continue
+        result = item.get("result")
+        if not result and isinstance(item.get("image"), dict):
+            result = item["image"].get("b64_json") or item["image"].get("result")
+        if not result:
+            continue
+        images.append(
+            {
+                "id": item.get("id"),
+                "prompt": item.get("prompt"),
+                "result": result,
+            }
+        )
     return images
 
 
 def collect_function_calls(payload: dict) -> list[dict]:
     calls: list[dict] = []
     for item in payload.get("output") or []:
-        if isinstance(item, dict) and item.get("type") == "function_call":
-            calls.append(item)
+        if not isinstance(item, dict):
+            continue
+        if item.get("type") in {"function_call", "tool_call"}:
+            calls.append(_function_fields(item))
     return calls
+
+
+def _ping_failure_reason(message: str) -> str:
+    match = re.search(r"failed \((\d+)\)", message)
+    if match:
+        code = match.group(1)
+        if code in {"401", "403"}:
+            return f"{code}: key rejected"
+        return f"HTTP {code}"
+    if "unreachable" in message.lower():
+        return "unreachable"
+    return "request failed"
 
 
 class XAIClient:
@@ -178,11 +237,13 @@ class XAIClient:
         image_path: Path | None = None,
         tool_choice: str | dict | None = None,
     ) -> dict:
+        # Responses API takes the charter in `instructions`. A system-role
+        # input item is not the documented delivery path for grok-4.6.
         payload = {
             "model": self.model,
+            "instructions": instructions,
             "reasoning": {"effort": self.reasoning_effort},
             "input": [
-                {"role": "system", "content": instructions},
                 {"role": "user", "content": user_content(text, image_path)},
             ],
         }
@@ -191,6 +252,36 @@ class XAIClient:
         if tool_choice is not None:
             payload["tool_choice"] = tool_choice
         return payload
+
+    def ping_payload(self) -> dict:
+        return {
+            "model": self.model,
+            "input": PING_PROMPT,
+            "reasoning": {"effort": "low"},
+            "max_output_tokens": 16,
+        }
+
+    def ping(self) -> tuple[bool, str]:
+        """Tiny live Responses call. Never include the key in the returned detail."""
+        ok, detail = api_key_status(self.api_key)
+        if not ok:
+            return False, detail
+        previous_timeout = self.timeout
+        self.timeout = min(self.timeout, PING_TIMEOUT)
+        try:
+            response = self.post(self.ping_payload())
+        except XAIClientError as exc:
+            return False, (
+                "XAI_API_KEY is set but the live ping failed "
+                f"({_ping_failure_reason(str(exc))})"
+            )
+        finally:
+            self.timeout = previous_timeout
+        if not isinstance(response, dict) or not response:
+            return False, "XAI_API_KEY is set but the live ping returned an empty response"
+        if response.get("error"):
+            return False, "XAI_API_KEY is set but the live ping failed (api error)"
+        return True, "XAI_API_KEY is set; live ping succeeded"
 
     def post(self, payload: dict, *, previous_response_id: str | None = None) -> dict:
         body = dict(payload)
@@ -209,10 +300,11 @@ class XAIClient:
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
                 return json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace")[-4000:]
+            detail = redact_secret(exc.read().decode("utf-8", errors="replace")[-4000:], self.api_key)
             raise XAIClientError(f"xAI Responses API failed ({exc.code}): {detail}") from exc
         except urllib.error.URLError as exc:
-            raise XAIClientError(f"xAI Responses API was unreachable: {exc.reason}") from exc
+            reason = redact_secret(str(exc.reason), self.api_key)
+            raise XAIClientError(f"xAI Responses API was unreachable: {reason}") from exc
 
     def complete(
         self,
@@ -233,56 +325,122 @@ class XAIClient:
             tool_choice=tool_choice,
         )
         response = self.post(payload)
-        tool_calls = collect_tool_calls(response)
-        thinking = collect_thinking(response)
-        images = collect_images(response)
+        tool_calls: list[dict] = []
+        thinking: list[str] = []
+        images: list[dict] = []
+        texts: list[str] = []
         rounds = 0
-        while function_handlers and collect_function_calls(response) and rounds < max_function_rounds:
-            rounds += 1
-            outputs = []
-            for call in collect_function_calls(response):
-                name = call.get("name")
-                raw_args = call.get("arguments") or "{}"
-                try:
-                    args = json.loads(raw_args) if isinstance(raw_args, str) else raw_args
-                except json.JSONDecodeError:
-                    args = {}
-                handler = function_handlers.get(name)
-                if handler is None:
-                    result = {"error": f"unknown function {name}"}
-                else:
-                    result = handler(**args) if isinstance(args, dict) else handler(args)
-                outputs.append(
-                    {
-                        "type": "function_call_output",
-                        "call_id": call.get("call_id") or call.get("id"),
-                        "output": json.dumps(result),
-                    }
-                )
-            response = self.post(
-                {
-                    "model": self.model,
-                    "reasoning": {"effort": self.reasoning_effort},
-                    "input": outputs,
-                    "tools": list(tools),
-                },
-                previous_response_id=response.get("id"),
-            )
+        nudges = 0
+
+        while True:
             tool_calls.extend(collect_tool_calls(response))
             thinking.extend(collect_thinking(response))
             images.extend(collect_images(response))
+            piece = collect_text(response)
+            if piece.strip():
+                texts.append(piece)
+
+            function_calls = collect_function_calls(response)
+            if function_handlers and function_calls and rounds < max_function_rounds:
+                rounds += 1
+                outputs = self._function_outputs(function_calls, function_handlers)
+                if not outputs:
+                    break
+                response = self.post(
+                    {
+                        "model": self.model,
+                        "reasoning": {"effort": self.reasoning_effort},
+                        "input": outputs,
+                        "tools": list(tools),
+                    },
+                    previous_response_id=response.get("id"),
+                )
+                continue
+
+            status = response.get("status")
+            if status in {"incomplete", "in_progress"} and rounds < max_function_rounds:
+                rounds += 1
+                follow = {
+                    "model": self.model,
+                    "reasoning": {"effort": self.reasoning_effort},
+                    "input": [
+                        {
+                            "role": "user",
+                            "content": "Continue. Return one JSON object with the charter keys.",
+                        }
+                    ],
+                }
+                if tools:
+                    follow["tools"] = list(tools)
+                response = self.post(follow, previous_response_id=response.get("id"))
+                continue
+
+            if function_handlers and not texts and nudges < 1 and response.get("id"):
+                nudges += 1
+                rounds += 1
+                response = self.post(
+                    {
+                        "model": self.model,
+                        "reasoning": {"effort": self.reasoning_effort},
+                        "input": [
+                            {
+                                "role": "user",
+                                "content": (
+                                    "Return one JSON object now. If you wrote grok_scene.py, "
+                                    "include it in a source field or a python fence."
+                                ),
+                            }
+                        ],
+                        "tools": list(tools),
+                    },
+                    previous_response_id=response.get("id"),
+                )
+                continue
+            break
+
+        final_text = texts[-1] if texts else ""
         return StageCallResult(
-            text=collect_text(response),
-            payload=extract_payload_or_empty(collect_text(response)),
+            text=final_text,
+            payload=extract_payload_or_empty(final_text),
             tool_calls=tool_calls,
             thinking=thinking,
             images=images,
             raw=response,
         )
 
+    @staticmethod
+    def _function_outputs(function_calls: list[dict], function_handlers: dict) -> list[dict]:
+        outputs: list[dict] = []
+        for call in function_calls:
+            name = call.get("name")
+            raw_args = call.get("arguments") if call.get("arguments") is not None else "{}"
+            try:
+                args = json.loads(raw_args) if isinstance(raw_args, str) else raw_args
+            except json.JSONDecodeError:
+                args = {}
+            handler = function_handlers.get(name)
+            if handler is None:
+                result = {"error": f"unknown function {name}"}
+            else:
+                try:
+                    result = handler(**args) if isinstance(args, dict) else handler(args)
+                except TypeError as exc:
+                    result = {"error": f"function {name} rejected arguments: {exc}"}
+            call_id = call.get("call_id") or call.get("id")
+            if not call_id:
+                continue
+            outputs.append(
+                {
+                    "type": "function_call_output",
+                    "call_id": call_id,
+                    "output": json.dumps(result),
+                }
+            )
+        return outputs
+
 
 def extract_payload_or_empty(text: str) -> dict:
-    if not text.strip():
+    if not text or not text.strip():
         return {}
     try:
         return extract_json_object(text)
