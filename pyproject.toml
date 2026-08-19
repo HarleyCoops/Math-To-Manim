@@ -5,12 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "math-to-manim"
 version = "1.1.0"
-description = "Ask a question -> get a freakin' movie. The Mythos 6-agent chain turns one sentence into a cinematic Manim film, with a REST API and MCP server."
+description = "Ask a question -> get a visual explainer. The Grok 4.6 chain turns one sentence into a cinematic Manim film."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Christian H. Cooper" }]
-keywords = ["manim", "animation", "mathematics", "claude", "mcp", "agents"]
+keywords = ["manim", "animation", "mathematics", "grok", "xai", "agents"]
 dependencies = [
   "pydantic>=2,<3",
 ]
@@ -34,22 +34,28 @@ mcp = [
 render = [
   "manim>=0.19",
 ]
+grok = [
+  "httpx>=0.27",
+]
 
 [project.scripts]
 math-to-manim = "mythos.cli:main"
 m2m = "mythos.cli:main"
 math-to-manim-sol = "sol.cli:main"
 m2m-sol = "sol.cli:main"
+math-to-manim-grok = "grok.cli:main"
+m2m-grok = "grok.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/HarleyCoops/Math-To-Manim"
 Repository = "https://github.com/HarleyCoops/Math-To-Manim"
 
 [tool.setuptools.packages.find]
-include = ["mythos*", "sol*"]
+include = ["mythos*", "sol*", "grok*"]
 
 [tool.setuptools.package-data]
 mythos = ["agents/*.md"]
+grok = ["agents/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
