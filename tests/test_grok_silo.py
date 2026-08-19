@@ -18,7 +18,7 @@ from grok.harness import GrokHarness
 from grok.jsonutil import extract_json_object, extract_python_block, extract_scene_source
 from grok.models import ARTIFACT_NAMES, RunRequest, StageCallResult
 from grok.offline import _OFFLINE_SCENE, reverse_tree_for
-from grok.service import GrokService
+from grok.service import GrokService, Job
 from grok.tools import verify_scene
 from grok.validation import normalize_reverse_tree, validate_reverse_tree, validate_run
 
@@ -257,6 +257,23 @@ def test_service_reads_run_ledger(tmp_path):
     assert service.list_runs(limit=1)[0].run_id == manifest["run_id"]
     with pytest.raises(ValueError):
         service.get_run("../escape")
+
+
+def test_service_submit_offline_job(tmp_path):
+    import time
+
+    service = GrokService(runs_dir=tmp_path)
+    job = service.submit(RunRequest(prompt="the heat equation", offline=True))
+    assert isinstance(job, Job)
+    for _ in range(100):
+        polled = service.get_job(job.id)
+        if polled.status in {"completed", "failed"}:
+            break
+        time.sleep(0.1)
+    assert polled.status == "completed"
+    bundle = service.inspect_run(polled.run_id)
+    assert "grok_scene.py" in bundle["artifacts"]
+    assert "class GrokOfflineStory" in service.read_scene_code(polled.run_id)
 
 
 def test_charters_ship_and_name_tools():

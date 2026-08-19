@@ -5,7 +5,7 @@
     math-to-manim runs                      # list on-disk runs
     math-to-manim doctor --ping             # preflight: config, auth, toolchain
     math-to-manim serve-api                 # REST API on :8642
-    math-to-manim serve-mcp                 # MCP server on stdio
+    math-to-manim serve-mcp                 # Grok MCP server on stdio
 
 Configuration comes from the environment (or a local, gitignored .env):
 M2M_MODEL, M2M_COMMAND, M2M_TIMEOUT, M2M_RENDER_TIMEOUT, M2M_RUNS_DIR,
@@ -134,7 +134,10 @@ def build_parser() -> argparse.ArgumentParser:
     api.add_argument("--reload", action="store_true")
     api.set_defaults(func=_cmd_serve_api)
 
-    mcp = sub.add_parser("serve-mcp", help="Serve the MCP server")
+    mcp = sub.add_parser(
+        "serve-mcp",
+        help="Serve the Grok MCP server (grok-4.6 chain on every tool)",
+    )
     mcp.add_argument("--transport", default="stdio",
                      choices=["stdio", "streamable-http"])
     mcp.add_argument("--port", type=int, default=8643)
