@@ -26,7 +26,7 @@ Do not route one provider through another provider's orchestration layer.
 | `mythos/cinematography.py` | The visual grammar library scenes import |
 | `mythos/service.py` | Job orchestration shared by all front doors |
 | `mythos/api.py` | REST API (FastAPI) — `math-to-manim serve-api` |
-| `mythos/mcp_server.py` | Official MCP Python SDK 2.x server — `math-to-manim serve-mcp` |
+| `mythos/mcp_server.py` | Operator entry for `math-to-manim serve-mcp`; tools run the Grok 4.6 chain |
 | `mythos/cli.py` | The `math-to-manim` command |
 | `examples/mythos/` | Flagship hand-finished films (QFT, Sound of Spacetime) |
 | `docs/showcase/` | Curated GIF gallery — the art-direction target |
@@ -56,7 +56,8 @@ The root README is the prior product page again; Grok docs live in `docs/GROK_4_
 9. **Grok is xAI-only.** Do not route Grok through `mythos/harness.py`. Live
    calls use `XAI_API_KEY` and `https://api.x.ai/v1`. Pytest makes no live
    xAI calls. `math-to-manim-grok doctor` live-pings xAI when the key is
-   set and never prints the key.
+   set and never prints the key. `math-to-manim serve-mcp` runs this Grok
+   chain.
 
 ## Quick verification
 

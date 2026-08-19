@@ -8,7 +8,7 @@ code and keep their own CLIs.
 
 | Silo | Native runtime | Entry point |
 |---|---|---|
-| `grok/` | xAI Responses API, model `grok-4.6` | `math-to-manim-grok` |
+| `grok/` | xAI Responses API, model `grok-4.6` | `math-to-manim-grok`; MCP via `math-to-manim serve-mcp` |
 | `mythos/` | Anthropic charter chain | `math-to-manim` |
 | `sol/` | Codex CLI + GPT-5.6 Sol | `math-to-manim-sol` |
 
@@ -67,7 +67,11 @@ math-to-manim-grok doctor
 math-to-manim-grok run "the heat equation"
 math-to-manim-grok run "A 3 kg cart at 4 m/s hits a spring k=200. How far does it compress?"
 math-to-manim-grok run "solve this worksheet" --image homework.jpg
+math-to-manim serve-mcp
 ```
+
+`math-to-manim serve-mcp` is the existing MCP operator command. Its tools
+run this Grok chain, not Mythos.
 
 Doctor checks that the key is set, then makes a tiny live Responses ping
 when the key is present. A present-but-invalid key is a failure. It never

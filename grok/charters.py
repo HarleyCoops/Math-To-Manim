@@ -78,6 +78,21 @@ def stage_by_name(name: str) -> Stage:
     raise ValueError(f"unknown Grok stage: {name}")
 
 
+def cinematic_charter() -> str:
+    """Composer + cinematography contract for MCP and review tools."""
+    return (
+        "GROK CINEMATIC CONTRACT\n"
+        "Grok 4.6 writes grok_scene.py as a single Manim CE ThreeDScene.\n"
+        "Camera: move_camera() or set_camera_orientation() only. "
+        "Never .animate on self.camera.\n"
+        "CAMERA IS THE NARRATOR. Headlines before symbols. "
+        "One idea per act. Homework numbers come from code_interpreter.\n\n"
+        + load_charter("grok-cinematographer.md")
+        + "\n\n"
+        + load_charter("grok-composer.md")
+    )
+
+
 def load_charter(filename: str) -> str:
     path = AGENT_DIR / filename
     if not path.is_file():

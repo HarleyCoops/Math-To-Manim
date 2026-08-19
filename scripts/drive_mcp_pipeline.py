@@ -5,15 +5,13 @@ This is the reference client for headless / scripted use: it spawns
 m2m_get_job (which reports live per-stage progress), and logs everything as
 JSONL so another process can tail the run.
 
-The model backend is whatever the server's environment says (M2M_MODEL /
-M2M_COMMAND, defaulting to claude-fable-5 on the Claude CLI subscription
-login, with the Anthropic fallback ladder behind it). Pass --model/--command
-only when you deliberately want to override that.
+The server is the Grok 4.6 chain. ``m2m_create_animation`` defaults to
+model grok-4.6. Claude/Codex ``--command`` values are ignored.
 
 Usage:
     python scripts/drive_mcp_pipeline.py "why does a spinning T-handle flip?" \
         --render -q l --log runs/mcp_drive.log
-    python scripts/drive_mcp_pipeline.py @prompt.txt --render
+    python scripts/drive_mcp_pipeline.py @prompt.txt --render --image page.jpg
 """
 
 from __future__ import annotations
@@ -40,10 +38,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--render", action="store_true")
     parser.add_argument("-q", "--quality", default="l",
                         choices=list("lmhpk"))
-    parser.add_argument("--model", default=None,
-                        help="override the server's M2M_MODEL")
-    parser.add_argument("--command", default=None,
-                        help="override the server's M2M_COMMAND")
+    parser.add_argument("--model", default="grok-4.6",
+                        help="Grok Responses model (default grok-4.6)")
+    parser.add_argument("--image", default=None,
+                        help="photographed homework page or diagram")
+    parser.add_argument("--offline", action="store_true",
+                        help="deterministic Grok rehearsal; no xAI calls")
     parser.add_argument("--log", default=None,
                         help="JSONL progress log (default: stdout only)")
     return parser.parse_args()
@@ -75,12 +75,15 @@ async def main() -> int:
     log = make_logger(Path(args.log) if args.log else None)
     log("start", prompt_chars=len(prompt))
 
-    params: dict = {"prompt": prompt, "render": args.render,
-                    "quality": args.quality}
-    if args.model:
-        params["model"] = args.model
-    if args.command:
-        params["command"] = args.command
+    params: dict = {
+        "prompt": prompt,
+        "render": args.render,
+        "quality": args.quality,
+        "model": args.model,
+        "offline": args.offline,
+    }
+    if args.image:
+        params["image"] = args.image
 
     server = StdioServerParameters(
         command=sys.executable,
