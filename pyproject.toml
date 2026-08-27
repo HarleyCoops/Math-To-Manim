@@ -45,17 +45,20 @@ math-to-manim-sol = "sol.cli:main"
 m2m-sol = "sol.cli:main"
 math-to-manim-grok = "grok.cli:main"
 m2m-grok = "grok.cli:main"
+math-to-manim-glm = "glm.cli:main"
+m2m-glm = "glm.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/HarleyCoops/Math-To-Manim"
 Repository = "https://github.com/HarleyCoops/Math-To-Manim"
 
 [tool.setuptools.packages.find]
-include = ["mythos*", "sol*", "grok*"]
+include = ["mythos*", "sol*", "grok*", "glm*"]
 
 [tool.setuptools.package-data]
 mythos = ["agents/*.md"]
 grok = ["agents/*.md"]
+glm = ["agents/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
