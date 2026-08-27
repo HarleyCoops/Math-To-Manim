@@ -16,6 +16,7 @@ Do not route one provider through another provider's orchestration layer.
 | Path | Role |
 |---|---|
 | `grok/` | Independent Grok 4.6 silo: xAI Responses client, charters, harness, CLI, run ledger |
+| `glm/` | Independent GLM silo (GLM-only): Z.ai Coding Plan chat/completions client (glm-5.3-flash, thinking always on), charters, harness, CLI, run ledger. Do not import other silos from `glm/` |
 | `docs/GROK_4_6_SILO.md` | Grok architecture and deployment contract |
 | `sol/` | Independent GPT-5.6 Sol silo: Codex CLI driver, film contract, harness, validation, run ledger |
 | `docs/SOL_5_6_SILO.md` | Sol architecture and deployment contract |
