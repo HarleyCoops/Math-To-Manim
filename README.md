@@ -13,6 +13,7 @@
 ### Ask a question. Get a visual explainer.
 
 [![GLM 5.3 Flash](https://img.shields.io/badge/README_by-GLM--5.3--Flash-6366f1)](docs/GLM_5_3_FLASH.md)
+[![glm silo](https://img.shields.io/badge/glm-silo%20live-6d28d9)](#glm)
 [![Claude Fable 5](https://img.shields.io/badge/Claude-Fable%205%20Mythos-d97757)](#mythos)
 [![GPT 5.6 Sol](https://img.shields.io/badge/Codex-GPT--5.6%20Sol-10a37f)](#sol)
 [![Grok 4.6](https://img.shields.io/badge/xAI-Grok%204.6-black)](#grok)
@@ -310,7 +311,7 @@ not `output/<run>/scene.py`.
 
 ## Choose A Native Pipeline
 
-Math To Manim contains three complete and independent ways to create a visual
+Math To Manim contains four complete and independent ways to create a visual
 explainer. Choose the command line account you already use.
 Neither pipeline routes through the other.
 
@@ -346,7 +347,19 @@ math-to-manim-grok run "the heat equation" --offline
 ```
 
 Hermes Agent is not a supported generate path. The supported operator
-surfaces are Mythos, Sol, Grok, and the MCP/REST front doors.
+surfaces are Mythos, Sol, Grok, GLM, and the MCP/REST front doors.
+
+### glm
+
+GLM uses Z.ai's Coding Plan with glm-5.3-flash; thinking is always enabled and
+effort tunes sampling latitude (low/high/max). Offline mode works login-free:
+
+```bash
+math-to-manim-glm doctor
+math-to-manim-glm run "the magnetic monopole" --offline
+```
+
+Details in [docs/GLM_5_3_SILO.md](docs/GLM_5_3_SILO.md).
 
 ## Installation
 
