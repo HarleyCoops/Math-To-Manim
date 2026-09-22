@@ -16,6 +16,8 @@ Do not route one provider through another provider's orchestration layer.
 | Path | Role |
 |---|---|
 | `grok/` | Independent Grok 4.6 silo: xAI Responses client, charters, harness, CLI, run ledger |
+| `mimo/` | Independent MiMo 2.6 silo: tool-calling client, reverse-thinking cartographer, geometry/scene tools, harness, CLI, run ledger. Do not import other silos from `mimo/` |
+| `docs/MIMO_2_6_SILO.md` | MiMo tool-calling architecture and deployment contract |
 | `glm/` | Independent GLM silo (GLM-only): Z.ai Coding Plan chat/completions client (glm-5.3-flash, thinking always on), charters, harness, CLI, run ledger. Do not import other silos from `glm/` |
 | `docs/GROK_4_6_SILO.md` | Grok architecture and deployment contract |
 | `sol/` | Independent GPT-5.6 Sol silo: Codex CLI driver, film contract, harness, validation, run ledger |
@@ -71,4 +73,6 @@ math-to-manim-sol run "why Fourier modes solve the heat equation" --offline
 math-to-manim-sol doctor
 math-to-manim-grok run "the heat equation" --offline
 math-to-manim-grok doctor
+math-to-manim-mimo run "the heat equation" --offline
+math-to-manim-mimo doctor
 ```
