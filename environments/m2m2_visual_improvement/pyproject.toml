@@ -37,3 +37,6 @@ m2m2_visual_improvement = [
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-q"
+markers = [
+  "render: requires the local Manim, FFmpeg, TeX, and OCR runtime",
+]

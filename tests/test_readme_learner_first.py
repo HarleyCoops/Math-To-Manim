@@ -7,6 +7,8 @@ README = Path("README.md")
 FEATURED_EXPLAINERS = [
     "docs/showcase/assets/erdos-1038-potential-landscape.gif",
     "docs/showcase/assets/jacobian-conjecture-3d.gif",
+    "docs/showcase/assets/continuous-geometric-picture.gif",
+    "docs/showcase/assets/qed-minkowski-epic-3d.gif",
 ]
 
 REMOVED_MYTHOS_SHOWCASE = [

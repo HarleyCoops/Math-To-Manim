@@ -19,7 +19,9 @@
 [![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
 [![License MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
+[The January 20 story](#the-morning-of-january-20-2025) ·
 [Featured explainers](#featured-visual-explainers) ·
+[The RL experiment](#the-ongoing-rl-experiment) ·
 [What you can ask](#what-can-i-ask) ·
 [How the reasoning works](#how-the-reasoning-pipeline-works) ·
 [MCP setup](#make-your-first-explainer) ·
@@ -33,6 +35,49 @@
 > ideas in order, checks the mathematics, and builds the explanation in Manim.*
 
 <br />
+
+</div>
+
+## The Morning Of January 20, 2025
+
+Math To Manim began in the early morning of January 20, 2025, the day
+[DeepSeek R1 was released](https://huggingface.co/deepseek-ai/DeepSeek-R1/commit/5a56bdbde75a16bdfbf3a8e9c852be3dfcfb8eef).
+The repository was created at **11:04:50 UTC**. Its earliest original commit
+was authored at **04:24:50 Mountain time (UTC−7)**, twenty minutes later.
+[That commit remains in the history](https://github.com/HarleyCoops/Math-To-Manim/commit/09a2f22ec02b0374d38373d28f76c5764a1e9a2e).
+
+The intuition that morning was that **GRPO could lead toward recursive
+self reasoning**: a model could revisit its own argument, discover the ideas
+it had skipped, and use feedback to build a better explanation. Math and
+animation offered a concrete place to explore that idea. An equation has to
+hold up, and an explanation has to survive being shown on screen.
+
+That was the project's founding hypothesis, not a demonstrated result in
+recursive self improvement. The practical question became: can a system work
+backward through the prerequisites of a difficult idea, teach them forward,
+and then inspect and improve the animation it made?
+
+The films below show what that pursuit has produced. The current experiment
+adds independent evaluation and revision feedback, while separate RL work
+explores whether those signals can improve a trainable policy.
+
+<details>
+<summary>Creation evidence and later screenshots</summary>
+
+The [GitHub repository metadata](https://api.github.com/repos/HarleyCoops/Math-To-Manim)
+records `created_at: 2025-01-20T11:04:50Z`; the original commit records
+`2025-01-20T04:24:50-07:00`. These timestamps establish the project's start.
+The account of the GRPO intuition is the creator's recollection.
+
+These screenshots were captured **September 24, 2026**. They show the pages
+as viewed then; they are not screenshots taken on release morning.
+
+[Repository page capture](docs/assets/math-to-manim-root.png) ·
+[DeepSeek R1 release capture](docs/assets/deepseek-r1-release.png)
+
+</details>
+
+<div align="center">
 
 ## Featured Visual Explainers
 
@@ -81,6 +126,13 @@ value reached exactly by piling the roots at the endpoints.
 
 <br />
 
+<p align="center">
+  <img src="docs/showcase/assets/continuous-geometric-picture.gif" alt="GRPO sibling completions become a geometric policy update" width="48%" />
+  <img src="docs/showcase/assets/qed-minkowski-epic-3d.gif" alt="Light cones and electromagnetic waves on a three dimensional stage" width="48%" />
+</p>
+
+<p align="center"><em><strong>GRPO AND SPACETIME.</strong> Two more views of the project's range: a geometric study of policy updates, and a QED/Minkowski film that gives abstract physics a visible stage. These are curated showcase studies, not measurements of training gains.</em></p>
+
 <p align="center"><strong><a href="docs/showcase/README.md">Explore every visual explainer in the motion showcase</a></strong></p>
 
 </div>
@@ -102,6 +154,35 @@ uses the edition maintained by the Manim community.
 The reasoning process is the product. Math To Manim does not jump directly
 from a sentence to Python. It first decides what must be understood, what must
 be shown, and in what order each idea should appear.
+
+## The Ongoing RL Experiment
+
+The original question is still open: can feedback improve the reasoning and
+visual explanation together? The repository now explores it at two levels.
+
+**Evaluate and revise an individual film.** In the Codex pipeline, **jev** is
+an independent math and render evaluator powered by **GPT-6 Astra**. A fresh,
+read only Codex session scores the mathematics and the rendered presentation,
+cites its evidence, and returns concrete revision feedback. The harness sends
+repairs back through the responsible stages and renders again before review.
+This is repair at inference time: no model weights change.
+
+```bash
+math-to-manim-sol run "Explain why Fourier modes solve the heat equation" --render --evaluator jev
+```
+
+**Learn across attempts.** The [Prime Intellect experiment](docs/PRIME_INTELLECT_RL.md)
+and [visual improvement environment](environments/m2m2_visual_improvement/README.md)
+provide a separate path toward training on repair tasks. Actual RL requires
+rollouts, a reward, and a trainer that updates policy weights. Running jev does
+not start that trainer or turn its scores into a calibrated reward.
+
+Jev's scores are provisional model judgments. A useful next experiment is to
+compare them with blinded human reviews on held out mathematical and visual
+defects, measure false approvals, and only then test a reward derived from
+them. This README claims neither measured RL gains nor a demonstrated loop of
+recursive self improvement. See the [jev design and calibration protocol](docs/JEV.md)
+for the acceptance gate, audit records, limitations, and offline checks.
 
 ## What Can I Ask
 

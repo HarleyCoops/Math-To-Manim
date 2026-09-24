@@ -120,3 +120,9 @@ its explicit agent charters while Sol can exploit the Codex CLI's long-horizon
 tool loop and workspace execution. Shared abstractions are limited to the final
 product expectation—an inspectable Manim film bundle—not the provider control
 plane.
+
+## Independent jev review
+
+Use `--render --evaluator jev` to score mathematics and rendered presentation
+with a fresh, read-only GPT-6 Astra Codex session. See [the jev contract](JEV.md)
+for revision routing, resume behavior, evidence records, and calibration limits.
