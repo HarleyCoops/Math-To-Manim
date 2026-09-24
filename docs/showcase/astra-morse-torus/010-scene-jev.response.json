@@ -1,0 +1,66 @@
+{
+  "model": "jev-1.13.0",
+  "usage": {
+    "input_tokens": 17049,
+    "output_tokens": 124
+  },
+  "answers": {
+    "criterion_1": {
+      "type": "score",
+      "score": 3.15,
+      "confidence": 0.5,
+      "legend": {
+        "0": "Absent or contradicted",
+        "1": "Major omissions",
+        "2": "Partly supported, needs repair",
+        "3": "Supported with minor limitations",
+        "4": "Clearly supported by specific evidence"
+      },
+      "probabilities": {
+        "0": 0.03,
+        "1": 0.02,
+        "2": 0.11,
+        "3": 0.45999999999999996,
+        "4": 0.38
+      }
+    },
+    "criterion_2": {
+      "type": "score",
+      "score": 2.93,
+      "confidence": 0.55,
+      "legend": {
+        "0": "Absent or contradicted",
+        "1": "Major omissions",
+        "2": "Partly supported, needs repair",
+        "3": "Supported with minor limitations",
+        "4": "Clearly supported by specific evidence"
+      },
+      "probabilities": {
+        "0": 0.04,
+        "1": 0.02,
+        "2": 0.16,
+        "3": 0.54,
+        "4": 0.24
+      }
+    },
+    "evidence_sufficient": {
+      "type": "noul",
+      "noul": 0.78
+    },
+    "blocking_defect": {
+      "type": "noul",
+      "noul": 0.08
+    },
+    "repair_target": {
+      "type": "choice",
+      "choice": "scene",
+      "confidence": 0.97,
+      "probabilities": {
+        "brief": 0.0,
+        "mathematics": 0.01,
+        "storyboard": 0.01,
+        "scene": 0.98
+      }
+    }
+  }
+}

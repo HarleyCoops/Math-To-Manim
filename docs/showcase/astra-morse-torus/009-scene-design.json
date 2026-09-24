@@ -1,0 +1,253 @@
+{
+  "model": "jev-1.13.0",
+  "policy": "design-advice-v1",
+  "advisory_only": true,
+  "findings": [
+    {
+      "id": "geometric_reveal",
+      "domain": "art",
+      "stages": [
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "replan_camera",
+      "question": "Does a geometric transformation reveal the central mathematical relationship rather than merely decorate narration?",
+      "evidence": "Transformation specification, source, or before/after frame observations",
+      "repair": "Stage the actual mathematical transformation before its symbolic conclusion.",
+      "verify": "The relevant relation is visibly identifiable before the summary formula.",
+      "score": 3.67,
+      "confidence": 0.72,
+      "status": "supported"
+    },
+    {
+      "id": "visual_hierarchy",
+      "domain": "clarity",
+      "stages": [
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "replan_camera",
+      "question": "Is one primary mathematical object or event visually dominant in each shot?",
+      "evidence": "Shot composition or per-frame descriptions",
+      "repair": "Dim scaffolding, remove competing labels, and isolate the object that carries the argument.",
+      "verify": "The focal object remains distinguishable at delivery resolution.",
+      "score": 3.5,
+      "confidence": 0.58,
+      "status": "investigate"
+    },
+    {
+      "id": "reading_time",
+      "domain": "clarity",
+      "stages": [
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "inspect_scene",
+      "question": "Does each new formula have a stable reading interval without competing camera or topology changes?",
+      "evidence": "Timed storyboard and source schedule; isolated stills cannot verify duration",
+      "repair": "Separate reveal, explanation, and motion; add a hold sized to formula complexity.",
+      "verify": "Source and sampled timestamps support a readable interval; flag unobserved motion.",
+      "score": 2.99,
+      "confidence": 0.51,
+      "status": "investigate"
+    },
+    {
+      "id": "latex_hierarchy",
+      "domain": "latex",
+      "stages": [
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "replan_camera",
+      "question": "Is the principal equation clearly distinguished from definitions and secondary annotations?",
+      "evidence": "Exact MathTex strings, font sizes, overlay bounds, actual frame observations",
+      "repair": "Keep one principal formula, subordinate captions, and clear screen-space bands.",
+      "verify": "Main equation remains readable without competing text.",
+      "score": 3.56,
+      "confidence": 0.63,
+      "status": "investigate"
+    },
+    {
+      "id": "latex_integrity",
+      "domain": "latex",
+      "stages": [
+        "mathematics",
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "check_math",
+      "question": "Do visible LaTeX expressions preserve grouping, domains, signs, indices and mathematical meaning?",
+      "evidence": "Approved equations versus exact source strings and rendered observations",
+      "repair": "Correct the exact expression; color whole semantic terms without splitting radicands or indices.",
+      "verify": "Source and rendered expression agree with the mathematical dossier.",
+      "score": 3.6,
+      "confidence": 0.67,
+      "status": "supported"
+    },
+    {
+      "id": "symbol_geometry_binding",
+      "domain": "latex",
+      "stages": [
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "clarify_definitions",
+      "question": "Can each important symbol be connected unambiguously to the geometric object it describes?",
+      "evidence": "Symbol legend, object colors and shot transitions",
+      "repair": "Highlight the corresponding object as its symbol appears; maintain consistent colors.",
+      "verify": "Symbol-to-object associations remain consistent across shots.",
+      "score": 3.24,
+      "confidence": 0.69,
+      "status": "supported"
+    },
+    {
+      "id": "camera_purpose",
+      "domain": "camera",
+      "stages": [
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "replan_camera",
+      "question": "Does each camera move reveal depth, an invariant, a hidden relationship or a local event?",
+      "evidence": "Camera targets and per-shot teaching purpose",
+      "repair": "Replace arbitrary orbiting with a move that exposes the mathematical relation.",
+      "verify": "Each movement has a named explanatory purpose.",
+      "score": 3.7,
+      "confidence": 0.75,
+      "status": "supported"
+    },
+    {
+      "id": "local_global_bridge",
+      "domain": "camera",
+      "stages": [
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "replan_camera",
+      "question": "Does the sequence restore global orientation after a local close-up?",
+      "evidence": "Wide/detail/return sequence and camera centers",
+      "repair": "Establish the whole object, push into the critical region, then pull back to reconnect the result.",
+      "verify": "Local events remain locatable on the full object.",
+      "score": 3.66,
+      "confidence": 0.72,
+      "status": "supported"
+    },
+    {
+      "id": "camera_clearance",
+      "domain": "camera",
+      "stages": [
+        "scene",
+        "render"
+      ],
+      "action": "inspect_scene",
+      "question": "Do the inspected views keep the critical geometry visible and clear of fixed overlays?",
+      "evidence": "Projected bounds or actual frame observations; source intent alone is insufficient",
+      "repair": "Change target, zoom or angle; relocate labels into reserved screen space.",
+      "verify": "Re-render the affected views and inspect their actual bounds.",
+      "score": 2.65,
+      "confidence": 0.67,
+      "status": "improve"
+    },
+    {
+      "id": "spatial_depth",
+      "domain": "space",
+      "stages": [
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "replan_camera",
+      "question": "Do occlusion, mesh, lighting and perspective make the relevant three-dimensional structure legible?",
+      "evidence": "Surface/material plan, source and frame observations",
+      "repair": "Use restrained mesh, directional shading, depth-aware opacity and a revealing oblique view.",
+      "verify": "Near/far surfaces and the relevant opening can be distinguished.",
+      "score": 2.96,
+      "confidence": 0.88,
+      "status": "improve"
+    },
+    {
+      "id": "surface_volume_boundary",
+      "domain": "space",
+      "stages": [
+        "mathematics",
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "check_math",
+      "question": "Does the explanation distinguish surfaces, enclosed volumes and boundary curves wherever their distinction matters?",
+      "evidence": "Definitions, geometric construction, captions and frame observations",
+      "repair": "Render and label the correct dimensional object; remove misleading filled-volume metaphors.",
+      "verify": "The displayed object has the intended dimension and boundary.",
+      "score": 3.87,
+      "confidence": 0.89,
+      "status": "supported"
+    },
+    {
+      "id": "topology_transition",
+      "domain": "space",
+      "stages": [
+        "mathematics",
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "check_math",
+      "question": "Are claimed topology changes supported by the actual construction and shown only at the appropriate critical events?",
+      "evidence": "Critical values, connectivity checks, source and observations on both sides of events",
+      "repair": "Correct connectivity or clipping; distinguish regular states from singular crossings.",
+      "verify": "Pre-event and post-event states match the verified topology.",
+      "score": 3.26,
+      "confidence": 0.57,
+      "status": "investigate"
+    },
+    {
+      "id": "color_semantics",
+      "domain": "art",
+      "stages": [
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "replan_camera",
+      "question": "Do colors encode stable mathematical roles rather than change meaning between shots?",
+      "evidence": "Color-role map and observed usage",
+      "repair": "Assign consistent colors to included sets, boundaries, extrema and saddles; reinforce with shape or labels.",
+      "verify": "Color-role assignments stay consistent in all inspected shots.",
+      "score": 3.42,
+      "confidence": 0.52,
+      "status": "investigate"
+    },
+    {
+      "id": "earned_finale",
+      "domain": "art",
+      "stages": [
+        "storyboard",
+        "scene",
+        "render"
+      ],
+      "action": "replan_camera",
+      "question": "Does the final tableau visibly account for the terms of the concluding equation?",
+      "evidence": "Final objects, formula and preceding argument",
+      "repair": "Bring the relevant objects into one clean composition and reveal the relation term by term.",
+      "verify": "Every important term has a visible or explicitly recalled geometric meaning.",
+      "score": 3.09,
+      "confidence": 0.7,
+      "status": "improve"
+    }
+  ],
+  "priority": [
+    "camera_clearance",
+    "spatial_depth",
+    "earned_finale"
+  ],
+  "note": "Low confidence requests evidence, not speculative visual changes. Scores are not calibrated quality measures."
+}

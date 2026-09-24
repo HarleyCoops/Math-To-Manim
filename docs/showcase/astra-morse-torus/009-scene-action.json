@@ -1,0 +1,13 @@
+{
+  "action": "inspect_scene",
+  "confidence": 0.38,
+  "execute": false,
+  "model": "jev-1.13.0",
+  "probabilities": {
+    "check_math": 0.02,
+    "no_action": 0.05,
+    "replan_camera": 0.43,
+    "clarify_definitions": 0.0,
+    "inspect_scene": 0.5
+  }
+}
