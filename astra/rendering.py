@@ -45,11 +45,11 @@ def render(run_dir, source, quality, attempt):
     folder = Path(run_dir) / f'renders/{attempt:03d}'
     folder.mkdir(parents=True, exist_ok=False)
     (folder / 'scene.py').write_text(source, encoding='utf-8')
-    args = [sys.executable, '-m', 'manim', f'-q{quality}', '--disable_caching',
-            '--media_dir', str(folder / 'media'), '--progress_bar', 'none',
-            str(folder / 'scene.py'), 'AstraFilm']
+    args = [sys.executable, str(Path(__file__).with_name('render_worker.py')),
+            str(folder / 'scene.py'), str(folder / 'media'), quality]
+    # Detailed 1080p/60 fps Cairo surfaces can exceed thirty minutes locally.
     proc = subprocess.run(args, cwd=folder, env=clean_environment(), capture_output=True,
-                          text=True, encoding='utf-8', errors='replace', timeout=1800)
+                          text=True, encoding='utf-8', errors='replace', timeout=7200)
     (folder / 'stdout.log').write_text(proc.stdout, encoding='utf-8')
     (folder / 'stderr.log').write_text(proc.stderr, encoding='utf-8')
     if proc.returncode:
@@ -59,7 +59,7 @@ def render(run_dir, source, quality, attempt):
         raise RuntimeError('Render did not produce a unique final MP4')
     video = videos[0]
     metadata = json.loads(command(['ffprobe','-v','error','-show_entries',
-                                   'format=duration:stream=width,height','-of','json',str(video)],cwd=folder))
+                                   'format=duration:stream=width,height,r_frame_rate','-of','json',str(video)],cwd=folder))
     duration = float(metadata['format']['duration'])
     if not 20 <= duration <= 240:
         raise RuntimeError(f'Unexpected film duration: {duration}')
@@ -90,18 +90,25 @@ def probe(run_dir, source, attempt):
     folder.mkdir(parents=True,exist_ok=False)
     scene=folder/'scene.py'
     scene.write_text(source,encoding='utf-8')
-    result=subprocess.run([sys.executable,'-m','manim','-s','--disable_caching',
-        '--media_dir',str(folder/'media'),'--progress_bar','none',str(scene),'AstraFilm'],
+    settings=Path(run_dir)/'delivery.json'
+    if not settings.exists():settings=Path(run_dir)/'request.json'
+    quality=json.loads(settings.read_text()).get('quality','h') if settings.exists() else 'h'
+    result=subprocess.run([sys.executable,str(Path(__file__).with_name('render_worker.py')),
+        str(scene),str(folder/'media'),quality,'still'],
         cwd=folder,env=clean_environment(),capture_output=True,text=True,
         encoding='utf-8',errors='replace',timeout=600)
     (folder/'stdout.log').write_text(result.stdout,encoding='utf-8')
     (folder/'stderr.log').write_text(result.stderr,encoding='utf-8')
     if result.returncode:raise RuntimeError('Scene execution probe failed: '+result.stderr[-5000:])
-    frames=list((folder/'media/images/scene').glob('AstraFilm*.png'))
+    frames=list((folder/'media/images').rglob('AstraFilm*.png'))
     if len(frames)!=1:raise RuntimeError('Scene probe did not produce exactly one image')
     record=folder/'execution.json'
+    from PIL import Image
+    with Image.open(frames[0]) as image:
+        resolution=list(image.size)
     record.write_text(json.dumps({'kind':'actual_manim_final_frame_probe',
         'source_sha256':hashlib.sha256(source.encode('utf-8')).hexdigest(),
+        'delivery_quality':quality,'resolution':resolution,
         'exit_code':result.returncode,'image':frames[0].relative_to(run_dir).as_posix(),
         'limitations':['Final still only; no continuous movie rendered or inspected.']},indent=2),encoding='utf-8')
     return record,frames[0]

@@ -29,7 +29,8 @@ The film uses a genuine Morse height with isolated critical points, rather than
 the degenerate height of a horizontal donut. The colored object is the surface
 below the scanning plane; it is not a volume of water.
 
-The live run is in progress. A render is published here only after it exists and
+The live run is in progress at **720p, 30 fps**, with the geometry and visual
+review requirements retained. A render is published here only after it exists and
 passes the visual review gate. [Read the production request](docs/prompts/astra-morse-torus.md).
 
 ## Astra And Jev

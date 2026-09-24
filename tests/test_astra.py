@@ -85,6 +85,22 @@ def test_credentials_not_inherited(monkeypatch):
     env=clean_environment()
     assert not {'OPENAI_API_KEY','CODEX_API_KEY','XAI_API_KEY','GH_TOKEN'} & env.keys()
 
+
+def test_resume_quality_preserves_planning_but_rechecks_scene(tmp_path):
+    client=FakeSDK();qualities=[]
+    def renderer(folder,source,quality,attempt):
+        qualities.append(quality)
+        return fake_render(folder,source,quality,attempt)
+    pipe=Pipeline(client,tmp_path,renderer,jev=FakeJev(),prober=fake_probe)
+    first=pipe.run(Request(prompt='Explain topology'));folder=Path(first['run_dir'])
+    client.calls.clear()
+    result=pipe.run(None,folder=folder,render_quality='m')
+    assert result['status']=='completed' and qualities==['h','m']
+    assert [c for c in client.calls if 'candidate' in c]==['006-scene-candidate.json']
+    assert 'delivery.json' in result['stages']['scene']['hashes']
+    client.calls.clear();pipe.run(None,folder=folder)
+    assert qualities[-1]=='m' and not any('candidate' in c for c in client.calls)
+
 @pytest.mark.parametrize('code',['import os\n'+SOURCE,SOURCE+'\nopen("x")',SOURCE+'\neval("x")'])
 def test_scene_static_screen_rejects_file_or_dynamic_execution(code):
     with pytest.raises(ValueError):validate_source(code)
