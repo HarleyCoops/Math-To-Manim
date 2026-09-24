@@ -1,3 +1,14 @@
+# Review modes
+
+Jev is advisory by default: one evaluation per checkpoint, no score-triggered
+regeneration, additional investigation, or automatic retry. An unavailable Jev
+response is recorded without an inferred approval. The strict gate contract
+below applies only to `--review-mode gated`.
+
+To finish saved scenes without further spending, `render-existing` makes zero
+model/API calls and labels the output `not_reviewed`. Earlier reviews remain
+unchanged. A completed local render is not a Jev approval.
+
 # TypeSafe Jev decision contract
 
 Jev is TypeSafe's separate System One model, **jev-1.13.0**, accessed with

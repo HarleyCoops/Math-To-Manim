@@ -37,3 +37,4 @@ class Request(StrictModel):
     effort: Literal["high", "xhigh", "max"] = "high"
     max_revisions: int = Field(default=6, ge=0, le=20)
     render: bool = True
+    review_mode: Literal['advisory','gated'] = 'advisory'

@@ -8,8 +8,19 @@ The primary pipeline now uses the official **Codex SDK**, your **Codex ChatGPT
 login**, and `gpt-6-astra` for authors and evidence auditors. Real **TypeSafe Jev
 (`jev-1.13.0`)** evaluates each checkpoint through its separate API. Astra develops the
 learning brief, verifies the mathematics, directs the visual argument, writes
-the scene, and reviews the actual render. Every checkpoint must pass an
-independent jev assessment before the next step can proceed.
+the scene, and reviews the actual render. Jev reviews are **advisory by default**:
+their scores are retained, but do not trigger regeneration or extra investigations.
+Strict gates remain available with `--review-mode gated`.
+
+To finish an existing scene without spending additional model credits:
+
+```bash
+math-to-manim render-existing runs/astra/<run-id> --candidate runs/astra/<run-id>/attempts/<candidate>.json -q m
+```
+
+This local-only path makes **zero Astra or Jev calls**. Manim renders and joins
+the animation segments, then extracts review frames. Output is marked
+`not_reviewed`, not Jev-approved; previous review records remain unchanged.
 
 [Run the chain](#installation) · [How jev works](#astra-and-jev) ·
 [Creation story](#the-morning-of-january-20-2025) · [Older films](docs/showcase/README.md)
@@ -29,11 +40,14 @@ The film uses a genuine Morse height with isolated critical points, rather than
 the degenerate height of a horizontal donut. The colored object is the surface
 below the scanning plane; it is not a volume of water.
 
-The live run is in progress at **720p, 30 fps**, with the geometry and visual
-review requirements retained. A render is published here only after it exists and
-passes the visual review gate. [Read the production request](docs/prompts/astra-morse-torus.md).
+The live run is in progress at **720p, 30 fps**, with geometry and review history
+retained. Remaining production is local-only, with no further model review or
+automatic regeneration. [Read the production request](docs/prompts/astra-morse-torus.md).
 
 ## Astra And Jev
+
+The diagram below documents the optional **gated** mode. Default advisory mode
+records one Jev evaluation per checkpoint and continues without repair loops.
 
 ```mermaid
 flowchart TD

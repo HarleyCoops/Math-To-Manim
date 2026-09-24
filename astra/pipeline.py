@@ -7,7 +7,7 @@ import shutil
 import uuid
 
 from astra.client import CodexSDK, MODEL
-from astra.jev import JevClient, POLICY_VERSION
+from astra.jev import JevClient, GateDecision, POLICY_VERSION
 from astra.evidence import text_evidence, design_summary
 from astra.models import Artifact, Assessment, Request, STAGES
 from astra.prompts import specialist_prompt, judge_prompt
@@ -55,8 +55,19 @@ class Pipeline:
                'astra_evidence_audit':result.model_dump(),
                'image_handling':'Jev receives only Astra text observations of images, never pixels.',
                'input_hashes':hashes}
-        decision=self.jev.review(state=state,stage=stage,audit=result,
-                                 output=folder/f'attempts/{index:03d}-{stage}-jev.json')
+        try:
+            decision=self.jev.review(state=state,stage=stage,audit=result,
+                                     output=folder/f'attempts/{index:03d}-{stage}-jev.json')
+        except Exception as exc:
+            if request.review_mode=='gated':raise
+            decision=GateDecision(approved=False,repair_stage='scene' if stage=='render' else stage,
+                feedback=f'Advisory review unavailable: {type(exc).__name__}. No retry or approval inferred.',
+                defects=[],evaluator='unavailable',model='unavailable',answers={})
+            save(folder/f'attempts/{index:03d}-{stage}-advisory-unavailable.json',decision.model_dump())
+        if request.review_mode=='advisory':
+            # Preserve Jev's actual verdict, but do not dispatch investigations,
+            # repeat evaluations, or regenerate work because of that verdict.
+            return decision
         if isinstance(self.jev, JevClient):
             from astra.design import review_design
             design=review_design(self.jev,state,stage,folder/f'attempts/{index:03d}-{stage}-design.json')
@@ -177,7 +188,7 @@ class Pipeline:
                     review=self._judge(folder,request,stage,paths,images,attempt)
                     ledger['events'].append(dict(stage=stage,attempt=attempt,approved=review.approved,
                                                review=review.model_dump()))
-                    if not review.approved:
+                    if not review.approved and request.review_mode=='gated':
                         revisions+=1
                         if revisions>request.max_revisions: raise RuntimeError('Jev revision budget exhausted')
                         i=min(i,STAGES.index(review.repair_stage));feedback=review.model_dump_json()
@@ -211,7 +222,7 @@ class Pipeline:
                 ledger['events'].append(dict(stage='render',attempt=attempt,approved=review.approved,
                                            review=review.model_dump()))
                 save(ledger_path,ledger)
-                if review.approved:
+                if review.approved or request.review_mode=='advisory':
                     ledger.update(video=str(video.relative_to(folder)),contact_sheet=str(sheet.relative_to(folder)),
                                   video_sha256=digest(video))
                     break
@@ -219,7 +230,9 @@ class Pipeline:
                 if revisions>request.max_revisions:raise RuntimeError('Render review revision budget exhausted')
                 i=STAGES.index(review.repair_stage);feedback=review.model_dump_json()
                 for name in STAGES[i:]:ledger['stages'].pop(name,None)
-            ledger.update(status='completed',completed_utc=datetime.now(timezone.utc).isoformat())
+            ledger.update(status='completed',review_mode=request.review_mode,
+                          review_status='advisory' if request.review_mode=='advisory' else 'approved',
+                          completed_utc=datetime.now(timezone.utc).isoformat())
         except Exception as exc:
             ledger.update(status='failed',error=f'{type(exc).__name__}: {exc}')
             raise
