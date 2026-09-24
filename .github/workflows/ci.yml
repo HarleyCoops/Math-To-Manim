@@ -36,12 +36,12 @@ jobs:
         run: |
           python - <<'PY'
           from importlib.metadata import version
-          from importlib.util import find_spec
           from mcp.server import MCPServer
 
           major = int(version("mcp").split(".", 1)[0])
           assert major == 2, version("mcp")
-          assert find_spec("mcp.server.fastmcp") is None
+          # MCP 2.2 includes a FastMCP stub that raises a migration error.
+          # Verify the API we use, rather than the absence of that stub.
           assert MCPServer.__name__ == "MCPServer"
           print("mcp:", version("mcp"))
           PY
