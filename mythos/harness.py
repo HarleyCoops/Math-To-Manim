@@ -26,8 +26,6 @@ import json
 import os
 import py_compile
 import re
-import shutil
-import subprocess
 import sys
 import time
 from datetime import datetime, timezone
@@ -54,6 +52,22 @@ from mythos.charter import (  # noqa: E402
     find_scene_class,
     load_env_file,
 )
+from mythos.manifest_schema import (  # noqa: E402
+    manifest_template,
+    migrate_manifest,
+    validation_template,
+)
+from mythos.prereq_cache import PrerequisiteCache  # noqa: E402
+from mythos.render import (  # noqa: E402
+    DEFAULT_RENDER_TIMEOUT,
+    render_scene_file,
+    resolve_manim,
+)
+from mythos.scene_checks import (  # noqa: E402
+    validate_manim_code_report,
+    validation_from_scene,
+    write_json,
+)
 
 # Charter search order: user-local Claude Code dir first, then the tracked
 # canonical copies that ship with the repo.
@@ -77,8 +91,8 @@ _LINT_RULES = [
      "never animate self.camera in a ThreeDScene; use move_camera"),
 ]
 
-#: Render wall-clock budget, separate from the per-model-call M2M_TIMEOUT.
-DEFAULT_RENDER_TIMEOUT = float(os.getenv("M2M_RENDER_TIMEOUT", "1800"))
+# DEFAULT_RENDER_TIMEOUT and resolve_manim live in mythos.render so the
+# sandbox wrapper does not import this harness. Re-exported for callers.
 
 
 class StageValidationError(RuntimeError):
@@ -128,23 +142,6 @@ def default_runs_dir() -> Path:
         or os.getenv("M2M2_RUNS_DIR")
         or str(REPO_ROOT / "runs")
     ) / "mythos"
-
-
-def resolve_manim() -> list[str]:
-    """Find the manim entry point, preferring the active interpreter's env.
-
-    Order: M2M_MANIM env override, `<current python> -m manim` when manim is
-    importable, then whatever is on PATH.
-    """
-    override = os.getenv("M2M_MANIM")
-    if override:
-        return [override]
-    try:
-        import manim  # noqa: F401
-        return [sys.executable, "-m", "manim"]
-    except ImportError:
-        pass
-    return [shutil.which("manim") or "manim"]
 
 
 class MythosHarness:
@@ -274,15 +271,17 @@ class MythosHarness:
         run_dir = self._create_run_dir(prompt)
         if run_dir_callback is not None:
             run_dir_callback(run_dir.name)
-        manifest: dict = {
-            "run_id": run_dir.name,
-            "prompt": prompt,
-            "model": self.model,
-            "command": self.command,
-            "offline": self.offline,
-            "created_utc": datetime.now(timezone.utc).isoformat(),
-            "stages": [],
-        }
+        manifest = manifest_template(
+            run_id=run_dir.name,
+            prompt=prompt,
+            model=self.model,
+            command=self.command,
+            offline=self.offline,
+            created_utc=datetime.now(timezone.utc).isoformat(),
+        )
+        write_json(run_dir / "validation.json", validation_template())
+        self._write_manifest(run_dir, manifest)
+        prereq_cache = PrerequisiteCache.for_runs_dir(self.runs_dir)
 
         artifact: dict = {"user_prompt": prompt}
         for slug, agent_file, artifact_name in STAGES:
@@ -295,6 +294,8 @@ class MythosHarness:
                     slug, agent_file, artifact, run_dir, artifact_name)
             (run_dir / artifact_name).write_text(
                 json.dumps(artifact, indent=2), encoding="utf-8")
+            if slug == "cartographer":
+                prereq_cache.ingest_knowledge_map(prompt, artifact)
             stage_record = {"stage": slug, "artifact": artifact_name,
                             "seconds": round(time.time() - started, 2)}
             if retried:
@@ -308,8 +309,7 @@ class MythosHarness:
 
         code_path, scene_name = self._codegen(run_dir, prompt, artifact, manifest)
         ok, failure = self._verify(code_path, prompt=prompt)
-        manifest["static_check"] = {
-            "passed": ok, "detail": failure[:2000] if failure else None}
+        self._record_validation(run_dir, manifest, code_path, ok, failure)
 
         if render:
             attempt = 0
@@ -319,7 +319,11 @@ class MythosHarness:
                     manifest.setdefault("renders", []).append(
                         {"attempt": attempt, "exit_code": rc})
                     if rc == 0:
+                        manifest.setdefault("status", {})
+                        manifest["status"]["render"] = "complete"
                         break
+                    manifest.setdefault("status", {})
+                    manifest["status"]["render"] = "failed"
                     failure = out
                     if rc == 124:
                         # A timeout is a budget problem, not a code problem —
@@ -334,6 +338,7 @@ class MythosHarness:
                     run_dir, code_path, failure or "unknown failure",
                     attempt, manifest)
                 ok, failure = self._verify(code_path, prompt=prompt)
+                self._record_validation(run_dir, manifest, code_path, ok, failure)
 
         manifest["scene_file"] = str(code_path)
         manifest["scene_name"] = scene_name
@@ -344,6 +349,24 @@ class MythosHarness:
         self._write_manifest(run_dir, manifest)
         print(f"  [mythos] run complete -> {run_dir}")
         return manifest
+
+    def render_workspace(
+        self,
+        run_dir: Path,
+        scene_name: str,
+        quality: str = "l",
+    ) -> dict:
+        """Render an already-initialized run directory and update its manifest."""
+        run_dir = Path(run_dir)
+        manifest_path = run_dir / "manifest.json"
+        manifest = migrate_manifest(json.loads(manifest_path.read_text(encoding="utf-8")))
+        scene_file = run_dir / "mythos_scene.py"
+        code, output = self._render(scene_file, scene_name, quality)
+        manifest.setdefault("renders", []).append({"exit_code": code})
+        manifest.setdefault("status", {})
+        manifest["status"]["render"] = "complete" if code == 0 else "failed"
+        self._write_manifest(run_dir, manifest)
+        return {"exit_code": code, "output": output, "manifest": manifest}
 
     # ------------------------------------------------------------------ #
     # Stage execution with degenerate-output retry                        #
@@ -431,6 +454,9 @@ class MythosHarness:
         except py_compile.PyCompileError as exc:
             return False, str(exc)
         code = code_path.read_text(encoding="utf-8")
+        report = validate_manim_code_report(code)
+        if not report.valid:
+            return False, "; ".join(report.errors)
         for pattern, message in _LINT_RULES:
             if re.search(pattern, code):
                 return False, f"charter lint: {message}"
@@ -450,23 +476,40 @@ class MythosHarness:
                     )
         return True, None
 
+    @staticmethod
+    def _record_validation(
+        run_dir: Path,
+        manifest: dict,
+        code_path: Path,
+        ok: bool,
+        failure: str | None,
+    ) -> None:
+        source = code_path.read_text(encoding="utf-8") if code_path.is_file() else ""
+        payload = validation_from_scene(source) if source else validation_template()
+        write_json(run_dir / "validation.json", payload)
+        manifest["static_check"] = {
+            "passed": ok,
+            "detail": failure[:2000] if failure else None,
+        }
+        status = dict(manifest.get("status") or {})
+        status["validation"] = "complete" if ok else "failed"
+        manifest["status"] = status
+
     def _render(self, code_path: Path, scene_name: str,
                 quality: str) -> tuple[int, str]:
-        cmd = resolve_manim() + [f"-q{quality}", str(code_path), scene_name]
-        print(f"  [mythos] rendering: {' '.join(cmd)}")
-        try:
-            completed = subprocess.run(
-                cmd, text=True, capture_output=True,
-                cwd=str(REPO_ROOT), timeout=self.render_timeout)
-        except subprocess.TimeoutExpired as exc:
-            partial = (exc.stderr or b"")
-            if isinstance(partial, bytes):
-                partial = partial.decode("utf-8", errors="replace")
-            return 124, (
-                f"render timed out after {self.render_timeout:.0f}s "
-                "(raise M2M_RENDER_TIMEOUT or lower the quality)\n" + partial
-            )
-        return completed.returncode, (completed.stderr or "") + (completed.stdout or "")
+        run_dir = code_path.parent
+        command = resolve_manim() + [
+            f"-q{quality}", "--media_dir", str(run_dir / "media"),
+            code_path.name, scene_name,
+        ]
+        print(f"  [mythos] rendering: {' '.join(command)}")
+        return render_scene_file(
+            run_dir,
+            scene_file=code_path,
+            scene_name=scene_name,
+            quality=quality,
+            timeout=self.render_timeout,
+        )
 
     def _repair(self, run_dir: Path, code_path: Path, failure: str,
                 attempt: int, manifest: dict) -> tuple[Path, str]:
@@ -493,6 +536,9 @@ class MythosHarness:
 
     @staticmethod
     def _write_manifest(run_dir: Path, manifest: dict) -> None:
+        migrated = migrate_manifest(manifest)
+        manifest.clear()
+        manifest.update(migrated)
         # Atomic: readers polling the run dir must never see a half-written
         # manifest (mid-write JSON parse errors were a real observed failure).
         # On Windows, os.replace onto a file a poller currently holds open

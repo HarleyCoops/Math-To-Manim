@@ -5,11 +5,17 @@ from __future__ import annotations
 import ast
 import json
 import py_compile
-import re
 from pathlib import Path
 
 from sol.models import ARTIFACT_NAMES
 from sol.rendering import find_final_video
+from sol.scene_checks import (
+    discover_scene_classes,
+    validate_manim_code_report,
+    validation_from_scene,
+    validation_template,
+    write_json,
+)
 
 _BLOCKED_IMPORTS = {"os", "subprocess", "socket", "requests", "urllib", "httpx", "shutil"}
 _BLOCKED_CALLS = {"eval", "exec", "compile", "open", "__import__"}
@@ -37,7 +43,6 @@ def _validate_scene(path: Path) -> tuple[list[str], str | None]:
     except SyntaxError as exc:
         return [f"sol_scene.py: syntax error ({exc})"], None
 
-    scene_classes: list[str] = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
@@ -49,19 +54,26 @@ def _validate_scene(path: Path) -> tuple[list[str], str | None]:
         elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
             if node.func.id in _BLOCKED_CALLS:
                 failures.append(f"sol_scene.py: blocked call {node.func.id}()")
-        elif isinstance(node, ast.ClassDef):
-            bases = {base.id for base in node.bases if isinstance(base, ast.Name)}
-            if bases & {"Scene", "ThreeDScene", "MovingCameraScene"}:
-                scene_classes.append(node.name)
+
+    scene_classes = discover_scene_classes(tree)
     if len(scene_classes) != 1:
-        failures.append(f"sol_scene.py: expected exactly one Scene subclass, found {len(scene_classes)}")
-    if re.search(r"self\.camera\.animate", source):
-        failures.append("sol_scene.py: animate the frame or use move_camera, never self.camera.animate")
+        failures.append(
+            f"sol_scene.py: expected exactly one Scene subclass, found {len(scene_classes)}"
+        )
+    report = validate_manim_code_report(source)
+    failures.extend(f"sol_scene.py: {error}" for error in report.errors)
     return failures, scene_classes[0] if len(scene_classes) == 1 else None
 
 
 def validate_run(run_dir: Path, *, require_video: bool) -> tuple[list[str], str | None, str | None]:
     failures: list[str] = []
+    scene_path = run_dir / "sol_scene.py"
+    validation_path = run_dir / "validation.json"
+    if scene_path.is_file():
+        write_json(validation_path, validation_from_scene(scene_path.read_text(encoding="utf-8")))
+    elif not validation_path.is_file():
+        write_json(validation_path, validation_template())
+
     for name in ARTIFACT_NAMES:
         path = run_dir / name
         if not path.is_file():
