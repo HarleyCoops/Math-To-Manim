@@ -1,0 +1,415 @@
+{
+  "stage": "math-director",
+  "title": "THE THIRD SIDE",
+  "upstream_artifacts": [
+    "01_intent.json"
+  ],
+  "mathematical_status": "Checked exact Euclidean construction and arithmetic; scene implementation and rendered presentation remain downstream checks.",
+  "learning_goal": "Apply the Pythagorean theorem twice, sharing the floor diagonal between two right triangles, to find the straight distance through a rectangular box.",
+  "hypotheses": [
+    "The box is a Euclidean rectangular solid with perpendicular edge directions and dimensions 3 by 4 by 6 in one common length unit.",
+    "The start and finish are opposite corners A and D. Routes may pass freely through the solid, including its boundary; there are no obstacles.",
+    "Travel is measured by ordinary geometric length, not time or cost.",
+    "Lengths d and L are positive, so the positive square roots are selected.",
+    "The familiar shortest-connection property of a straight segment is an accepted elementary fact. The two Pythagorean calculations determine its length."
+  ],
+  "prerequisites_and_exclusions": {
+    "required": [
+      "Right triangles",
+      "Pythagorean theorem",
+      "Squares and positive square roots"
+    ],
+    "not_for_display": [
+      "Coordinates",
+      "Dot products",
+      "Parametric formulas",
+      "Triangle inequality formalism"
+    ],
+    "excluded": [
+      "Calculus",
+      "Vector notation",
+      "Surface unfolding",
+      "Surface-path optimization",
+      "An unexplained three-dimensional distance formula"
+    ]
+  },
+  "exact_geometry": {
+    "units": "All displayed lengths use the original mathematical units; squared lengths have square units.",
+    "box": {
+      "x_interval": [
+        0,
+        3
+      ],
+      "y_interval": [
+        0,
+        4
+      ],
+      "z_interval": [
+        0,
+        6
+      ],
+      "dimension_ratio": "3:4:6"
+    },
+    "named_points": {
+      "A": [
+        0,
+        0,
+        0
+      ],
+      "B": [
+        3,
+        0,
+        0
+      ],
+      "C": [
+        3,
+        4,
+        0
+      ],
+      "D": [
+        3,
+        4,
+        6
+      ]
+    },
+    "all_box_vertices": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0
+      ],
+      [
+        0,
+        4,
+        0
+      ],
+      [
+        3,
+        4,
+        0
+      ],
+      [
+        0,
+        0,
+        6
+      ],
+      [
+        3,
+        0,
+        6
+      ],
+      [
+        0,
+        4,
+        6
+      ],
+      [
+        3,
+        4,
+        6
+      ]
+    ],
+    "edges_rule": "Join two box vertices exactly when one coordinate differs. This yields the 12 box edges; AC and AD are additional diagonals.",
+    "floor_triangle": {
+      "vertices": [
+        "A",
+        "B",
+        "C"
+      ],
+      "legs": {
+        "AB": 3,
+        "BC": 4
+      },
+      "hypotenuse": "AC",
+      "hypotenuse_symbol": "d",
+      "right_angle_vertex": "B",
+      "plane": "z = 0"
+    },
+    "upright_triangle": {
+      "vertices": [
+        "A",
+        "C",
+        "D"
+      ],
+      "legs": {
+        "AC": 5,
+        "CD": 6
+      },
+      "hypotenuse": "AD",
+      "hypotenuse_symbol": "L",
+      "right_angle_vertex": "C",
+      "plane": "4x - 3y = 0"
+    },
+    "shared_side": "AC is the hypotenuse of ABC and the base of ACD. Preserve the same actual segment as its role changes.",
+    "edge_walk": {
+      "ordered_vertices": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "segment_lengths": [
+        3,
+        4,
+        6
+      ],
+      "total": 13
+    },
+    "straight_route": {
+      "endpoints": [
+        "A",
+        "D"
+      ],
+      "exact_length_unicode": "√61",
+      "approximate_length": 7.81
+    },
+    "placement_rule": "A single positive scale s, a rigid rotation, and a translation may be applied to all geometry together. Rendered lengths are 3s, 4s, 6s, 5s, and s√61; displayed values remain original units. No independent axis scaling.",
+    "optional_centered_placement": "Subtract box center (1.5, 2, 3) from every construction point, then uniformly scale and rigidly place."
+  },
+  "checked_derivation": [
+    {
+      "step": 1,
+      "claim": "The floor diagonal has length 5.",
+      "geometric_evidence": "AB and BC are perpendicular floor edges of lengths 3 and 4. AC closes right triangle ABC; its right angle is at B.",
+      "theorem": "For a right triangle, hypotenuse squared equals the sum of the squared leg lengths.",
+      "exact_chain_latex": "d^2=3^2+4^2=9+16=25,\\qquad d=\\sqrt{25}=5.",
+      "scene_text": [
+        "d² = 3² + 4² = 25",
+        "d = 5"
+      ],
+      "proof_direction": "Establish the right triangle first, then apply Pythagoras to compute its unknown side. The numeral 5 must be earned before becoming an input."
+    },
+    {
+      "step": 2,
+      "claim": "The straight interior diagonal has length √61.",
+      "geometric_evidence": "CD is a height of the rectangular box and is perpendicular to the floor. Therefore CD is perpendicular to the floor line AC through C. Triangle ACD is right at C, with legs 5 and 6.",
+      "exact_chain_latex": "L^2=d^2+6^2=5^2+6^2=25+36=61,\\qquad L=\\sqrt{61}\\approx7.81.",
+      "scene_text": [
+        "L² = 5² + 6² = 61",
+        "L = √61 ≈ 7.81"
+      ],
+      "proof_direction": "Use the already-established AC = 5 and the perpendicular height 6 to compute AD. A camera projection is not the evidence for perpendicularity."
+    },
+    {
+      "step": 3,
+      "claim": "The straight route is shorter than the selected edge walk.",
+      "exact_chain_latex": "3+4+6=13,\\qquad \\sqrt{61}<13\\quad\\text{because }61<169=13^2.",
+      "scene_text": [
+        "Edge walk: 3 + 4 + 6 = 13",
+        "Through the interior: √61 ≈ 7.81"
+      ],
+      "proof_direction": "Compare routes with the same endpoints A and D. This numerical comparison establishes the advantage over this walk only."
+    },
+    {
+      "step": 4,
+      "claim": "AD is a shortest route through the box.",
+      "justification": "A straight segment is the shortest connection between two points. Segment AD is an allowed route because it lies in the box. Together these facts establish the shortest-route claim.",
+      "optional_sparse_caption": "The shortest connection is straight.",
+      "boundary": "Do not claim that comparing 13 with 7.81 alone proves optimality among every possible path. No surface-constrained shortest path is calculated."
+    }
+  ],
+  "construction_certificates_internal_only": {
+    "floor_right_angle": "At B, directions to A and C are (-3, 0, 0) and (0, 4, 0). Their dot product is 0.",
+    "upright_right_angle": "At C, directions to A and D are (-3, -4, 0) and (0, 0, 6). Their dot product is 0.",
+    "squared_distances": {
+      "AB": 9,
+      "BC": 16,
+      "CD": 36,
+      "AC": 25,
+      "AD": 61
+    },
+    "interior_containment": "Points on AD have coordinates (3t, 4t, 6t) for 0 ≤ t ≤ 1. For 0 < t < 1 every coordinate is strictly between its box bounds; hence every non-endpoint lies strictly inside the solid.",
+    "triangle_planes": "ABC lies in z = 0. ACD lies in 4x - 3y = 0 and contains both the floor diagonal and the vertical height. Their common edge is AC.",
+    "optimality_certificate_scope": "For any finite broken-line route from A to D, repeated triangle inequality gives length at least AD. The familiar extension to any rectifiable route follows because curve length is at least its endpoint chord. These facts support the claim internally and are not additional classroom prerequisites.",
+    "surface_distinction": "AC lies on the floor. CD is a boundary edge. AD is the interior route, except at its endpoints. The filled ACD triangle is an explanatory slice through the solid, not a physical wall or a permitted surface route."
+  },
+  "right_angle_markers": {
+    "construction_units": "The following unscaled coordinates use marker leg size m = 0.20. Apply exactly the same placement transform as to the box.",
+    "size": 0.2,
+    "general_rule_internal": "At the right-angle vertex V choose unit directions u and v toward the other two triangle vertices. Draw the three-point open corner V + m u, V + m(u + v), V + m v. The triangle legs supply the remaining two sides of the small square.",
+    "at_B": {
+      "inward_unit_directions": [
+        [
+          -1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "polyline_points": [
+        [
+          2.8,
+          0,
+          0
+        ],
+        [
+          2.8,
+          0.2,
+          0
+        ],
+        [
+          3,
+          0.2,
+          0
+        ]
+      ],
+      "plane": "z = 0"
+    },
+    "at_C": {
+      "inward_unit_directions": [
+        [
+          -0.6,
+          -0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "polyline_points": [
+        [
+          2.88,
+          3.84,
+          0
+        ],
+        [
+          2.88,
+          3.84,
+          0.2
+        ],
+        [
+          3,
+          4,
+          0.2
+        ]
+      ],
+      "plane": "4x - 3y = 0"
+    },
+    "visual_caution": "Markers must be true geometry in their respective triangle planes. They may project to skewed shapes during the orbit; never replace them with screen-aligned right-angle squares. Keep them small, visible, and unobscured."
+  },
+  "numerical_checks": {
+    "sqrt_61": 7.810249675906654,
+    "rounded_to_two_decimal_places": 7.81,
+    "rounding_certificate_latex": "7.805^2=60.918025<61<61.074225=7.815^2.",
+    "rounding_absolute_error": 0.00024967590665436745,
+    "edge_walk_minus_straight_exact_latex": "13-\\sqrt{61}",
+    "edge_walk_minus_straight_approximate": 5.189750324093346,
+    "difference_display_policy": "The approximately 5.19-unit saving is checked but optional and unnecessary for the sparse film.",
+    "equality_policy": "Use = for exact statements and ≈ for the rounded decimal. Never state √61 = 7.81 or L = 7.81 as an exact equality.",
+    "sanity_checks": [
+      "5 > 4 and 5 < 3 + 4",
+      "√61 > 6 and √61 < 5 + 6",
+      "√61 < 13"
+    ]
+  },
+  "presentation_dependencies": [
+    {
+      "beat": "Floor proof",
+      "geometry_before_math": "Reveal AB = 3 and BC = 4, then AC, the floor triangle plane, and the right angle at B.",
+      "math_after_geometry": [
+        "d² = 3² + 4² = 25",
+        "d = 5"
+      ]
+    },
+    {
+      "beat": "Second proof",
+      "geometry_before_math": "Only after d = 5, lift CD = 6. Keep AC continuous; reveal AD, the ACD slice, and the right angle at C.",
+      "math_after_geometry": [
+        "L² = 5² + 6² = 61",
+        "L = √61 ≈ 7.81"
+      ]
+    },
+    {
+      "beat": "Comparison",
+      "geometry_before_math": "Trace A → B → C → D and emphasize A → D with the same start and finish.",
+      "math_after_geometry": [
+        "Edge walk: 3 + 4 + 6 = 13",
+        "Through the interior: √61 ≈ 7.81"
+      ]
+    },
+    {
+      "beat": "Hero",
+      "geometry_before_math": "Both connected triangles and markers remain visible; settle the camera.",
+      "math_after_geometry": [
+        "L = √61 ≈ 7.81"
+      ]
+    }
+  ],
+  "downstream_constraints": {
+    "duration_seconds": [
+      35,
+      45
+    ],
+    "target_seconds": 40,
+    "typography": "Use only Text with Segoe UI for displayed text and unicode formulas. LaTeX strings in this dossier are archival mathematics, not instructions to use Tex or MathTex.",
+    "layout": "Keep all typography fixed in frame in safe top/bottom bands, at least 5% from frame edges. Separate projected geometry and all independent text blocks throughout the orbit.",
+    "pacing": "Show geometry before each related equation, with a perceptible pause. Give each completed result at least two seconds to read and the final settled hero at least three seconds.",
+    "appearance": "Dark midnight gallery; teal floor, gold diagonals, lavender height; translucent triangle planes. Make AD dominant after it is introduced.",
+    "camera": "Use a deliberate smooth modest orbit that reveals depth and keeps each triangle away from edge-on projection during its proof. Use move_camera/set_camera_orientation; never self.camera.animate.",
+    "implementation": "Self-contained ThreeDScene, imports only manim and optionally numpy/math; no external assets, voiceover, or LaTeX runtime dependency.",
+    "render_ownership": "The wrapper renders. This stage must not render.",
+    "box_scaffold_visibility": "Once the enclosing box is revealed, its wireframe must clearly communicate the full 3:4:6 volume throughout the upright-triangle proof and final hero hold. Modestly increase scaffold stroke opacity and/or stroke width from the reviewed implementation while keeping it visually subordinate to the teal floor construction, gold diagonals, lavender height, and right-angle markers. Keep box faces unfilled and preserve all construction coordinates, reveal order, and camera timing."
+  },
+  "certificate_boundaries_and_limitations": [
+    "Exact mathematical correctness is established for the supplied coordinates and permitted uniform rigid placement. It does not certify future code that changes those coordinates.",
+    "This dossier does not certify animation duration, font availability, glyph rendering, projected overlap, triangle transparency, camera visibility, or text readability. Static scene inspection and wrapper render review must establish those properties.",
+    "Perspective or orthographic projection can change apparent lengths and angles; the underlying construction, not screen appearance, preserves the 3:4:6 box and both right angles.",
+    "The shortest-route conclusion assumes free travel through the interior. It does not apply to a route constrained to the box surface or edges.",
+    "The checked decimal is an approximation to an irrational exact length. Preserve √61 in the final result.",
+    "No missing source formula was inferred: all displayed formulas are explicitly requested and verified by the two right triangles."
+  ],
+  "handoff_acceptance_checks": [
+    "Check box edge lengths share one uniform scale and have ratio 3:4:6.",
+    "Check both triangle polygons use exactly ABC and ACD, sharing the same AC endpoints.",
+    "Check the first right-angle marker is at B in the floor plane and the second at C in the upright diagonal plane.",
+    "Check labels 3 and 4 identify the floor legs, 5 identifies AC only after the first proof, 6 identifies CD, and L identifies AD.",
+    "Check two-dimensional Pythagoras is applied in the required order, with geometry preceding equations.",
+    "Check the highlighted 13-unit edge walk and √61 interior diagonal both join A to D.",
+    "Check the route is explicitly identified as through the interior and no surface optimization is implied.",
+    "Wrapper must inspect safe text bands, both triangles and markers, readable exact/approximate notation, orbit depth, final hold, and total duration.",
+    "After downstream scaffold adjustment, wrapper review must confirm that the enclosing volume is readily legible at the views corresponding to review_frames/frame_06.png and review_frames/frame_12.png, and throughout the intervening orbit, without obscuring either triangle, either right-angle marker, or AD. Keep the colored proof construction visually dominant and box faces unfilled."
+  ],
+  "repair_handoff": {
+    "source": "User-supplied jev repair evidence, record jev/002/record.json",
+    "evidence_access": "The supplied review report is the evidence for this presentation defect. This math-director repair did not independently inspect scene source, review images, or video.",
+    "reported_defect": "The thin, low-contrast box scaffold makes the enclosing volume harder to read than the proof triangles.",
+    "reported_locations": [
+      "review_frames/frame_06.png",
+      "review_frames/frame_12.png",
+      "sol_scene.py lines 78 and 82 (locations reported by evaluator; downstream must confirm against current source)"
+    ],
+    "mathematical_relevance": "A readable enclosing volume helps the learner see AD as a segment through the interior between opposite box corners and understand the vertical triangle as an interior slice.",
+    "required_downstream_change": "Increase wireframe opacity or stroke width modestly at the scaffold styling definitions identified by the evaluator. Tune against wrapper-rendered frames; no exact replacement style constants are asserted because current style values were not inspected in this stage.",
+    "preserve": [
+      "Exact 3:4:6 proportions and uniform scaling",
+      "The shared AC object and both right-angle markers",
+      "Both Pythagorean derivations and exact/approximate notation",
+      "Unfilled box faces and explicit interior caption",
+      "Geometry-first reveal order and 35–45 second duration"
+    ],
+    "reported_positive_findings": [
+      "The evaluator verified the mathematics and confirmed that AC remains the same source object across both triangles.",
+      "The evaluator found that the interior caption and unfilled box faces distinguish the route from a surface-constrained path.",
+      "Faint captions sampled during scheduled fades do not alone establish persistent illegibility."
+    ],
+    "validation_needed": [
+      "Wrapper-render the adjusted downstream scene and compare the upright-triangle and hero views with the reported defective views.",
+      "Confirm scaffold visibility without competing with the colored proof geometry or obscuring markers and text.",
+      "Review continuous playback for camera smoothness, transient overlaps, route traversal, and actual duration.",
+      "Inspect a settled frame of d² = 3² + 4² = 25; the supplied review states this equation was checked in source but not clearly captured in the sampled frames."
+    ],
+    "stage_result": "Dossier requirement and acceptance checks updated; scene styling repair and its rendered verification remain pending downstream.",
+    "scope": "Only 04_math_dossier.json is changed. No scene source edits, rendering, or repository/git changes are performed by this stage."
+  }
+}

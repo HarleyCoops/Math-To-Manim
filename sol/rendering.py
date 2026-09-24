@@ -3,14 +3,46 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+try:
+    import resource
+except ImportError:  # pragma: no cover - Windows
+    resource = None  # type: ignore[assignment]
+
+_SCENE_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+_QUALITY = re.compile(r"^[lmhpk]$")
+
 
 class RenderError(RuntimeError):
     pass
+
+
+def resolve_inside(run_dir: Path, path: Path | str) -> Path:
+    root = Path(run_dir).resolve()
+    candidate = Path(path)
+    resolved = candidate.resolve() if candidate.is_absolute() else (root / candidate).resolve()
+    if resolved != root and root not in resolved.parents:
+        raise RenderError(f"path escapes run directory: {path}")
+    return resolved
+
+
+def apply_resource_limits() -> None:
+    """Best-effort CPU/address-space caps. See docs/security.md for residual risk."""
+    if resource is None:
+        return
+    try:
+        resource.setrlimit(resource.RLIMIT_CPU, (600, 600))
+    except (ValueError, OSError):
+        pass
+    try:
+        resource.setrlimit(resource.RLIMIT_AS, (4 * 1024 ** 3, 4 * 1024 ** 3))
+    except (ValueError, OSError):
+        pass
 
 
 @dataclass(frozen=True)
@@ -28,13 +60,20 @@ def build_manim_command(
     scene_name: str,
     quality: str,
 ) -> list[str]:
+    if not _QUALITY.fullmatch(quality):
+        raise RenderError(f"invalid Manim quality flag: {quality!r}")
+    if not _SCENE_NAME.fullmatch(scene_name):
+        raise RenderError(f"invalid scene class name: {scene_name!r}")
+    root = Path(run_dir).resolve()
+    media_dir = resolve_inside(root, root / "media")
+    resolve_inside(root, root / "sol_scene.py")
     return [
         sys.executable,
         "-m",
         "manim",
         f"-q{quality}",
         "--media_dir",
-        str(Path(run_dir) / "media"),
+        str(media_dir),
         "--progress_bar",
         "none",
         "sol_scene.py",
@@ -122,6 +161,7 @@ def render_scene(
         errors="replace",
         timeout=timeout,
         check=False,
+        preexec_fn=apply_resource_limits if resource is not None else None,
     )
     stdout_path.write_text(completed.stdout, encoding="utf-8")
     stderr_path.write_text(completed.stderr, encoding="utf-8")
@@ -150,7 +190,7 @@ def render_scene(
 def extract_review_frames(run_dir: Path, video_path: Path) -> tuple[list[Path], Path | None]:
     review_dir = Path(run_dir) / "review_frames"
     review_dir.mkdir(exist_ok=True)
-    for name in [*(f"frame_{index:02d}.png" for index in range(1, 7)), "contact_sheet.png"]:
+    for name in [*(f"frame_{index:02d}.png" for index in range(1, 13)), "contact_sheet.png"]:
         (review_dir / name).unlink(missing_ok=True)
     duration_result = subprocess.run(
         [
@@ -171,7 +211,7 @@ def extract_review_frames(run_dir: Path, video_path: Path) -> tuple[list[Path], 
         duration = float(duration_result.stdout.strip())
     except ValueError:
         return [], None
-    timestamps = [duration * fraction for fraction in (0.08, 0.25, 0.42, 0.58, 0.75, 0.94)]
+    timestamps = [duration * (index + 0.5) / 12 for index in range(12)]
     frames: list[Path] = []
     for index, timestamp in enumerate(timestamps, start=1):
         frame = review_dir / f"frame_{index:02d}.png"
@@ -203,7 +243,7 @@ def extract_review_frames(run_dir: Path, video_path: Path) -> tuple[list[Path], 
             "-i",
             str(video_path),
             "-vf",
-            "fps=1/12,scale=480:-1,tile=3x2:padding=8:margin=8",
+            f"fps=12/{duration},scale=480:-1,tile=4x3:padding=8:margin=8",
             "-frames:v",
             "1",
             str(contact_sheet),

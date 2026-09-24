@@ -25,10 +25,9 @@ measured optimum. On September 24, 2026, the
 [official Astra model page](https://developers.openai.com/api/docs/models/gpt-6-astra)
 and the local Codex catalog both supported `high`. The
 [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)
-documents the reasoning setting. Local verification used CLI 0.146.0; its
-`exec --help` lists `--model`, `--sandbox read-only`, `--image`, and
-`--output-schema`. The local catalog also listed `ultra`; jev uses the shared
-documented `high` setting. Account access still requires a live run.
+documents the reasoning setting. Live production uses repository-pinned CLI
+0.156.1. CLI 0.146.0 was rejected for Astra by the service; run `npm ci` before
+using the chain. The driver prefers this local runtime.
 
 Every assessment starts a fresh session without a writer session ID. The client
 requests a read-only sandbox, attaches rendered images, and tells the reviewer
@@ -45,8 +44,12 @@ during review and fail the run if it changes.
 
 The typed assessment has `mathematics` and `presentation` criteria. Each has a
 finite score in [0, 1], a boolean `verified`, a rationale, and exact relative
-evidence paths. Lists record defects, observations, and limitations. Rubric
-anchors are 0 (unusable), 0.5 (major repair), 0.8 (acceptable on inspected
+evidence paths. Lists record defects, observations, and limitations.
+Citations are constrained by a per-run schema enum to bare supplied paths;
+line numbers and explanations belong in the rationale or defect text. Twelve
+equally spaced frame samples and a contact sheet support presentation review.
+The `verified` flag applies to the supplied evidence, not continuous motion.
+Rubric anchors are 0 (unusable), 0.5 (major repair), 0.8 (acceptable on inspected
 evidence), and 1 (no issue found on inspected evidence).
 
 The wrapper approves only when both criteria are verified, both scores are at

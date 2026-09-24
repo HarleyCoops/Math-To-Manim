@@ -71,6 +71,11 @@ def test_gate_and_attempt_snapshots(bundle):
     assert (bundle / "jev/002/inputs/frame.png").read_bytes() == b"new frame"
     assert all("session_id" not in call for call in client.calls)
     assert client.calls[0]["image_paths"] == [bundle / "frame.png"]
+    schema = json.loads(client.calls[0]["schema_path"].read_text())
+    allowed = schema["$defs"]["Criterion"]["properties"]["evidence"]["items"]["enum"]
+    assert "frame.png" in allowed
+    assert "sol_scene.py" in allowed
+    assert "sol_scene.py:10 explanatory prose" not in allowed
     record = json.loads((bundle / "jev/001/record.json").read_text())
     assert record["status"] == "completed"
     assert record["score_kind"] == "uncalibrated_model_judgment"

@@ -56,10 +56,11 @@ def load_openai_agents_sdk() -> dict[str, Any] | None:
     """
 
     try:
-        from agents import Agent, Runner, function_tool, handoff  # type: ignore
+        from agents import Agent, RunConfig, Runner, function_tool, handoff  # type: ignore
 
         return {
             "Agent": Agent,
+            "RunConfig": RunConfig,
             "Runner": Runner,
             "function_tool": function_tool,
             "handoff": handoff,
@@ -69,12 +70,13 @@ def load_openai_agents_sdk() -> dict[str, Any] | None:
 
     try:
         from agents.agent import Agent  # type: ignore
-        from agents.run import Runner  # type: ignore
+        from agents.run import RunConfig, Runner  # type: ignore
         from agents.tool import function_tool  # type: ignore
         from agents.handoffs import handoff  # type: ignore
 
         return {
             "Agent": Agent,
+            "RunConfig": RunConfig,
             "Runner": Runner,
             "function_tool": function_tool,
             "handoff": handoff,
@@ -106,9 +108,14 @@ def maybe_run_sdk_agent(
         return None
 
     Agent = sdk["Agent"]
+    RunConfig = sdk["RunConfig"]
     Runner = sdk["Runner"]
     agent = Agent(name=name, instructions=instructions, model=model)
-    result = Runner.run_sync(agent, prompt)
+    result = Runner.run_sync(
+        agent,
+        prompt,
+        run_config=RunConfig(tracing_disabled=True),
+    )
     output = getattr(result, "final_output", result)
     if not isinstance(output, str):
         output = json.dumps(output)
@@ -141,6 +148,7 @@ def run_structured_sdk_agent(
     from agents.agent_output import AgentOutputSchema  # type: ignore
 
     Agent = sdk["Agent"]
+    RunConfig = sdk["RunConfig"]
     Runner = sdk["Runner"]
     agent = Agent(
         name=name,
@@ -148,7 +156,11 @@ def run_structured_sdk_agent(
         model=model,
         output_type=AgentOutputSchema(output_type, strict_json_schema=False),
     )
-    result = Runner.run_sync(agent, prompt)
+    result = Runner.run_sync(
+        agent,
+        prompt,
+        run_config=RunConfig(tracing_disabled=True),
+    )
     output = getattr(result, "final_output", result)
     if isinstance(output, output_type):
         return output

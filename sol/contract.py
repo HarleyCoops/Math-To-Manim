@@ -7,7 +7,7 @@ from pathlib import Path
 from sol.models import ARTIFACT_NAMES, RunRequest
 
 SOL_FILM_CONTRACT = """
-You are the complete GPT-5.6 Sol-native Math-To-Manim production pipeline.
+You are the complete GPT-6 Astra-native Math-To-Manim production pipeline.
 You have shell and workspace tools through Codex CLI. Work autonomously inside
 the assigned run directory. Do not modify repository source, git state, or any
 other run.

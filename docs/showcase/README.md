@@ -31,6 +31,42 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 
 ---
 
+## The Third Side · grade 8 geometry
+
+<a href="assets/the-third-side.mp4"><img src="assets/the-third-side.gif" alt="A floor diagonal becomes the base of a second right triangle inside a 3D box" width="90%" /></a>
+
+Two uses of Pythagoras connect the corners of a 3 × 4 × 6 box: 5 across the
+floor, then √61 ≈ 7.81 through the interior.
+[Interactive lesson](https://harleycoops.github.io/Math-To-Manim/) ·
+[Scene](../../examples/sol/the_third_side.py) ·
+[Production record](the-third-side/production.json) ·
+[Astra, Jev, and Base44 implementation](../ASTRA_JEV_BASE44.md).
+
+
+## Olin: the space inside a tweet
+
+<p align="center">
+  <a href="assets/olin-off-white-3d-space.mp4">
+    <img src="assets/olin-off-white-3d-space.gif" alt="Ten thousand points lift from Olin's flat generative drawing into an off white three dimensional point cloud" width="90%" />
+  </a>
+</p>
+
+One tweet supplies only the flat coordinates
+\((u,v)=(q+40\cos c,\;q\sin c+35d)\), so it cannot identify a unique object
+in three dimensions. The film first constructs the exact lift
+\(E(i,t)=(u,\;40\sin c,\;v)\). An orthographic view down its hidden direction
+returns every original point exactly. It then introduces
+\(C(i,t)=((40+q)\cos c,\;(40+q)\sin c,\;35d)\), a more symmetric cylindrical
+reading in which \(c\) controls rotation, \(q\) controls radius, and \(35d\)
+controls height. \(C\) is an alternate interpretation, not the literal
+source of the tweet's shadow, because its projection does not return the
+original coordinates.
+
+Production sources: [corrected Mythos prompt](../prompts/olin-off-white-3d-space.md)
+and [Manim scene](../../examples/mythos/olin_off_white_3d_space.py).
+
+---
+
 ## The v1.1 house-style films
 
 Two new studies rendered by the engine's own cinematography grammar
@@ -196,6 +232,7 @@ Source: [`the_valley.py`](../../examples/physics/nuclear/the_valley.py).
 | `assets/grpo-semantic-manifold.gif` | ML / reinforcement learning | A shorter validated loop extracted from the full GRPO response-manifold render. |
 | `assets/hopf-fibration.gif` | Topology | Dense colored fibers and projection geometry for the Hopf fibration. |
 | `assets/lorenz-attractor.gif` | Dynamical systems | Glowing trajectories reveal the butterfly shape of the Lorenz attractor. |
+| `assets/olin-off-white-3d-space.gif` | Generative art / geometry | Olin's ten thousand point sketch becomes an exact three dimensional lift before the film explores a separate cylindrical interpretation. |
 | `assets/prolip-scene.gif` | Scientific networks | Molecular/protein interaction graphics with highlighted graph relationships. |
 | `assets/quartic-torus-analysis.gif` | Topology / differential geometry | A full agent-pipeline render of a quartic torus-like implicit surface, showing regularity, genus, curvature, and multi-view topology. |
 | `assets/qed-minkowski-epic-3d.gif` | Quantum field theory / physics | Complete short Math-To-Manim pipeline render: Minkowski spacetime, light cones, electromagnetic waves, QED Lagrangian, gauge symmetry, and RG flow on an off-white 3D stage. |

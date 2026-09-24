@@ -10,8 +10,10 @@ from pathlib import Path
 from sol.client import DEFAULT_MODEL, CodexCli
 from sol.jev import JevEvaluator
 from sol.contract import SOL_FILM_CONTRACT
+from sol.manifest_schema import CURRENT_SCHEMA_VERSION, migrate_manifest, validation_template
 from sol.models import CodexRunResult, RunManifest, RunRequest
 from sol.offline import write_offline_bundle
+from sol.prereq_cache import PrerequisiteCache
 from sol.rendering import RenderError, preflight_render, render_scene
 from sol.staged import StagedPipeline, write_offline_stage_records
 from sol.validation import validate_run
@@ -55,6 +57,7 @@ class SolHarness:
         run_dir = self._create_run_dir(request.prompt)
         now = datetime.now(timezone.utc).isoformat()
         manifest = RunManifest(
+            schema_version=CURRENT_SCHEMA_VERSION,
             run_id=run_dir.name,
             prompt=request.prompt,
             model=self.client.model,
@@ -63,9 +66,16 @@ class SolHarness:
             quality=request.quality,
             created_utc=now,
             execution_mode="staged",
+            artifacts={"validation": "validation.json", "scene": "sol_scene.py"},
+            status_detail={"validation": "pending"},
         )
         manifest_path = run_dir / "manifest.json"
         self._write_manifest(manifest_path, manifest)
+        (run_dir / "validation.json").write_text(
+            json.dumps(validation_template(), indent=2),
+            encoding="utf-8",
+        )
+        PrerequisiteCache.for_runs_dir(self.runs_dir)
         (run_dir / "request.json").write_text(request.model_dump_json(indent=2), encoding="utf-8")
         (run_dir / "CONTRACT.md").write_text(SOL_FILM_CONTRACT + "\n", encoding="utf-8")
         schema_path = run_dir / "final-result.schema.json"
@@ -96,6 +106,15 @@ class SolHarness:
                     {"attempt": 0, "mode": "codex-cli-staged", "status": result.status}
                 )
 
+            knowledge_map_path = run_dir / "02_knowledge_map.json"
+            if knowledge_map_path.is_file():
+                try:
+                    PrerequisiteCache.for_runs_dir(self.runs_dir).ingest_knowledge_map(
+                        request.prompt,
+                        json.loads(knowledge_map_path.read_text(encoding="utf-8")),
+                    )
+                except (OSError, json.JSONDecodeError, TypeError):
+                    pass
             scene_name, video_path = self._validate_and_review(
                 run_dir, request, manifest, pipeline,
             )
@@ -103,6 +122,8 @@ class SolHarness:
             manifest.scene_file = "sol_scene.py"
             manifest.scene_name = scene_name or result.scene_name
             manifest.video_path = video_path or result.video_path
+            manifest.schema_version = CURRENT_SCHEMA_VERSION
+            manifest.status_detail["validation"] = "complete"
             manifest.completed_utc = datetime.now(timezone.utc).isoformat()
         except Exception as exc:
             manifest.status = "failed"
@@ -256,9 +277,12 @@ class SolHarness:
         if not request_path.is_file() or not manifest_path.is_file():
             raise FileNotFoundError(f"unknown Sol run: {run_id}")
         request = RunRequest.model_validate_json(request_path.read_text(encoding="utf-8"))
-        manifest = RunManifest.model_validate_json(manifest_path.read_text(encoding="utf-8"))
+        raw_manifest = migrate_manifest(json.loads(manifest_path.read_text(encoding="utf-8")))
+        manifest = RunManifest.model_validate(raw_manifest)
         manifest.status = "running"
         manifest.error = None
+        manifest.completed_utc = None
+        manifest.status_detail["validation"] = "pending"
         self._write_manifest(manifest_path, manifest)
         try:
             self.client.reasoning_effort = request.reasoning_effort
@@ -269,6 +293,11 @@ class SolHarness:
                 result = write_offline_bundle(run_dir, request)
             else:
                 result = pipeline.run(run_dir, request, from_stage=from_stage)
+            manifest.stage_records = [
+                str(path.relative_to(run_dir)).replace("\\", "/")
+                for path in sorted((run_dir / "stages").glob("[0-9][0-9]-*.json"))
+                if not path.name.endswith("-result.json")
+            ]
             scene_name, video_path = self._validate_and_review(
                 run_dir, request, manifest, pipeline,
             )
@@ -276,6 +305,7 @@ class SolHarness:
             manifest.scene_file = result.scene_file
             manifest.scene_name = scene_name or result.scene_name
             manifest.video_path = video_path or result.video_path
+            manifest.status_detail["validation"] = "complete"
             manifest.completed_utc = datetime.now(timezone.utc).isoformat()
         except Exception as exc:
             manifest.status = "failed"

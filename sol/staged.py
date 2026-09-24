@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from sol.agents import AGENT_STAGES, AgentStage, build_stage_prompt, stage_by_name
-from sol.client import CodexCli
+from sol.client import CodexCli, DEFAULT_MODEL
 from sol.models import (
     ARTIFACT_NAMES,
     CodexRunResult,
@@ -41,11 +41,12 @@ def stage_input_hash(
     stage: AgentStage,
     request: RunRequest,
     upstream_hashes: dict[str, str],
+    model: str = DEFAULT_MODEL,
 ) -> str:
     payload = {
         "role": stage.name,
         "version": stage.version,
-        "model": "gpt-5.6-sol",
+        "model": model,
         "reasoning_effort": stage.reasoning_effort,
         "request": request.model_dump(mode="json"),
         "upstream": dict(sorted(upstream_hashes.items())),
@@ -236,7 +237,7 @@ class StagedPipeline:
             f"- {path.relative_to(run_dir)}" for path in evidence_paths
         )
         prompt = f"""This is a render-review continuation of your saved
-cinematographer role in the staged GPT-5.6 Sol film pipeline.
+cinematographer role in the staged GPT-6 Astra film pipeline.
 
 Inspect these representative images from the rendered film:
 {evidence}
@@ -288,6 +289,7 @@ strict structured stage summary required by the supplied schema, using role
                 session_id=record.thread_id,
                 reasoning_effort=stage.reasoning_effort,
                 result_model=StageRunResult,
+                image_paths=evidence_paths,
             )
             if (
                 not isinstance(result, StageRunResult)
@@ -327,7 +329,7 @@ strict structured stage summary required by the supplied schema, using role
         upstream_hashes: dict[str, str],
         feedback: dict[str, str] | None,
     ) -> dict[str, str]:
-        input_hash = stage_input_hash(stage, request, upstream_hashes)
+        input_hash = stage_input_hash(stage, request, upstream_hashes, self.client.model)
         record_path = run_dir / _record_relative(index, stage)
         previous = _load_record(record_path)
         cached = (

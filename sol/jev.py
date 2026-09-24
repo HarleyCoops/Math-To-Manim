@@ -86,7 +86,9 @@ class JevEvaluator:
             snapshot.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(run_dir / name, snapshot)
         schema_path = attempt_dir / "assessment.schema.json"
-        schema_path.write_text(json.dumps(JevAssessment.model_json_schema(), indent=2),
+        schema = JevAssessment.model_json_schema()
+        schema["$defs"]["Criterion"]["properties"]["evidence"]["items"]["enum"] = list(hashes)
+        schema_path.write_text(json.dumps(schema, indent=2),
                                encoding="utf-8")
         metadata = {
             "version": 1, "role": "jev", "attempt": attempt,
@@ -110,8 +112,14 @@ Rendered frame evidence (open the images): {json.dumps(frames)}
 Check assumptions, equations, and whether the scene represents the mathematical
 claim honestly. Check clipping, notation, legibility, layout and the visual
 explanation in the supplied frames. Cite exact relative paths in each criterion.
+Each evidence array entry must be ONE bare path from the supplied list, with
+no line numbers, ranges, explanations, or combined paths. Put those details in
+the rationale or defects instead. The schema enumerates the allowed paths.
 For defects, include a source line or frame filename and a concrete repair.
 Do not claim to have inspected the full video or verified motion from stills.
+The verified flag concerns the criterion on the supplied source and sampled
+frames only. Record uninspected continuous motion in limitations; it is not
+by itself a failure of this still-frame presentation criterion.
 Set verified=false when evidence is inadequate; explain the limitation.
 Scores are diagnostic judgments: 0 = unusable, 0.5 = major repair,
 0.8 = acceptable on inspected evidence, 1 = no issue found in inspected evidence.
