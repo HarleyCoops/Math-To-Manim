@@ -48,3 +48,40 @@ rechecks the film. Offline tests use explicit fakes and are never live evidence.
 [TypeSafe introduction](https://docs.typesafe.ai/introduction) ·
 [Python SDK](https://docs.typesafe.ai/sdk/python) ·
 [Confidence](https://docs.typesafe.ai/confidence)
+
+## Jev-selected investigations
+
+Jev does not execute tools or generate recommendations in prose. The CLI offers
+an allowlisted action menu as a Choice question. The host executes a selected
+action through a focused Astra session; that session uses tools and writes
+specific evidence-backed recommendations. Its text is labeled as Astra's.
+
+| Action | Investigation |
+|---|---|
+| `check_math` | Calculate formulas, check domains and topology, inspect primary references |
+| `clarify_definitions` | Locate first use, propose definitions and exact teaching order |
+| `inspect_scene` | Check source and installed Manim APIs; recommend specific corrections |
+| `inspect_frames` | Inspect actual frames and identify visible problems by filename |
+| `replan_camera` | Recommend camera targets, zoom, labels, colors and holds |
+| `no_action` | No additional investigation |
+
+Actions are filtered by checkpoint. Confidence below 0.65 does not dispatch a
+tool. Rejected gates can request one investigation before the ordinary bounded
+repair loop continues. Investigation never overrides a rejected gate and never
+edits a candidate. A repaired candidate must pass a new audit and Jev gate.
+
+```bash
+math-to-manim recommend runs/astra/<run-id> --stage storyboard --attempt 3
+math-to-manim recommend runs/astra/<run-id> --stage storyboard --attempt 3 --execute
+```
+
+The first command records Jev's selection; `--execute` runs it when confident.
+Standalone reports remain advisory and do not change the active run's approvals.
+Requests, responses, action probabilities, evidence hashes and investigation
+reports are retained under `recommendations/` (or `attempts/` for gate-triggered
+actions). This is host-dispatched tool routing, not native Jev function calling.
+
+[TypeSafe: Jev with coding agents](https://docs.typesafe.ai/introduction/coding-agents)
+
+See the [verbose artistic decision map](JEV_DESIGN_MAP.md) for all 16 rubrics,
+evidence requirements, repair actions and verification criteria.

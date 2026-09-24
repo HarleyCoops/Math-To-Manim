@@ -16,9 +16,25 @@ def main(argv=None):
     run.add_argument('--effort',choices=['high','xhigh','max'],default='high')
     run.add_argument('--max-revisions',type=int,default=6);run.add_argument('--no-render',action='store_true')
     resume=commands.add_parser('resume');resume.add_argument('run_dir',type=Path)
+    rec=commands.add_parser('recommend',help='Ask real Jev to select a focused Astra investigation')
+    rec.add_argument('run_dir',type=Path)
+    rec.add_argument('--stage',choices=['brief','mathematics','storyboard','scene','render'],required=True)
+    rec.add_argument('--attempt',type=int)
+    rec.add_argument('--execute',action='store_true',help='Execute a sufficiently confident selection with Astra')
+    rec.add_argument('--design',action='store_true',help='Evaluate the detailed artistic and teaching decision map first')
+    design_map=commands.add_parser('design-map',help='Print the complete Jev design rubric without API calls')
+    design_map.add_argument('--stage',choices=['brief','mathematics','storyboard','scene','render'])
     commands.add_parser('doctor')
     commands.add_parser('runs')
     args=p.parse_args(argv)
+    if args.command=='design-map':
+        from astra.design import mapping
+        print(json.dumps(mapping(args.stage),indent=2))
+        return 0
+    if args.command=='recommend':
+        from astra.actions import recommend
+        print(json.dumps(recommend(args.run_dir,args.stage,args.attempt,args.execute,args.design),indent=2))
+        return 0
     if args.command=='doctor':
         result=subprocess.run(['node',str(ROOT/'node_modules/@openai/codex/bin/codex.js'),'login','status'],env=clean_environment())
         for tool in ['ffmpeg','latex']:

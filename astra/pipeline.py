@@ -56,6 +56,25 @@ class Pipeline:
                'input_hashes':hashes}
         decision=self.jev.review(state=state,stage=stage,audit=result,
                                  output=folder/f'attempts/{index:03d}-{stage}-jev.json')
+        if isinstance(self.jev, JevClient):
+            from astra.design import review_design
+            design=review_design(self.jev,state,stage,folder/f'attempts/{index:03d}-{stage}-design.json')
+            state=dict(state,design_advice=design)
+            design_path=folder/f'attempts/{index:03d}-{stage}-design.json'
+            paths=paths+[design_path]
+            hashes[design_path.relative_to(folder).as_posix()]=digest(design_path)
+        if not decision.approved and isinstance(self.jev, JevClient):
+            from astra.actions import select_action, execute_action
+            action = select_action(self.jev, dict(state, gate_decision=decision.model_dump()),
+                                   stage, folder/f'attempts/{index:03d}-{stage}-action.json')
+            report = execute_action(self.client, action, stage=stage, request=request,
+                                    folder=folder, paths=paths, images=images,
+                                    output=folder/f'attempts/{index:03d}-{stage}-investigation.json')
+            if report is not None:
+                decision.feedback += '\nJev-selected Astra investigation: ' + action.action + '\n' + report.feedback
+            else:
+                decision.feedback += '\nNo additional investigation executed: ' + action.action
+            save(folder/f'attempts/{index:03d}-{stage}-jev.json', decision.model_dump())
         if any(digest(folder/name)!=value for name,value in hashes.items()):
             raise RuntimeError('Evidence changed during TypeSafe Jev evaluation')
         return decision

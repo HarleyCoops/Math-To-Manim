@@ -92,6 +92,26 @@ or formal proofs. Jev evaluates supplied evidence; it does not independently
 prove the mathematics. API failures stop the run without an Astra substitute.
 See [the Jev contract](docs/JEV.md) for the exact gates and evidence handling.
 
+The [detailed design map](docs/JEV_DESIGN_MAP.md) covers 16 artistic and teaching
+decisions, from geometric reveals to LaTeX hierarchy and local-to-global camera
+movement. Jev can also select focused investigations: check a formula, clarify a definition,
+inspect source or frames, or replan camera and label layout. Our CLI executes the
+choice through Astra and records concrete recommendations; Jev itself does not
+run tools or write prose. Low-confidence selections do not execute.
+
+```mermaid
+flowchart LR
+    D[Uncertainty or rejected gate] --> J{Jev: choose investigation}
+    J --> T[CLI dispatches an allowed Astra tool task]
+    T --> E[Specific findings and evidence]
+    E --> R[Astra revises candidate]
+    R --> G[Fresh audit and Jev gate]
+```
+
+```bash
+math-to-manim recommend runs/astra/<run-id> --stage render --design --execute
+```
+
 ## Installation
 
 Install Python 3.10+, Node.js 18+, Manim's system dependencies, FFmpeg and LaTeX.
