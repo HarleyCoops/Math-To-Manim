@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from sol.client import DEFAULT_MODEL, CodexCli
+from sol.jev import JevEvaluator
 from sol.contract import SOL_FILM_CONTRACT
 from sol.manifest_schema import CURRENT_SCHEMA_VERSION, migrate_manifest, validation_template
 from sol.models import CodexRunResult, RunManifest, RunRequest
@@ -114,122 +115,9 @@ class SolHarness:
                     )
                 except (OSError, json.JSONDecodeError, TypeError):
                     pass
-            failures, scene_name, video_path = validate_run(
-                run_dir,
-                require_video=False,
+            scene_name, video_path = self._validate_and_review(
+                run_dir, request, manifest, pipeline,
             )
-            repair = 0
-            while failures and not request.offline and repair < request.max_repairs:
-                repair += 1
-                evidence = "\n".join(f"- {failure}" for failure in failures)
-                result = pipeline.run(
-                    run_dir,
-                    request,
-                    from_stage="scene-composer",
-                    feedback={"scene-composer": evidence},
-                )
-                manifest.attempts.append(
-                    {
-                        "attempt": repair,
-                        "mode": "scene-composer-static-repair",
-                        "status": result.status,
-                        "input_failures": failures,
-                    }
-                )
-                failures, scene_name, video_path = validate_run(
-                    run_dir,
-                    require_video=False,
-                )
-
-            if failures:
-                raise RuntimeError("run bundle validation failed: " + "; ".join(failures))
-            if request.render and not request.offline:
-                if not scene_name:
-                    raise RuntimeError("render requested but no scene class was found")
-                render_repairs = 0
-                while True:
-                    try:
-                        outcome = render_scene(
-                            run_dir,
-                            scene_name=scene_name,
-                            quality=request.quality,
-                        )
-                        evidence_paths = list(outcome.frame_paths)
-                        if outcome.contact_sheet_path:
-                            evidence_paths.append(outcome.contact_sheet_path)
-                        if not evidence_paths:
-                            raise RenderError(
-                                "render completed without representative frame evidence"
-                            )
-                        review = pipeline.review_render(
-                            run_dir,
-                            request,
-                            evidence_paths=evidence_paths,
-                        )
-                    except RenderError as exc:
-                        if render_repairs >= request.max_repairs:
-                            raise
-                        render_repairs += 1
-                        pipeline.run(
-                            run_dir,
-                            request,
-                            from_stage="scene-composer",
-                            feedback={"scene-composer": str(exc)},
-                        )
-                        failures, scene_name, _ = validate_run(
-                            run_dir,
-                            require_video=False,
-                        )
-                        if failures or not scene_name:
-                            raise RuntimeError(
-                                "scene-composer repair failed: " + "; ".join(failures)
-                            )
-                        manifest.attempts.append(
-                            {
-                                "attempt": render_repairs,
-                                "mode": "scene-composer-render-repair",
-                                "status": "completed",
-                                "input_failure": str(exc),
-                            }
-                        )
-                        continue
-                    if review["status"] == "approved":
-                        manifest.attempts.append(
-                            {
-                                "mode": "wrapper-render-and-cinematographer-review",
-                                "status": "completed",
-                                "evidence": [
-                                    str(path.relative_to(run_dir))
-                                    for path in evidence_paths
-                                ],
-                            }
-                        )
-                        break
-                    if render_repairs >= request.max_repairs:
-                        raise RuntimeError(
-                            "visual review still requires repair: "
-                            + json.dumps(review.get("defects", []))
-                        )
-                    render_repairs += 1
-                    pipeline.run(
-                        run_dir,
-                        request,
-                        from_stage="scene-composer",
-                        feedback={
-                            "scene-composer": json.dumps(
-                                review.get("defects", []),
-                                ensure_ascii=False,
-                            )
-                        },
-                    )
-                failures, scene_name, video_path = validate_run(
-                    run_dir,
-                    require_video=True,
-                )
-                if failures:
-                    raise RuntimeError(
-                        "rendered run bundle validation failed: " + "; ".join(failures)
-                    )
             manifest.status = "completed"
             manifest.scene_file = "sol_scene.py"
             manifest.scene_name = scene_name or result.scene_name
@@ -247,6 +135,139 @@ class SolHarness:
         self._write_manifest(manifest_path, manifest)
         return manifest.model_dump()
 
+    def _validate_and_review(
+        self, run_dir: Path, request: RunRequest, manifest: RunManifest,
+        pipeline: StagedPipeline,
+    ) -> tuple[str | None, str | None]:
+        if request.evaluator == "jev" and request.render and not request.offline:
+            (run_dir / "review.json").write_text(
+                json.dumps({"status": "pending", "evaluator": "jev"}),
+                encoding="utf-8",
+            )
+        failures, scene_name, video_path = validate_run(
+            run_dir,
+            require_video=False,
+        )
+        repair = 0
+        while failures and not request.offline and repair < request.max_repairs:
+            repair += 1
+            evidence = "\n".join(f"- {failure}" for failure in failures)
+            result = pipeline.run(
+                run_dir,
+                request,
+                from_stage="scene-composer",
+                feedback={"scene-composer": evidence},
+            )
+            manifest.attempts.append(
+                {
+                    "attempt": repair,
+                    "mode": "scene-composer-static-repair",
+                    "status": result.status,
+                    "input_failures": failures,
+                }
+            )
+            failures, scene_name, video_path = validate_run(
+                run_dir,
+                require_video=False,
+            )
+
+        if failures:
+            raise RuntimeError("run bundle validation failed: " + "; ".join(failures))
+        if request.render and not request.offline:
+            if not scene_name:
+                raise RuntimeError("render requested but no scene class was found")
+            render_repairs = 0
+            while True:
+                try:
+                    outcome = render_scene(
+                        run_dir,
+                        scene_name=scene_name,
+                        quality=request.quality,
+                    )
+                    evidence_paths = list(outcome.frame_paths)
+                    if outcome.contact_sheet_path:
+                        evidence_paths.append(outcome.contact_sheet_path)
+                    if not evidence_paths:
+                        raise RenderError(
+                            "render completed without representative frame evidence"
+                        )
+                    reviewer = (
+                        JevEvaluator.from_client(self.client)
+                        if request.evaluator == "jev" else pipeline
+                    )
+                    review = reviewer.review_render(
+                        run_dir,
+                        request,
+                        evidence_paths=evidence_paths,
+                    )
+                except RenderError as exc:
+                    if render_repairs >= request.max_repairs:
+                        raise
+                    render_repairs += 1
+                    pipeline.run(
+                        run_dir,
+                        request,
+                        from_stage="scene-composer",
+                        feedback={"scene-composer": str(exc)},
+                    )
+                    failures, scene_name, _ = validate_run(
+                        run_dir,
+                        require_video=False,
+                    )
+                    if failures or not scene_name:
+                        raise RuntimeError(
+                            "scene-composer repair failed: " + "; ".join(failures)
+                        )
+                    manifest.attempts.append(
+                        {
+                            "attempt": render_repairs,
+                            "mode": "scene-composer-render-repair",
+                            "status": "completed",
+                            "input_failure": str(exc),
+                        }
+                    )
+                    continue
+                if review["status"] == "approved":
+                    manifest.attempts.append(
+                        {
+                            "mode": f"wrapper-render-and-{request.evaluator}-review",
+                            "status": "completed",
+                            "evidence": [
+                                str(path.relative_to(run_dir))
+                                for path in evidence_paths
+                            ],
+                        }
+                    )
+                    break
+                if render_repairs >= request.max_repairs:
+                    raise RuntimeError(
+                        "visual review still requires repair: "
+                        + json.dumps(review.get("defects", []))
+                    )
+                render_repairs += 1
+                repair_stage = review.get("repair_stage", "scene-composer")
+                feedback = json.dumps(review, ensure_ascii=False)
+                manifest.attempts.append({
+                    "attempt": render_repairs, "mode": f"{repair_stage}-review-repair",
+                    "review": review,
+                })
+                pipeline.run(
+                    run_dir, request, from_stage=repair_stage,
+                    feedback={repair_stage: feedback, "scene-composer": feedback},
+                )
+                failures, scene_name, _ = validate_run(run_dir, require_video=False)
+                if failures or not scene_name:
+                    raise RuntimeError("review repair failed: " + "; ".join(failures))
+            failures, scene_name, video_path = validate_run(
+                run_dir,
+                require_video=True,
+            )
+            if failures:
+                raise RuntimeError(
+                    "rendered run bundle validation failed: " + "; ".join(failures)
+                )
+        return scene_name, video_path
+
     def resume(self, run_id: str, *, from_stage: str | None = None) -> dict:
         if Path(run_id).name != run_id:
             raise ValueError("run_id must be a single directory name")
@@ -260,23 +281,31 @@ class SolHarness:
         manifest = RunManifest.model_validate(raw_manifest)
         manifest.status = "running"
         manifest.error = None
+        manifest.completed_utc = None
+        manifest.status_detail["validation"] = "pending"
         self._write_manifest(manifest_path, manifest)
         try:
-            result = StagedPipeline(client=self.client).run(
-                run_dir,
-                request,
-                from_stage=from_stage,
+            self.client.reasoning_effort = request.reasoning_effort
+            pipeline = StagedPipeline(client=self.client)
+            if request.render and not request.offline:
+                preflight_render()
+            if request.offline:
+                result = write_offline_bundle(run_dir, request)
+            else:
+                result = pipeline.run(run_dir, request, from_stage=from_stage)
+            manifest.stage_records = [
+                str(path.relative_to(run_dir)).replace("\\", "/")
+                for path in sorted((run_dir / "stages").glob("[0-9][0-9]-*.json"))
+                if not path.name.endswith("-result.json")
+            ]
+            scene_name, video_path = self._validate_and_review(
+                run_dir, request, manifest, pipeline,
             )
-            failures, scene_name, video_path = validate_run(
-                run_dir,
-                require_video=request.render,
-            )
-            if failures:
-                raise RuntimeError("run bundle validation failed: " + "; ".join(failures))
             manifest.status = "completed"
             manifest.scene_file = result.scene_file
             manifest.scene_name = scene_name or result.scene_name
             manifest.video_path = video_path or result.video_path
+            manifest.status_detail["validation"] = "complete"
             manifest.completed_utc = datetime.now(timezone.utc).isoformat()
         except Exception as exc:
             manifest.status = "failed"

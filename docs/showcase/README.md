@@ -31,6 +31,18 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 
 ---
 
+## The Third Side · grade 8 geometry
+
+<a href="assets/the-third-side.mp4"><img src="assets/the-third-side.gif" alt="A floor diagonal becomes the base of a second right triangle inside a 3D box" width="90%" /></a>
+
+Two uses of Pythagoras connect the corners of a 3 × 4 × 6 box: 5 across the
+floor, then √61 ≈ 7.81 through the interior.
+[Interactive lesson](https://harleycoops.github.io/Math-To-Manim/) ·
+[Scene](../../examples/sol/the_third_side.py) ·
+[Production record](the-third-side/production.json) ·
+[Astra, Jev, and Base44 implementation](../ASTRA_JEV_BASE44.md).
+
+
 ## Olin: the space inside a tweet
 
 <p align="center">

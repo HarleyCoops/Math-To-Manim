@@ -1,4 +1,4 @@
-"""Codex CLI-native GPT-5.6 Sol Math-To-Manim silo."""
+"""Codex CLI-native GPT-6 Astra Math-To-Manim silo."""
 
 from sol.harness import SolHarness
 from sol.models import CodexRunResult, RunManifest, RunRequest

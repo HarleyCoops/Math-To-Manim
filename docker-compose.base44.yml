@@ -1,7 +1,6 @@
 # Base44 dev runbook for Math-To-Manim.
-# Brings up the FastAPI REST API (mythos.api) in dev mode on host port 3000.
-# The API boots without external credentials; model backends (claude/codex/fugu-api)
-# are only contacted when a non-offline run is submitted.
+# Serves the interactive lesson and curated film on host port 3000.
+# Film production runs separately through the authenticated Codex CLI.
 services:
   api:
     image: python:3.12-slim
@@ -17,7 +16,7 @@ services:
       - "3000:3000"
     command: >
       bash -lc "
-      pip install -e '.[dev]' 2>&1 | tail -n 5 &&
-      exec uvicorn mythos.api:app --host 0.0.0.0 --port 3000 --reload
+      pip install -e '.[api]' &&
+      exec uvicorn deployment.app:app --host 0.0.0.0 --port 3000 --reload
       "
     restart: unless-stopped

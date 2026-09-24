@@ -14,10 +14,11 @@ from pydantic import BaseModel
 
 from sol.models import CodexRunResult
 
-DEFAULT_MODEL = os.getenv("M2M_SOL_MODEL", "gpt-5.6-sol")
+DEFAULT_MODEL = os.getenv("M2M_SOL_MODEL", "gpt-6-astra")
 DEFAULT_REASONING_EFFORT = os.getenv("M2M_SOL_REASONING", "high")
 DEFAULT_TIMEOUT = float(os.getenv("M2M_SOL_TIMEOUT", "3600"))
-DEFAULT_COMMAND = os.getenv("M2M_SOL_CODEX", "codex")
+_LOCAL_CLI = Path(__file__).resolve().parents[1] / "node_modules" / ".bin" / ("codex.cmd" if os.name == "nt" else "codex")
+DEFAULT_COMMAND = os.getenv("M2M_SOL_CODEX", str(_LOCAL_CLI) if _LOCAL_CLI.is_file() else "codex")
 FAST_SERVICE_TIER = 'service_tier="fast"'
 
 
@@ -33,11 +34,15 @@ class CodexCli:
         model: str = DEFAULT_MODEL,
         reasoning_effort: str = DEFAULT_REASONING_EFFORT,
         timeout: float = DEFAULT_TIMEOUT,
+        sandbox: str = "workspace-write",
     ):
         self.command = command
         self.model = model
         self.reasoning_effort = reasoning_effort
         self.timeout = timeout
+        if sandbox not in {"read-only", "workspace-write"}:
+            raise ValueError("unsupported Codex sandbox")
+        self.sandbox = sandbox
 
     def resolve(self) -> str:
         resolved = shutil.which(self.command)
@@ -56,6 +61,7 @@ class CodexCli:
         output_path: Path,
         session_id: str | None = None,
         reasoning_effort: str | None = None,
+        image_paths: list[Path] | None = None,
     ) -> list[str]:
         effort = reasoning_effort or self.reasoning_effort
         command = [
@@ -64,17 +70,18 @@ class CodexCli:
             "-c", f'model_reasoning_effort="{effort}"',
             "exec",
         ]
+        command.extend(["--sandbox", self.sandbox, "--cd", str(cwd)])
         if session_id:
             command.extend(["resume", session_id])
         command.extend([
             "--model", self.model,
-            "--sandbox", "workspace-write",
-            "--cd", str(cwd),
             "--json",
             "--output-schema", str(schema_path),
             "--output-last-message", str(output_path),
             "-",
         ])
+        for path in image_paths or []:
+            command[-1:-1] = ["--image", str(path)]
         return command
 
     def run(
@@ -89,6 +96,7 @@ class CodexCli:
         session_id: str | None = None,
         reasoning_effort: str | None = None,
         result_model: type[BaseModel] = CodexRunResult,
+        image_paths: list[Path] | None = None,
     ) -> BaseModel:
         command = self.build_command(
             cwd=cwd,
@@ -96,6 +104,7 @@ class CodexCli:
             output_path=output_path,
             session_id=session_id,
             reasoning_effort=reasoning_effort,
+            image_paths=image_paths,
         )
         # A stray API key would silently switch billing/auth modes. This silo is
         # deliberately ChatGPT-login-only, so remove it from the child process.

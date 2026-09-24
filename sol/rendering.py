@@ -147,6 +147,10 @@ def render_scene(
     run_dir = Path(run_dir)
     stdout_path = run_dir / "render_stdout.log"
     stderr_path = run_dir / "render_stderr.log"
+    previous_videos = {
+        path.resolve(): (path.stat().st_mtime_ns, path.stat().st_size)
+        for path in run_dir.glob("**/*.mp4")
+    }
     completed = subprocess.run(
         build_manim_command(run_dir, scene_name=scene_name, quality=quality),
         cwd=run_dir,
@@ -171,6 +175,8 @@ def render_scene(
     video = find_final_video(run_dir)
     if video is None or video.stat().st_size < 1024:
         raise RenderError("Manim completed without a valid final MP4")
+    if previous_videos.get(video.resolve()) == (video.stat().st_mtime_ns, video.stat().st_size):
+        raise RenderError("Manim did not produce fresh video evidence")
     frames, contact_sheet = extract_review_frames(run_dir, video)
     return RenderOutcome(
         video_path=video,
@@ -184,6 +190,8 @@ def render_scene(
 def extract_review_frames(run_dir: Path, video_path: Path) -> tuple[list[Path], Path | None]:
     review_dir = Path(run_dir) / "review_frames"
     review_dir.mkdir(exist_ok=True)
+    for name in [*(f"frame_{index:02d}.png" for index in range(1, 13)), "contact_sheet.png"]:
+        (review_dir / name).unlink(missing_ok=True)
     duration_result = subprocess.run(
         [
             "ffprobe",
@@ -203,7 +211,7 @@ def extract_review_frames(run_dir: Path, video_path: Path) -> tuple[list[Path], 
         duration = float(duration_result.stdout.strip())
     except ValueError:
         return [], None
-    timestamps = [duration * fraction for fraction in (0.08, 0.25, 0.42, 0.58, 0.75, 0.94)]
+    timestamps = [duration * (index + 0.5) / 12 for index in range(12)]
     frames: list[Path] = []
     for index, timestamp in enumerate(timestamps, start=1):
         frame = review_dir / f"frame_{index:02d}.png"
@@ -235,7 +243,7 @@ def extract_review_frames(run_dir: Path, video_path: Path) -> tuple[list[Path], 
             "-i",
             str(video_path),
             "-vf",
-            "fps=1/12,scale=480:-1,tile=3x2:padding=8:margin=8",
+            f"fps=12/{duration},scale=480:-1,tile=4x3:padding=8:margin=8",
             "-frames:v",
             "1",
             str(contact_sheet),

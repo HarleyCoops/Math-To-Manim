@@ -6,7 +6,7 @@ Guidance for AI agents (and humans) working in this repository.
 
 Math-To-Manim contains provider-native silos. The established `mythos/` product
 remains the Anthropic-native six-agent chain driven by Claude Fable 5. The parallel
-`sol/` product remains a complete GPT-5.6 Sol-native film pipeline driven
+`sol/` product remains a complete GPT-6 Astra-native film pipeline driven
 only by the Codex CLI and its cached ChatGPT login. The `grok/` product is
 a complete Grok 4.6 film pipeline driven only by the xAI Responses API.
 Do not route one provider through another provider's orchestration layer.
@@ -20,7 +20,7 @@ Do not route one provider through another provider's orchestration layer.
 | `docs/MIMO_2_6_SILO.md` | MiMo tool-calling architecture and deployment contract |
 | `glm/` | Independent GLM silo (GLM-only): Z.ai Coding Plan chat/completions client (glm-5.3-flash, thinking always on), charters, harness, CLI, run ledger. Do not import other silos from `glm/` |
 | `docs/GROK_4_6_SILO.md` | Grok architecture and deployment contract |
-| `sol/` | Independent GPT-5.6 Sol silo: Codex CLI driver, film contract, harness, validation, run ledger |
+| `sol/` | Independent GPT-6 Astra silo: Codex CLI driver, film contract, harness, validation, run ledger |
 | `docs/SOL_5_6_SILO.md` | Sol architecture and deployment contract |
 | `mythos/agents/*.md` | The six agent charters (single source of truth; mirror to `.claude/agents/` for native Claude Code use) |
 | `mythos/harness.py` | Chain runner: intent → cartographer → curriculum → math-director → cinematographer → scene-composer → codegen → verify → render → repair |

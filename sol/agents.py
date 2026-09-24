@@ -118,7 +118,7 @@ def build_stage_prompt(
         if feedback
         else ""
     )
-    return f"""You are the {stage.name} specialist in the staged GPT-5.6 Sol
+    return f"""You are the {stage.name} specialist in the staged GPT-6 Astra
 Math-To-Manim film pipeline.
 
 <role_contract>

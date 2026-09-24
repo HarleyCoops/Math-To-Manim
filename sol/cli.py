@@ -31,6 +31,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     run.add_argument("--max-repairs", default=2, type=int, choices=range(0, 6))
     run.add_argument("--offline", action="store_true")
+    run.add_argument("--evaluator", choices=["cinematographer", "jev"],
+                     default="cinematographer", help="Reviewer for rendered runs")
 
     runs = sub.add_parser("runs", help="List recent Sol run manifests")
     runs.add_argument("--limit", type=int, default=20)
@@ -95,6 +97,7 @@ def main(argv: list[str] | None = None) -> int:
             render=args.render,
             quality=args.quality,
             max_repairs=args.max_repairs,
+            evaluator=args.evaluator,
         ))
         import json
 

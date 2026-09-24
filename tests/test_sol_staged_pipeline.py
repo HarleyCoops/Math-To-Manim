@@ -45,7 +45,7 @@ def test_codex_resume_command_targets_existing_thread(monkeypatch, tmp_path):
         session_id="thread-1038",
     )
 
-    assert command[command.index("exec") + 1 : command.index("--model")] == [
+    assert command[command.index("resume") : command.index("--model")] == [
         "resume",
         "thread-1038",
     ]
@@ -140,7 +140,7 @@ def test_stage_prompt_is_sol_native_and_limits_writes(tmp_path):
         run_dir=tmp_path,
     )
 
-    assert "GPT-5.6 Sol" in prompt
+    assert "GPT-6 Astra" in prompt
     assert "05_shot_list.json" in prompt
     assert "03_curriculum.json" in prompt
     assert "04_math_dossier.json" in prompt
@@ -553,3 +553,18 @@ def test_harness_renders_then_reviews_with_saved_cinematographer(
         "cinematographer-review",
         "thread-cinematographer",
     )
+
+
+def test_model_change_invalidates_stage_cache():
+    from sol.staged import stage_input_hash
+    stage = AGENT_STAGES[0]
+    request = RunRequest(prompt="a triangle")
+    assert stage_input_hash(stage, request, {}, "gpt-5.6-sol") != stage_input_hash(stage, request, {}, "gpt-6-astra")
+
+
+def test_resume_keeps_sandbox_and_directory_before_subcommand(monkeypatch, tmp_path):
+    monkeypatch.setattr("sol.client.shutil.which", lambda _: "codex")
+    command = CodexCli().build_command(cwd=tmp_path, schema_path=tmp_path / "schema.json",
+        output_path=tmp_path / "out.json", session_id="thread")
+    assert command.index("--sandbox") < command.index("resume")
+    assert command.index("--cd") < command.index("resume")

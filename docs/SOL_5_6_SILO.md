@@ -1,13 +1,13 @@
-# GPT-5.6 Sol: Codex CLI-native film silo
+# GPT-6 Astra: Codex CLI-native film silo
 
 ## Boundary
 
-Math-To-Manim has two deliberately independent production systems:
+The Codex-native chain runs independently of the other provider pipelines:
 
 | Silo | Native runtime | Entry point |
 |---|---|---|
 | `mythos/` | Anthropic charter chain | `math-to-manim` |
-| `sol/` | One long-horizon Codex CLI run using GPT-5.6 Sol | `math-to-manim-sol` |
+| `sol/` | Six durable Codex specialist sessions using GPT-6 Astra | `math-to-manim-sol` |
 
 The Sol silo is not a calculator, web API, or adapter around Mythos. It is a
 parallel implementation of the complete Math-To-Manim outcome. It imports no
@@ -18,7 +18,7 @@ Mythos prompt, backend, or orchestrator.
 ```text
 math-to-manim-sol run <request>
   -> create isolated runs/sol/<timestamp>-<slug>/ ledger
-  -> codex exec --model gpt-5.6-sol --sandbox workspace-write
+  -> codex exec --model gpt-6-astra --sandbox workspace-write
      -> infer intent and learner altitude
      -> reverse-map prerequisites
      -> build curriculum and checked math dossier
@@ -31,9 +31,12 @@ math-to-manim-sol run <request>
 ```
 
 The wrapper owns isolation, the output schema, the run ledger, final static
-checks, and the repair budget. Sol owns the film. This keeps model reasoning in
-one coherent context while retaining a deterministic trust boundary around the
-generated Python and artifacts.
+checks, and the repair budget. Each specialist session owns its declared
+artifacts. After intent, the curriculum lane and math director can run in
+parallel; cinematography joins their outputs before scene composition.
+The optional independent Jev session scores the rendered candidate and sends
+rejections back through a bounded repair loop. Static validation and the CLI
+sandbox reduce risk; they are not a formal security boundary.
 
 ## Authentication
 
@@ -41,7 +44,8 @@ The child process removes `OPENAI_API_KEY` from its environment. Authentication
 therefore comes only from the Codex CLI's cached ChatGPT session:
 
 ```bash
-npm install -g @openai/codex
+npm ci
+# Uses the repository-pinned Codex runtime (0.156.1).
 codex login
 math-to-manim-sol doctor
 ```
@@ -120,3 +124,9 @@ its explicit agent charters while Sol can exploit the Codex CLI's long-horizon
 tool loop and workspace execution. Shared abstractions are limited to the final
 product expectation—an inspectable Manim film bundle—not the provider control
 plane.
+
+## Independent jev review
+
+Use `--render --evaluator jev` to score mathematics and rendered presentation
+with a fresh, read-only GPT-6 Astra Codex session. See [the jev contract](JEV.md)
+for revision routing, resume behavior, evidence records, and calibration limits.

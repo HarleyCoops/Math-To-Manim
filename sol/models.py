@@ -26,6 +26,7 @@ class RunRequest(BaseModel):
     reasoning_effort: Literal["low", "medium", "high", "xhigh", "max"] = "high"
     max_repairs: int = Field(default=2, ge=0, le=5)
     offline: bool = False
+    evaluator: Literal["cinematographer", "jev"] = "cinematographer"
 
 
 class CodexRunResult(BaseModel):

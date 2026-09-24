@@ -12,16 +12,18 @@
 
 ### Ask a question. Get a visual explainer.
 
-[![GLM 5.3 Flash](https://img.shields.io/badge/README_by-GLM--5.3--Flash-6366f1)](docs/GLM_5_3_FLASH.md)
+[![GLM 5.3 Flash](https://img.shields.io/badge/Z.ai-GLM--5.3--Flash-6366f1)](docs/GLM_5_3_FLASH.md)
 [![glm silo](https://img.shields.io/badge/glm-silo%20live-6d28d9)](#glm)
 [![Claude Fable 5](https://img.shields.io/badge/Claude-Fable%205%20Mythos-d97757)](#mythos)
-[![GPT 5.6 Sol](https://img.shields.io/badge/Codex-GPT--5.6%20Sol-10a37f)](#sol)
+[![GPT 6 Astra](https://img.shields.io/badge/Codex-GPT--6%20Astra-10a37f)](#sol)
 [![Grok 4.6](https://img.shields.io/badge/xAI-Grok%204.6-black)](#grok)
 [![MCP server](https://img.shields.io/badge/MCP-server-788c5d)](#make-your-first-explainer)
 [![Python 3.10](https://img.shields.io/badge/Python-3.10%2B-3b82f6)](https://www.python.org/)
 [![Manim CE](https://img.shields.io/badge/Manim-CE-f59e0b)](https://www.manim.community/)
 [![License MIT](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
+[The January 20 story](#the-morning-of-january-20-2025) ·
+[The Third Side](#the-third-side-astra-jev-and-a-new-lesson) ·
 [See it move](#see-it-move) ·
 [Featured explainers](#featured-visual-explainers) ·
 [How an explainer is born](#how-an-explainer-is-born) ·
@@ -36,11 +38,73 @@
 
 </div>
 
+## The Morning Of January 20, 2025
+
+I started Math To Manim on the morning of January 20, 2025, the day
+[DeepSeek R1 was released](https://huggingface.co/deepseek-ai/DeepSeek-R1/commit/5a56bdbde75a16bdfbf3a8e9c852be3dfcfb8eef).
+
+GRPO made me wonder how far **recursive self reasoning** could go. Could a
+model revisit an argument, find the ideas it had skipped, and use feedback
+to explain it better? Math and animation gave me a way to test that question:
+the equation has to hold up, and the explanation has to work on screen.
+
+I began with a practical loop: work backward through an idea's prerequisites,
+teach them forward, then inspect and revise the animation. The GRPO connection
+was my starting hypothesis. I'm still working on the RL experiment and how
+to turn evaluation feedback into useful training signals.
+
+Today, the Codex pipeline produces lessons through six specialist stages,
+with Jev checking the mathematics and rendered frames independently.
+
+<details>
+<summary>Creation evidence and later screenshots</summary>
+
+The [GitHub repository metadata](https://api.github.com/repos/HarleyCoops/Math-To-Manim)
+records `created_at: 2025-01-20T11:04:50Z`; the original commit records
+`2025-01-20T04:24:50-07:00`. These timestamps establish the project's start.
+[The original commit remains in the history](https://github.com/HarleyCoops/Math-To-Manim/commit/09a2f22ec02b0374d38373d28f76c5764a1e9a2e).
+The account of the GRPO intuition is the creator's recollection.
+
+These screenshots were captured **September 24, 2026**. They show the pages
+as viewed then; they are not screenshots taken on release morning.
+
+[Repository page capture](docs/assets/math-to-manim-root.png) ·
+[DeepSeek R1 release capture](docs/assets/deepseek-r1-release.png)
+
+</details>
+
+## The Third Side: Astra, Jev, And A New Lesson
+
+<a href="docs/showcase/assets/the-third-side.mp4"><img src="docs/showcase/assets/the-third-side.gif" alt="Two right triangles reveal the shortest straight path through a three dimensional box" width="100%" /></a>
+
+A new **eighth-grade math** film starts on the floor of a 3 × 4 × 6 box.
+The first right triangle gives a diagonal of 5. Stand up a second triangle,
+and the straight route through the box becomes **√61 ≈ 7.81 units**, compared
+with 13 along three edges. The camera reveals how the two triangles connect.
+
+[Explore the interactive lesson](https://harleycoops.github.io/Math-To-Manim/) ·
+[Watch the MP4](docs/showcase/assets/the-third-side.mp4) ·
+[Read the scene](examples/sol/the_third_side.py) ·
+[Implementation and deployment](docs/ASTRA_JEV_BASE44.md)
+
+**GPT-6 Astra** runs the six production roles in the Codex-native chain.
+**Jev** evaluates the mathematics and sampled rendered frames in a separate
+read-only Astra session, returning scores, evidence, and repair feedback.
+The **Base44 Docker setup** serves the finished film and an interactive box
+whose dimensions you can change. The same lesson is published on GitHub Pages.
+
+For this film, Jev flagged inconsistent coloring inside a square root and a
+box outline that was too faint. The scene composer revised the film, and a
+fresh review approved the updated source and sampled frames.
+[Inspect the production record](docs/showcase/the-third-side/production.json).
+
+This is an inference-time revision system. The separate RL experiment remains
+in progress; Jev's diagnostic scores are not evidence of learned improvement.
+
 ## See It Move
 
-No manual can teach what thirty seconds of motion can. This page is a film
-strip before it is documentation. Every frame below was asked into existence by
-this repository, then rendered, inspected, and repaired until it stood on its own.
+A selection of rendered explanations from the project. Open the showcase for
+source scenes, prompts, and longer films.
 
 <table>
 <tr>
@@ -50,7 +114,7 @@ this repository, then rendered, inspected, and repaired until it stood on its ow
 </td>
 <td width="50%">
 <p align="center"><img src="docs/showcase/assets/hopf-fibration.gif" alt="Circles of the Hopf fibration nested through three dimensional space" /></p>
-<p align="center"><strong>Hopf fibration.</strong> Every point on a sphere owns a circle in space, and no two circles touch. Geometry dreaming in one dimension too many.</p>
+<p align="center"><strong>Hopf fibration.</strong> A 3D projection shows how the circles associated with points on a sphere link together.</p>
 </td>
 </tr>
 <tr>
@@ -70,7 +134,7 @@ this repository, then rendered, inspected, and repaired until it stood on its ow
 </td>
 <td width="50%">
 <p align="center"><img src="docs/showcase/assets/cosmic-gravity-3d.gif" alt="Mass curves a grid of space while orbiting bodies trace their geodesics" /></p>
-<p align="center"><strong>Cosmic gravity.</strong> Matter tells the grid how to bend; the bend tells matter how to fall. A mass email between planets, answered instantly.</p>
+<p align="center"><strong>Cosmic gravity.</strong> A visual model connects curvature with orbital motion.</p>
 </td>
 </tr>
 </table>
@@ -291,9 +355,8 @@ You do not need to memorize tool names. The assistant starts the explainer,
 reports progress, and can inspect every reasoning artifact. The final scene
 and render stay in your local run directory.
 
-Behind the MCP tool names sits the Mythos service — `serve-mcp` keeps the same
-tool names stable while its internals currently dispatch through GrokService.
-For most learners this detail changes nothing: you ask, it explains.
+The MCP server runs the Grok pipeline. Its tools expose progress, reasoning
+artifacts, and the finished scene to your assistant.
 
 A login-free rehearsal of the same path:
 
@@ -311,9 +374,8 @@ not `output/<run>/scene.py`.
 
 ## Choose A Native Pipeline
 
-Math To Manim contains four complete and independent ways to create a visual
-explainer. Choose the command line account you already use.
-Neither pipeline routes through the other.
+Math To Manim contains five independent pipelines for creating visual
+explainers. Choose the provider account you already use.
 
 ### Mythos
 
@@ -328,13 +390,14 @@ math-to-manim run "Explain fractions with a folding paper model for a sixth grad
 
 ### Sol
 
-Sol uses the logged in Codex CLI and durable specialist stages. Each role saves
+Sol uses GPT-6 Astra through the logged in Codex CLI and durable specialist stages. Each role saves
 its artifact and session so the run can be inspected, resumed, and repaired by
 the responsible specialist.
 
 ```bash
+npm ci  # install the repository's compatible Codex CLI
 math-to-manim-sol doctor
-math-to-manim-sol run "Explain fractions with a folding paper model for a sixth grade learner."
+math-to-manim-sol run "Explain fractions with a folding paper model for a sixth grade learner." --render --evaluator jev
 ```
 
 ### Grok
@@ -346,10 +409,7 @@ math-to-manim-grok doctor
 math-to-manim-grok run "the heat equation" --offline
 ```
 
-Hermes Agent is not a supported generate path. The supported operator
-surfaces are Mythos, Sol, Grok, GLM, and the MCP/REST front doors.
-
-### glm
+### GLM
 
 GLM uses Z.ai's Coding Plan with glm-5.3-flash; thinking is always enabled and
 effort tunes sampling latitude (low/high/max). Offline mode works login-free:
@@ -360,6 +420,40 @@ math-to-manim-glm run "the magnetic monopole" --offline
 ```
 
 Details in [docs/GLM_5_3_SILO.md](docs/GLM_5_3_SILO.md).
+
+### MiMo
+
+MiMo has its own tool-calling chain in `mimo/`; see the
+[MiMo pipeline documentation](docs/MIMO_2_6_SILO.md).
+
+## The Ongoing RL Experiment
+
+The original question is still open: can feedback improve the reasoning and
+visual explanation together? The repository now explores it at two levels.
+
+**Evaluate and revise an individual film.** In the Codex pipeline, **Jev** is
+an independent math and render evaluator powered by **GPT-6 Astra**. A fresh,
+read only Codex session scores the mathematics and the rendered presentation,
+cites its evidence, and returns concrete revision feedback. The harness sends
+repairs back through the responsible stages and renders again before review.
+This is repair at inference time: no model weights change.
+
+```bash
+math-to-manim-sol run "Explain why Fourier modes solve the heat equation" --render --evaluator jev
+```
+
+**Learn across attempts.** The [Prime Intellect experiment](docs/PRIME_INTELLECT_RL.md)
+and [visual improvement environment](environments/m2m2_visual_improvement/README.md)
+provide a separate path toward training on repair tasks. Actual RL requires
+rollouts, a reward, and a trainer that updates policy weights. Running jev does
+not start that trainer or turn its scores into a calibrated reward.
+
+Jev's scores are provisional model judgments. A useful next experiment is to
+compare them with blinded human reviews on held out mathematical and visual
+defects, measure false approvals, and only then test a reward derived from
+them. That calibration and the RL training experiment remain work in progress.
+See the [Jev design and calibration protocol](docs/JEV.md)
+for the acceptance gate, audit records, limitations, and offline checks.
 
 ## Installation
 
@@ -395,7 +489,7 @@ ask for an explainer in ordinary language.
 
 | Tool | Purpose |
 |---|---|
-| `m2m_create_animation` | Starts the Mythos reasoning chain as a background job |
+| `m2m_create_animation` | Starts the Grok reasoning chain as a background job |
 | `m2m_get_job` | Reports live progress for each reasoning stage |
 | `m2m_list_runs` | Lists local runs with the newest first |
 | `m2m_get_run` | Returns the manifest and artifact list for one run |
@@ -469,29 +563,17 @@ expensive render.
 
 ---
 
-## Authored By GLM-5.3-Flash
-
-This page was rebuilt by **GLM-5.3-Flash** (Z.ai). Flash can see this
-repository and write to it through the GitHub Contents API — the commit
-carrying these words is that collaboration made literal. Honesty clause: there
-is no `glm/` directory here and no `math-to-manim-glm` command. Installing
-this repo gives you exactly the three pipelines documented above — Mythos,
-Sol, Grok — plus the MCP and REST front doors they share.
-
-A short note about this page lives at
-[docs/GLM_5_3_FLASH.md](docs/GLM_5_3_FLASH.md).
-
 ## More From The Project
 
 - [Motion showcase](docs/showcase/README.md) — every visual study and older animation, preserved.
 - [Reverse reasoning pipeline diagram](docs/assets/reverse-reasoning-pipeline.svg) — the chain on one page.
 - [Prime Intellect RL notes](docs/PRIME_INTELLECT_RL.md) — reinforcement learning for visual repair.
 - [Roadmap](docs/ROADMAP.md) — what comes next. · [Agent guide](AGENTS.md) — repository boundaries and verification rules.
-- Pipeline contracts: [Sol 5.6](docs/SOL_5_6_SILO.md) · [Grok 4.6](docs/GROK_4_6_SILO.md)
+- Pipeline contracts: [Astra / Codex](docs/SOL_5_6_SILO.md) · [Grok 4.6](docs/GROK_4_6_SILO.md)
 - Kimi K3 grows in its own repository: [HarleyCoops/KimiK3Manim](https://github.com/HarleyCoops/KimiK3Manim)
 
 Hermes Agent is not a supported generate path. The supported surfaces are
-Mythos, Sol, Grok, MCP, and REST.
+Mythos, Sol, Grok, GLM, MiMo, MCP, and REST.
 
 ## Repository Layout
 
@@ -500,6 +582,9 @@ mythos/            Claude CLI reasoning chain, service, API, MCP, and CLI
 sol/               Codex CLI specialist pipeline
 grok/              Grok 4.6 via xAI pipeline
 examples/mythos/   Hand finished Mythos examples
+examples/sol/      Astra films and curated scene source
+web/               Interactive geometry lesson
+deployment/        Base44-compatible presentation server
 docs/showcase/     Complete visual archive
 tests/             Offline repository tests
 runs/              Local reasoning and render artifacts
@@ -507,14 +592,10 @@ archive/           Retired implementations kept for history
 legacy/            Original January 2025 repository material
 ```
 
-## Ask Anyway
+## Try Your Own Lesson
 
-You found this page because some idea wanted a picture. Bring the question —
-the balance scale, the folding paper, the spinning handle that flips itself.
-The chain will meet you where your understanding already stands and build
-outward from there.
-
-A homework question is enough.
+Start with a question, the learner's background, and one example you want
+to explain. Inspect the generated mathematics and film before using it to teach.
 
 ## License
 

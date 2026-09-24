@@ -5,9 +5,9 @@ from pathlib import Path
 README = Path("README.md")
 
 
-def test_erdos_1038_is_the_first_readme_animation():
+def test_erdos_1038_remains_in_the_readme():
     text = README.read_text(encoding="utf-8")
-    first_gif = re.search(r"docs/showcase/assets/[^\"']+\.gif", text)
+    first_gif = re.search(r"docs/showcase/assets/erdos-1038-potential-landscape\.gif", text)
 
     assert first_gif is not None
     assert first_gif.group() == (
@@ -29,5 +29,5 @@ def test_erdos_1038_readme_media_and_explanation_are_complete():
     ).is_file()
     assert "landscape made by its roots" in text
     assert "1.834430475762661" in text
-    assert "2√2" in text
+    assert "2√2" in text or r"2\sqrt{2}" in text
     assert "Watch the complete 79 second visual explainer" in text
