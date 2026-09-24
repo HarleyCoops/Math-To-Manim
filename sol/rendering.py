@@ -3,14 +3,46 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+try:
+    import resource
+except ImportError:  # pragma: no cover - Windows
+    resource = None  # type: ignore[assignment]
+
+_SCENE_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+_QUALITY = re.compile(r"^[lmhpk]$")
+
 
 class RenderError(RuntimeError):
     pass
+
+
+def resolve_inside(run_dir: Path, path: Path | str) -> Path:
+    root = Path(run_dir).resolve()
+    candidate = Path(path)
+    resolved = candidate.resolve() if candidate.is_absolute() else (root / candidate).resolve()
+    if resolved != root and root not in resolved.parents:
+        raise RenderError(f"path escapes run directory: {path}")
+    return resolved
+
+
+def apply_resource_limits() -> None:
+    """Best-effort CPU/address-space caps. See docs/security.md for residual risk."""
+    if resource is None:
+        return
+    try:
+        resource.setrlimit(resource.RLIMIT_CPU, (600, 600))
+    except (ValueError, OSError):
+        pass
+    try:
+        resource.setrlimit(resource.RLIMIT_AS, (4 * 1024 ** 3, 4 * 1024 ** 3))
+    except (ValueError, OSError):
+        pass
 
 
 @dataclass(frozen=True)
@@ -28,13 +60,20 @@ def build_manim_command(
     scene_name: str,
     quality: str,
 ) -> list[str]:
+    if not _QUALITY.fullmatch(quality):
+        raise RenderError(f"invalid Manim quality flag: {quality!r}")
+    if not _SCENE_NAME.fullmatch(scene_name):
+        raise RenderError(f"invalid scene class name: {scene_name!r}")
+    root = Path(run_dir).resolve()
+    media_dir = resolve_inside(root, root / "media")
+    resolve_inside(root, root / "sol_scene.py")
     return [
         sys.executable,
         "-m",
         "manim",
         f"-q{quality}",
         "--media_dir",
-        str(Path(run_dir) / "media"),
+        str(media_dir),
         "--progress_bar",
         "none",
         "sol_scene.py",
@@ -118,6 +157,7 @@ def render_scene(
         errors="replace",
         timeout=timeout,
         check=False,
+        preexec_fn=apply_resource_limits if resource is not None else None,
     )
     stdout_path.write_text(completed.stdout, encoding="utf-8")
     stderr_path.write_text(completed.stderr, encoding="utf-8")

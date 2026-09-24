@@ -64,18 +64,27 @@ codex exec "Say ready from inside this repo"
    output visually.
 5. Report exact commands, run bundle paths, skipped checks, and changed files.
 
-## Hermes Registration
+## Status
 
-Register the parent skills directory, not this skill directory itself:
+This skill is archived. It is not a supported generate path. The live
+first animation flow is in the repository `README.md` (Mythos CLI, Sol
+CLI, or `math-to-manim serve-mcp`). There is no `hermes/skills/` directory
+at the repo root. If you still have a local Hermes install and want to
+load this archived skill for inspection only:
 
 ```bash
-hermes config set skills.external_dirs "$(pwd)/hermes/skills"
+hermes config set skills.external_dirs "$(pwd)/archive/hermes/hermes/skills"
 hermes skills list --source local
-hermes --skills hermes-learns-manim,agents-md,codebase-inspection,manim-video,systematic-debugging
+hermes --skills hermes-learns-manim
 ```
 
-Hermes scans configured external skill directories recursively for `SKILL.md`
-files. Pointing `skills.external_dirs` at `hermes/skills` makes
-`hermes-learns-manim` discoverable by name.
+Do not expect `initialize_run_workspace` or `output/<run>/scene.py`. Live
+runs write `runs/mythos/<run>/mythos_scene.py` and seed
+`runs/mythos/<run>/validation.json` as the canonical validation artifact.
+
+Env vars are documented in the README Configuration table (`M2M_MODEL`,
+`M2M_COMMAND`, `M2M_TIMEOUT`, `M2M_RENDER_TIMEOUT`, `M2M_RUNS_DIR`,
+`M2M_MANIM`, `M2M_PREREQ_CACHE_TTL_DAYS`, `M2M_LATEX_DEEP_CHECK`). There
+is no Hermes `config.py` in this repository.
 
 For full repo instructions, see `README.md` and `AGENTS.md`.
