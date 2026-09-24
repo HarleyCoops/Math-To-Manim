@@ -19,11 +19,11 @@ review/render repairs; manual resume starts a new bounded budget.
 
 ## Model and isolation
 
-Jev explicitly selects `gpt-6-astra` with `model_reasoning_effort="high"`,
+Jev explicitly selects `gpt-6-astra` with `model_reasoning_effort="low"`,
 independently of the writer's settings. This is a starting configuration, not a
 measured optimum. On September 24, 2026, the
 [official Astra model page](https://developers.openai.com/api/docs/models/gpt-6-astra)
-and the local Codex catalog both supported `high`. The
+and the local Codex catalog both supported `low`. The
 [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)
 documents the reasoning setting. Live production uses repository-pinned CLI
 0.156.1. CLI 0.146.0 was rejected for Astra by the service; run `npm ci` before
