@@ -8,7 +8,7 @@
   "review_status": "not_reviewed",
   "status": "completed",
   "video_sha256": "744c159b303dd7eeefdd8fff2a2fee3de6ff382956b40952518693bddb36d0cd",
-  "scene_sha256": "0b3214706f1a23a7f91aba638d1e25f1e3cff43b8483da35f798730b4fb7331b",
+  "scene_sha256": "ea1ff2b38e97a6bec6a5ef2d182bdbea3f45abef0b29bc946fd99bff5f0f5611",
   "metadata": {
     "programs": [],
     "stream_groups": [],
@@ -889,5 +889,7 @@
     "Jev is text-only and evaluated earlier Astra observations, not pixels.",
     "Sampled frames do not certify every instant of continuous motion.",
     "Gate thresholds were provisional, not calibrated correctness probabilities."
-  ]
+  ],
+  "rendered_source_sha256": "0b3214706f1a23a7f91aba638d1e25f1e3cff43b8483da35f798730b4fb7331b",
+  "source_hash_note": "scene_sha256 hashes the published Git blob with LF line endings; rendered_source_sha256 hashes the original Windows render file with CRLF line endings. Scene code is otherwise identical."
 }
