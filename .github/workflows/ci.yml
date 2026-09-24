@@ -53,14 +53,14 @@ jobs:
         run: python -m pytest -q tests/integration
 
       - name: Compile package
-        run: python -m compileall -q mythos
+        run: python -m compileall -q astra mythos
 
       - name: Check CLI help
         run: |
           math-to-manim --version
           math-to-manim run --help
-          math-to-manim serve-api --help
-          math-to-manim serve-mcp --help
+          math-to-manim-mythos serve-api --help
+          math-to-manim-mythos serve-mcp --help
           math-to-manim runs --help
 
       - name: Verify the pinned Sol CLI and offline contract
@@ -72,8 +72,8 @@ jobs:
 
       - name: Offline chain smoke (no model calls)
         run: |
-          math-to-manim run "Explain why derivatives are slopes" --offline
-          math-to-manim runs --limit 3
+          math-to-manim-mythos run "Explain why derivatives are slopes" --offline
+          math-to-manim-mythos runs --limit 3
 
       - name: API boots and answers /health
         run: |
@@ -116,7 +116,7 @@ jobs:
         run: .venv/bin/manim --version
 
       - name: Offline chain with a real low-quality render
-        run: .venv/bin/math-to-manim run "Explain why derivatives are slopes" --offline --render -q l
+        run: .venv/bin/math-to-manim-mythos run "Explain why derivatives are slopes" --offline --render -q l
 
       - name: Init-to-render pytest smoke
         run: .venv/bin/python -m pytest -q tests/integration/test_e2e_smoke.py

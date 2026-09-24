@@ -4,15 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "math-to-manim"
-version = "1.1.0"
-description = "Ask a question -> get a visual explainer. The Grok 4.6 chain turns one sentence into a cinematic Manim film."
+version = "2.0.0"
+description = "Astra-native mathematical films with independent jev review at every reasoning and rendering step."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Christian H. Cooper" }]
-keywords = ["manim", "animation", "mathematics", "grok", "xai", "agents"]
+keywords = ["manim", "animation", "mathematics", "astra", "codex", "agents"]
 dependencies = [
   "pydantic>=2,<3",
+  "typesafe-sdk==0.7.1",
 ]
 
 [project.optional-dependencies]
@@ -40,8 +41,10 @@ grok = [
 ]
 
 [project.scripts]
-math-to-manim = "mythos.cli:main"
-m2m = "mythos.cli:main"
+math-to-manim = "astra.cli:main"
+math-to-manim-astra = "astra.cli:main"
+math-to-manim-mythos = "mythos.cli:main"
+m2m = "astra.cli:main"
 math-to-manim-sol = "sol.cli:main"
 m2m-sol = "sol.cli:main"
 math-to-manim-grok = "grok.cli:main"
@@ -56,9 +59,10 @@ Homepage = "https://github.com/HarleyCoops/Math-To-Manim"
 Repository = "https://github.com/HarleyCoops/Math-To-Manim"
 
 [tool.setuptools.packages.find]
-include = ["mythos*", "sol*", "grok*", "glm*", "mimo*"]
+include = ["astra*", "mythos*", "sol*", "grok*", "glm*", "mimo*"]
 
 [tool.setuptools.package-data]
+astra = ["*.mjs"]
 mythos = ["agents/*.md"]
 grok = ["agents/*.md"]
 glm = ["agents/*.md"]

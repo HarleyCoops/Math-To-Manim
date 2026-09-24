@@ -1,78 +1,48 @@
 # Agent guide
 
-Guidance for AI agents (and humans) working in this repository.
+Math-To-Manim's primary product is the Astra-native Codex SDK chain in `astra/`.
+The user's September 24, 2026 direction supersedes the former multi-provider
+homepage and requirement to preserve its featured GIF block. Keep the star
+chart and older showcase files; feature new verified Astra films on the homepage.
 
-## What this repo is
+## Architecture
 
-Math-To-Manim contains provider-native silos. The established `mythos/` product
-remains the Anthropic-native six-agent chain driven by Claude Fable 5. The parallel
-`sol/` product remains a complete GPT-6 Astra-native film pipeline driven
-only by the Codex CLI and its cached ChatGPT login. The `grok/` product is
-a complete Grok 4.6 film pipeline driven only by the xAI Responses API.
-Do not route one provider through another provider's orchestration layer.
-
-## Layout
-
-| Path | Role |
-|---|---|
-| `grok/` | Independent Grok 4.6 silo: xAI Responses client, charters, harness, CLI, run ledger |
-| `mimo/` | Independent MiMo 2.6 silo: tool-calling client, reverse-thinking cartographer, geometry/scene tools, harness, CLI, run ledger. Do not import other silos from `mimo/` |
-| `docs/MIMO_2_6_SILO.md` | MiMo tool-calling architecture and deployment contract |
-| `glm/` | Independent GLM silo (GLM-only): Z.ai Coding Plan chat/completions client (glm-5.3-flash, thinking always on), charters, harness, CLI, run ledger. Do not import other silos from `glm/` |
-| `docs/GROK_4_6_SILO.md` | Grok architecture and deployment contract |
-| `sol/` | Independent GPT-6 Astra silo: Codex CLI driver, film contract, harness, validation, run ledger |
-| `docs/SOL_5_6_SILO.md` | Sol architecture and deployment contract |
-| `mythos/agents/*.md` | The six agent charters (single source of truth; mirror to `.claude/agents/` for native Claude Code use) |
-| `mythos/harness.py` | Chain runner: intent → cartographer → curriculum → math-director → cinematographer → scene-composer → codegen → verify → render → repair |
-| `mythos/charter.py` | The Cinematic Charter + parsing utilities |
-| `mythos/backends.py` | Model backends: Claude CLI (default), Codex CLI, OpenAI-compatible HTTP |
-| `mythos/cinematography.py` | The visual grammar library scenes import |
-| `mythos/service.py` | Job orchestration shared by all front doors |
-| `mythos/api.py` | REST API (FastAPI) — `math-to-manim serve-api` |
-| `mythos/mcp_server.py` | Operator entry for `math-to-manim serve-mcp`; tools run the Grok 4.6 chain |
-| `mythos/cli.py` | The `math-to-manim` command |
-| `examples/mythos/` | Flagship hand-finished films (QFT, Sound of Spacetime) |
-| `docs/showcase/` | Curated GIF gallery — the art-direction target |
-| `tests/` | Offline test suite (no model calls, no render needed) |
-| `archive/`, `legacy/` | Retired code. Do not import from it; do not "fix" it. |
-
-The root README is the prior product page again; Grok docs live in `docs/GROK_4_6_SILO.md`.
+- `astra/cli.py`: primary `math-to-manim`, `m2m`, `math-to-manim-astra` commands.
+- `astra/pipeline.py`: brief -> mathematics -> storyboard -> scene -> render,
+  with an independent jev gate at EVERY step and bounded backward repair.
+- `astra/bridge.mjs`: official Codex SDK, GPT-6 Astra, cached ChatGPT login.
+- `astra/prompts.py`: specialist and evaluator charters.
+- `astra/rendering.py`: static source checks, local Manim and frame extraction.
+- `docs/JEV.md`, `docs/ASTRA_PIPELINE.md`: evaluation and architecture contracts.
+- `mythos/`, `sol/`, `grok/`, `glm/`, `mimo/`: compatibility pipelines, accessed
+  by explicit provider commands; do not route Astra through their orchestration.
 
 ## Working rules
 
-1. **Runs are cheap, renders are not.** `--offline` exercises the whole chain
-   deterministically with zero model calls; use it for plumbing changes.
-2. **Charters are the product.** Behavior changes in the chain usually belong
-   in `mythos/agents/*.md` or `grok/agents/*.md`, not in harness code.
-3. **ThreeDScene camera rule:** `move_camera()` / `set_camera_orientation()`,
-   never `.animate` on `self.camera`. The static verifier enforces this.
-4. **Artifacts land in `runs/<silo>/<ts>-<slug>/`** — keep them repo-local
-   (never `/tmp`) so humans can inspect them. Grok writes `runs/grok/`.
-5. **Tests must pass offline:** `pip install -e ".[dev]" && pytest`.
-6. **Keep the README's showcase GIFs and star chart intact** in any docs work.
-7. **Keep provider silos native.** `sol/` must not import Mythos prompts,
-   backends, or orchestration; `mythos/` must not import the Sol client;
-   `grok/` must not import Mythos prompts, backends, or orchestration, and
-   must not import the Sol client.
-8. **Sol is CLI-only.** Do not add an HTTP API, Responses API client, API-key
-   fallback, or calculator-specific compiler to `sol/`.
-9. **Grok is xAI-only.** Do not route Grok through `mythos/harness.py`. Live
-   calls use `XAI_API_KEY` and `https://api.x.ai/v1`. Pytest makes no live
-   xAI calls. `math-to-manim-grok doctor` live-pings xAI when the key is
-   set and never prints the key. `math-to-manim serve-mcp` runs this Grok
-   chain.
+1. Use Codex login, never an API-key fallback, for the Astra chain. Remove API
+   credentials from model and renderer child environments; never print secrets.
+2. Authors and evidence auditors use `gpt-6-astra`. Real TypeSafe Jev uses
+   `jev-1.13.0` through typesafe-sdk with TYPESAFE_API_KEY. Never substitute
+   Astra for Jev or claim that Jev sees images; it receives text observations.
+3. Keep failed attempts, review feedback and actual render evidence in
+   `runs/astra/`. Do not claim success without a completed manifest and MP4.
+4. Use `move_camera` and `set_camera_orientation` for ThreeDScene cameras.
+5. Jev approval is scoped to evidence. Stills do not prove continuous motion.
+6. Reject invalid evidence and exhausted budgets. Never bypass the gate to
+   publish a render. Upstream repairs invalidate downstream work.
+7. Local Manim execution is not an OS/container sandbox. Do not describe static
+   source screening as a complete security boundary.
+8. Test offline with `python -m pytest`. Live model/render runs need explicit
+   task authorization; the current full-film request provides it.
+9. Do not modify `archive/` or `legacy/`. Preserve other providers' implementation
+   boundaries and their existing explicit commands.
 
-## Quick verification
+## Verification
 
 ```bash
-pip install -e ".[dev]"
-pytest                                        # offline, no model calls
-math-to-manim run "the heat equation" --offline
-math-to-manim serve-api &  curl localhost:8642/health
-math-to-manim-sol run "why Fourier modes solve the heat equation" --offline
-math-to-manim-sol doctor
-math-to-manim-grok run "the heat equation" --offline
-math-to-manim-grok doctor
-math-to-manim-mimo run "the heat equation" --offline
-math-to-manim-mimo doctor
+npm ci
+pip install -e ".[dev,render]"
+python -m pytest
+math-to-manim doctor
+math-to-manim run "Explain a new mathematical idea" -q h
 ```

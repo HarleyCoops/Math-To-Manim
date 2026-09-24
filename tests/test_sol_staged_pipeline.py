@@ -54,6 +54,7 @@ def test_codex_resume_command_targets_existing_thread(monkeypatch, tmp_path):
 def test_codex_streams_jsonl_events_to_trace_and_sink(monkeypatch, tmp_path):
     monkeypatch.setattr("sol.client.shutil.which", lambda _: "/usr/bin/codex")
     observed: dict = {}
+    streamed = threading.Event()
 
     class FakeProcess:
         def __init__(self):
@@ -66,6 +67,9 @@ def test_codex_streams_jsonl_events_to_trace_and_sink(monkeypatch, tmp_path):
             self.returncode = 0
 
         def wait(self, timeout=None):
+            # Model a process that stays alive while its stdout is consumed.
+            # Thread.start() alone does not guarantee the reader ran yet.
+            assert streamed.wait(5), "stdout reader did not deliver the event"
             observed["trace_during_wait"] = (
                 tmp_path / "trace.jsonl"
             ).read_text(encoding="utf-8")
@@ -83,13 +87,18 @@ def test_codex_streams_jsonl_events_to_trace_and_sink(monkeypatch, tmp_path):
     monkeypatch.setattr("sol.client.subprocess.Popen", fake_popen)
     events: list[dict] = []
 
+    def event_sink(event):
+        events.append(event)
+        if event['type'] == 'turn.completed':
+            streamed.set()
+
     result = CodexCli().run(
         "make a film",
         cwd=tmp_path,
         schema_path=tmp_path / "schema.json",
         output_path=tmp_path / "result.json",
         trace_path=tmp_path / "trace.jsonl",
-        event_sink=events.append,
+        event_sink=event_sink,
     )
 
     assert result.status == "completed"

@@ -1,8 +1,11 @@
 {
-  "name": "math-to-manim-sol-runtime",
+  "name": "math-to-manim-astra-runtime",
   "private": true,
-  "description": "Pinned Codex CLI runtime for the GPT-6 Astra film pipeline",
+  "description": "Official Codex SDK and CLI for the Astra-native reasoning and jev evaluation chain",
   "devDependencies": {
     "@openai/codex": "0.156.1"
+  },
+  "dependencies": {
+    "@openai/codex-sdk": "0.156.1"
   }
 }

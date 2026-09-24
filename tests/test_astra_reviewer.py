@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from sol.client import CodexCli
 from sol.harness import SolHarness
-from sol.jev import Criterion, JevAssessment, JevEvaluator
+from sol.astra_reviewer import Criterion, AstraAssessment, AstraReviewer
 from sol.models import RunRequest
 from sol.offline import write_offline_bundle
 
@@ -16,7 +16,7 @@ def assessment(score=0.9, verified=True, defects=None):
     def criterion(evidence):
         return Criterion(score=score, verified=verified, rationale="Checked supplied evidence",
                          evidence=[evidence])
-    return JevAssessment(mathematics=criterion("04_math_dossier.json"),
+    return AstraAssessment(mathematics=criterion("04_math_dossier.json"),
                          presentation=criterion("frame.png"), defects=defects or [],
                          observations=[], limitations=["Stills do not verify motion"])
 
@@ -43,13 +43,13 @@ def bundle(tmp_path):
 
 
 def review(bundle, client):
-    return JevEvaluator(client).review_render(bundle, RunRequest(prompt="Explain a theorem"),
+    return AstraReviewer(client).review_render(bundle, RunRequest(prompt="Explain a theorem"),
                                              evidence_paths=[bundle / "frame.png"])
 
 
 def test_astra_independent_read_only_configuration(monkeypatch, tmp_path):
     monkeypatch.setattr("sol.client.shutil.which", lambda _: "codex")
-    evaluator = JevEvaluator.from_client(CodexCli(model="writer", reasoning_effort="low"))
+    evaluator = AstraReviewer.from_client(CodexCli(model="writer", reasoning_effort="low"))
     assert evaluator.client.model == "gpt-6-astra"
     assert evaluator.client.reasoning_effort == "high"
     command = evaluator.client.build_command(cwd=tmp_path, schema_path=tmp_path / "schema",
@@ -59,7 +59,7 @@ def test_astra_independent_read_only_configuration(monkeypatch, tmp_path):
     assert "resume" not in command
     assert "--image" in command
     with pytest.raises(ValueError, match="read-only"):
-        JevEvaluator(CodexCli())
+        AstraReviewer(CodexCli())
 
 
 def test_gate_and_attempt_snapshots(bundle):
@@ -67,8 +67,8 @@ def test_gate_and_attempt_snapshots(bundle):
     assert review(bundle, client)["status"] == "approved"
     (bundle / "frame.png").write_bytes(b"new frame")
     assert review(bundle, client)["status"] == "approved"
-    assert (bundle / "jev/001/inputs/frame.png").read_bytes() == b"test frame"
-    assert (bundle / "jev/002/inputs/frame.png").read_bytes() == b"new frame"
+    assert (bundle / "astra_review/001/inputs/frame.png").read_bytes() == b"test frame"
+    assert (bundle / "astra_review/002/inputs/frame.png").read_bytes() == b"new frame"
     assert all("session_id" not in call for call in client.calls)
     assert client.calls[0]["image_paths"] == [bundle / "frame.png"]
     schema = json.loads(client.calls[0]["schema_path"].read_text())
@@ -76,7 +76,7 @@ def test_gate_and_attempt_snapshots(bundle):
     assert "frame.png" in allowed
     assert "sol_scene.py" in allowed
     assert "sol_scene.py:10 explanatory prose" not in allowed
-    record = json.loads((bundle / "jev/001/record.json").read_text())
+    record = json.loads((bundle / "astra_review/001/record.json").read_text())
     assert record["status"] == "completed"
     assert record["score_kind"] == "uncalibrated_model_judgment"
 
@@ -106,7 +106,7 @@ def test_mutation_fails_closed_and_records_error(bundle):
     client = Reviewer(mutation=lambda root: (root / "sol_scene.py").write_text("changed"))
     with pytest.raises(ValueError, match="changed during"):
         review(bundle, client)
-    record = json.loads((bundle / "jev/001/record.json").read_text())
+    record = json.loads((bundle / "astra_review/001/record.json").read_text())
     assert record["status"] == "failed"
     assert not (bundle / "review.json").exists()
 
@@ -129,7 +129,7 @@ def test_missing_and_outside_frames_rejected(bundle):
     with pytest.raises(ValueError, match="missing or empty"):
         review(bundle, Reviewer())
     with pytest.raises(ValueError):
-        JevEvaluator(Reviewer()).review_render(bundle, RunRequest(prompt="explain"),
+        AstraReviewer(Reviewer()).review_render(bundle, RunRequest(prompt="explain"),
                                               evidence_paths=[bundle.parent / "outside.png"])
 
 
@@ -157,9 +157,9 @@ def test_repair_and_resume_always_render_and_review(monkeypatch, tmp_path, rejec
     monkeypatch.setattr("sol.harness.StagedPipeline", Pipeline)
     monkeypatch.setattr("sol.harness.render_scene", render)
     monkeypatch.setattr("sol.harness.preflight_render", lambda: [])
-    monkeypatch.setattr(JevEvaluator, "from_client", lambda client: JevEvaluator(SequenceReviewer()))
+    monkeypatch.setattr(AstraReviewer, "from_client", lambda client: AstraReviewer(SequenceReviewer()))
     harness = SolHarness(runs_dir=tmp_path)
-    request = RunRequest(prompt="Explain a theorem", render=True, evaluator="jev", max_repairs=1)
+    request = RunRequest(prompt="Explain a theorem", render=True, evaluator="astra_review", max_repairs=1)
     if reject_forever:
         with pytest.raises(RuntimeError, match="requires repair"):
             harness.run(request)
@@ -178,12 +178,12 @@ def test_repair_and_resume_always_render_and_review(monkeypatch, tmp_path, rejec
         assert sum(c[0] == "review" for c in calls) == 2
 
 
-def test_no_render_and_offline_do_not_claim_jev_review(monkeypatch, tmp_path):
-    monkeypatch.setattr(JevEvaluator, "from_client", lambda _: pytest.fail("unexpected review"))
+def test_no_render_and_offline_do_not_claim_astra_review_review(monkeypatch, tmp_path):
+    monkeypatch.setattr(AstraReviewer, "from_client", lambda _: pytest.fail("unexpected review"))
     harness = SolHarness(runs_dir=tmp_path)
-    result = harness.run(RunRequest(prompt="Explain a theorem", evaluator="jev", offline=True, render=True))
+    result = harness.run(RunRequest(prompt="Explain a theorem", evaluator="astra_review", offline=True, render=True))
     harness.resume(result["run_id"])
-    assert not list(tmp_path.glob("*/jev"))
+    assert not list(tmp_path.glob("*/astra_review"))
 
 
 def test_stale_video_rejected(monkeypatch, tmp_path):
@@ -219,5 +219,11 @@ def test_failed_reviewer_does_not_reuse_approval(bundle):
     with pytest.raises(RuntimeError, match="unavailable"):
         review(bundle, Reviewer(mutation=fail))
     assert not (bundle / "review.json").exists()
-    assert json.loads((bundle / "jev/002/record.json").read_text())["status"] == "failed"
-    assert (bundle / "jev/001/review.json").exists()
+    assert json.loads((bundle / "astra_review/002/record.json").read_text())["status"] == "failed"
+    assert (bundle / "astra_review/001/review.json").exists()
+
+
+def test_old_saved_reviewer_name_migrates_to_astra():
+    request = RunRequest(prompt='Explain a theorem', evaluator='jev')
+    assert request.evaluator == 'astra_review'
+    assert request.model_dump()['evaluator'] == 'astra_review'

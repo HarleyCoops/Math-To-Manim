@@ -1,4 +1,4 @@
-# The Third Side: Astra, Jev, and the lesson deployment
+# The Third Side: Astra review and the lesson deployment
 
 This grade 8 lesson asks for the shortest straight route between opposite
 corners **through the interior** of a rectangular box. It is not the shortest
@@ -18,7 +18,7 @@ lesson was added. This is a new teaching treatment of a familiar theorem.
 The `sol/` package keeps its existing CLI name for compatibility. Its default
 model is now `gpt-6-astra`, with six roles: intent, cartographer, curriculum,
 math director, cinematographer, and scene composer. The wrapper validates and
-renders the scene. With `--evaluator jev`, a fresh Astra session independently
+renders the scene. With `--evaluator astra_review`, a fresh Astra session independently
 reviews the source and sampled frames. Rejected candidates return to the
 appropriate production stages with evidence and feedback.
 
@@ -34,17 +34,19 @@ actual writer model, preventing reuse of a different model's stage artifacts.
 pip install -e ".[dev,render]"
 npm ci
 codex login
-math-to-manim-sol run "Explain the diagonal of a 3 by 4 by 6 box with two right triangles for a grade 8 learner" --render -q h --evaluator jev --max-repairs 2
+math-to-manim-sol run "Explain the diagonal of a 3 by 4 by 6 box with two right triangles for a grade 8 learner" --render -q h --evaluator astra_review --max-repairs 2
 ```
 
 Each run retains its stage artifacts, model traces, Manim source, rendering
-logs, sampled frames, and Jev attempts in `runs/sol/`. The public showcase
+logs, sampled frames, and Astra review attempts in `runs/sol/`. The public showcase
 contains the curated scene and media; raw session traces remain local.
 The [production record](showcase/the-third-side/production.json) includes the
 final assessment and review-attempt history. The
 [review contact sheet](showcase/the-third-side/review-contact-sheet.png)
 shows sampled visual evidence.
-See [Jev's design](JEV.md) for score definitions and limitations. This is a
+This historical film used an Astra reviewer, previously mislabeled Jev.
+It did not call TypeSafe. See [the real TypeSafe integration](JEV.md) for the
+new primary pipeline. This is a
 revision loop at inference time, not an RL weight update.
 
 ## Base44 development setup

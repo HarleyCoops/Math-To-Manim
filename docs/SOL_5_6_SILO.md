@@ -125,8 +125,9 @@ tool loop and workspace execution. Shared abstractions are limited to the final
 product expectation—an inspectable Manim film bundle—not the provider control
 plane.
 
-## Independent jev review
+## Independent Astra review
 
-Use `--render --evaluator jev` to score mathematics and rendered presentation
-with a fresh, read-only GPT-6 Astra Codex session. See [the jev contract](JEV.md)
-for revision routing, resume behavior, evidence records, and calibration limits.
+Use `--render --evaluator astra_review` for a fresh, read-only GPT-6 Astra
+review of mathematics and sampled presentation evidence. This legacy option was
+previously mislabeled Jev; it does not call TypeSafe. The new primary Astra
+pipeline uses [real TypeSafe Jev](JEV.md) at every checkpoint.

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 ARTIFACT_NAMES = (
     "01_intent.json",
@@ -26,7 +26,13 @@ class RunRequest(BaseModel):
     reasoning_effort: Literal["low", "medium", "high", "xhigh", "max"] = "high"
     max_repairs: int = Field(default=2, ge=0, le=5)
     offline: bool = False
-    evaluator: Literal["cinematographer", "jev"] = "cinematographer"
+    evaluator: Literal["cinematographer", "astra_review"] = "cinematographer"
+
+    @field_validator('evaluator', mode='before')
+    @classmethod
+    def migrate_legacy_reviewer_name(cls, value):
+        # Old saved requests used this incorrect name for an Astra reviewer.
+        return 'astra_review' if value == 'jev' else value
 
 
 class CodexRunResult(BaseModel):
