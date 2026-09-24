@@ -1,115 +1,50 @@
-# jev: independent mathematics and render evaluation
+# TypeSafe Jev decision contract
 
-Jev scores rendered candidates and returns revision feedback. It lives in
-`sol/`, uses the Codex CLI with cached ChatGPT login, and has no API-key or HTTP
-fallback. It does not call Mythos or update model weights.
+Jev is TypeSafe's separate System One model, **jev-1.13.0**, accessed with
+**typesafe-sdk 0.7.1** and `TYPESAFE_API_KEY`. It is not an Astra persona.
+Earlier Sol reviewer code used the name “jev” incorrectly; it is now named
+`sol/astra_reviewer.py`, with the explicit `--evaluator astra_review` option.
+Historical review artifacts retain their original records; they are not
+TypeSafe evaluations. The primary `astra/jev.py` implementation is authoritative.
 
-## Run
+At every brief, mathematics, storyboard, scene and render checkpoint:
 
-```bash
-math-to-manim-sol run "Explain Fourier modes" --render --evaluator jev --max-repairs 2
-math-to-manim-sol resume <run-id>
-```
+1. Astra audits the exact candidate and relevant upstream artifacts in a fresh
+   Codex SDK session. The render auditor also receives sampled frame images.
+2. The harness validates exact evidence citations and checks SHA-256 hashes.
+3. Jev receives text artifacts, the Astra audit, checkpoint and original request.
+   Images are represented only by explicitly attributed Astra observations.
+4. Two atomic Score questions evaluate checkpoint-specific evidence. Each must
+   score at least 3.2 on a 0–4 rubric, with confidence at least 0.65.
+5. Noul evidence sufficiency must be at least 0.8; Noul blocking defect
+   probability must be at most 0.2. An unresolved Astra blocker also rejects.
+6. Choice selects the repair role. Confidence below 0.65 routes to the current
+   stage for more evidence. Routing never skips an unapproved earlier stage.
 
-The default reviewer remains the saved cinematographer. Jev runs only for live
-rendered requests. `--offline` produces no jev assessment; omitting `--render`
-also skips evaluation. Resume uses the saved evaluator choice and performs
-fresh rendering and review. Each invocation permits at most `max_repairs`
-review/render repairs; manual resume starts a new bounded budget.
+The thresholds are provisional engineering policy, not calibrated accuracy.
+Jev confidence reflects answer distributions, not a proof of correctness.
+Human calibration should label held-out accepted and rejected artifacts,
+measure false accept/reject rates by stage, then version any policy changes.
+Sampled frames cannot verify every instant of motion. Jev cannot see pixels.
 
-## Model and isolation
+## Authentication and failure
 
-Jev explicitly selects `gpt-6-astra` with `model_reasoning_effort="high"`,
-independently of the writer's settings. This is a starting configuration, not a
-measured optimum. On September 24, 2026, the
-[official Astra model page](https://developers.openai.com/api/docs/models/gpt-6-astra)
-and the local Codex catalog both supported `high`. The
-[Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)
-documents the reasoning setting. Live production uses repository-pinned CLI
-0.156.1. CLI 0.146.0 was rejected for Astra by the service; run `npm ci` before
-using the chain. The driver prefers this local runtime.
+Save `TYPESAFE_API_KEY=your-key` in the repository's git-ignored `.env.local`
+or provide the process environment variable. The local file is read directly
+into the TypeSafe client, never exported to Astra or the renderer. Codex uses
+cached ChatGPT login separately. Credentials are never written to run artifacts.
+Missing keys, API failures, malformed responses and exhausted repair budgets
+stop the run. There is no simulated or Astra fallback for a live Jev gate.
 
-Every assessment starts a fresh session without a writer session ID. The client
-requests a read-only sandbox, attaches rendered images, and tells the reviewer
-to treat candidate files as evidence rather than instructions. The CLI writes
-its final response through `--output-last-message`; the reviewer need not write
-files. The Python wrapper writes audit records.
+## Audit trail
 
-Independence means a separate session, role, and permissions. It does not mean
-statistically independent errors or a formal security boundary against all
-locally configured tools. Hash checks detect changes to supplied evidence
-during review and fail the run if it changes.
+Each attempt stores the Astra audit, exact input hashes, TypeSafe request state,
+raw typed response and deterministic gate decision. Feedback derived from the
+Astra audit is explicitly labeled; Jev does not generate that prose. Approved
+stages bind the original request and all upstream artifact hashes. A changed
+artifact or evaluation policy invalidates cached approvals. Resume rerenders and
+rechecks the film. Offline tests use explicit fakes and are never live evidence.
 
-## Assessment and acceptance
-
-The typed assessment has `mathematics` and `presentation` criteria. Each has a
-finite score in [0, 1], a boolean `verified`, a rationale, and exact relative
-evidence paths. Lists record defects, observations, and limitations.
-Citations are constrained by a per-run schema enum to bare supplied paths;
-line numbers and explanations belong in the rationale or defect text. Twelve
-equally spaced frame samples and a contact sheet support presentation review.
-The `verified` flag applies to the supplied evidence, not continuous motion.
-Rubric anchors are 0 (unusable), 0.5 (major repair), 0.8 (acceptable on inspected
-evidence), and 1 (no issue found on inspected evidence).
-
-The wrapper approves only when both criteria are verified, both scores are at
-least 0.8, and there are no defects. The threshold is provisional. Missing
-frames, invalid JSON/scores/citations, reviewer errors, and evidence mutations
-fail the run. Low scores or unverified criteria generate repair feedback even
-when no explicit defects were returned.
-
-Mathematical rejection restarts the math director and downstream visual planning
-and composition. Presentation-only low scores restart scene composition.
-Explicit free-text defects conservatively restart the math director too,
-because a defect can contradict a high score. The full assessment accompanies
-feedback. Revised candidates are statically validated, rendered, and assessed
-again. Exhausting the repair budget fails the run.
-
-## Evidence and audit trail
-
-Each `runs/sol/<run-id>/jev/NNN/` contains:
-
-- `inputs/`: copies of the dossier, scene specification, source, and frames;
-- `record.json`: request, reviewer settings, timestamps, SHA-256 input hashes,
-  status/error, and the `uncalibrated_model_judgment` score label;
-- `assessment.schema.json`, `assessment.json`, and `trace.jsonl`: schema and
-  CLI response/trace (availability depends on where a failed call stops);
-- `review.json`: the acceptance decision and feedback after a valid assessment.
-
-Root `review.json` is cleared when a new jev review starts, so failure cannot
-leave an earlier approval as current. Attempt directories are never reused.
-Manifests preserve repair feedback; resume never trusts an old approval.
-Rendering rejects unchanged old video output and removes old target frames
-before extracting replacements.
-
-Sampled stills cannot establish continuous motion quality, timing, narration
-synchronization, or every transient layout defect. Mathematical review is a
-model judgment, not a proof certificate. Copied inputs support later human
-audits; the local filesystem is not an immutable evidence store.
-
-## Human calibration before reward use
-
-1. Build held-out cases with known mathematical errors, notation/clipping
-   defects, correct controls, and failures between sampled frames. Keep these
-   separate from repair training data.
-2. Have two human reviewers score candidates without jev's verdict. Adjudicate
-   disagreements and preserve reference explanations.
-3. Repeat jev assessments on unchanged bundles. Measure false approvals and
-   rejections separately for math and presentation, human agreement, score
-   variation, and paired before/after repair outcomes.
-4. Tune rubric, frame sampling, and thresholds on a development split. Report
-   results on untouched held-out cases. Version any reward mapping separately
-   and audit reward gaming during actual RL training.
-
-No calibration results or training gains are claimed by this implementation.
-
-## Offline verification
-
-```bash
-python -m pytest tests/test_jev.py tests/test_sol_silo.py tests/test_sol_staged_pipeline.py
-python -m pytest
-```
-
-Fake CLI responses and renders test isolation, score validation, citations,
-mutations, snapshots, rejection feedback, math repair routing, bounded retries,
-and resume review. They do not establish live model or rendering quality.
+[TypeSafe introduction](https://docs.typesafe.ai/introduction) ·
+[Python SDK](https://docs.typesafe.ai/sdk/python) ·
+[Confidence](https://docs.typesafe.ai/confidence)

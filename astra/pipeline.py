@@ -7,6 +7,7 @@ import shutil
 import uuid
 
 from astra.client import CodexSDK, MODEL
+from astra.jev import JevClient, POLICY_VERSION
 from astra.models import Artifact, Assessment, Request, STAGES
 from astra.prompts import specialist_prompt, judge_prompt
 from astra.rendering import render, validate_source
@@ -23,30 +24,46 @@ def save(path, value):
     temp.replace(path)
 
 class Pipeline:
-    def __init__(self, client=None, runs_dir=None, renderer=None):
+    def __init__(self, client=None, runs_dir=None, renderer=None, jev=None):
         self.client = client or CodexSDK()
         self.runs_dir = Path(runs_dir or ROOT/'runs/astra')
         self.renderer = renderer or render
+        self.jev = jev
 
     def _judge(self, folder, request, stage, paths, images, index):
         hashes = {str(p.relative_to(folder)).replace('\\','/'): digest(p) for p in paths}
         context = '\n'.join(hashes)
-        output = folder/f'attempts/{index:03d}-{stage}-jev.json'
+        output = folder/f'attempts/{index:03d}-{stage}-astra-audit.json'
         result = self.client.call(judge_prompt(stage,request,context,list(hashes)),
                                   cwd=folder,output=output,schema=Assessment,images=images,
-                                  effort=request.effort,search=stage=='mathematics')
+                                  effort=request.effort,search=stage=='mathematics',
+                                  evidence_paths=list(hashes))
+        save(output, result.model_dump())
         if any(digest(folder/name)!=value for name,value in hashes.items()):
-            raise RuntimeError('Evidence changed during jev review')
+            raise RuntimeError('Evidence changed during Astra audit')
         if not set(result.evidence).issubset(hashes):
-            raise RuntimeError('Jev cited evidence outside the supplied bundle')
+            raise RuntimeError('Astra auditor cited evidence outside the supplied bundle')
         if stage=='render' and not set(result.evidence).intersection(
                 str(p.relative_to(folder)).replace('\\','/') for p in images):
             raise RuntimeError('Render review must cite actual frames')
         save(output.with_suffix('.record.json'),dict(model=MODEL,input_hashes=hashes,
-             approved=result.approved,score_kind='uncalibrated_model_judgment'))
-        return result
+             role='astra-evidence-auditor',score_kind='uncalibrated_model_judgment'))
+        state={'checkpoint':stage,'original_request':request.prompt,
+               'artifacts':{name:(folder/name).read_text(encoding='utf-8') for name in hashes
+                            if (folder/name).suffix in {'.json','.py'}},
+               'astra_evidence_audit':result.model_dump(),
+               'image_handling':'Jev receives only Astra text observations of images, never pixels.',
+               'input_hashes':hashes}
+        decision=self.jev.review(state=state,stage=stage,audit=result,
+                                 output=folder/f'attempts/{index:03d}-{stage}-jev.json')
+        if any(digest(folder/name)!=value for name,value in hashes.items()):
+            raise RuntimeError('Evidence changed during TypeSafe Jev evaluation')
+        return decision
 
     def run(self, request, *, folder=None):
+        # Fail before consuming Codex usage if the real Jev credentials are absent.
+        if self.jev is None:
+            self.jev = JevClient()
         if folder is None:
             folder=self.runs_dir/(datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')+'-'+uuid.uuid4().hex[:6])
             folder.mkdir(parents=True)
@@ -58,10 +75,14 @@ class Pipeline:
         # A local resume reuses only accepted artifacts whose exact hashes still match.
         ledger_path=folder/'manifest.json'
         ledger=json.loads(ledger_path.read_text()) if ledger_path.exists() else dict(model=MODEL,stages={},events=[])
-        ledger.update(status='running',error=None,run_dir=str(folder))
+        if ledger.get('evaluator_policy') != POLICY_VERSION:
+            ledger['stages'] = {}
+        ledger.update(status='running',error=None,run_dir=str(folder),evaluator_policy=POLICY_VERSION)
         save(ledger_path,ledger)
         feedback=''; revisions=0; i=0
-        attempt=len(list((folder/'attempts').glob('*-candidate.json')))+len(list((folder/'attempts').glob('*-render-jev.json')))
+        attempt=max([int(p.name.split('-')[0]) for p in (folder/'attempts').iterdir()
+                     if p.name.split('-')[0].isdigit()]
+                    + [event['attempt'] for event in ledger['events']] + [0])
         try:
             while True:
                 while i < len(STAGES):
@@ -79,9 +100,19 @@ class Pipeline:
                     artifact=self.client.call(specialist_prompt(stage,request,context,feedback),cwd=folder,
                          output=candidate_path,schema=Artifact,effort=request.effort,search=stage=='mathematics')
                     save(candidate_path,artifact.model_dump())
-                    if stage=='scene': validate_source(artifact.content)
+                    if stage=='scene':
+                        try:
+                            validate_source(artifact.content)
+                        except (ValueError, SyntaxError) as exc:
+                            revisions += 1
+                            ledger['events'].append(dict(stage=stage,attempt=attempt,error=str(exc)))
+                            if revisions > request.max_revisions:
+                                raise RuntimeError('Static repair budget exhausted') from exc
+                            feedback = 'Static source validation failed: ' + str(exc)
+                            save(ledger_path,ledger)
+                            continue
                     paths=[folder/f'{name}.json' for name in STAGES[:i]]+[candidate_path]
-                    print(f'jev: {stage}',flush=True)
+                    print(f'Astra evidence audit -> TypeSafe Jev: {stage}',flush=True)
                     review=self._judge(folder,request,stage,paths,[],attempt)
                     ledger['events'].append(dict(stage=stage,attempt=attempt,approved=review.approved,
                                                review=review.model_dump()))
@@ -110,7 +141,7 @@ class Pipeline:
                     feedback='Render failed. Repair source: '+str(exc);i=3
                     ledger['stages'].pop('scene',None);save(ledger_path,ledger);continue
                 paths=[folder/f'{name}.json' for name in STAGES]+[folder/'scene.py']+frames+[sheet]
-                print('jev: actual render frames',flush=True)
+                print('Astra frame inspection -> TypeSafe Jev decision',flush=True)
                 review=self._judge(folder,request,'render',paths,frames+[sheet],attempt)
                 ledger['events'].append(dict(stage='render',attempt=attempt,approved=review.approved,
                                            review=review.model_dump()))

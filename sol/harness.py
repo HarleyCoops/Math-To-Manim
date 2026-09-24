@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from sol.client import DEFAULT_MODEL, CodexCli
-from sol.jev import JevEvaluator
+from sol.astra_reviewer import AstraReviewer
 from sol.contract import SOL_FILM_CONTRACT
 from sol.manifest_schema import CURRENT_SCHEMA_VERSION, migrate_manifest, validation_template
 from sol.models import CodexRunResult, RunManifest, RunRequest
@@ -139,9 +139,9 @@ class SolHarness:
         self, run_dir: Path, request: RunRequest, manifest: RunManifest,
         pipeline: StagedPipeline,
     ) -> tuple[str | None, str | None]:
-        if request.evaluator == "jev" and request.render and not request.offline:
+        if request.evaluator == "astra_review" and request.render and not request.offline:
             (run_dir / "review.json").write_text(
-                json.dumps({"status": "pending", "evaluator": "jev"}),
+                json.dumps({"status": "pending", "evaluator": "astra_review"}),
                 encoding="utf-8",
             )
         failures, scene_name, video_path = validate_run(
@@ -192,8 +192,8 @@ class SolHarness:
                             "render completed without representative frame evidence"
                         )
                     reviewer = (
-                        JevEvaluator.from_client(self.client)
-                        if request.evaluator == "jev" else pipeline
+                        AstraReviewer.from_client(self.client)
+                        if request.evaluator == "astra_review" else pipeline
                     )
                     review = reviewer.review_render(
                         run_dir,

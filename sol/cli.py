@@ -31,7 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     run.add_argument("--max-repairs", default=2, type=int, choices=range(0, 6))
     run.add_argument("--offline", action="store_true")
-    run.add_argument("--evaluator", choices=["cinematographer", "jev"],
+    run.add_argument("--evaluator", choices=["cinematographer", "astra_review"],
                      default="cinematographer", help="Reviewer for rendered runs")
 
     runs = sub.add_parser("runs", help="List recent Sol run manifests")

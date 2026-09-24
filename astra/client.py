@@ -1,4 +1,4 @@
-"""One fresh Astra Codex SDK session per specialist or jev review."""
+"""One fresh Astra Codex SDK session per specialist or evidence audit."""
 import json
 import os
 from pathlib import Path
@@ -12,12 +12,16 @@ def clean_environment():
         word in k.upper() for word in ("API_KEY", "SECRET", "TOKEN", "PASSWORD"))}
 
 class CodexSDK:
-    def call(self, prompt, *, cwd, output, schema, images=(), effort="high", search=False):
+    def call(self, prompt, *, cwd, output, schema, images=(), effort="high", search=False,
+             evidence_paths=None):
         output = Path(output).resolve()
         output.parent.mkdir(parents=True, exist_ok=True)
         trace = output.with_suffix(".trace.jsonl")
+        output_schema = schema.model_json_schema()
+        if evidence_paths is not None:
+            output_schema['properties']['evidence']['items']['enum'] = evidence_paths
         payload = dict(prompt=prompt, cwd=str(Path(cwd).resolve()), output=str(output),
-                       trace=str(trace), schema=schema.model_json_schema(),
+                       trace=str(trace), schema=output_schema,
                        images=[str(Path(p).resolve()) for p in images], effort=effort,
                        sandbox="read-only", search=search, timeoutMs=1800000)
         output.with_suffix(".prompt.txt").write_text(prompt, encoding="utf-8")

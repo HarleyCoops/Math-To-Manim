@@ -24,6 +24,13 @@ def main(argv=None):
         for tool in ['ffmpeg','latex']:
             import shutil
             print(f'{tool}: {shutil.which(tool) or "missing"}')
+        from astra.jev import load_api_key
+        try:
+            load_api_key()
+            print('TypeSafe: credential configured (not a live authentication check)')
+        except RuntimeError:
+            print('TypeSafe: missing TYPESAFE_API_KEY')
+            return 1
         return result.returncode
     if args.command=='runs':
         for path in sorted((ROOT/'runs/astra').glob('*/manifest.json')):

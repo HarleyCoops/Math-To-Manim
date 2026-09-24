@@ -13,6 +13,7 @@ authors = [{ name = "Christian H. Cooper" }]
 keywords = ["manim", "animation", "mathematics", "astra", "codex", "agents"]
 dependencies = [
   "pydantic>=2,<3",
+  "typesafe-sdk==0.7.1",
 ]
 
 [project.optional-dependencies]
