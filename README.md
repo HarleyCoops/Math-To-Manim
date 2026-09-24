@@ -113,6 +113,51 @@ flowchart LR
 math-to-manim recommend runs/astra/<run-id> --stage render --design --execute
 ```
 
+### What Jev Decides
+
+| Decision | TypeSafe primitive | What the chain does with it |
+|---|---|---|
+| Is the checkpoint supported by evidence? | Two `Score` answers plus `Noul` checks | Advance only when the readiness policy passes and Astra has no unresolved blockers |
+| Where should a repair start? | `Choice` | Route to brief, mathematics, storyboard or scene; invalidate downstream approvals |
+| Which investigation would help? | `Choice` over allowed actions | Dispatch a focused Astra tool session when confidence is sufficient |
+| Where can the film improve? | Sixteen independent `Score` questions | Record supported strengths, concrete improvement opportunities and evidence gaps |
+
+The artistic map examines **dramatic questions and geometric reveals**,
+**definition order and reading time**, **LaTeX hierarchy and mathematical
+integrity**, **symbol-to-geometry links**, **purposeful camera movement and
+local-to-global views**, **depth and overlay clearance**, **surface/volume/boundary
+distinctions**, **topology changes**, **color semantics**, and **an earned finale**.
+Every rubric specifies its evidence, repair action and verification criterion.
+
+Available investigations are `check_math`, `clarify_definitions`, `inspect_scene`,
+`inspect_frames`, and `replan_camera`, plus `no_action`. Jev chooses among these;
+our CLI executes them through Astra. For example, a camera investigation can
+recommend an exact target, zoom and label position, while a definition check can
+identify the first unexplained symbol and propose replacement wording. These
+written recommendations come from Astra, not from Jev.
+
+A rejected gate may receive one additional investigation and a new Jev decision
+on the expanded evidence. Both decisions remain recorded. Mathematical blockers
+cannot be overruled by an artistic score. Low-confidence action choices do not
+execute, and advisory design scores do not silently change an approved film.
+Source changes still require a new render and review.
+
+```bash
+# Inspect every decision, evidence requirement and repair mapping offline.
+math-to-manim design-map
+math-to-manim design-map --stage render
+
+# Ask real Jev to evaluate the design and select a focused investigation.
+math-to-manim recommend runs/astra/<run-id> --stage render --design --execute
+```
+
+Each live evaluation retains its input, raw TypeSafe response, interpreted
+scores and action selection. New calls also retain **HTTP receipts**: UTC time,
+endpoint, status and request-body hash, with credentials excluded. Astra tool
+traces and recommendations are separate, so model roles remain inspectable.
+See the [complete design and optimization map](docs/JEV_DESIGN_MAP.md) and
+[API/evidence contract](docs/JEV.md).
+
 ## Installation
 
 Install Python 3.10+, Node.js 18+, Manim's system dependencies, FFmpeg and LaTeX.
