@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "math-to-manim"
-version = "1.1.0"
+version = "2.0.0"
 description = "Ask a question -> get a freakin' movie. The Mythos 6-agent chain turns one sentence into a cinematic Manim film, with a REST API and MCP server."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -35,8 +35,10 @@ render = [
 ]
 
 [project.scripts]
-math-to-manim = "mythos.cli:main"
-m2m = "mythos.cli:main"
+math-to-manim = "astra.cli:main"
+math-to-manim-mythos = "mythos.cli:main"
+m2m = "astra.cli:main"
+math-to-manim-astra = "astra.cli:main"
 math-to-manim-sol = "sol.cli:main"
 m2m-sol = "sol.cli:main"
 
@@ -45,9 +47,10 @@ Homepage = "https://github.com/HarleyCoops/Math-To-Manim"
 Repository = "https://github.com/HarleyCoops/Math-To-Manim"
 
 [tool.setuptools.packages.find]
-include = ["mythos*", "sol*"]
+include = ["astra*", "mythos*", "sol*"]
 
 [tool.setuptools.package-data]
+astra = ["*.mjs"]
 mythos = ["agents/*.md"]
 
 [tool.pytest.ini_options]

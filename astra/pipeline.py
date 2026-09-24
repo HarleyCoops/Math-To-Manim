@@ -1,0 +1,131 @@
+"""Astra production chain with independent jev gates and bounded backward repair."""
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import shutil
+import uuid
+
+from astra.client import CodexSDK, MODEL
+from astra.models import Artifact, Assessment, Request, STAGES
+from astra.prompts import specialist_prompt, judge_prompt
+from astra.rendering import render, validate_source
+
+ROOT = Path(__file__).resolve().parents[1]
+
+def digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def save(path, value):
+    path = Path(path)
+    temp = path.with_suffix('.tmp')
+    temp.write_text(json.dumps(value,indent=2,ensure_ascii=False),encoding='utf-8')
+    temp.replace(path)
+
+class Pipeline:
+    def __init__(self, client=None, runs_dir=None, renderer=None):
+        self.client = client or CodexSDK()
+        self.runs_dir = Path(runs_dir or ROOT/'runs/astra')
+        self.renderer = renderer or render
+
+    def _judge(self, folder, request, stage, paths, images, index):
+        hashes = {str(p.relative_to(folder)).replace('\\','/'): digest(p) for p in paths}
+        context = '\n'.join(hashes)
+        output = folder/f'attempts/{index:03d}-{stage}-jev.json'
+        result = self.client.call(judge_prompt(stage,request,context,list(hashes)),
+                                  cwd=folder,output=output,schema=Assessment,images=images,
+                                  effort=request.effort,search=stage=='mathematics')
+        if any(digest(folder/name)!=value for name,value in hashes.items()):
+            raise RuntimeError('Evidence changed during jev review')
+        if not set(result.evidence).issubset(hashes):
+            raise RuntimeError('Jev cited evidence outside the supplied bundle')
+        if stage=='render' and not set(result.evidence).intersection(
+                str(p.relative_to(folder)).replace('\\','/') for p in images):
+            raise RuntimeError('Render review must cite actual frames')
+        save(output.with_suffix('.record.json'),dict(model=MODEL,input_hashes=hashes,
+             approved=result.approved,score_kind='uncalibrated_model_judgment'))
+        return result
+
+    def run(self, request, *, folder=None):
+        if folder is None:
+            folder=self.runs_dir/(datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')+'-'+uuid.uuid4().hex[:6])
+            folder.mkdir(parents=True)
+            save(folder/'request.json',request.model_dump())
+        else:
+            folder=Path(folder).resolve()
+            request=Request.model_validate_json((folder/'request.json').read_text(encoding='utf-8'))
+        (folder/'attempts').mkdir(exist_ok=True)
+        # A local resume reuses only accepted artifacts whose exact hashes still match.
+        ledger_path=folder/'manifest.json'
+        ledger=json.loads(ledger_path.read_text()) if ledger_path.exists() else dict(model=MODEL,stages={},events=[])
+        ledger.update(status='running',error=None,run_dir=str(folder))
+        save(ledger_path,ledger)
+        feedback=''; revisions=0; i=0
+        attempt=len(list((folder/'attempts').glob('*-candidate.json')))+len(list((folder/'attempts').glob('*-render-jev.json')))
+        try:
+            while True:
+                while i < len(STAGES):
+                    stage=STAGES[i]
+                    accepted=ledger['stages'].get(stage)
+                    if accepted and all((folder/p).is_file() and digest(folder/p)==h for p,h in accepted['hashes'].items()):
+                        print(f'cached: {stage}',flush=True); i+=1; continue
+                    # Invalidate this stage and every downstream stage before writing anything.
+                    for name in STAGES[i:]: ledger['stages'].pop(name,None)
+                    save(ledger_path,ledger)
+                    attempt+=1
+                    print(f'Astra {stage}, attempt {attempt}',flush=True)
+                    context='\n'.join(f'{name}.json' for name in STAGES[:i])
+                    candidate_path=folder/f'attempts/{attempt:03d}-{stage}-candidate.json'
+                    artifact=self.client.call(specialist_prompt(stage,request,context,feedback),cwd=folder,
+                         output=candidate_path,schema=Artifact,effort=request.effort,search=stage=='mathematics')
+                    save(candidate_path,artifact.model_dump())
+                    if stage=='scene': validate_source(artifact.content)
+                    paths=[folder/f'{name}.json' for name in STAGES[:i]]+[candidate_path]
+                    print(f'jev: {stage}',flush=True)
+                    review=self._judge(folder,request,stage,paths,[],attempt)
+                    ledger['events'].append(dict(stage=stage,attempt=attempt,approved=review.approved,
+                                               review=review.model_dump()))
+                    if not review.approved:
+                        revisions+=1
+                        if revisions>request.max_revisions: raise RuntimeError('Jev revision budget exhausted')
+                        i=min(i,STAGES.index(review.repair_stage));feedback=review.model_dump_json()
+                        for name in STAGES[i:]:ledger['stages'].pop(name,None)
+                        save(ledger_path,ledger);continue
+                    shutil.copyfile(candidate_path,folder/f'{stage}.json')
+                    # Bind cached approval to the request and all upstream inputs, not just output.
+                    deps=[folder/'request.json']+[folder/f'{name}.json' for name in STAGES[:i+1]]
+                    ledger['stages'][stage]={'hashes':{p.relative_to(folder).as_posix():digest(p) for p in deps}}
+                    save(ledger_path,ledger); i+=1;feedback=''
+                if not request.render: break
+                attempt+=1
+                source=Artifact.model_validate_json((folder/'scene.json').read_text()).content
+                (folder/'scene.py').write_text(source,encoding='utf-8')
+                print(f'Rendering {request.quality}, attempt {attempt}',flush=True)
+                try:
+                    video,frames,sheet=self.renderer(folder,source,request.quality,attempt)
+                except (RuntimeError, ValueError) as exc:
+                    revisions+=1
+                    ledger['events'].append(dict(stage='render',attempt=attempt,error=str(exc)))
+                    if revisions>request.max_revisions: raise
+                    feedback='Render failed. Repair source: '+str(exc);i=3
+                    ledger['stages'].pop('scene',None);save(ledger_path,ledger);continue
+                paths=[folder/f'{name}.json' for name in STAGES]+[folder/'scene.py']+frames+[sheet]
+                print('jev: actual render frames',flush=True)
+                review=self._judge(folder,request,'render',paths,frames+[sheet],attempt)
+                ledger['events'].append(dict(stage='render',attempt=attempt,approved=review.approved,
+                                           review=review.model_dump()))
+                save(ledger_path,ledger)
+                if review.approved:
+                    ledger.update(video=str(video.relative_to(folder)),contact_sheet=str(sheet.relative_to(folder)),
+                                  video_sha256=digest(video))
+                    break
+                revisions+=1
+                if revisions>request.max_revisions:raise RuntimeError('Render review revision budget exhausted')
+                i=STAGES.index(review.repair_stage);feedback=review.model_dump_json()
+                for name in STAGES[i:]:ledger['stages'].pop(name,None)
+            ledger.update(status='completed',completed_utc=datetime.now(timezone.utc).isoformat())
+        except Exception as exc:
+            ledger.update(status='failed',error=f'{type(exc).__name__}: {exc}')
+            raise
+        finally:save(ledger_path,ledger)
+        return ledger
