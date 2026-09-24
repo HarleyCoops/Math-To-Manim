@@ -40,9 +40,20 @@ The film uses a genuine Morse height with isolated critical points, rather than
 the degenerate height of a horizontal donut. The colored object is the surface
 below the scanning plane; it is not a volume of water.
 
-The live run is in progress at **720p, 30 fps**, with geometry and review history
-retained. Remaining production is local-only, with no further model review or
-automatic regeneration. [Read the production request](docs/prompts/astra-morse-torus.md).
+**The complete 98-second movie is rendered and stitched at 720p, 30 fps.**
+
+[![Morse theory on a torus — selected moments](docs/showcase/assets/astra-morse-torus.gif)](docs/showcase/assets/astra-morse-torus.mp4)
+
+[Watch the full movie](docs/showcase/assets/astra-morse-torus.mp4) ·
+[View the contact sheet](docs/showcase/assets/astra-morse-torus-contact-sheet.png) ·
+[Inspect the Manim source](examples/astra/morse_torus.py) ·
+[Read the production record](docs/showcase/astra-morse-torus/README.md) ·
+[Production request](docs/prompts/astra-morse-torus.md)
+
+The GIF shows selected moments. The full MP4 decoded without errors and its
+resolution, frame rate, and duration were checked with FFprobe. At the user's
+request, the final candidate was rendered locally with **no further model/API
+calls**. Earlier Jev verdicts are preserved; the final film is **not Jev-approved**.
 
 ## Astra And Jev
 

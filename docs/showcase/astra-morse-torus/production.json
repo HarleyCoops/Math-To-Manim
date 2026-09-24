@@ -1,0 +1,893 @@
+{
+  "title": "Morse Theory: Four Critical Moments",
+  "run_id": "20260924-193828-35a89b",
+  "writer_model": "gpt-6-astra",
+  "historical_auditor_model": "gpt-6-astra",
+  "historical_evaluator_model": "jev-1.13.0",
+  "review_mode": "disabled_for_local_render",
+  "review_status": "not_reviewed",
+  "status": "completed",
+  "video_sha256": "744c159b303dd7eeefdd8fff2a2fee3de6ff382956b40952518693bddb36d0cd",
+  "scene_sha256": "0b3214706f1a23a7f91aba638d1e25f1e3cff43b8483da35f798730b4fb7331b",
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1280,
+        "height": 720,
+        "r_frame_rate": "30/1"
+      }
+    ],
+    "format": {
+      "duration": "98.000000"
+    }
+  },
+  "events": [
+    {
+      "stage": "brief",
+      "attempt": 1,
+      "approved": true,
+      "review": {
+        "approved": true,
+        "repair_stage": "brief",
+        "feedback": "",
+        "defects": [],
+        "evaluator": "typesafe-jev",
+        "model": "jev-1.13.0",
+        "answers": {
+          "criterion_1": {
+            "type": "score",
+            "score": 3.96,
+            "confidence": 0.96,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.0,
+              "3": 0.03,
+              "4": 0.97
+            }
+          },
+          "criterion_2": {
+            "type": "score",
+            "score": 3.7,
+            "confidence": 0.75,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.01,
+              "3": 0.26,
+              "4": 0.73
+            }
+          },
+          "evidence_sufficient": {
+            "type": "noul",
+            "noul": 0.87
+          },
+          "blocking_defect": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "repair_target": {
+            "type": "choice",
+            "choice": "brief",
+            "confidence": 0.34,
+            "probabilities": {
+              "storyboard": 0.15,
+              "mathematics": 0.05,
+              "scene": 0.3,
+              "brief": 0.5
+            }
+          }
+        },
+        "policy_version": "typesafe-jev-v1"
+      }
+    },
+    {
+      "stage": "mathematics",
+      "attempt": 2,
+      "approved": true,
+      "review": {
+        "approved": true,
+        "repair_stage": "mathematics",
+        "feedback": "",
+        "defects": [],
+        "evaluator": "typesafe-jev",
+        "model": "jev-1.13.0",
+        "answers": {
+          "criterion_1": {
+            "type": "score",
+            "score": 3.61,
+            "confidence": 0.67,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.01,
+              "3": 0.35,
+              "4": 0.64
+            }
+          },
+          "criterion_2": {
+            "type": "score",
+            "score": 3.78,
+            "confidence": 0.81,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.01,
+              "3": 0.18,
+              "4": 0.81
+            }
+          },
+          "evidence_sufficient": {
+            "type": "noul",
+            "noul": 0.9
+          },
+          "blocking_defect": {
+            "type": "noul",
+            "noul": 0.06
+          },
+          "repair_target": {
+            "type": "choice",
+            "choice": "mathematics",
+            "confidence": 0.53,
+            "probabilities": {
+              "scene": 0.2,
+              "mathematics": 0.64,
+              "storyboard": 0.14,
+              "brief": 0.02
+            }
+          }
+        },
+        "policy_version": "typesafe-jev-v1"
+      }
+    },
+    {
+      "stage": "storyboard",
+      "attempt": 3,
+      "approved": false,
+      "review": {
+        "approved": false,
+        "repair_stage": "storyboard",
+        "feedback": "criterion_1: score=3.330/4, confidence=0.450; Does the shot sequence introduce definitions before using them? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\nAstra evidence audit (not Jev-generated prose):\nAcceptable at storyboard checkpoint. Independent differentiation and numerical checks confirm exactly four critical points, heights \u22122.8, \u22121.2, 1.2, 2.8, nonsingular Hessians, and indices 0,1,1,2. Shots 3\u20136 correctly specify disk \u2192 cylinder \u2192 punctured torus \u2192 closed torus and boundary counts 1,2,1,0. Shots 4\u20135 distinguish the two band attachments and reserve surface labels for regular levels. Shots 7\u20138 connect Euler counting to Morse attachments and the final relation. The schedule totals 94 seconds with a five-second final hold. Camera directions, overlay regions, analytic geometry, and mesh budgets provide sufficient implementation guidance. Minor refinement: in shot 2, replace 'preview a small teal patch' with 'test for included surface points,' since the specified height remains below the minimum and correctly produces no patch.",
+        "defects": [
+          "criterion_1: score=3.330/4, confidence=0.450; Does the shot sequence introduce definitions before using them? Evaluate only the supplied text state; do not infer unseen images or unperformed checks."
+        ],
+        "evaluator": "typesafe-jev",
+        "model": "jev-1.13.0",
+        "answers": {
+          "criterion_1": {
+            "type": "score",
+            "score": 3.33,
+            "confidence": 0.45,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.0,
+              "1": 0.01,
+              "2": 0.1,
+              "3": 0.43,
+              "4": 0.46
+            }
+          },
+          "criterion_2": {
+            "type": "score",
+            "score": 3.84,
+            "confidence": 0.86,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.02,
+              "3": 0.12,
+              "4": 0.86
+            }
+          },
+          "evidence_sufficient": {
+            "type": "noul",
+            "noul": 0.92
+          },
+          "blocking_defect": {
+            "type": "noul",
+            "noul": 0.12
+          },
+          "repair_target": {
+            "type": "choice",
+            "choice": "storyboard",
+            "confidence": 0.8,
+            "probabilities": {
+              "mathematics": 0.0,
+              "storyboard": 0.85,
+              "brief": 0.14,
+              "scene": 0.01
+            }
+          }
+        },
+        "policy_version": "typesafe-jev-v1"
+      }
+    },
+    {
+      "stage": "storyboard",
+      "attempt": 4,
+      "approved": true,
+      "review": {
+        "approved": true,
+        "repair_stage": "storyboard",
+        "feedback": "",
+        "defects": [],
+        "evaluator": "typesafe-jev",
+        "model": "jev-1.13.0",
+        "answers": {
+          "criterion_1": {
+            "type": "score",
+            "score": 3.84,
+            "confidence": 0.87,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.01,
+              "3": 0.13,
+              "4": 0.86
+            }
+          },
+          "criterion_2": {
+            "type": "score",
+            "score": 3.9,
+            "confidence": 0.92,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.01,
+              "3": 0.08,
+              "4": 0.91
+            }
+          },
+          "evidence_sufficient": {
+            "type": "noul",
+            "noul": 0.89
+          },
+          "blocking_defect": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "repair_target": {
+            "type": "choice",
+            "choice": "storyboard",
+            "confidence": 0.69,
+            "probabilities": {
+              "storyboard": 0.76,
+              "mathematics": 0.02,
+              "brief": 0.01,
+              "scene": 0.21
+            }
+          }
+        },
+        "policy_version": "typesafe-jev-v1"
+      }
+    },
+    {
+      "stage": "scene",
+      "attempt": 5,
+      "approved": false,
+      "review": {
+        "approved": false,
+        "repair_stage": "scene",
+        "feedback": "criterion_1: score=2.070/4, confidence=0.760; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\ncriterion_2: score=1.940/4, confidence=0.810; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\nInsufficient evidence: probability=0.610; gather concrete checks\nBlocking defect probability=0.930; resolve the evidence audit defects\nAstra evidence audit has unresolved blockers or insufficient verification\nAstra evidence audit (not Jev-generated prose):\nRepair attempts/005-scene-candidate.json, embedded source lines 228\u2013231 in refresh_geometry. The area test uses only cross(p[3]-p[0], p[9]-p[0]). At an admissible-domain endpoint, the first edge collapses, but the rest of the face remains a valid triangular patch. Independently reproducing the candidate's geometry at a=-2.4 rejects all 32 valid patches in the strip v\u2208[-\u03c0/3,-5\u03c0/18]. For one central patch, the tested cross-product norm is zero while the other corner triangle's norm is approximately 0.00663044. Replace this single-corner test with a robust whole-polygon or triangulated-area test that preserves collapsed-edge triangles and suppresses only genuinely zero-area patches. Check both domain endpoints and levels approaching the lower saddle for missing strips or popping. The upstream mathematics is sound: independently recomputed heights are -2.8,-1.2,1.2,2.8, with Hessian diagonals (2.8,0.8),(1.2,-0.8),(-1.2,0.8),(-2.8,-0.8), hence indices 0,1,1,2. Definitions, surface-type sequence, boundary-count distinction, Euler explanation, fixed MathTex overlays, and planned 98-second duration otherwise match the requested scene.",
+        "defects": [
+          "criterion_1: score=2.070/4, confidence=0.760; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.",
+          "criterion_2: score=1.940/4, confidence=0.810; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.",
+          "Insufficient evidence: probability=0.610; gather concrete checks",
+          "Blocking defect probability=0.930; resolve the evidence audit defects",
+          "Astra evidence audit has unresolved blockers or insufficient verification"
+        ],
+        "evaluator": "typesafe-jev",
+        "model": "jev-1.13.0",
+        "answers": {
+          "criterion_1": {
+            "type": "score",
+            "score": 2.07,
+            "confidence": 0.76,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.05,
+              "1": 0.01,
+              "2": 0.82,
+              "3": 0.06,
+              "4": 0.06
+            }
+          },
+          "criterion_2": {
+            "type": "score",
+            "score": 1.94,
+            "confidence": 0.81,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.06,
+              "1": 0.02,
+              "2": 0.86,
+              "3": 0.03,
+              "4": 0.03
+            }
+          },
+          "evidence_sufficient": {
+            "type": "noul",
+            "noul": 0.61
+          },
+          "blocking_defect": {
+            "type": "noul",
+            "noul": 0.93
+          },
+          "repair_target": {
+            "type": "choice",
+            "choice": "scene",
+            "confidence": 1.0,
+            "probabilities": {
+              "scene": 1.0,
+              "brief": 0.0,
+              "mathematics": 0.0,
+              "storyboard": 0.0
+            }
+          }
+        },
+        "policy_version": "typesafe-jev-v1"
+      }
+    },
+    {
+      "stage": "scene",
+      "attempt": 7,
+      "approved": false,
+      "review": {
+        "approved": false,
+        "repair_stage": "scene",
+        "feedback": "criterion_1: score=3.550/4, confidence=0.630; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\nAstra evidence audit (not Jev-generated prose):\nAcceptable at the scene checkpoint on source and independent numerical evidence. In attempts/006-scene-candidate.json, content lines 25\u201332 implement the regular vertical torus. Independent calculations confirm exactly four critical heights \u22122.8, \u22121.2, 1.2, 2.8, Hessian determinants 2.24, \u22120.96, \u22120.96, 2.24, and indices 0,1,1,2. Independent clipping of a periodic triangulated torus gives Euler characteristics 0,1,0,\u22121,0 and boundary counts 0,1,2,1,0 at successive regular levels, consistent with the stated surface types.\n\nLines 155\u2013248 implement analytic sublevel geometry and intersection branches. Independent reproduction at 13 representative heights found no nonzero-width patches rejected by the repaired two-triangle area test; maximum sampled height excess was 8.89e\u221216 and cross-section implicit-surface residual was 1.23e\u221215. The endpoint-strip repair at lines 217\u2013228 retains the valid triangular patches.\n\nLines 279\u2013537 introduce definitions before attachments, distinguish surface membership from liquid volume and boundary count, illustrate Euler counting, and schedule the final relation for a five-second hold within 98 seconds. The source uses actual MathTex, reusable 3D patches, the requested palette, fixed overlay backing, and supported camera methods. Installed Manim source supports the inspected camera, Surface metadata, and fixed-frame APIs. No blocking source defect was identified.\nJev-selected Astra investigation: inspect_scene\nNo blocking source defect confirmed at the scene checkpoint. Locations below refer to lines within attempts/006-scene-candidate.json's content field. Lines 217\u2013235 correctly sum both corner-triangle areas before rejecting collapsed patches. Independent JavaScript reproduction at ten levels, including both sides of each saddle, rejected no nonzero-domain patches; at a=-2.4, the endpoint strips survive with minimum patch area 0.00331522. Retain this correction. Independently recomputed critical heights are -2.8,-1.2,1.2,2.8, with indices 0,1,1,2 and nonsingular Hessians. Sampled patch vertices exceed the inclusion height by at most 8.89e-16. Installed Manim source supports the Surface metadata used at lines 118\u2013128, camera arguments at lines 80\u201395, and fixed-frame registration at lines 39\u201343. Reproducing ThreeDCamera's projection places the minimum, saddles, and maximum clear of the overlay bands at their specified target views; this establishes point clearance, not complete geometry visibility. Definitions precede attachments, captions distinguish surface, volume, and boundary, and lines 533\u2013537 schedule the final equation from approximately 93 to 98 seconds. No source revision is required on the inspected evidence. During render review, specifically inspect endpoint patches and saddle reconnections, overlay clearance throughout camera moves, and boundary depth treatment: lines 151 and 267 deliberately draw unshaded curves over shaded geometry.",
+        "defects": [
+          "criterion_1: score=3.550/4, confidence=0.630; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks."
+        ],
+        "evaluator": "typesafe-jev",
+        "model": "jev-1.13.0",
+        "answers": {
+          "criterion_1": {
+            "type": "score",
+            "score": 3.55,
+            "confidence": 0.63,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.01,
+              "3": 0.42,
+              "4": 0.57
+            }
+          },
+          "criterion_2": {
+            "type": "score",
+            "score": 3.32,
+            "confidence": 0.67,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.03,
+              "3": 0.61,
+              "4": 0.36
+            }
+          },
+          "evidence_sufficient": {
+            "type": "noul",
+            "noul": 0.81
+          },
+          "blocking_defect": {
+            "type": "noul",
+            "noul": 0.09
+          },
+          "repair_target": {
+            "type": "choice",
+            "choice": "scene",
+            "confidence": 0.87,
+            "probabilities": {
+              "brief": 0.01,
+              "storyboard": 0.07,
+              "scene": 0.9,
+              "mathematics": 0.02
+            }
+          }
+        },
+        "policy_version": "typesafe-jev-v1"
+      },
+      "candidate": "attempts/006-scene-candidate.json",
+      "recovery": "Fresh audit after rounded-probability validation repair; source unchanged."
+    },
+    {
+      "stage": "scene",
+      "attempt": 9,
+      "approved": false,
+      "review": {
+        "approved": false,
+        "repair_stage": "scene",
+        "feedback": "criterion_1: score=3.540/4, confidence=0.610; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\ncriterion_2: score=3.040/4, confidence=0.640; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\nAstra evidence audit (not Jev-generated prose):\nAcceptable at the scene checkpoint. Independently confirmed exactly four critical points, heights \u22122.8, \u22121.2, 1.2, 2.8, Hessian determinants 2.24, \u22120.96, \u22120.96, 2.24, and indices 0,1,1,2. Independent sampling confirmed the analytic included-surface construction satisfies the torus equation and height inequality within floating-point tolerance. The source hash matches probes/009/execution.json, which reports a successful final-frame probe. Source inspection shows actual MathTex, reusable surface patches, evolving analytic intersection curves, supported camera methods, definitions before use, and a 98-second schedule including the five-second conclusion. In probes/009/media/images/scene/AstraFilm_ManimCE_v0.20.1.png, the entire upright teal/cyan torus is centered against midnight blue with an unobstructed central opening and generous negative space. The complete Euler relation is large, readable, and separated from the geometry. No scanning plane or captions remain, appropriately for this final shot. Surface tessellation is visibly faceted, and coral extrema and violet saddle markers are mostly occluded by the surface. These are nonblocking finishing issues: consider improving marker visibility in the summary shot without sacrificing depth cues.\nNo additional investigation executed: inspect_scene",
+        "defects": [
+          "criterion_1: score=3.540/4, confidence=0.610; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.",
+          "criterion_2: score=3.040/4, confidence=0.640; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks."
+        ],
+        "evaluator": "typesafe-jev",
+        "model": "jev-1.13.0",
+        "answers": {
+          "criterion_1": {
+            "type": "score",
+            "score": 3.54,
+            "confidence": 0.61,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.0,
+              "2": 0.03,
+              "3": 0.36,
+              "4": 0.6
+            }
+          },
+          "criterion_2": {
+            "type": "score",
+            "score": 3.04,
+            "confidence": 0.64,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.02,
+              "1": 0.01,
+              "2": 0.12,
+              "3": 0.61,
+              "4": 0.24
+            }
+          },
+          "evidence_sufficient": {
+            "type": "noul",
+            "noul": 0.85
+          },
+          "blocking_defect": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "repair_target": {
+            "type": "choice",
+            "choice": "scene",
+            "confidence": 0.97,
+            "probabilities": {
+              "storyboard": 0.01,
+              "brief": 0.0,
+              "mathematics": 0.01,
+              "scene": 0.98
+            }
+          }
+        },
+        "policy_version": "typesafe-jev-v1"
+      },
+      "candidate": "attempts/006-scene-candidate.json",
+      "recovery": "Fresh audit after rounded-probability validation repair; source unchanged."
+    },
+    {
+      "stage": "scene",
+      "attempt": 10,
+      "approved": false,
+      "review": {
+        "approved": false,
+        "repair_stage": "scene",
+        "feedback": "criterion_1: score=3.160/4, confidence=0.300; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\ncriterion_2: score=2.410/4, confidence=0.600; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\nInsufficient evidence: probability=0.720; gather concrete checks\nBlocking defect probability=0.490; resolve the evidence audit defects\nAstra evidence audit has unresolved blockers or insufficient verification\nAstra evidence audit (not Jev-generated prose):\nAcceptable at the scene checkpoint. The candidate source SHA-256 matches execution.json, which records a successful final-frame probe. Independent derivation confirms regularity, exactly four critical heights (-2.8, -1.2, 1.2, 2.8), nonzero Hessian determinants (2.24, -0.96, -0.96, 2.24), and indices (0, 1, 1, 2). Independent numerical checks of 117,612 analytic sublevel samples found height excess below 9e-16 and surface-equation residual below 1.7e-15. The source defines the requested concepts, distinguishes surface membership from liquid volume and boundary count, and implements the disk\u2013annulus\u2013punctured-torus\u2013closed-torus progression. It uses MathTex, reusable geometry, appropriate camera APIs, and a source schedule ending at 98 seconds with a five-second final hold. In probes/010/media/images/scene/AstraFilm_ManimCE_v0.20.1.png, the complete upright teal torus is centered against midnight blue, with a clearly open central hole, visible cyan mesh and shaded tube depth. Coral extrema and violet saddle rings are distinguishable. The final Morse relation is large, readable, unclipped, and separated from the geometry by generous negative space. No distracting caption, scanning plane, or index rail remains. No blocking revision is identified.\nAdditional investigation:\nRepair attempts/010-scene-candidate.json, decoded content lines 118\u2013128 and 230\u2013247. Each patch has 13 perimeter samples; set_points_as_corners(points[i]) creates 48 B\u00e9zier points. Installed Manim CE's three_d_utils.get_3d_vmob_end_corner_index selects index 21, and get_3d_vmob_unit_normal uses indices 18, 21 and 24. These lie along one sampled parameter edge, so the inferred normal measures edge curvature rather than the surface normal. Independently reproducing this calculation at a=0 on the actual patch w\u2208[-0.5,-0.4375], v\u2208[0,\u03c0/6] gives normal (0.773010,0,-0.634393), parallel to the torus tangent T_u: absolute dot product 1 instead of 0. ThreeDCamera.modified_rgbas uses this incorrect normal for the second shading color. Fix the animated patches by supplying consistent analytic torus normals through a custom Cairo shading override for tagged patches, retaining shade_in_3d=True for depth sorting; alternatively allocate compatible small triangle/quad patches once instead of using this subdivided perimeter layout. The replacement at lines 442\u2013462 repairs only the completed torus, not the teaching sweep.\n\nThe parametrization, four critical heights (-2.8,-1.2,1.2,2.8), Hessian signatures, indices (0,1,1,2), and Euler relation are correct. Source definitions distinguish the included surface, boundary curves and liquid volume, and place stable topology labels at regular levels.\n\nIn probes/010/media/images/scene/AstraFilm_ManimCE_v0.20.1.png, the complete upright teal torus occupies approximately x=654\u20131282, y=217\u2013850. Cyan mesh and tube shading surround a clearly open central hole. Both coral extremum rings and both violet saddle rings are visible without occlusion. The white final Morse relation is readable, centered above the geometry, and unclipped, with generous negative space. No scanning plane or evolving sublevel is present in this final shot. The candidate content SHA-256 matches probes/010/execution.json, which reports exit code 0. This still therefore supports the final composition but cannot validate the defective animated-patch shading.\nJev-selected Astra investigation: inspect_scene\nRepair attempts/010-scene-candidate.json, decoded content lines 118\u2013128 and 230\u2013247. Each patch has 13 perimeter samples; set_points_as_corners(points[i]) creates 48 B\u00e9zier points. Installed Manim CE's three_d_utils.get_3d_vmob_end_corner_index selects index 21, and get_3d_vmob_unit_normal uses indices 18, 21 and 24. These lie along one sampled parameter edge, so the inferred normal measures edge curvature rather than the surface normal. Independently reproducing this calculation at a=0 on the actual patch w\u2208[-0.5,-0.4375], v\u2208[0,\u03c0/6] gives normal (0.773010,0,-0.634393), parallel to the torus tangent T_u: absolute dot product 1 instead of 0. ThreeDCamera.modified_rgbas uses this incorrect normal for the second shading color. Fix the animated patches by supplying consistent analytic torus normals through a custom Cairo shading override for tagged patches, retaining shade_in_3d=True for depth sorting; alternatively allocate compatible small triangle/quad patches once instead of using this subdivided perimeter layout. The replacement at lines 442\u2013462 repairs only the completed torus, not the teaching sweep.\n\nThe parametrization, four critical heights (-2.8,-1.2,1.2,2.8), Hessian signatures, indices (0,1,1,2), and Euler relation are correct. Source definitions distinguish the included surface, boundary curves and liquid volume, and place stable topology labels at regular levels.\n\nIn probes/010/media/images/scene/AstraFilm_ManimCE_v0.20.1.png, the complete upright teal torus occupies approximately x=654\u20131282, y=217\u2013850. Cyan mesh and tube shading surround a clearly open central hole. Both coral extremum rings and both violet saddle rings are visible without occlusion. The white final Morse relation is readable, centered above the geometry, and unclipped, with generous negative space. No scanning plane or evolving sublevel is present in this final shot. The candidate content SHA-256 matches probes/010/execution.json, which reports exit code 0. This still therefore supports the final composition but cannot validate the defective animated-patch shading.",
+        "defects": [
+          "criterion_1: score=3.160/4, confidence=0.300; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.",
+          "criterion_2: score=2.410/4, confidence=0.600; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.",
+          "Insufficient evidence: probability=0.720; gather concrete checks",
+          "Blocking defect probability=0.490; resolve the evidence audit defects",
+          "Astra evidence audit has unresolved blockers or insufficient verification"
+        ],
+        "evaluator": "typesafe-jev",
+        "model": "jev-1.13.0",
+        "answers": {
+          "criterion_1": {
+            "type": "score",
+            "score": 3.16,
+            "confidence": 0.3,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.0,
+              "2": 0.28,
+              "3": 0.25,
+              "4": 0.45999999999999996
+            }
+          },
+          "criterion_2": {
+            "type": "score",
+            "score": 2.41,
+            "confidence": 0.6,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.01,
+              "2": 0.66,
+              "3": 0.19,
+              "4": 0.13
+            }
+          },
+          "evidence_sufficient": {
+            "type": "noul",
+            "noul": 0.72
+          },
+          "blocking_defect": {
+            "type": "noul",
+            "noul": 0.49
+          },
+          "repair_target": {
+            "type": "choice",
+            "choice": "scene",
+            "confidence": 1.0,
+            "probabilities": {
+              "scene": 1.0,
+              "brief": 0.0,
+              "storyboard": 0.0,
+              "mathematics": 0.0
+            }
+          }
+        },
+        "policy_version": "typesafe-jev-v1"
+      }
+    },
+    {
+      "stage": "scene",
+      "attempt": 11,
+      "error": "Scene contains prohibited call: getattr"
+    },
+    {
+      "stage": "delivery",
+      "attempt": 0,
+      "quality": "m",
+      "reason": "User requested lower resolution. Retained completed candidate 011; interrupted old 1080p execution before publication. Fresh 720p probe and review required."
+    },
+    {
+      "stage": "scene",
+      "attempt": 13,
+      "approved": false,
+      "review": {
+        "approved": false,
+        "repair_stage": "scene",
+        "feedback": "criterion_1: score=3.240/4, confidence=0.540; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\ncriterion_2: score=2.830/4, confidence=0.570; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\nAstra evidence audit (not Jev-generated prose):\nAccept at the scene checkpoint. Independently recomputed the four critical heights \u22122.8, \u22121.2, 1.2, 2.8, Hessian determinants 2.24, \u22120.96, \u22120.96, 2.24, and indices 0,1,1,2. Regularity follows from orthogonal tangent lengths 2+0.8 cos(v)>0 and 0.8. Independent sampling of 122,412 analytic sublevel points gave maximum torus-equation residual 1.78e\u221215 and height excess 6.67e\u221216. The disk \u2192 cylinder \u2192 punctured torus \u2192 closed torus sequence, boundary counts, and Euler relation are correct. In attempts/013-scene-candidate.json, definitions precede attachments; captions distinguish surface, boundary, and liquid volume. Source inspection supports the 98-second schedule, five-second closing hold, reusable clipping geometry, actual MathTex, and required camera APIs. Configuration honors 1280\u00d7720 at 30 fps. The candidate content SHA-256 matches probes/013/execution.json, which reports successful final-frame execution. In probes/013/media/images/AstraFilm.png, the entire upright teal torus is centered and uncropped, with a clearly open central hole, cyan mesh, visible tube shading, coral outer extrema, and violet inner saddles. All four marker callouts remain visible. The white closing formula is fully readable above the geometry, without overlap, against the midnight background; ample negative space surrounds the torus. No blocking defect observed within scene-stage evidence.\nNo additional investigation executed: inspect_scene",
+        "defects": [
+          "criterion_1: score=3.240/4, confidence=0.540; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.",
+          "criterion_2: score=2.830/4, confidence=0.570; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks."
+        ],
+        "evaluator": "typesafe-jev",
+        "model": "jev-1.13.0",
+        "answers": {
+          "criterion_1": {
+            "type": "score",
+            "score": 3.24,
+            "confidence": 0.54,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.02,
+              "1": 0.01,
+              "2": 0.07,
+              "3": 0.5,
+              "4": 0.4
+            }
+          },
+          "criterion_2": {
+            "type": "score",
+            "score": 2.83,
+            "confidence": 0.57,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.04,
+              "1": 0.02,
+              "2": 0.18,
+              "3": 0.59,
+              "4": 0.17
+            }
+          },
+          "evidence_sufficient": {
+            "type": "noul",
+            "noul": 0.84
+          },
+          "blocking_defect": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "repair_target": {
+            "type": "choice",
+            "choice": "scene",
+            "confidence": 0.93,
+            "probabilities": {
+              "scene": 0.95,
+              "brief": 0.01,
+              "storyboard": 0.02,
+              "mathematics": 0.02
+            }
+          }
+        },
+        "policy_version": "typesafe-jev-v1"
+      }
+    },
+    {
+      "stage": "scene",
+      "attempt": 14,
+      "approved": false,
+      "review": {
+        "approved": false,
+        "repair_stage": "scene",
+        "feedback": "criterion_1: score=3.470/4, confidence=0.560; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\ncriterion_2: score=3.150/4, confidence=0.640; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\nAstra evidence audit (not Jev-generated prose):\nAcceptable at the scene checkpoint. The candidate source SHA-256 matches probes/014/execution.json, which records successful final-frame execution at 1280\u00d7720. Source sets 30 fps and targets 98 seconds. Independent calculation confirms four isolated critical points with heights \u22122.8, \u22121.2, 1.2, 2.8, indices 0,1,1,2, and Hessian determinants 2.24,\u22120.96,\u22120.96,2.24. Independent sampling of 175,692 sublevel points gave torus-equation residual below 1.7\u00d710\u207b\u00b9\u2075 and height-cutoff excess below 8.9\u00d710\u207b\u00b9\u2076. The source implements the correct surface progression, exact intersection branches, definitions before use, and explicit distinctions between surface, boundary, and liquid volume. In probes/014/media/images/AstraFilm.png, the complete upright teal torus occupies approximately x=436\u2013855, y=145\u2013566. Its opening remains clear, cyan mesh and shading reveal tube curvature, coral callouts mark the outer extrema, and violet callouts mark the inner saddles. The closing Morse relation is readable across the top with ample separation from the geometry; no formula clipping or material occlusion is visible. The absent scanning plane and captions suit this final tableau. No blocking revision is identified.\nNo additional investigation executed: inspect_scene",
+        "defects": [
+          "criterion_1: score=3.470/4, confidence=0.560; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.",
+          "criterion_2: score=3.150/4, confidence=0.640; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks."
+        ],
+        "evaluator": "typesafe-jev",
+        "model": "jev-1.13.0",
+        "answers": {
+          "criterion_1": {
+            "type": "score",
+            "score": 3.47,
+            "confidence": 0.56,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.0,
+              "2": 0.04,
+              "3": 0.42,
+              "4": 0.53
+            }
+          },
+          "criterion_2": {
+            "type": "score",
+            "score": 3.15,
+            "confidence": 0.64,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.01,
+              "2": 0.09,
+              "3": 0.6,
+              "4": 0.29
+            }
+          },
+          "evidence_sufficient": {
+            "type": "noul",
+            "noul": 0.85
+          },
+          "blocking_defect": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "repair_target": {
+            "type": "choice",
+            "choice": "scene",
+            "confidence": 0.95,
+            "probabilities": {
+              "storyboard": 0.02,
+              "scene": 0.96,
+              "mathematics": 0.01,
+              "brief": 0.01
+            }
+          }
+        },
+        "policy_version": "typesafe-jev-v1"
+      }
+    },
+    {
+      "stage": "scene",
+      "attempt": 15,
+      "error": "Scene contains prohibited call: getattr"
+    },
+    {
+      "stage": "scene",
+      "attempt": 16,
+      "approved": false,
+      "review": {
+        "approved": false,
+        "repair_stage": "scene",
+        "feedback": "criterion_1: score=3.510/4, confidence=0.590; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\ncriterion_2: score=3.250/4, confidence=0.570; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\nAstra evidence audit (not Jev-generated prose):\nAccept at the scene checkpoint. Independently recomputed critical heights \u22122.8, \u22121.2, 1.2, 2.8, indices 0, 1, 1, 2, and nonzero Hessian determinants 2.24, \u22120.96, \u22120.96, 2.24. Checking 50,960 samples of the implemented sublevel parametrization gave maximum surface residual 1.78e\u221215 and height-cutoff excess 8.89e\u221216. Source inspection supports the disk \u2192 cylinder \u2192 punctured torus \u2192 closed torus sequence and correctly distinguishes surface inclusion, boundary curves, and liquid volume. Definitions precede their applications; Euler counting is attributed to the attachment theorem. The candidate source hash matches probes/016/execution.json, which reports successful final-frame execution at 1280\u00d7720. Source configuration specifies 30 fps and schedules a 98-second film with a five-second closing hold. In probes/016/media/images/AstraFilm.png, the entire upright teal torus is visible centrally, with a clearly open hole, cyan mesh, and shaded tube depth. Coral extrema and violet saddle callouts are visible without obscuring the geometry. The white final Morse relation is fully readable above the torus, with ample separation and negative space; no formula clipping or overlay collision is visible. The absent scanning plane and captions are appropriate for this closing tableau. No blocking revision is identified.\nNo additional investigation executed: inspect_scene",
+        "defects": [
+          "criterion_1: score=3.510/4, confidence=0.590; Does the audit support that the scene implements the approved mathematical formulas? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.",
+          "criterion_2: score=3.250/4, confidence=0.570; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks."
+        ],
+        "evaluator": "typesafe-jev",
+        "model": "jev-1.13.0",
+        "answers": {
+          "criterion_1": {
+            "type": "score",
+            "score": 3.51,
+            "confidence": 0.59,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.01,
+              "2": 0.05,
+              "3": 0.33,
+              "4": 0.6
+            }
+          },
+          "criterion_2": {
+            "type": "score",
+            "score": 3.25,
+            "confidence": 0.57,
+            "legend": {
+              "0": "Absent or contradicted",
+              "1": "Major omissions",
+              "2": "Partly supported, needs repair",
+              "3": "Supported with minor limitations",
+              "4": "Clearly supported by specific evidence"
+            },
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.01,
+              "2": 0.08,
+              "3": 0.52,
+              "4": 0.38
+            }
+          },
+          "evidence_sufficient": {
+            "type": "noul",
+            "noul": 0.83
+          },
+          "blocking_defect": {
+            "type": "noul",
+            "noul": 0.07
+          },
+          "repair_target": {
+            "type": "choice",
+            "choice": "scene",
+            "confidence": 0.92,
+            "probabilities": {
+              "mathematics": 0.02,
+              "scene": 0.94,
+              "storyboard": 0.02,
+              "brief": 0.02
+            }
+          }
+        },
+        "policy_version": "typesafe-jev-v1"
+      }
+    },
+    {
+      "stage": "local_render",
+      "attempt": 1,
+      "candidate": "attempts/017-scene-candidate.json",
+      "candidate_sha256": "c10a5a813c427eaaa58c9cb78ecdf6adf1108d13da8f6938a56258859c936999",
+      "quality": "m",
+      "reason": "User requested no further Jev blockers or model spending. Local rendering only; no approval inferred."
+    }
+  ],
+  "limitations": [
+    "The user stopped further model reviews and requested local completion to control credit use. This final movie is not Jev-approved.",
+    "Jev is text-only and evaluated earlier Astra observations, not pixels.",
+    "Sampled frames do not certify every instant of continuous motion.",
+    "Gate thresholds were provisional, not calibrated correctness probabilities."
+  ]
+}
