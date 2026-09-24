@@ -147,6 +147,10 @@ def render_scene(
     run_dir = Path(run_dir)
     stdout_path = run_dir / "render_stdout.log"
     stderr_path = run_dir / "render_stderr.log"
+    previous_videos = {
+        path.resolve(): (path.stat().st_mtime_ns, path.stat().st_size)
+        for path in run_dir.glob("**/*.mp4")
+    }
     completed = subprocess.run(
         build_manim_command(run_dir, scene_name=scene_name, quality=quality),
         cwd=run_dir,
@@ -171,6 +175,8 @@ def render_scene(
     video = find_final_video(run_dir)
     if video is None or video.stat().st_size < 1024:
         raise RenderError("Manim completed without a valid final MP4")
+    if previous_videos.get(video.resolve()) == (video.stat().st_mtime_ns, video.stat().st_size):
+        raise RenderError("Manim did not produce fresh video evidence")
     frames, contact_sheet = extract_review_frames(run_dir, video)
     return RenderOutcome(
         video_path=video,
@@ -184,6 +190,8 @@ def render_scene(
 def extract_review_frames(run_dir: Path, video_path: Path) -> tuple[list[Path], Path | None]:
     review_dir = Path(run_dir) / "review_frames"
     review_dir.mkdir(exist_ok=True)
+    for name in [*(f"frame_{index:02d}.png" for index in range(1, 7)), "contact_sheet.png"]:
+        (review_dir / name).unlink(missing_ok=True)
     duration_result = subprocess.run(
         [
             "ffprobe",

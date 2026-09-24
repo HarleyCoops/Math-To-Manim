@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools==80.9.0", "wheel==0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "m2m2-visual-improvement"
+version = "0.1.0"
+description = "Render-grounded visual-improvement RL environment for Math-To-Manim"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "MIT" }
+authors = [{ name = "Christian H. Cooper" }]
+dependencies = [
+  "datasets==5.0.0",
+  "pydantic==2.13.4",
+  "verifiers==0.2.1",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest==9.1.1",
+]
+
+[tool.setuptools.packages.find]
+include = ["m2m2_visual_improvement*"]
+
+[tool.setuptools.package-data]
+m2m2_visual_improvement = [
+  "data/*.json",
+  "data/*.jsonl",
+  "fixtures/micro_scenes/*.md",
+  "fixtures/provider_holdout/*/*.json",
+  "fixtures/provider_holdout/*/*.py",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+markers = [
+  "render: requires the local Manim, FFmpeg, TeX, and OCR runtime",
+]

@@ -1,0 +1,6 @@
+{
+  "learner_intent": "See polynomial roots as a potential landscape.",
+  "learner_altitude": "advanced undergraduate",
+  "duration_target_seconds": 75,
+  "success_criteria": ["show the zero plane", "contrast the two extrema"]
+}

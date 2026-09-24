@@ -1,0 +1,8 @@
+{
+  "scene_name": "Erdos1038PotentialLandscape",
+  "base_class": "ThreeDScene",
+  "target_resolution": [854, 480],
+  "target_duration_seconds": 75,
+  "three_d_contract": ["potential surface", "zero plane", "raised valley"],
+  "overlay_policy": "one headline or two short text blocks"
+}

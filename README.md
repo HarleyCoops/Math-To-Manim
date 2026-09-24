@@ -102,6 +102,49 @@ this repository, then rendered, inspected, and repaired until it stood on its ow
 
 ---
 
+</div>
+
+## The Morning Of January 20, 2025
+
+Math To Manim began in the early morning of January 20, 2025, the day
+[DeepSeek R1 was released](https://huggingface.co/deepseek-ai/DeepSeek-R1/commit/5a56bdbde75a16bdfbf3a8e9c852be3dfcfb8eef).
+The repository was created at **11:04:50 UTC**. Its earliest original commit
+was authored at **04:24:50 Mountain time (UTC−7)**, twenty minutes later.
+[That commit remains in the history](https://github.com/HarleyCoops/Math-To-Manim/commit/09a2f22ec02b0374d38373d28f76c5764a1e9a2e).
+
+The intuition that morning was that **GRPO could lead toward recursive
+self reasoning**: a model could revisit its own argument, discover the ideas
+it had skipped, and use feedback to build a better explanation. Math and
+animation offered a concrete place to explore that idea. An equation has to
+hold up, and an explanation has to survive being shown on screen.
+
+That was the project's founding hypothesis, not a demonstrated result in
+recursive self improvement. The practical question became: can a system work
+backward through the prerequisites of a difficult idea, teach them forward,
+and then inspect and improve the animation it made?
+
+The films below show what that pursuit has produced. The current experiment
+adds independent evaluation and revision feedback, while separate RL work
+explores whether those signals can improve a trainable policy.
+
+<details>
+<summary>Creation evidence and later screenshots</summary>
+
+The [GitHub repository metadata](https://api.github.com/repos/HarleyCoops/Math-To-Manim)
+records `created_at: 2025-01-20T11:04:50Z`; the original commit records
+`2025-01-20T04:24:50-07:00`. These timestamps establish the project's start.
+The account of the GRPO intuition is the creator's recollection.
+
+These screenshots were captured **September 24, 2026**. They show the pages
+as viewed then; they are not screenshots taken on release morning.
+
+[Repository page capture](docs/assets/math-to-manim-root.png) ·
+[DeepSeek R1 release capture](docs/assets/deepseek-r1-release.png)
+
+</details>
+
+<div align="center">
+
 ## Featured Visual Explainers
 
 <p align="center">

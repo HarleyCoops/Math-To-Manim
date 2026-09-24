@@ -1,0 +1,8 @@
+{
+  "target_claims": [
+    "E_f is the below-zero footprint of the logarithmic potential.",
+    "The lower width is approached but not attained.",
+    "The upper width is attained by endpoint roots."
+  ],
+  "misconceptions_to_preempt": ["a sampled scalar plot is not a global proof"]
+}

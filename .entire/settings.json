@@ -1,0 +1,29 @@
+{
+  "enabled": true,
+  "external_agents": true,
+  "strategy_options": {
+    "checkpoint_remote": {
+      "provider": "github",
+      "repo": "HarleyCoops/math-to-manim-checkpoints"
+    }
+  },
+  "absolute_git_hook_path": true,
+  "telemetry": false,
+  "redaction": {
+    "pii": {
+      "enabled": true,
+      "email": true,
+      "phone": true,
+      "address": false,
+      "custom_patterns": {
+        "openai_style_token": "sk-[A-Za-z0-9_-]{20,}",
+        "bearer_token": "(?i)\\bBearer\\s+[A-Za-z0-9._-]{20,}\\b"
+      }
+    }
+  },
+  "checkpoints": {
+    "primary": {
+      "type": "git-branch"
+    }
+  }
+}

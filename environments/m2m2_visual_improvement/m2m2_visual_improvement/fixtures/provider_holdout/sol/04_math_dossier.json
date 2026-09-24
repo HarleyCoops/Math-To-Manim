@@ -1,0 +1,5 @@
+{
+  "definitions": ["V_mu(x)=integral log|x-t| dmu(t)", "E_f={x:V_mu_f(x)<0}"],
+  "certified_minimum": ["1.834430475762661<L<1.834430475762662"],
+  "upper_extreme": ["f(x)=(x^2-1)^m", "|E_f|=2sqrt(2)"]
+}

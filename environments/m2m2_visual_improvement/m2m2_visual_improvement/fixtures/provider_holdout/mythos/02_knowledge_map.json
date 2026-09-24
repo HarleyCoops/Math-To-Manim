@@ -1,0 +1,5 @@
+{
+  "target": "Use concrete groups to explain GCF and operation order.",
+  "nodes": ["factors", "shared factors", "multiplication before addition"],
+  "edges": [["factors", "shared factors"], ["multiplication", "addition"]]
+}

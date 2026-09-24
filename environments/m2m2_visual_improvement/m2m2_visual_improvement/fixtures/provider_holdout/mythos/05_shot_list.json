@@ -1,0 +1,8 @@
+{
+  "shots": [
+    {"id": "factor-trees", "focus": "shared factor tokens"},
+    {"id": "gcf-zoom", "focus": "the number 6"},
+    {"id": "pemdas-stack", "focus": "4x2 before +3"}
+  ],
+  "camera_score": ["push into shared factors", "restore classroom context"]
+}
