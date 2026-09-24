@@ -2,6 +2,8 @@
 import json
 import math
 import os
+import hashlib
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
 from pydantic import BaseModel, ConfigDict
@@ -112,9 +114,33 @@ def load_api_key(root=None):
 
 class JevClient:
     def __init__(self, api_key=None):
+        import httpx2
         from typesafe_sdk import TypeSafeClient
+        self.http_events=[]
+        def record(response):
+            self.http_events.append({
+                'utc':datetime.now(timezone.utc).isoformat(),
+                'method':response.request.method,'url':str(response.request.url),
+                'status':response.status_code,
+                'request_body_sha256':hashlib.sha256(response.request.content).hexdigest(),
+                'response_headers':{k:response.headers[k] for k in
+                    ['date','x-request-id','request-id','x-correlation-id'] if k in response.headers},
+            })
+        http=httpx2.Client(timeout=90,event_hooks={'response':[record]})
         self.client=TypeSafeClient(api_key=api_key or load_api_key(),
-                                   model=JEV_MODEL,base_url='https://api.typesafe.ai',timeout=90)
+                                   model=JEV_MODEL,base_url='https://api.typesafe.ai',http_client=http)
+
+    def ask(self, *, state, questions, output):
+        """Retain actual HTTP receipts, including retries, without secret headers."""
+        start=len(self.http_events)
+        try:
+            response=self.client.system_one(state=state,questions=questions,model=JEV_MODEL)
+            raw=response.model_dump(mode='json')
+            Path(output).with_suffix('.response.json').write_text(json.dumps(raw,indent=2),encoding='utf-8')
+            return raw
+        finally:
+            Path(output).with_suffix('.http.json').write_text(
+                json.dumps(self.http_events[start:],indent=2),encoding='utf-8')
 
     def review(self, *, state, stage, audit, output):
         # Avoid silently truncating mathematical state. Split upstream artifacts deliberately instead.
@@ -124,9 +150,7 @@ class JevClient:
         output=Path(output)
         payload={'model':JEV_MODEL,'state':state,'questions':questions,'policy_version':POLICY_VERSION}
         output.with_suffix('.request.json').write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding='utf-8')
-        response=self.client.system_one(state=state,questions=questions,model=JEV_MODEL)
-        raw=response.model_dump(mode='json')
-        output.with_suffix('.response.json').write_text(json.dumps(raw,indent=2),encoding='utf-8')
+        raw=self.ask(state=state,questions=questions,output=output)
         decision=evaluate_response(raw,stage=stage,audit=audit)
         output.write_text(decision.model_dump_json(indent=2),encoding='utf-8')
         return decision

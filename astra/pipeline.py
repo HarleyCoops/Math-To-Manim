@@ -72,14 +72,29 @@ class Pipeline:
                                     output=folder/f'attempts/{index:03d}-{stage}-investigation.json')
             if report is not None:
                 decision.feedback += '\nJev-selected Astra investigation: ' + action.action + '\n' + report.feedback
+                investigation_path=folder/f'attempts/{index:03d}-{stage}-investigation.json'
+                hashes[investigation_path.relative_to(folder).as_posix()]=digest(investigation_path)
+                combined=result.model_copy(update={
+                    'verified':result.verified and report.verified,
+                    'defects':list(dict.fromkeys(result.defects+report.defects)),
+                    'feedback':result.feedback+'\nAdditional investigation:\n'+report.feedback,
+                })
+                enriched=dict(state,additional_astra_investigation=report.model_dump(),
+                              astra_evidence_audit=combined.model_dump())
+                # One new decision over genuinely new evidence, not repeated sampling.
+                # The original audit's unresolved blockers still cannot be overruled.
+                decision=self.jev.review(state=enriched,stage=stage,audit=combined,
+                    output=folder/f'attempts/{index:03d}-{stage}-jev-after-tool.json')
+                if not decision.approved:
+                    decision.feedback += '\nJev-selected Astra investigation: ' + action.action + '\n' + report.feedback
             else:
                 decision.feedback += '\nNo additional investigation executed: ' + action.action
-            save(folder/f'attempts/{index:03d}-{stage}-jev.json', decision.model_dump())
+            save(folder/f'attempts/{index:03d}-{stage}-final-decision.json', decision.model_dump())
         if any(digest(folder/name)!=value for name,value in hashes.items()):
             raise RuntimeError('Evidence changed during TypeSafe Jev evaluation')
         return decision
 
-    def run(self, request, *, folder=None):
+    def run(self, request, *, folder=None, feedback=''):
         # Fail before consuming Codex usage if the real Jev credentials are absent.
         if self.jev is None:
             self.jev = JevClient()
@@ -98,7 +113,7 @@ class Pipeline:
             ledger['stages'] = {}
         ledger.update(status='running',error=None,run_dir=str(folder),evaluator_policy=POLICY_VERSION)
         save(ledger_path,ledger)
-        feedback=''; revisions=0; i=0
+        revisions=0; i=0
         attempt=max([int(p.name.split('-')[0]) for p in (folder/'attempts').iterdir()
                      if p.name.split('-')[0].isdigit()]
                     + [event['attempt'] for event in ledger['events']] + [0])

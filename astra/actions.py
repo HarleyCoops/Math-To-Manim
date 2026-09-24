@@ -53,8 +53,7 @@ def select_action(jev, state, stage, output):
         'instructions':'Which ONE available investigation would most directly resolve the specific uncertainty or defect in this state? Choose no_action if evidence supports proceeding without further investigation. You select an action; the host executes it.',
         'criteria':{k:ACTIONS[k] for k in STAGE_ACTIONS[stage]}}}
     output.with_suffix('.request.json').write_text(json.dumps({'model':JEV_MODEL,'state':state,'questions':questions},indent=2),encoding='utf-8')
-    raw=jev.client.system_one(state=state,questions=questions,model=JEV_MODEL).model_dump(mode='json')
-    output.with_suffix('.response.json').write_text(json.dumps(raw,indent=2),encoding='utf-8')
+    raw=jev.ask(state=state,questions=questions,output=output)
     decision=parse_action(raw,stage)
     output.write_text(decision.model_dump_json(indent=2),encoding='utf-8')
     return decision

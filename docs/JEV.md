@@ -85,3 +85,13 @@ actions). This is host-dispatched tool routing, not native Jev function calling.
 
 See the [verbose artistic decision map](JEV_DESIGN_MAP.md) for all 16 rubrics,
 evidence requirements, repair actions and verification criteria.
+
+When a selected investigation supplies new evidence, the gate may evaluate that
+expanded state once. Both decisions are retained. This is not repeated sampling
+of unchanged evidence, and unresolved blockers in the original audit still
+prevent approval.
+
+Every new SDK invocation also writes an `.http.json` receipt containing the
+actual request URL, UTC time, HTTP status, request-body hash and selected
+non-secret response headers. Retries remain visible. Empty receipts do not
+constitute successful API calls. Authorization headers and keys are excluded.

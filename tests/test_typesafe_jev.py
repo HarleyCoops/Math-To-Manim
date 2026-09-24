@@ -65,3 +65,40 @@ def test_file_key_is_not_exported(tmp_path,monkeypatch):
 def test_missing_key_fails_before_model_calls(tmp_path,monkeypatch):
     monkeypatch.delenv('TYPESAFE_API_KEY',raising=False)
     with pytest.raises(RuntimeError,match='Save TYPESAFE_API_KEY'):load_api_key(tmp_path)
+
+
+def test_rounded_distribution_tolerance_preserves_valid_api_response():
+    r=response()
+    r['answers']['criterion_1'].update(score=3.55,confidence=.63,
+        probabilities={'0':0.,'1':0.,'2':.01,'3':.4,'4':.59})
+    # Rounded probabilities imply 3.58; this is valid rounding, not malformed data.
+    d=evaluate_response(r,stage='brief',audit=audit())
+    assert not d.approved  # Confidence policy still rejects it.
+
+
+def test_http_receipt_records_transport_without_credentials(tmp_path,monkeypatch):
+    import json
+    import httpx2
+    import typesafe_sdk  # Resolve SDK type annotations before replacing the HTTP factory.
+    from astra.jev import JevClient
+    original_client=httpx2.Client
+    def handler(request):
+        assert request.headers['authorization']=='Bearer fake-test-key'
+        return httpx2.Response(200,json={'model':'jev-1.13.0',
+            'usage':{'input_tokens':1,'output_tokens':1},
+            'answers':{'check':{'type':'noul','noul':.99}}},
+            headers={'x-request-id':'offline-test-request'})
+    monkeypatch.setattr(httpx2,'Client',lambda **kw:original_client(
+        transport=httpx2.MockTransport(handler),**kw))
+    client=JevClient(api_key='fake-test-key')
+    try:
+        client.ask(state='Offline fixture',questions={'check':{'type':'noul','instructions':'Fixture?'}},
+                   output=tmp_path/'fixture.json')
+    finally:client.close()
+    receipt=(tmp_path/'fixture.http.json').read_text()
+    assert 'fake-test-key' not in receipt
+    data=json.loads(receipt)
+    assert data[0]['status']==200
+    assert data[0]['url']=='https://api.typesafe.ai/v1/systemone'
+    assert len(data[0]['request_body_sha256'])==64
+    assert data[0]['response_headers']['x-request-id']=='offline-test-request'

@@ -91,3 +91,35 @@ def test_invalid_citations_and_mutations_fail_closed(tmp_path):
             return result
     with pytest.raises(RuntimeError,match='outside'):
         Pipeline(BadSDK(),tmp_path,fake_render,jev=FakeJev()).run(Request(prompt='Explain topology'))
+
+
+def test_one_reevaluation_requires_new_investigation_evidence(tmp_path,monkeypatch):
+    import astra.pipeline as module
+    from astra.actions import ActionDecision
+    folder=tmp_path/'run';(folder/'attempts').mkdir(parents=True)
+    candidate=folder/'attempts/001-brief-candidate.json'
+    candidate.write_text('{}')
+    states=[]
+    class FakeLiveJev:
+        def review(self,*,state,stage,audit,output):
+            states.append(state)
+            return GateDecision(approved='additional_astra_investigation' in state,
+                repair_stage='brief',feedback='Need evidence',defects=[],model='jev-test-fake',answers={})
+    def design(jev,state,stage,output):
+        result={'policy':'test','advisory_only':True,'priority':[],'findings':[]}
+        Path(output).write_text(json.dumps(result));return result
+    def investigate(client,decision,**kw):
+        report=verdict(['attempts/001-brief-candidate.json'])
+        report.feedback='New independent evidence'
+        Path(kw['output']).write_text(report.model_dump_json());return report
+    monkeypatch.setattr(module,'JevClient',FakeLiveJev)
+    monkeypatch.setattr('astra.design.review_design',design)
+    monkeypatch.setattr('astra.actions.select_action',lambda *a:ActionDecision(
+        action='clarify_definitions',confidence=.9,execute=True,model='jev-test-fake',probabilities={}))
+    monkeypatch.setattr('astra.actions.execute_action',investigate)
+    result=Pipeline(FakeSDK(),jev=FakeLiveJev())._judge(folder,Request(prompt='Explain topology'),
+        'brief',[candidate],[],1)
+    assert result.approved and len(states)==2
+    assert 'additional_astra_investigation' not in states[0]
+    assert states[1]['additional_astra_investigation']['feedback']=='New independent evidence'
+    assert (folder/'attempts/001-brief-final-decision.json').is_file()

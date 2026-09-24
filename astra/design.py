@@ -71,8 +71,7 @@ def review_design(jev,state,stage,output):
         raise ValueError('Jev design state exceeds local evidence budget')
     q=questions(stage)
     output.with_suffix('.request.json').write_text(json.dumps({'model':JEV_MODEL,'state':state,'questions':q},indent=2),encoding='utf-8')
-    raw=jev.client.system_one(state=state,questions=q,model=JEV_MODEL).model_dump(mode='json')
-    output.with_suffix('.response.json').write_text(json.dumps(raw,indent=2),encoding='utf-8')
+    raw=jev.ask(state=state,questions=q,output=output)
     result=interpret(raw,stage)
     output.write_text(json.dumps(result,indent=2),encoding='utf-8')
     return result
