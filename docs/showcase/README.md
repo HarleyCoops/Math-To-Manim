@@ -31,6 +31,20 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 
 ---
 
+## Morse Theory · four critical moments
+
+[Watch the 98-second movie](assets/astra-morse-torus.mp4) ·
+[Preview GIF](assets/astra-morse-torus.gif) ·
+[Source and production record](astra-morse-torus/README.md)
+
+A rising plane changes the included torus surface from a disk to an annulus,
+then a punctured torus and a closed torus. Rendered at 720p/30 fps; final
+production was local-only, without a final Jev review.
+
+The root README's [six-panel collage](assets/showcase-collage.gif) combines
+this film with five existing studies. Rebuild it without model calls using
+`python scripts/build_showcase_collage.py --font /path/to/font.ttf`.
+
 ## The Third Side · grade 8 geometry
 
 <a href="assets/the-third-side.mp4"><img src="assets/the-third-side.gif" alt="A floor diagonal becomes the base of a second right triangle inside a 3D box" width="90%" /></a>

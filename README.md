@@ -8,6 +8,15 @@
   </picture>
 </a>
 
+<a href="docs/showcase/README.md">
+  <picture>
+    <source media="(prefers-reduced-motion: reduce)" srcset="docs/showcase/assets/showcase-collage-poster.png" />
+    <img src="docs/showcase/assets/showcase-collage.gif" alt="Six animated examples: Morse theory, the box diagonal, Hopf fibers, parallel transport, polyhedral geometry, and minimal surfaces" width="100%" />
+  </picture>
+</a>
+
+*Six real renders from the new Astra film and the existing showcase. [Explore the films →](docs/showcase/README.md)*
+
 ### A question becomes a mathematical world you can move through.
 
 **GPT-6 Astra builds the explanation. Jev challenges every step. Manim makes it visible.**
