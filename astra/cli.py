@@ -16,6 +16,7 @@ def main(argv=None):
     run.add_argument('--effort',choices=['high','xhigh','max'],default='high')
     run.add_argument('--max-revisions',type=int,default=6);run.add_argument('--no-render',action='store_true')
     resume=commands.add_parser('resume');resume.add_argument('run_dir',type=Path)
+    resume.add_argument('-q','--quality',choices=['l','m','h'],help='Override delivery quality while preserving approved mathematical planning')
     rec=commands.add_parser('recommend',help='Ask real Jev to select a focused Astra investigation')
     rec.add_argument('run_dir',type=Path)
     rec.add_argument('--stage',choices=['brief','mathematics','storyboard','scene','render'],required=True)
@@ -53,7 +54,7 @@ def main(argv=None):
             data=json.loads(path.read_text());print(path.parent.name,data['status'])
         return 0
     if args.command=='resume':
-        result=Pipeline().run(None,folder=args.run_dir)
+        result=Pipeline().run(None,folder=args.run_dir,render_quality=args.quality)
     else:
         result=Pipeline().run(Request(prompt=args.prompt,quality=args.quality,effort=args.effort,
                                       max_revisions=args.max_revisions,render=not args.no_render))

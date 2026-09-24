@@ -95,7 +95,7 @@ class Pipeline:
             raise RuntimeError('Evidence changed during TypeSafe Jev evaluation')
         return decision
 
-    def run(self, request, *, folder=None, feedback=''):
+    def run(self, request, *, folder=None, feedback='', render_quality=None):
         # Fail before consuming Codex usage if the real Jev credentials are absent.
         if self.jev is None:
             self.jev = JevClient()
@@ -112,6 +112,21 @@ class Pipeline:
         ledger=json.loads(ledger_path.read_text()) if ledger_path.exists() else dict(model=MODEL,stages={},events=[])
         if ledger.get('evaluator_policy') != POLICY_VERSION:
             ledger['stages'] = {}
+        delivery_path=folder/'delivery.json'
+        if render_quality is not None:
+            if render_quality not in {'l','m','h'}:raise ValueError('Invalid render quality')
+            delivery={'quality':render_quality}
+            if not delivery_path.exists() or json.loads(delivery_path.read_text())!=delivery:
+                save(delivery_path,delivery)
+                ledger['stages'].pop('scene',None)
+                ledger['events'].append(dict(stage='delivery',attempt=0,quality=render_quality,
+                    reason='User changed delivery quality; scene and render require fresh review.'))
+        if delivery_path.exists():
+            quality=json.loads(delivery_path.read_text())['quality']
+            from astra.render_worker import PROFILES
+            width,height,fps=PROFILES[quality]
+            request=request.model_copy(update={'quality':quality,'prompt':request.prompt+
+                f'\nLatest user delivery override: {width}x{height} at {fps} fps supersedes all earlier resolution/fps requirements. Preserve the mathematical content and visual design.'})
         ledger.update(status='running',error=None,run_dir=str(folder),evaluator_policy=POLICY_VERSION)
         save(ledger_path,ledger)
         revisions=0; i=0
@@ -147,6 +162,7 @@ class Pipeline:
                             save(ledger_path,ledger)
                             continue
                     paths=[folder/f'{name}.json' for name in STAGES[:i]]+[candidate_path]
+                    if stage=='scene' and delivery_path.exists():paths.append(delivery_path)
                     images=[]
                     if stage=='scene' and request.render:
                         try:
@@ -170,6 +186,7 @@ class Pipeline:
                     shutil.copyfile(candidate_path,folder/f'{stage}.json')
                     # Bind cached approval to the request and all upstream inputs, not just output.
                     deps=[folder/'request.json']+[folder/f'{name}.json' for name in STAGES[:i+1]]
+                    if stage=='scene' and delivery_path.exists():deps.append(delivery_path)
                     ledger['stages'][stage]={'hashes':{p.relative_to(folder).as_posix():digest(p) for p in deps}}
                     save(ledger_path,ledger); i+=1;feedback=''
                 if not request.render: break
@@ -186,6 +203,9 @@ class Pipeline:
                     feedback='Render failed. Repair source: '+str(exc);i=3
                     ledger['stages'].pop('scene',None);save(ledger_path,ledger);continue
                 paths=[folder/f'{name}.json' for name in STAGES]+[folder/'scene.py']+frames+[sheet]
+                metadata=sheet.parent/'metadata.json'
+                if metadata.exists():paths.append(metadata)
+                if delivery_path.exists():paths.append(delivery_path)
                 print('Astra frame inspection -> TypeSafe Jev decision',flush=True)
                 review=self._judge(folder,request,'render',paths,frames+[sheet],attempt)
                 ledger['events'].append(dict(stage='render',attempt=attempt,approved=review.approved,
