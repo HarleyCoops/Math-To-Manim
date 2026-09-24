@@ -9,7 +9,7 @@ chart and older showcase files; feature new verified Astra films on the homepage
 
 - `astra/cli.py`: primary `math-to-manim`, `m2m`, `math-to-manim-astra` commands.
 - `astra/pipeline.py`: brief -> mathematics -> storyboard -> scene -> render,
-  with an independent jev gate at EVERY step and bounded backward repair.
+  with advisory Jev reviews by default; strict gates are explicitly opt-in.
 - `astra/bridge.mjs`: official Codex SDK, GPT-6 Astra, cached ChatGPT login.
 - `astra/prompts.py`: specialist and evaluator charters.
 - `astra/rendering.py`: static source checks, local Manim and frame extraction.
@@ -28,8 +28,10 @@ chart and older showcase files; feature new verified Astra films on the homepage
    `runs/astra/`. Do not claim success without a completed manifest and MP4.
 4. Use `move_camera` and `set_camera_orientation` for ThreeDScene cameras.
 5. Jev approval is scoped to evidence. Stills do not prove continuous motion.
-6. Reject invalid evidence and exhausted budgets. Never bypass the gate to
-   publish a render. Upstream repairs invalidate downstream work.
+6. The user's later instruction removes Jev blockers to control costs. Default
+   reviews are advisory, without Jev-triggered retries or investigations. Use
+   render-existing for saved scenes with zero model calls. Preserve old verdicts
+   and label such output not_reviewed, never Jev-approved. Gated mode is opt-in.
 7. Local Manim execution is not an OS/container sandbox. Do not describe static
    source screening as a complete security boundary.
 8. Test offline with `python -m pytest`. Live model/render runs need explicit

@@ -15,6 +15,11 @@ def main(argv=None):
     run=commands.add_parser('run');run.add_argument('prompt');run.add_argument('-q','--quality',choices=['l','m','h'],default='h')
     run.add_argument('--effort',choices=['high','xhigh','max'],default='high')
     run.add_argument('--max-revisions',type=int,default=6);run.add_argument('--no-render',action='store_true')
+    run.add_argument('--review-mode',choices=['advisory','gated'],default='advisory')
+    local=commands.add_parser('render-existing',help='Render saved scene code with zero model/API calls')
+    local.add_argument('run_dir',type=Path)
+    local.add_argument('--candidate',type=Path,required=True,help='Saved candidate JSON or scene Python file')
+    local.add_argument('-q','--quality',choices=['l','m','h'],default='m')
     resume=commands.add_parser('resume');resume.add_argument('run_dir',type=Path)
     resume.add_argument('-q','--quality',choices=['l','m','h'],help='Override delivery quality while preserving approved mathematical planning')
     rec=commands.add_parser('recommend',help='Ask real Jev to select a focused Astra investigation')
@@ -28,6 +33,10 @@ def main(argv=None):
     commands.add_parser('doctor')
     commands.add_parser('runs')
     args=p.parse_args(argv)
+    if args.command=='render-existing':
+        from astra.local_render import render_existing
+        print(json.dumps(render_existing(args.run_dir,args.candidate,args.quality),indent=2))
+        return 0
     if args.command=='design-map':
         from astra.design import mapping
         print(json.dumps(mapping(args.stage),indent=2))
@@ -57,7 +66,8 @@ def main(argv=None):
         result=Pipeline().run(None,folder=args.run_dir,render_quality=args.quality)
     else:
         result=Pipeline().run(Request(prompt=args.prompt,quality=args.quality,effort=args.effort,
-                                      max_revisions=args.max_revisions,render=not args.no_render))
+                                      max_revisions=args.max_revisions,render=not args.no_render,
+                                      review_mode=args.review_mode))
     print(json.dumps(result,indent=2));return 0
 
 if __name__=='__main__':raise SystemExit(main())

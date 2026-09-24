@@ -50,15 +50,50 @@ def fake_render(folder,source,quality,attempt):
     return paths[0],[paths[1]],paths[2]
 
 def test_all_stages_and_render_require_jev(tmp_path):
-    client=FakeSDK();result=Pipeline(client,tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(prompt='Explain topology'))
+    client=FakeSDK();result=Pipeline(client,tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(review_mode='gated',prompt='Explain topology'))
     assert result['status']=='completed'
     assert len(result['events'])==5
     assert all(e['approved'] for e in result['events'])
     assert len(client.calls)==9
     assert result['video_sha256']
 
+
+def test_advisory_rejection_does_not_retry_or_claim_approval(tmp_path):
+    client=FakeSDK('scene')
+    result=Pipeline(client,tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(prompt='Explain topology'))
+    assert result['status']=='completed' and result['review_status']=='advisory'
+    assert sum('scene-candidate' in c for c in client.calls)==1
+    assert any(e.get('approved') is False for e in result['events'])
+
+
+def test_advisory_api_failure_is_recorded_without_retry(tmp_path):
+    class UnavailableJev:
+        calls=0
+        def review(self,**kwargs):
+            self.calls+=1
+            raise ConnectionError('offline')
+    jev=UnavailableJev()
+    result=Pipeline(FakeSDK(),tmp_path,fake_render,jev=jev,prober=fake_probe).run(Request(prompt='Explain topology'))
+    assert result['status']=='completed' and jev.calls==5
+    assert all(e['review']['evaluator']=='unavailable' for e in result['events'])
+    assert not any(e['approved'] for e in result['events'])
+
+
+def test_local_render_never_constructs_model_clients(tmp_path,monkeypatch):
+    import astra.local_render as local
+    folder=tmp_path/'run';folder.mkdir()
+    (folder/'manifest.json').write_text('{"events":[]}')
+    scene=folder/'saved.py';scene.write_text(SOURCE)
+    monkeypatch.setattr(local,'render',fake_render)
+    monkeypatch.setattr('astra.pipeline.CodexSDK',lambda:pytest.fail('No model clients permitted'))
+    monkeypatch.setattr('astra.pipeline.JevClient',lambda:pytest.fail('No Jev clients permitted'))
+    result=local.render_existing(folder,scene)
+    assert result['status']=='completed' and result['review_status']=='not_reviewed'
+    assert result['review_mode']=='disabled_for_local_render'
+    assert result['video_sha256']
+
 def test_rejection_invalidates_downstream_and_repairs_upstream(tmp_path):
-    client=FakeSDK('storyboard');result=Pipeline(client,tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(prompt='Explain topology'))
+    client=FakeSDK('storyboard');result=Pipeline(client,tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(review_mode='gated',prompt='Explain topology'))
     assert result['status']=='completed'
     assert sum('mathematics-candidate' in c for c in client.calls)==2
     assert sum('storyboard-candidate' in c for c in client.calls)==2
@@ -67,12 +102,12 @@ def test_rejection_invalidates_downstream_and_repairs_upstream(tmp_path):
 def test_exhausted_gate_fails_without_render(tmp_path):
     client=FakeSDK('brief')
     with pytest.raises(RuntimeError,match='budget'):
-        Pipeline(client,tmp_path,lambda *a:pytest.fail('must not render'),jev=FakeJev(),prober=fake_probe).run(Request(prompt='Explain topology',max_revisions=0))
+        Pipeline(client,tmp_path,lambda *a:pytest.fail('must not render'),jev=FakeJev(),prober=fake_probe).run(Request(review_mode='gated',prompt='Explain topology',max_revisions=0))
     assert json.loads(next(tmp_path.glob('*/manifest.json')).read_text())['status']=='failed'
 
 def test_resume_rechecks_render_and_changed_artifacts(tmp_path):
     client=FakeSDK();pipe=Pipeline(client,tmp_path,fake_render,jev=FakeJev(),prober=fake_probe)
-    first=pipe.run(Request(prompt='Explain topology'));folder=Path(first['run_dir'])
+    first=pipe.run(Request(review_mode='gated',prompt='Explain topology'));folder=Path(first['run_dir'])
     client.calls.clear();pipe.run(None,folder=folder)
     assert len(client.calls)==1 and 'render-astra-audit' in client.calls[0]
     (folder/'mathematics.json').write_text('{}')
@@ -92,7 +127,7 @@ def test_resume_quality_preserves_planning_but_rechecks_scene(tmp_path):
         qualities.append(quality)
         return fake_render(folder,source,quality,attempt)
     pipe=Pipeline(client,tmp_path,renderer,jev=FakeJev(),prober=fake_probe)
-    first=pipe.run(Request(prompt='Explain topology'));folder=Path(first['run_dir'])
+    first=pipe.run(Request(review_mode='gated',prompt='Explain topology'));folder=Path(first['run_dir'])
     client.calls.clear()
     result=pipe.run(None,folder=folder,render_quality='m')
     assert result['status']=='completed' and qualities==['h','m']
@@ -112,7 +147,7 @@ def test_invalid_citations_and_mutations_fail_closed(tmp_path):
             if isinstance(result,Assessment):result.evidence=['made-up.txt']
             return result
     with pytest.raises(RuntimeError,match='outside'):
-        Pipeline(BadSDK(),tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(prompt='Explain topology'))
+        Pipeline(BadSDK(),tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(review_mode='gated',prompt='Explain topology'))
 
 
 def test_one_reevaluation_requires_new_investigation_evidence(tmp_path,monkeypatch):
@@ -139,7 +174,7 @@ def test_one_reevaluation_requires_new_investigation_evidence(tmp_path,monkeypat
     monkeypatch.setattr('astra.actions.select_action',lambda *a:ActionDecision(
         action='clarify_definitions',confidence=.9,execute=True,model='jev-test-fake',probabilities={}))
     monkeypatch.setattr('astra.actions.execute_action',investigate)
-    result=Pipeline(FakeSDK(),jev=FakeLiveJev())._judge(folder,Request(prompt='Explain topology'),
+    result=Pipeline(FakeSDK(),jev=FakeLiveJev())._judge(folder,Request(review_mode='gated',prompt='Explain topology'),
         'brief',[candidate],[],1)
     assert result.approved and len(states)==2
     assert 'additional_astra_investigation' not in states[0]

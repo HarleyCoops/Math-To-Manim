@@ -1,8 +1,13 @@
 # Astra-native animation pipeline
 
 The primary CLI runs `astra.pipeline.Pipeline`: brief → mathematics → storyboard
-→ scene → local render. Every checkpoint requires a fresh Astra evidence audit
-and a real TypeSafe Jev decision. See [the gate contract](JEV.md).
+→ scene → local render. Default reviews are advisory: each checkpoint receives
+an Astra audit and one Jev evaluation, without Jev-triggered retries or extra
+investigations. `--review-mode gated` enables the strict [gate contract](JEV.md).
+
+`render-existing RUN --candidate FILE -q m` finishes retained scene code with
+zero model/API calls. Manim joins its animation segments into one MP4. This
+path records `review_status: not_reviewed` and preserves earlier verdicts.
 
 `astra/bridge.mjs` uses the official pinned Codex SDK and CLI 0.156.1, with
 `gpt-6-astra`, structured outputs and cached ChatGPT login. Specialist sessions
