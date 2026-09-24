@@ -80,3 +80,28 @@ def render(run_dir, source, quality, attempt):
     sheet.save(folder/'contact_sheet.png')
     (folder/'metadata.json').write_text(json.dumps(metadata,indent=2),encoding='utf-8')
     return video, frames, folder/'contact_sheet.png'
+
+
+def probe(run_dir, source, attempt):
+    """Execute a candidate to a real final still; this is not a finished movie."""
+    import hashlib
+    validate_source(source)
+    folder=Path(run_dir)/f'probes/{attempt:03d}'
+    folder.mkdir(parents=True,exist_ok=False)
+    scene=folder/'scene.py'
+    scene.write_text(source,encoding='utf-8')
+    result=subprocess.run([sys.executable,'-m','manim','-s','--disable_caching',
+        '--media_dir',str(folder/'media'),'--progress_bar','none',str(scene),'AstraFilm'],
+        cwd=folder,env=clean_environment(),capture_output=True,text=True,
+        encoding='utf-8',errors='replace',timeout=600)
+    (folder/'stdout.log').write_text(result.stdout,encoding='utf-8')
+    (folder/'stderr.log').write_text(result.stderr,encoding='utf-8')
+    if result.returncode:raise RuntimeError('Scene execution probe failed: '+result.stderr[-5000:])
+    frames=list((folder/'media/images/scene').glob('AstraFilm*.png'))
+    if len(frames)!=1:raise RuntimeError('Scene probe did not produce exactly one image')
+    record=folder/'execution.json'
+    record.write_text(json.dumps({'kind':'actual_manim_final_frame_probe',
+        'source_sha256':hashlib.sha256(source.encode('utf-8')).hexdigest(),
+        'exit_code':result.returncode,'image':frames[0].relative_to(run_dir).as_posix(),
+        'limitations':['Final still only; no continuous movie rendered or inspected.']},indent=2),encoding='utf-8')
+    return record,frames[0]

@@ -37,6 +37,12 @@ class FakeSDK:
         self.rejected_stage=None if reject else self.rejected_stage
         return verdict(evidence,reject=bool(reject),target='mathematics')
 
+def fake_probe(folder,source,attempt):
+    p=folder/f'probes/{attempt:03d}';p.mkdir(parents=True)
+    record=p/'execution.json';record.write_text('{}')
+    frame=p/'frame.png';frame.write_bytes(b'test')
+    return record,frame
+
 def fake_render(folder,source,quality,attempt):
     p=folder/f'renders/{attempt:03d}';p.mkdir(parents=True)
     paths=[p/n for n in ('film.mp4','frame.png','sheet.png')]
@@ -44,7 +50,7 @@ def fake_render(folder,source,quality,attempt):
     return paths[0],[paths[1]],paths[2]
 
 def test_all_stages_and_render_require_jev(tmp_path):
-    client=FakeSDK();result=Pipeline(client,tmp_path,fake_render,jev=FakeJev()).run(Request(prompt='Explain topology'))
+    client=FakeSDK();result=Pipeline(client,tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(prompt='Explain topology'))
     assert result['status']=='completed'
     assert len(result['events'])==5
     assert all(e['approved'] for e in result['events'])
@@ -52,7 +58,7 @@ def test_all_stages_and_render_require_jev(tmp_path):
     assert result['video_sha256']
 
 def test_rejection_invalidates_downstream_and_repairs_upstream(tmp_path):
-    client=FakeSDK('storyboard');result=Pipeline(client,tmp_path,fake_render,jev=FakeJev()).run(Request(prompt='Explain topology'))
+    client=FakeSDK('storyboard');result=Pipeline(client,tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(prompt='Explain topology'))
     assert result['status']=='completed'
     assert sum('mathematics-candidate' in c for c in client.calls)==2
     assert sum('storyboard-candidate' in c for c in client.calls)==2
@@ -61,11 +67,11 @@ def test_rejection_invalidates_downstream_and_repairs_upstream(tmp_path):
 def test_exhausted_gate_fails_without_render(tmp_path):
     client=FakeSDK('brief')
     with pytest.raises(RuntimeError,match='budget'):
-        Pipeline(client,tmp_path,lambda *a:pytest.fail('must not render'),jev=FakeJev()).run(Request(prompt='Explain topology',max_revisions=0))
+        Pipeline(client,tmp_path,lambda *a:pytest.fail('must not render'),jev=FakeJev(),prober=fake_probe).run(Request(prompt='Explain topology',max_revisions=0))
     assert json.loads(next(tmp_path.glob('*/manifest.json')).read_text())['status']=='failed'
 
 def test_resume_rechecks_render_and_changed_artifacts(tmp_path):
-    client=FakeSDK();pipe=Pipeline(client,tmp_path,fake_render,jev=FakeJev())
+    client=FakeSDK();pipe=Pipeline(client,tmp_path,fake_render,jev=FakeJev(),prober=fake_probe)
     first=pipe.run(Request(prompt='Explain topology'));folder=Path(first['run_dir'])
     client.calls.clear();pipe.run(None,folder=folder)
     assert len(client.calls)==1 and 'render-astra-audit' in client.calls[0]
@@ -90,7 +96,7 @@ def test_invalid_citations_and_mutations_fail_closed(tmp_path):
             if isinstance(result,Assessment):result.evidence=['made-up.txt']
             return result
     with pytest.raises(RuntimeError,match='outside'):
-        Pipeline(BadSDK(),tmp_path,fake_render,jev=FakeJev()).run(Request(prompt='Explain topology'))
+        Pipeline(BadSDK(),tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(prompt='Explain topology'))
 
 
 def test_one_reevaluation_requires_new_investigation_evidence(tmp_path,monkeypatch):

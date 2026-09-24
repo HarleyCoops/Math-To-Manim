@@ -50,7 +50,8 @@ flowchart TD
     J3 -- revise --> S
     J3 -- pass --> C[Astra: complete Manim scene]
     C --> V[Static source checks]
-    V --> A4[Astra: source audit]
+    V --> P[Manim: real final-frame execution probe]
+    P --> A4[Astra: source and probe audit]
     A4 --> J4{jev: code and storyboard fidelity}
     J4 -- revise --> C
     J4 -- pass --> R[Local Manim render and frame extraction]

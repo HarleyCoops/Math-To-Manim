@@ -277,7 +277,8 @@ return Astra-authored prose, labeled separately from Jev's numerical decisions.
 - **Storyboard:** shot timings, formula strings, camera poses, color-role map,
   transformations and explicit teaching purpose.
 - **Scene:** actual source, Manim API checks, object construction and schedule.
-  Intended visibility is not evidence of successful rendering.
+  When a movie is requested, a real final-frame execution probe adds runtime,
+  LaTeX and one-view evidence. Intended visibility is not proof of all views.
 - **Render:** actual frame observations linked to filenames plus source and
   metadata. Isolated stills cannot establish all motion, pacing or continuity.
 

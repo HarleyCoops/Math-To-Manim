@@ -11,7 +11,7 @@ from astra.jev import JevClient, POLICY_VERSION
 from astra.evidence import text_evidence, design_summary
 from astra.models import Artifact, Assessment, Request, STAGES
 from astra.prompts import specialist_prompt, judge_prompt
-from astra.rendering import render, validate_source
+from astra.rendering import render, probe, validate_source
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -25,11 +25,12 @@ def save(path, value):
     temp.replace(path)
 
 class Pipeline:
-    def __init__(self, client=None, runs_dir=None, renderer=None, jev=None):
+    def __init__(self, client=None, runs_dir=None, renderer=None, jev=None, prober=None):
         self.client = client or CodexSDK()
         self.runs_dir = Path(runs_dir or ROOT/'runs/astra')
         self.renderer = renderer or render
         self.jev = jev
+        self.prober = prober or probe
 
     def _judge(self, folder, request, stage, paths, images, index):
         hashes = {str(p.relative_to(folder)).replace('\\','/'): digest(p) for p in paths}
@@ -146,8 +147,18 @@ class Pipeline:
                             save(ledger_path,ledger)
                             continue
                     paths=[folder/f'{name}.json' for name in STAGES[:i]]+[candidate_path]
+                    images=[]
+                    if stage=='scene' and request.render:
+                        try:
+                            execution,frame=self.prober(folder,artifact.content,attempt)
+                        except RuntimeError as exc:
+                            revisions+=1
+                            ledger['events'].append(dict(stage='scene_probe',attempt=attempt,error=str(exc)))
+                            if revisions>request.max_revisions:raise
+                            feedback=str(exc);save(ledger_path,ledger);continue
+                        paths.extend([execution,frame]);images=[frame]
                     print(f'Astra evidence audit -> TypeSafe Jev: {stage}',flush=True)
-                    review=self._judge(folder,request,stage,paths,[],attempt)
+                    review=self._judge(folder,request,stage,paths,images,attempt)
                     ledger['events'].append(dict(stage=stage,attempt=attempt,approved=review.approved,
                                                review=review.model_dump()))
                     if not review.approved:

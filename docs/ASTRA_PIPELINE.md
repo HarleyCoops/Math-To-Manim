@@ -22,3 +22,9 @@ for this workflow; do not treat it as safe execution of arbitrary hostile code.
 
 A successful manifest binds the MP4 hash and review history. A source file,
 mock test, API smoke test or an interrupted run is not a completed animation.
+
+Before a requested full movie render, the harness executes each scene candidate
+to a final still with Manim. The scene audit receives that actual image and an
+execution record bound to the source hash. This supplies runtime and LaTeX
+evidence without claiming a movie exists. The later render gate still requires
+the full MP4 and sampled frames. `--no-render` does not execute this probe.
