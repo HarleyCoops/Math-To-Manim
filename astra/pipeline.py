@@ -8,6 +8,7 @@ import uuid
 
 from astra.client import CodexSDK, MODEL
 from astra.jev import JevClient, POLICY_VERSION
+from astra.evidence import text_evidence, design_summary
 from astra.models import Artifact, Assessment, Request, STAGES
 from astra.prompts import specialist_prompt, judge_prompt
 from astra.rendering import render, validate_source
@@ -49,8 +50,7 @@ class Pipeline:
         save(output.with_suffix('.record.json'),dict(model=MODEL,input_hashes=hashes,
              role='astra-evidence-auditor',score_kind='uncalibrated_model_judgment'))
         state={'checkpoint':stage,'original_request':request.prompt,
-               'artifacts':{name:(folder/name).read_text(encoding='utf-8') for name in hashes
-                            if (folder/name).suffix in {'.json','.py'}},
+               'artifacts':text_evidence(folder,paths),
                'astra_evidence_audit':result.model_dump(),
                'image_handling':'Jev receives only Astra text observations of images, never pixels.',
                'input_hashes':hashes}
@@ -59,7 +59,7 @@ class Pipeline:
         if isinstance(self.jev, JevClient):
             from astra.design import review_design
             design=review_design(self.jev,state,stage,folder/f'attempts/{index:03d}-{stage}-design.json')
-            state=dict(state,design_advice=design)
+            state=dict(state,design_advice=design_summary(design))
             design_path=folder/f'attempts/{index:03d}-{stage}-design.json'
             paths=paths+[design_path]
             hashes[design_path.relative_to(folder).as_posix()]=digest(design_path)

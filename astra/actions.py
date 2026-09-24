@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from pydantic import BaseModel, ConfigDict
 from astra.jev import JEV_MODEL, _unit
+from astra.evidence import text_evidence, design_summary
 from astra.models import Assessment, Request
 from astra.prompts import judge_prompt
 
@@ -107,7 +108,7 @@ def recommend(folder, stage, attempt=None, execute=False, design=False):
             if reports:paths.append(reports[-1])
     hashes={p.relative_to(folder).as_posix():digest(p) for p in paths}
     state={'checkpoint':stage,'original_request':request.prompt,
-        'artifacts':{p.relative_to(folder).as_posix():p.read_text(encoding='utf-8') for p in paths if p.suffix in {'.json','.py'}},
+        'artifacts':text_evidence(folder,paths),
         'image_handling':'Jev sees text reports only. The selected Astra tool can inspect the listed images.',
         'input_hashes':hashes}
     output_dir=folder/'recommendations'/datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S-%f')
@@ -118,7 +119,7 @@ def recommend(folder, stage, attempt=None, execute=False, design=False):
         if design:
             from astra.design import review_design
             design_report=review_design(jev,state,stage,output_dir/'design.json')
-            state=dict(state,design_advice=design_report)
+            state=dict(state,design_advice=design_summary(design_report))
             paths.append(output_dir/'design.json')
             hashes[(output_dir/'design.json').relative_to(folder).as_posix()]=digest(output_dir/'design.json')
         decision=select_action(jev,state,stage,output_dir/'action.json')
