@@ -49,13 +49,14 @@ def review(bundle, client):
 
 def test_astra_independent_read_only_configuration(monkeypatch, tmp_path):
     monkeypatch.setattr("sol.client.shutil.which", lambda _: "codex")
-    evaluator = JevEvaluator.from_client(CodexCli(model="writer", reasoning_effort="low"))
+    evaluator = JevEvaluator.from_client(CodexCli(model="writer", reasoning_effort="high"))
     assert evaluator.client.model == "gpt-6-astra"
-    assert evaluator.client.reasoning_effort == "high"
+    assert evaluator.client.reasoning_effort == "low"
     command = evaluator.client.build_command(cwd=tmp_path, schema_path=tmp_path / "schema",
                                              output_path=tmp_path / "output",
                                              image_paths=[tmp_path / "frame.png"])
     assert command[command.index("--sandbox") + 1] == "read-only"
+    assert 'model_reasoning_effort="low"' in command
     assert "resume" not in command
     assert "--image" in command
     with pytest.raises(ValueError, match="read-only"):

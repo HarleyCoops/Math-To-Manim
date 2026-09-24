@@ -48,7 +48,7 @@ class JevEvaluator:
     @classmethod
     def from_client(cls, client: CodexCli) -> JevEvaluator:
         return cls(CodexCli(command=client.command, model="gpt-6-astra",
-                            reasoning_effort="high",
+                            reasoning_effort="low",
                             timeout=client.timeout, sandbox="read-only"))
 
     def review_render(self, run_dir: Path, request: RunRequest, *,
