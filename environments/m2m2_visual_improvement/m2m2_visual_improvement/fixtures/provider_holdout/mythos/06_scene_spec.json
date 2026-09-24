@@ -1,0 +1,12 @@
+{
+  "scene_name": "StructureFirstJourney",
+  "scene_class": "Scene",
+  "objects": [
+    {"id": "factor_tree_12", "kind": "factor_tree"},
+    {"id": "factor_tree_18", "kind": "factor_tree"},
+    {"id": "shared_factor_6", "kind": "number"},
+    {"id": "pemdas_expression", "kind": "math"}
+  ],
+  "timeline": ["factor-trees", "gcf-zoom", "pemdas-stack"],
+  "acceptance": ["large captions", "one idea per beat", "two final questions"]
+}

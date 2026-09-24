@@ -1,0 +1,10 @@
+{
+  "run_id": "provider-holdout-sol-potential-landscape",
+  "prompt": "Explain the proposed solution of Erdos Problem 1038 as a potential landscape with a certified lower value and endpoint-root maximum.",
+  "offline": false,
+  "render_requested": true,
+  "scene_file": "sol_scene.py",
+  "scene_name": "Erdos1038PotentialLandscape",
+  "status": "completed",
+  "completed_utc": "2026-07-23T00:00:00+00:00"
+}

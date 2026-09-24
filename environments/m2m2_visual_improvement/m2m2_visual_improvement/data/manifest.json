@@ -1,0 +1,1051 @@
+{
+  "base_scene_count": 18,
+  "base_scene_sha256": {
+    "scene_01_negative_product": "de202ca36e0d8e341c08cde166f0ad652329e391a473c63318e38e4cd0801e45",
+    "scene_02_fraction_equivalence": "83f14eab771f3705b3c9ba8c50f9b3fe1e7222ae8773be635615dcc92de58f76",
+    "scene_03_slope_triangle": "51863ee09a4c52c6ffad7a4507a3d00d51a9a8802ebaba5270f5a66afdc103f1",
+    "scene_04_pythagorean_tiles": "03fd7fd7cb43264aaef1f4e0ad461f5488b5cde141fd79b1e42a65260a5ba9b8",
+    "scene_05_quadratic_roots": "1e097737d17bd95419fd58d46da074c3b786e764ba89b095c4bd33c5ac85f949",
+    "scene_06_derivative_tangent": "d9e755dfd5b172fcde9471ec55cee407ae3746ee3d48926266c1068c947876db",
+    "scene_07_integral_area": "f0f2bfe371c4dd15afb077dcfcb1d696dd924b7edcc24eb39f1833619dc941cd",
+    "scene_08_unit_circle": "7182d3bfa3967153e92cc69be1ce5d6c9951a8c8622df4e1b09a5369877461f4",
+    "scene_09_vector_addition": "8b8d677fca7560d211f9fec46df2428013ee630e1d82dbe67575b62b998fad91",
+    "scene_10_matrix_transform": "712a473547e7b996def63bc60ab7fdb1d8692ef202c48b75f814eb47e1c67096",
+    "scene_11_probability_tree": "f9b1d742ea24de190c475596aea6e493b13d77c942a42dd8825a870528c63bd0",
+    "scene_12_exponential_growth": "6268e15205f71ff477ce02bcbb8895815978d1a1ba05d20170465a6d156ccbdd",
+    "scene_13_sine_wave": "c9954b5513cd8be3cdc3ecb4aec2120c190f11cc78fabf12f0a6f4e069881274",
+    "scene_14_complex_rotation": "0c16659ef3e8c6e90ad25a940143b01045dda459a1d2f0e8ccc91e7857547612",
+    "scene_15_dot_product": "2ae1dc4101e0ac411c9a1898ba708d3303b380e9f35023bee29ecf2a1a118e89",
+    "scene_16_epsilon_limit": "67f0a6f96a5869077eb9fe4c4ea4598cca1d16debf7afd097c67590a1c1c9ac8",
+    "scene_17_fourier_modes": "a7a04560539d5fb6c888ef76c1edd87d807dc6c599b19b1140de81c954551202",
+    "scene_18_heat_equation": "86bfc9b5fd33bcc1f771796a97dda24915c7b0d58ba0e8bb1eca0e9a2cb7f9af"
+  },
+  "defect_families": [
+    "absent_or_weak_zoom",
+    "below_readability_threshold",
+    "excessive_simultaneous_objects",
+    "off_frame_placement",
+    "temporal_stacking",
+    "text_formula_crowding"
+  ],
+  "generator_version": "m2m2.visual_dataset.v1",
+  "mutations_per_base": 8,
+  "schema_version": "m2m2.visual_dataset_manifest.v1",
+  "seed": 20260724,
+  "split_counts": {
+    "test": 24,
+    "train": 96,
+    "validation": 24
+  },
+  "task_count": 144,
+  "tasks": [
+    {
+      "base_scene_id": "scene_01_negative_product",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "388179754fee673c88d0c5808e200893200734932491cbf23d2e00cea3c6a27a",
+      "split": "train",
+      "task_id": "scene_01_negative_product.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_01_negative_product",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "0962a0d6f6ab0904f90281d3d14168a6af38b51940230627c7cecc4f1025eff7",
+      "split": "train",
+      "task_id": "scene_01_negative_product.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_01_negative_product",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "306ee18ea64013706700e48164898fd67769e7df3bef2624f25733ab668d4245",
+      "split": "train",
+      "task_id": "scene_01_negative_product.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_01_negative_product",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "c9b422c0c6fda92f9e95cc026ae9a56902f1d845840301dbdf7b2475a5353289",
+      "split": "train",
+      "task_id": "scene_01_negative_product.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_01_negative_product",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "0526a30ceae26427e4481cbe5a969b315c9aafdf07776c485c34e8d700aae174",
+      "split": "train",
+      "task_id": "scene_01_negative_product.density_burst"
+    },
+    {
+      "base_scene_id": "scene_01_negative_product",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "edf8e5b11a7f8ba930170a984e18db16cd5ebe727bf2a1ee41a5c6379e0b5cef",
+      "split": "train",
+      "task_id": "scene_01_negative_product.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_01_negative_product",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "9449162edebb06a74a31780f41f5aaace8ae313681346c76457da7897619e129",
+      "split": "train",
+      "task_id": "scene_01_negative_product.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_01_negative_product",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "651e05b396ab84f6fdc0936dacec2e2023b4764eb96988cc2e99f96c08a035e9",
+      "split": "train",
+      "task_id": "scene_01_negative_product.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_02_fraction_equivalence",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "5cbb1c871e81adcf05c8054867f15b0d1a7d8a2cefcdfd4cd70e3a75d47ded2b",
+      "split": "train",
+      "task_id": "scene_02_fraction_equivalence.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_02_fraction_equivalence",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "ba9f10590620437763cc5babb325e357c5a1a0af7c6f8a5a248af5cff8501a05",
+      "split": "train",
+      "task_id": "scene_02_fraction_equivalence.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_02_fraction_equivalence",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "9ddf5bc48a19b8bde4132314a4f6b030a0ae78ef3a7acc4e1b4261f0c111d84a",
+      "split": "train",
+      "task_id": "scene_02_fraction_equivalence.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_02_fraction_equivalence",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "cf7270931b9d889942dbb5c73800d4d2a33ad0cae09747a5ff8944c4f5620e38",
+      "split": "train",
+      "task_id": "scene_02_fraction_equivalence.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_02_fraction_equivalence",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "07a305c51da635d650dbbce2450dbaff0d8613137c13a68df73d30d6125f19f4",
+      "split": "train",
+      "task_id": "scene_02_fraction_equivalence.density_burst"
+    },
+    {
+      "base_scene_id": "scene_02_fraction_equivalence",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "ae39d732cb4ea8d12495c4de0b57e5299b267b96878591ecf15f23c0982aea9a",
+      "split": "train",
+      "task_id": "scene_02_fraction_equivalence.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_02_fraction_equivalence",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "d1ca92ce07e3053b3ba992e62965fd0b398180537a978a80216990b3af6f90df",
+      "split": "train",
+      "task_id": "scene_02_fraction_equivalence.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_02_fraction_equivalence",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "b1aecb5764d3bebca36505ca50f1536e7ea9072cc66a75def5e8162231f90d75",
+      "split": "train",
+      "task_id": "scene_02_fraction_equivalence.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_03_slope_triangle",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "98c8b85287f0869eefdf04691336702c77e9d799f22638abb86b34de15e5b617",
+      "split": "train",
+      "task_id": "scene_03_slope_triangle.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_03_slope_triangle",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "cfef612e9b78704dc9260bb02c7d3ffeaa1a6bc42470fca0f58e53c9cf5f4698",
+      "split": "train",
+      "task_id": "scene_03_slope_triangle.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_03_slope_triangle",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "6de0e7146f80d6d8108c985487c3ef44c11bac46e84ce17500860f50bc03749d",
+      "split": "train",
+      "task_id": "scene_03_slope_triangle.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_03_slope_triangle",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "8907ea1747dfcc4a9d70c69e6ff97e41484f3a64fadc56aa6595a5f65860a9bf",
+      "split": "train",
+      "task_id": "scene_03_slope_triangle.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_03_slope_triangle",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "1e5b34cecfcb0b0cc6d5c2fe733164279d818428a22471b873a9416e8340090b",
+      "split": "train",
+      "task_id": "scene_03_slope_triangle.density_burst"
+    },
+    {
+      "base_scene_id": "scene_03_slope_triangle",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "a31d7e4c4b5080b2ed9d8db5834f827fdd7fcb9fa64b6d4eb6876599d1119c39",
+      "split": "train",
+      "task_id": "scene_03_slope_triangle.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_03_slope_triangle",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "e853f52fac30da551987519c68422f0bec23d5941af29a8e0169d76d4f24f5ab",
+      "split": "train",
+      "task_id": "scene_03_slope_triangle.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_03_slope_triangle",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "e0f00778c42422c650c6c7580f0bf3cd11b990f7dbbd5a983e8d7522fc0b9455",
+      "split": "train",
+      "task_id": "scene_03_slope_triangle.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_04_pythagorean_tiles",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "268773115b0064c1f793783f540d22574db5f4ba18de11eab6e45227d80040fb",
+      "split": "train",
+      "task_id": "scene_04_pythagorean_tiles.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_04_pythagorean_tiles",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "2e7e3075714defbee9ab1ce39d3c0a6dc5e79d7eb93b36e55b0105deb4b8ebfa",
+      "split": "train",
+      "task_id": "scene_04_pythagorean_tiles.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_04_pythagorean_tiles",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "790bb2fa9e5974f0013970930a4442d0938071b529f873d5496b031063a62846",
+      "split": "train",
+      "task_id": "scene_04_pythagorean_tiles.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_04_pythagorean_tiles",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "3de5f14d7a6946f21d1f4a1bd0e71c486769904e589c605959dd16101f15b0fc",
+      "split": "train",
+      "task_id": "scene_04_pythagorean_tiles.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_04_pythagorean_tiles",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "70caf91acc3a065e29591c261587b148148938183c6dbeec07971b08d4cdfdc9",
+      "split": "train",
+      "task_id": "scene_04_pythagorean_tiles.density_burst"
+    },
+    {
+      "base_scene_id": "scene_04_pythagorean_tiles",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "67cce024c89af8c7d862c7f7e6c158b49eccd60c4fca63f52b9c05b8fb770aaa",
+      "split": "train",
+      "task_id": "scene_04_pythagorean_tiles.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_04_pythagorean_tiles",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "70dfd9849a790cbe93716e5781c8f57fde41fe6d7ac04a749242e2fd101f34d5",
+      "split": "train",
+      "task_id": "scene_04_pythagorean_tiles.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_04_pythagorean_tiles",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "09238f342c0303a9986d576db6e098db342f0ab8bbd135c78308572c3af24381",
+      "split": "train",
+      "task_id": "scene_04_pythagorean_tiles.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_05_quadratic_roots",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "315c295c57934904d7ecf087fdb54e32fe8739273c5572c424fd9ac6aaefa818",
+      "split": "train",
+      "task_id": "scene_05_quadratic_roots.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_05_quadratic_roots",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "a9a874537f97f700f5badda88da9da4c7ff325fea6128b8d5589b7183b403d0d",
+      "split": "train",
+      "task_id": "scene_05_quadratic_roots.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_05_quadratic_roots",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "d10f8d11ec81e308f3191ff0e2a18c76c8de257b842c56292dd4276fcae5db1d",
+      "split": "train",
+      "task_id": "scene_05_quadratic_roots.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_05_quadratic_roots",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "05c75a2ab3e2ad5d5077a3a94c98fc1150ce1f2f9b24e8164d4158a21ac5e7e9",
+      "split": "train",
+      "task_id": "scene_05_quadratic_roots.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_05_quadratic_roots",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "6a0a2ea7fd9a9aaabe83fa32a9051515891c69e00a73bbc8191883e63161e960",
+      "split": "train",
+      "task_id": "scene_05_quadratic_roots.density_burst"
+    },
+    {
+      "base_scene_id": "scene_05_quadratic_roots",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "c082ade3aa26c103813b6f34f06ea6caee42baffbf5b02c116786f95a796d140",
+      "split": "train",
+      "task_id": "scene_05_quadratic_roots.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_05_quadratic_roots",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "4e8170d4d2ffcd77de95793f995e90978e71bb999132fcc37029394b5640a876",
+      "split": "train",
+      "task_id": "scene_05_quadratic_roots.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_05_quadratic_roots",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "4fc5771782b80a2d2af3a0e47997e948109d7b575e384183fb94f79162b1be35",
+      "split": "train",
+      "task_id": "scene_05_quadratic_roots.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_06_derivative_tangent",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "f6f623d2272ffe784f9eb9b8aff5b184eb7299c4b856fbaae07a28edb36347e7",
+      "split": "train",
+      "task_id": "scene_06_derivative_tangent.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_06_derivative_tangent",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "1998baf318a5df0ad29925669116571c5a218aed29ee38b7b6810e60d9dabd58",
+      "split": "train",
+      "task_id": "scene_06_derivative_tangent.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_06_derivative_tangent",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "5e3dd16e98cf05dae0845e7a38a33293bb6a7df298da6bcf75ff56f3158a1944",
+      "split": "train",
+      "task_id": "scene_06_derivative_tangent.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_06_derivative_tangent",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "95430486123f6e07134b485fc0bc93d60debb4af3eaf1f70183b170f54d589cd",
+      "split": "train",
+      "task_id": "scene_06_derivative_tangent.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_06_derivative_tangent",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "c3c47eb5528abbf538e3c04f24c25247222dc28f45dc569ece320dc65e5c1ab4",
+      "split": "train",
+      "task_id": "scene_06_derivative_tangent.density_burst"
+    },
+    {
+      "base_scene_id": "scene_06_derivative_tangent",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "07edd82b4ed42c3967562e416f57df5e6a1c7dfed3982c9cc9b2c37b0bed1ec9",
+      "split": "train",
+      "task_id": "scene_06_derivative_tangent.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_06_derivative_tangent",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "f969134071c69a93290f04547ed01eb810794bef2fdc53c8d3da8f35e9c58f54",
+      "split": "train",
+      "task_id": "scene_06_derivative_tangent.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_06_derivative_tangent",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "ae4a051182132546a4d9763da8ff0b913580cfdc6dc31fa31575eeb6c2f73ce7",
+      "split": "train",
+      "task_id": "scene_06_derivative_tangent.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_07_integral_area",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "3323db83793f565af3fcefb1d01a09d3aa9fd70c04d80bc8dcda1ca778bab3e6",
+      "split": "train",
+      "task_id": "scene_07_integral_area.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_07_integral_area",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "cbbe299b6dc36842cd0c872bb76e5ed337929a91a2c332736dc036e424e2c000",
+      "split": "train",
+      "task_id": "scene_07_integral_area.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_07_integral_area",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "b114a50bebabecaf1b3bcd687df462387fc6b1c9bbbccf8ae82d65bfb9c3af2b",
+      "split": "train",
+      "task_id": "scene_07_integral_area.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_07_integral_area",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "2fcdca3dedc4a224e0c8c85be1ebead7527b40c56cb811d298d1bd9cc432489e",
+      "split": "train",
+      "task_id": "scene_07_integral_area.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_07_integral_area",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "209e46b33aa82892e24b1a4b34f8819379a8b1eaf9506c8ced8d0be58714b7b2",
+      "split": "train",
+      "task_id": "scene_07_integral_area.density_burst"
+    },
+    {
+      "base_scene_id": "scene_07_integral_area",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "b1cd55d973be58751053e63288a8b68031e5f982805161dfa35b257d53dd233b",
+      "split": "train",
+      "task_id": "scene_07_integral_area.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_07_integral_area",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "9474a4436f81e825b911223336078bf8c47506d07242e43e8cefcba02f9ecf99",
+      "split": "train",
+      "task_id": "scene_07_integral_area.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_07_integral_area",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "025947a76cf08a86bf8a42d0132ab6218055660183ac695e33cf54a524ee86c6",
+      "split": "train",
+      "task_id": "scene_07_integral_area.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_08_unit_circle",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "84713dfe90454414827af918692fa22427465591aced67a96b514a67804edc48",
+      "split": "train",
+      "task_id": "scene_08_unit_circle.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_08_unit_circle",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "4c8f6856384376e7203bfda2f1db6162d5c46035898b6fbe1b2937633981ada0",
+      "split": "train",
+      "task_id": "scene_08_unit_circle.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_08_unit_circle",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "eaac656b2826eb4c4b713784f75523acab0c7a9582aac94a4edd6dba5e2153a8",
+      "split": "train",
+      "task_id": "scene_08_unit_circle.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_08_unit_circle",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "56cffd6f8d59d41ba02766cb610184049adcc2dd7b1e49c76e11dbd200a348e4",
+      "split": "train",
+      "task_id": "scene_08_unit_circle.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_08_unit_circle",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "910dbd8f86f4ec9fdd8ae09356c9eadc0097095292fa6904a95bd0817b3b6f61",
+      "split": "train",
+      "task_id": "scene_08_unit_circle.density_burst"
+    },
+    {
+      "base_scene_id": "scene_08_unit_circle",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "770a3ecec8196c2dd5f586d61889b919499ae98624afa0f63051bc0dfaa6b5cc",
+      "split": "train",
+      "task_id": "scene_08_unit_circle.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_08_unit_circle",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "6d7f199e379d262962b28d938d227d98659d73f8e5ff2fac296df30bd923d2d4",
+      "split": "train",
+      "task_id": "scene_08_unit_circle.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_08_unit_circle",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "86ed7d69c59db81bff367fcb8270c2e24cd9a1182630d8b381a64bd6d8f8b454",
+      "split": "train",
+      "task_id": "scene_08_unit_circle.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_09_vector_addition",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "621f72819d61f4d0549e913250fce5aac6ab79496b4e3225636fc68c4fa02e67",
+      "split": "train",
+      "task_id": "scene_09_vector_addition.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_09_vector_addition",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "a53b6b29cc7d2929842d36c26ad9132db2beca3f7633a37ba3309124cd83f6fa",
+      "split": "train",
+      "task_id": "scene_09_vector_addition.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_09_vector_addition",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "b7140e70a75b8a365e6f7c08c80c5e6ee14eb0ceeb02b298b36b19842e12fa54",
+      "split": "train",
+      "task_id": "scene_09_vector_addition.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_09_vector_addition",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "cc453c775a3664b9260222e2f8068de01d3a5dd73a1b7d169adf3eb85617b3d5",
+      "split": "train",
+      "task_id": "scene_09_vector_addition.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_09_vector_addition",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "b4a4f20c85d1a5e04bd285d230cfa130840a34e00c82e1b7f3018ef117895c4a",
+      "split": "train",
+      "task_id": "scene_09_vector_addition.density_burst"
+    },
+    {
+      "base_scene_id": "scene_09_vector_addition",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "409f02bb081df8d74b8f9ae2d2e4c95bdbdb1ef74b33083c44a21e7b96a33527",
+      "split": "train",
+      "task_id": "scene_09_vector_addition.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_09_vector_addition",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "08281bf55436dbf37f060a6986654c07e57d167a1d6348f420a0fb3f54974d93",
+      "split": "train",
+      "task_id": "scene_09_vector_addition.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_09_vector_addition",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "62e35802b9e0179f8763b32e74a3efa769461c143bfb750650faa9fa7521faa5",
+      "split": "train",
+      "task_id": "scene_09_vector_addition.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_10_matrix_transform",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "8da2b38db80e9434932d051aff0345f71760848b863b0be263c6f2fc5aa2e515",
+      "split": "train",
+      "task_id": "scene_10_matrix_transform.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_10_matrix_transform",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "80d4c2261a113ccb9da616959a882bec0a19c05b25e96167dbaad4599cb23eeb",
+      "split": "train",
+      "task_id": "scene_10_matrix_transform.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_10_matrix_transform",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "764ed38a5a70c8e7426888b979fa2e7972f7e4253aac33ed7940de4b78021cbc",
+      "split": "train",
+      "task_id": "scene_10_matrix_transform.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_10_matrix_transform",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "410a6a55d01e2e038d468f79a22710088cfdd57a88e132aa0a06acb731b2c8a1",
+      "split": "train",
+      "task_id": "scene_10_matrix_transform.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_10_matrix_transform",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "34a1f86bf3b95b15a7d11495b166e0a14337c7ba308ee9b77b7ffb8a018cdcb0",
+      "split": "train",
+      "task_id": "scene_10_matrix_transform.density_burst"
+    },
+    {
+      "base_scene_id": "scene_10_matrix_transform",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "0c880b3266e3dc491cdbdc2a9c78bc3ab94af65ae8bf4ed2e76505c859ddab5c",
+      "split": "train",
+      "task_id": "scene_10_matrix_transform.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_10_matrix_transform",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "fcf0e057f0309e57154606fe667d4003f7e2b88d4d26826cfef45f49ac68060a",
+      "split": "train",
+      "task_id": "scene_10_matrix_transform.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_10_matrix_transform",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "37850e727dedcdf3733fc96c6fa1007a1bbc480f4ed59a0a5297b1d1540dbd40",
+      "split": "train",
+      "task_id": "scene_10_matrix_transform.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_11_probability_tree",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "b8256d95d06e125c8f2e08cfc37977277ee362c61454d7707bf67365bfe5e7c3",
+      "split": "train",
+      "task_id": "scene_11_probability_tree.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_11_probability_tree",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "cd9f9e110e3b913e0cf32917dc358e4ed82606047c63eec1d53b1043d9148fb3",
+      "split": "train",
+      "task_id": "scene_11_probability_tree.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_11_probability_tree",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "2e9bd2598040461017eb645570c26a1ac5153a4f0337cfb9d142a2e1e79e39d8",
+      "split": "train",
+      "task_id": "scene_11_probability_tree.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_11_probability_tree",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "3320d58fc200146504d742874b305d01c66a89f158fb50a59ddf36fe3f6ca33c",
+      "split": "train",
+      "task_id": "scene_11_probability_tree.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_11_probability_tree",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "e8cab3440469756b6318f4500e1e4fe3724a16f4b40cd595392517fb2b972289",
+      "split": "train",
+      "task_id": "scene_11_probability_tree.density_burst"
+    },
+    {
+      "base_scene_id": "scene_11_probability_tree",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "5f22ef54ea3d8476c13d20f3297ff8d527ce98801ae6ba745a6dbce1d2e0144f",
+      "split": "train",
+      "task_id": "scene_11_probability_tree.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_11_probability_tree",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "1dad1e359b864cd840014ff84b90752c5a6bd47aff76cafe05e1701b9627c245",
+      "split": "train",
+      "task_id": "scene_11_probability_tree.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_11_probability_tree",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "7af62a27abe06c747a23b570d95beca2d11f713b9ebe5d23cfeb55aee7a73ef2",
+      "split": "train",
+      "task_id": "scene_11_probability_tree.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_12_exponential_growth",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "67249bbdecc0a590be1db84176acd76bf3dbf5f3185bdad1d51e25dc63c3502f",
+      "split": "train",
+      "task_id": "scene_12_exponential_growth.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_12_exponential_growth",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "7ca06040528325da542b2ea5d9283f997cc3765ef97e8b06227879e70013f5bc",
+      "split": "train",
+      "task_id": "scene_12_exponential_growth.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_12_exponential_growth",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "d4b61c75df916e764f6092ac1670a6581348dfe43451ce1996b384b181d2edf7",
+      "split": "train",
+      "task_id": "scene_12_exponential_growth.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_12_exponential_growth",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "5414eac8d3bfc0c5c6839bc0a3f4dea86fc800363da41e8083172eb3afbd2b5d",
+      "split": "train",
+      "task_id": "scene_12_exponential_growth.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_12_exponential_growth",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "c7f977f67fffc4024d574ac7deffe430a61d0153c94295d2b9c42c55988e48db",
+      "split": "train",
+      "task_id": "scene_12_exponential_growth.density_burst"
+    },
+    {
+      "base_scene_id": "scene_12_exponential_growth",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "066f5115565ba3e6eab7dfbd2c7ebc31d79960db12594ee86b5d55b18c3d012b",
+      "split": "train",
+      "task_id": "scene_12_exponential_growth.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_12_exponential_growth",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "3d81735ac07e1dd4dd9b1c222ab996c88f4a38679024c1129d124f85998a71b1",
+      "split": "train",
+      "task_id": "scene_12_exponential_growth.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_12_exponential_growth",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "d776230297bb13c60b5305e3497e1be6b28a8a195531ed301a163651686143ca",
+      "split": "train",
+      "task_id": "scene_12_exponential_growth.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_13_sine_wave",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "289b2ff42a2ae549d8ae6b4fc884bd21fc4ee8d40abb60b7100032961ed2b4d3",
+      "split": "validation",
+      "task_id": "scene_13_sine_wave.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_13_sine_wave",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "750f3d5a3532f87a15314a4f2f0b76acbef4a36c4f2dde8ed755818211b6692b",
+      "split": "validation",
+      "task_id": "scene_13_sine_wave.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_13_sine_wave",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "7f1dc2c6189c8e60e5db7b4371db58c39cac63fcacb4c5d7f7367ad1e6c9a17b",
+      "split": "validation",
+      "task_id": "scene_13_sine_wave.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_13_sine_wave",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "6cd45be8419b03b716cbb5d57135e366e350e46c443dbb18d956bfd48a930aea",
+      "split": "validation",
+      "task_id": "scene_13_sine_wave.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_13_sine_wave",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "9a722c8623f440630c3864cb6a04da3e4e53dc2cacc4d088f6ea222af2b0a1d1",
+      "split": "validation",
+      "task_id": "scene_13_sine_wave.density_burst"
+    },
+    {
+      "base_scene_id": "scene_13_sine_wave",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "dba67dbd270e7dd345fdc720070ad23b3f7be5c10828aa7f3fe5e8927be5953f",
+      "split": "validation",
+      "task_id": "scene_13_sine_wave.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_13_sine_wave",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "0775b0e0859eff8b4a8d7b202ab360534965055c0623e4bf854f69d214013612",
+      "split": "validation",
+      "task_id": "scene_13_sine_wave.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_13_sine_wave",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "725aef4b8f45e9ae4762358c2234455c4fea6941eba55ee9bfa7d9a1a1f5ee29",
+      "split": "validation",
+      "task_id": "scene_13_sine_wave.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_14_complex_rotation",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "26aaa876c0fb1b10eeeb3f16bcb2d0c25f5851736138808890209f602cd9c2f1",
+      "split": "validation",
+      "task_id": "scene_14_complex_rotation.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_14_complex_rotation",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "a82b9cd2ef23522af07096f2eb7eaec9b5122ade51eebbe44d2ac53c828c70fa",
+      "split": "validation",
+      "task_id": "scene_14_complex_rotation.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_14_complex_rotation",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "c90e81fa303bb30706e8c7c8ab4aadeda13bb5dd11998e7cd770926626215b81",
+      "split": "validation",
+      "task_id": "scene_14_complex_rotation.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_14_complex_rotation",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "8748074388b5a88935f7138419c080589bf189ffa51dedfe1d009f1f57e96bd4",
+      "split": "validation",
+      "task_id": "scene_14_complex_rotation.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_14_complex_rotation",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "fe990b200e8c2ed21f7fa1a15203f81f74600b28b2b13d37945ba6ba791bc0b9",
+      "split": "validation",
+      "task_id": "scene_14_complex_rotation.density_burst"
+    },
+    {
+      "base_scene_id": "scene_14_complex_rotation",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "a1dcce3af2c42f3c38f195e1899312c0af255ef5d57af59b0c7482687671d055",
+      "split": "validation",
+      "task_id": "scene_14_complex_rotation.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_14_complex_rotation",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "73f739a0882b77d73b5dec5f8c7c0cc7cae1b0c74f5b7492f32d4f133b523040",
+      "split": "validation",
+      "task_id": "scene_14_complex_rotation.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_14_complex_rotation",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "abe2d3769bac78e22dcd83990f5bdc39db4e00dda551aa54a90949c2d2f951ec",
+      "split": "validation",
+      "task_id": "scene_14_complex_rotation.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_15_dot_product",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "ae6d7e66514bef11b75fa1dabf335860d36a7ddd2204afd458cb22fce0802664",
+      "split": "validation",
+      "task_id": "scene_15_dot_product.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_15_dot_product",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "98f6628965dfb4d9c5856bed5c66f289700c7b45cdba3036fb60b096793f8e01",
+      "split": "validation",
+      "task_id": "scene_15_dot_product.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_15_dot_product",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "03d62c118a8580492a78ea26b1c0ee416dbb0b7e11134c24686ff336550bb01d",
+      "split": "validation",
+      "task_id": "scene_15_dot_product.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_15_dot_product",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "51b5b49dbc61144d467647a709ab5760b9dfe2e0edc66d87d69acb6648b13650",
+      "split": "validation",
+      "task_id": "scene_15_dot_product.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_15_dot_product",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "bada4d818f41d5ad47a9ec5eb9c579a8efba1ff452ee5fa439af08aed07602e9",
+      "split": "validation",
+      "task_id": "scene_15_dot_product.density_burst"
+    },
+    {
+      "base_scene_id": "scene_15_dot_product",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "69d9af3c91f2893028a8f2ddba8816eec565e101e82e25184e2f2218cdea9a71",
+      "split": "validation",
+      "task_id": "scene_15_dot_product.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_15_dot_product",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "2209071d45592eaa2d0b91b128b83b2b9c26f0ae32705cad8563f500ada060d1",
+      "split": "validation",
+      "task_id": "scene_15_dot_product.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_15_dot_product",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "bad7373db342bb314dfc4ba3278944f55335a49ba14954601db913de2eba2757",
+      "split": "validation",
+      "task_id": "scene_15_dot_product.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_16_epsilon_limit",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "ff8a80379e3b5d51e7ab0f2ae0142ed9e83645b321fdc4e7cf9e070a6dfe7ad5",
+      "split": "test",
+      "task_id": "scene_16_epsilon_limit.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_16_epsilon_limit",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "0d2afd023b361cb5c4f4d9d1c9cd7af328c87f16e28b8964a388a6b4a4b20fa1",
+      "split": "test",
+      "task_id": "scene_16_epsilon_limit.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_16_epsilon_limit",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "96dbce9a95b371f48f7321a83d768c874b922382ba6e1bd904d8f367bf740bdc",
+      "split": "test",
+      "task_id": "scene_16_epsilon_limit.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_16_epsilon_limit",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "12ad08471036de9fa90e63bd5602d74371f82411de946047666f79be6fa864d1",
+      "split": "test",
+      "task_id": "scene_16_epsilon_limit.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_16_epsilon_limit",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "e7ea3b74831f3e47aef4a4c5a5f71ad0cb6a6ba7e31fc88b653070db9d570bb8",
+      "split": "test",
+      "task_id": "scene_16_epsilon_limit.density_burst"
+    },
+    {
+      "base_scene_id": "scene_16_epsilon_limit",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "f04f9025f351c3e47bb1108d3f64ec2fd322f1ddc20831bcbcfd8f133cfd834b",
+      "split": "test",
+      "task_id": "scene_16_epsilon_limit.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_16_epsilon_limit",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "85c8bdb4c6200aea1bac0d37180b28067a7fa508e83aabccdf7ee36e1d02862e",
+      "split": "test",
+      "task_id": "scene_16_epsilon_limit.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_16_epsilon_limit",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "529f8f9889f3607af910cd8e50577ab83c0591b42656bdc38e08d1a647975d5b",
+      "split": "test",
+      "task_id": "scene_16_epsilon_limit.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_17_fourier_modes",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "7148499b4f420a3120d2f6407e277a9858e2176855d1178815ea5350cdb03fca",
+      "split": "test",
+      "task_id": "scene_17_fourier_modes.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_17_fourier_modes",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "4de57a746a9f568658067d6eb54f1c33eb54c003dc037ac870987bbde90c0871",
+      "split": "test",
+      "task_id": "scene_17_fourier_modes.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_17_fourier_modes",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "e4a4b2e7eedf473e94e8390c74b54bd942c1e77d990642efd64bc629b7688c2e",
+      "split": "test",
+      "task_id": "scene_17_fourier_modes.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_17_fourier_modes",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "19c9f1973694b40aac8619618b4047a1a20706b26dfa5fa4398ea4d48471d62f",
+      "split": "test",
+      "task_id": "scene_17_fourier_modes.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_17_fourier_modes",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "97c1cd6b816399955c4bc806467a96ba8a15ef1324647d8aff174d40beee0796",
+      "split": "test",
+      "task_id": "scene_17_fourier_modes.density_burst"
+    },
+    {
+      "base_scene_id": "scene_17_fourier_modes",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "93123bf1dc115bb5eca0c711dfcb82e8d53da965a2be4a4c32e62fec89ccec2b",
+      "split": "test",
+      "task_id": "scene_17_fourier_modes.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_17_fourier_modes",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "5e48859a385adb74d347ee3e9c9c1fdc70c93970a90b1253cb1ab630893c8adc",
+      "split": "test",
+      "task_id": "scene_17_fourier_modes.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_17_fourier_modes",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "a03aec0fe3c721c2983c9c755134fd8043af26e8a2640631346dd2fef7371898",
+      "split": "test",
+      "task_id": "scene_17_fourier_modes.temporal_stack"
+    },
+    {
+      "base_scene_id": "scene_18_heat_equation",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "feae338ce7e96db590b7edbd7ee0235fd544e638a79b128fcf43fcd6b8d01688",
+      "split": "test",
+      "task_id": "scene_18_heat_equation.off_frame_right"
+    },
+    {
+      "base_scene_id": "scene_18_heat_equation",
+      "defect_family": "off_frame_placement",
+      "payload_sha256": "c417a837acac991c1042005fa4dcd1dc81b3ea8a1fc0c70fa4e07e4621bfab21",
+      "split": "test",
+      "task_id": "scene_18_heat_equation.off_frame_top"
+    },
+    {
+      "base_scene_id": "scene_18_heat_equation",
+      "defect_family": "text_formula_crowding",
+      "payload_sha256": "7606d4b21e258918d10fcea93aa09207ffaa2612f52efa54e3ed5c23e53dcfa4",
+      "split": "test",
+      "task_id": "scene_18_heat_equation.text_overlap"
+    },
+    {
+      "base_scene_id": "scene_18_heat_equation",
+      "defect_family": "below_readability_threshold",
+      "payload_sha256": "0998fdbaae79ac21335b768512ed06fc398f4902d034f57c8d3cd46cbd6e2a11",
+      "split": "test",
+      "task_id": "scene_18_heat_equation.tiny_text"
+    },
+    {
+      "base_scene_id": "scene_18_heat_equation",
+      "defect_family": "excessive_simultaneous_objects",
+      "payload_sha256": "3c1f74d6df3eb9ae07716f47d7424da4ee4e02cbaa25611a5b5ee12bf33a672c",
+      "split": "test",
+      "task_id": "scene_18_heat_equation.density_burst"
+    },
+    {
+      "base_scene_id": "scene_18_heat_equation",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "636add4acb58c00e89d35723e1cfeb5b0cb829ed35abcc99d4b8e991ddb3c594",
+      "split": "test",
+      "task_id": "scene_18_heat_equation.weak_zoom"
+    },
+    {
+      "base_scene_id": "scene_18_heat_equation",
+      "defect_family": "absent_or_weak_zoom",
+      "payload_sha256": "7711958adb0aab3cd9e206a42cbb6550f25b5a48388f170ca29df8254c39fe58",
+      "split": "test",
+      "task_id": "scene_18_heat_equation.wrong_zoom"
+    },
+    {
+      "base_scene_id": "scene_18_heat_equation",
+      "defect_family": "temporal_stacking",
+      "payload_sha256": "2d2f28deaadbd74b21bc6aec66b8dc415744cbd8c50824f807188c9cc0c71221",
+      "split": "test",
+      "task_id": "scene_18_heat_equation.temporal_stack"
+    }
+  ]
+}

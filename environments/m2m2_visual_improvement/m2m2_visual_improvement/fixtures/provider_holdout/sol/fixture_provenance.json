@@ -1,0 +1,14 @@
+{
+  "sanitized_excerpt": true,
+  "source_run_id": "20260723-062143-erd-s-1038-the-potential-landscape-use-the-compl",
+  "source_sha256": {
+    "01_intent.json": "af499a454628570396e8d21f45a12507e9566c4baddd09dd713880e6eed4742f",
+    "02_knowledge_map.json": "d657dfa74caf56e06e0b78904c50167999a2b1657cc7a3e83cc2f9725c611797",
+    "03_curriculum.json": "e46388be5f3e24242d14525f293764fb5d873be6e2f5140e6f65e7be7e73fafe",
+    "04_math_dossier.json": "5a65d402dc682f630b5e14b2825be7f1a4e1455ec9f8bc35e0539429fde18446",
+    "05_shot_list.json": "a1ff3194db3899fb7d4b731883ed5e34f352722d408b1b5d1a5c7d53dae64f5e",
+    "06_scene_spec.json": "c61a8c15d05556c61f2c3359e862aad10dcd91ab05add1feeeca427238a410a6",
+    "manifest.json": "ba6859768697fca079a2fee78e999f38415e820b634b56231c4a488108e2fa87",
+    "sol_scene.py": "82531a9525c67c4b80ea0d8c5fe24c3b7343f893424103e7e95a8d55c982649e"
+  }
+}
