@@ -1,0 +1,65 @@
+{
+  "acts": [
+    {
+      "act_number": 1,
+      "title": "Where it is, and how fast it goes",
+      "opening_question": "Five planets on five different ellipses all come back to the start at the same instant. What do they have in common that we cannot see?",
+      "teaches": "hodograph",
+      "narrative": "Cold open in 3D: a glowing star, five brass ellipses sharing one focus, five planets with comet trails moving with true Kepler timing; they leave perihelion together and return together. The stage flattens to a top-down split screen: on the left one orbit (e = 0.6) with a blue velocity arrow riding the planet; on the right an empty velocity plane with a single origin. Twelve velocity arrows are stamped around the orbit at equal time steps, then all twelve slide across the screen and land tail to tail at the origin. Their tips sit on a perfect circle, which draws itself in blue. A live arrow then circulates on the right while the planet circulates on the left. The formula v = (GM/h)(-sin theta, e + cos theta) arrives and the camera tours it: GM/h is the radius, e slides the center upward.",
+      "headline": "Where it is draws an ellipse.\nHow fast it goes draws a circle.",
+      "payoff": "A planet's velocity always runs around a circle, and the orbit's eccentricity only slides that circle off center.",
+      "estimated_seconds": 42
+    },
+    {
+      "act_number": 2,
+      "title": "Same energy, same year",
+      "opening_question": "If every orbit has its own velocity circle, which orbits belong together?",
+      "teaches": "equal_energy_equal_axis",
+      "narrative": "Back to the left stage: five orbits with the same long axis and eccentricities 0, 0.3, 0.55, 0.75 and 0.9. The energy formula E = -GM/(2a) appears; its a is highlighted in olive and the five major axes are shown to be the same length. The five planets are released from perihelion together and return together after one period, T = 2 pi sqrt(a^3/GM).",
+      "headline": "Same energy, same year.",
+      "payoff": "Orbits with the same energy have the same long axis and the same period, however stretched they are.",
+      "estimated_seconds": 20
+    },
+    {
+      "act_number": 3,
+      "title": "Two points every circle shares",
+      "opening_question": "Do the velocity circles of this family have anything in common?",
+      "teaches": "hinge_points",
+      "narrative": "On the right, the five velocity circles draw themselves: different radii, centers stacked along the vertical axis, apparently unrelated. Then two gold points light up at (+p0, 0) and (-p0, 0): every circle passes through both. The circular orbit's velocity circle is the one centered on the origin, and its radius is exactly p0. The identity R^2 = d^2 + p0^2 appears with R in blue, d in coral and p0 in olive, with the caption that this is the condition for a circle to meet the p0 circle at opposite points.",
+      "headline": "Every circle passes\nthrough the same two points.",
+      "payoff": "All same-energy velocity circles are pinned to two opposite points of the circle of radius p0.",
+      "estimated_seconds": 22
+    },
+    {
+      "act_number": 4,
+      "title": "Lift the plane onto a sphere",
+      "opening_question": "Where have we seen circles that all pass through two opposite points before?",
+      "teaches": "stereographic_lift",
+      "narrative": "The velocity plane moves to center stage and the camera tilts into 3D. A glass sphere of radius p0 rises so that its equator is the circular orbit's velocity circle and the two gold points sit on the equator. Thin rays fan out from the north pole through one circle; each point slides up its ray onto the glass. Then every circle lifts at once and each lands as a great circle, all hinged on the two gold points. The camera orbits slowly; rings dim as they pass behind the glass.",
+      "headline": "Lift the plane onto a sphere.",
+      "payoff": "Stereographic projection turns every same-energy velocity circle into a great circle on one sphere.",
+      "estimated_seconds": 24
+    },
+    {
+      "act_number": 5,
+      "title": "Eccentricity is an angle",
+      "opening_question": "If every orbit is a great circle through the same hinge, what distinguishes one orbit from another?",
+      "teaches": "eccentricity_angle",
+      "narrative": "The camera swings around to look straight down the hinge axis; every great circle collapses to a straight line through the center of the sphere. An arc marks the angle alpha between the equator and the e = 0.55 ring. The formula e = sin alpha appears on a card facing the camera and the camera makes the film's deepest move: a 3x dive into alpha, held. It pulls back, and alpha sweeps toward 90 degrees while the ring rises; at alpha = 90 degrees the ring runs through the north pole, the image of a head-on fall whose infinite speed becomes one ordinary point.",
+      "headline": "Eccentricity is an angle.",
+      "payoff": "An orbit's shape is a tilt: e = sin alpha, and even a head-on collision is just the ring through the pole.",
+      "estimated_seconds": 27
+    },
+    {
+      "act_number": 6,
+      "title": "Rotate the sphere, change the orbit",
+      "opening_question": "If shapes are angles, can we turn one orbit into another?",
+      "teaches": "great_circle_symmetry",
+      "narrative": "Back in the orbiting 3D view, one ring rotates about the hinge axis while an inset in the corner redraws the matching orbit: a circle stretches into an ellipse and back. Real numbers: Earth's ring tilts 0.96 degrees, Halley's comet's 75.3 degrees. In words: in three dimensions the sphere needs a fourth dimension, and Fock (1935) used that hidden rotation to explain why hydrogen's orbitals of different shapes share an energy, n^2 states per level, E_n = -13.6 eV / n^2. The film ends on the armillary of glowing rings, planets running along them, and the title.",
+      "headline": "Rotate the sphere,\nchange the orbit.",
+      "payoff": "Every orbit is a great circle; changing an orbit's shape without changing its energy is a rotation.",
+      "estimated_seconds": 30
+    }
+  ],
+  "through_line": "The film keeps handing the viewer one oddity at a time and resolving it with a picture. Act 1 plants the first oddity (a circle hiding inside an ellipse). Act 2 groups orbits by energy, which makes the second oddity visible in Act 3: circles of every size pinned to the same two points. Act 4 explains the pins by lifting the plane onto a sphere, which raises the question of what now distinguishes the orbits; Act 5 answers with a single angle and pushes that angle to its extreme, the collision orbit through the pole. Act 6 cashes the whole chain in: if shapes are angles, a rotation changes the shape, and that hidden rotation is real enough to organize the hydrogen atom."
+}

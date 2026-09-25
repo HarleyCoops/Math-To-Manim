@@ -1,0 +1,38 @@
+{
+  "core_claim": "Every planetary orbit is secretly a great circle: lift a planet's velocity circle onto a sphere and all orbits with the same energy become great circles, so changing an orbit's shape is nothing more than rotating that sphere.",
+  "audience": "Curious adults who know what an ellipse is and that velocity is an arrow with a length and a direction. They have heard of Kepler's laws but never derived them. They fear dense notation and 'it can be shown that'. They will follow anything they can see move. No calculus is required; one square root and one sine are the heaviest symbols on screen.",
+  "emotional_arc": [
+    "Calm wonder: five planets circle a star, each on a different ellipse, and all of them come back to the start at the same instant.",
+    "Surprise: the position traces an ellipse, but the velocity arrows, slid tail to tail, trace a perfect circle (Hamilton, 1846).",
+    "Tension: the velocity circles of orbits with equal energy are all different sizes and centers, yet every one passes through the same two points. That is too tidy to be an accident.",
+    "Revelation: lift the plane onto a sphere and every circle becomes a great circle hinged on those two points. Eccentricity is a tilt angle.",
+    "Awe: a head-on fall with infinite speed lands on one ordinary point, the north pole, and rotating the sphere turns a circular orbit into Halley's comet. In hydrogen the four-dimensional version of this sphere explains why electron orbitals of different shapes share an energy."
+  ],
+  "scope": {
+    "in": [
+      "Kepler orbits around a fixed star, per unit mass, with GM = 1 and semi-major axis a = 1 for the featured family",
+      "Hamilton's hodograph: v(theta) = (GM/h)(-sin theta, e + cos theta), a circle of radius GM/h whose center is offset by e GM/h",
+      "Equal energy means equal semi-major axis, E = -GM/(2a), and therefore equal period T = 2 pi sqrt(a^3/GM)",
+      "The two shared points of all hodographs in a same-energy family with a common long axis: (+p0, 0) and (-p0, 0), with p0 = sqrt(-2E) = sqrt(GM/a); the identity R^2 = d^2 + p0^2",
+      "Inverse stereographic projection from the north pole of a sphere of radius p0; a circle that meets the equator at two opposite points lifts to a great circle",
+      "Eccentricity as tilt: the lifted great circle contains the hinge axis and is tilted by alpha with e = sin alpha",
+      "The collision orbit (e -> 1): perihelion speed goes to infinity and its image goes to the north pole (Moser regularization, 1970)",
+      "Rotating the sphere about the hinge axis maps one same-energy orbit to another; Fock's 1935 four-dimensional version and hydrogen's n^2 degeneracy as the real-world payoff",
+      "Real eccentricities: Earth 0.0167 tilts 0.96 degrees; Halley's comet 0.967 tilts 75.3 degrees"
+    ],
+    "out": [
+      "Hyperbolic and parabolic orbits (mentioned nowhere; the hodograph arcs exist but would dilute the sphere story)",
+      "The Runge-Lenz vector and Poisson brackets; the symmetry is shown geometrically, not algebraically",
+      "The full proof of Moser's time reparametrization (only the fact that the sphere point moves with the eccentric anomaly is used)",
+      "Three-dimensional orbits and the S^3 picture; stated once in words for hydrogen, never drawn",
+      "Relativistic and quantum corrections (fine structure, Lamb shift)"
+    ]
+  },
+  "duration_seconds": 165,
+  "title_options": [
+    "Every Orbit Is a Great Circle",
+    "The Hidden Sphere",
+    "Eccentricity Is an Angle"
+  ],
+  "the_big_zoom": "Seen edge-on along the hinge axis, every great circle becomes a straight line through the center of the glass sphere. The camera dives 3x into the symbol alpha in e = sin alpha, the angle between the equator and a tilted circle, and holds: the shape of an orbit is a tilt angle. Then it pulls back and alpha sweeps toward 90 degrees until the circle passes through the north pole, where a head-on fall with infinite speed becomes one ordinary point."
+}

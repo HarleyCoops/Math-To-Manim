@@ -1,0 +1,7 @@
+# Production request: Every Orbit Is a Great Circle
+
+The prompt given to the Mythos six-agent chain (run `20260925-161931-every-orbit-is-a-great-circle`). The operating Claude session wrote this prompt and then answered every stage of the chain.
+
+> Every Kepler orbit is secretly a great circle. Start from Hamilton's hodograph: a planet's velocity vectors, placed tail to tail, always trace a perfect circle, even though its position traces an ellipse. Then show a family of orbits with the same energy (same long axis, different eccentricities): their velocity circles all pass through the same two points. Lift the velocity plane onto a sphere by stereographic projection and every one of those circles becomes a great circle hinged on those two points. Eccentricity turns out to be a tilt angle (e = sin alpha), a head-on fall toward the star passes through the north pole, and rotating the sphere turns one orbit into another of the same energy (Moser 1970; Fock 1935 found the four-dimensional version, which explains hydrogen's n^2 degeneracy). Planets must move with true Kepler timing and every number on screen must be exact.
+>
+> Art direction: an orrery at night. Ink-dark stage, brass and ivory linework, a lit glass sphere with Fresnel rim light and a soft specular highlight, great circles that dim when they pass behind the glass, a glowing star, planets with fading comet trails, a quiet starfield. Stunning 3D realism with the Mythos palette as the cast list.

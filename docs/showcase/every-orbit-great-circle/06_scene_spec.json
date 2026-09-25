@@ -1,0 +1,802 @@
+{
+  "scene_name": "HiddenSphereJourney",
+  "scene_class": "ThreeDScene",
+  "palette": {
+    "background": "#0c0c0b",
+    "text": "#faf9f5",
+    "secondary_text": "#b0aea5",
+    "matter": "#d97757",
+    "light": "#6a9bcc",
+    "structure": "#788c5d",
+    "interaction": "#d4a27f",
+    "glass_body": "#16222e",
+    "orbit_tint_ramp": {
+      "0": "#6a9bcc",
+      "0.3": "#8fb0c4",
+      "0.55": "#d4a27f",
+      "0.75": "#dc8d6b",
+      "0.9": "#d97757"
+    },
+    "color_identity": {
+      "orbit, planet, e, d": "#d97757",
+      "velocity v, hodograph, GM/h, R": "#6a9bcc",
+      "E, a, p0, equator": "#788c5d",
+      "hinge points, alpha, great circles": "#d4a27f"
+    }
+  },
+  "objects": [
+    {
+      "id": "starfield",
+      "kind": "VGroup of Dot (fixed in frame)",
+      "spec": "220 dots, radius 0.006-0.018, opacity 0.15-0.7, seeded RNG 7; two depth layers drift by camera theta and phi to fake parallax."
+    },
+    {
+      "id": "vignette",
+      "kind": "VGroup of Circle (fixed in frame)",
+      "spec": "Concentric black rings of growing stroke width and 0.06 opacity darkening the frame corners."
+    },
+    {
+      "id": "star",
+      "kind": "VGroup (Sphere core + camera-facing glow disks)",
+      "spec": "Core Sphere radius 0.16, ivory-gold; 7 billboard disks radius 0.25-1.3, gold, opacity 0.22 falling to 0.02, re-oriented every frame to face the camera."
+    },
+    {
+      "id": "orbit_family",
+      "kind": "VGroup of glow ParametricFunction",
+      "spec": "Ellipses with focus at the star, a = 1, e in [0, 0.3, 0.55, 0.75, 0.9], perihelion on +x, scaled by 1.35 world units; each with 3 glow layers (widths 2.2/7/14, opacity 1/0.16/0.06) in its ramp tint."
+    },
+    {
+      "id": "planets",
+      "kind": "VGroup of Sphere + glow disk",
+      "spec": "Radius 0.07, colored by orbit tint; positions from Kepler's equation M = E - e sin E solved by Newton iteration, driven by one ValueTracker t (sim time, period 2 pi)."
+    },
+    {
+      "id": "comet_trails",
+      "kind": "VGroup of Line segments",
+      "spec": "28 segments over the last 0.9 sim-time units, opacity ramping 0 -> 0.8, width 1 -> 3.5, rebuilt from the Kepler solution each frame."
+    },
+    {
+      "id": "orbit_e06",
+      "kind": "glow ParametricFunction",
+      "spec": "e = 0.6 ellipse, focus at LEFT_CENTER = (-3.35, -0.35, 0), scale 1.35."
+    },
+    {
+      "id": "velocity_plane",
+      "kind": "VGroup (polar grid)",
+      "spec": "Origin RIGHT_CENTER = (3.45, -1.0, 0), velocity scale 1.05 world units per unit speed; 5 faint concentric circles and 12 radial ticks in gray at opacity 0.12-0.2; small origin dot."
+    },
+    {
+      "id": "velocity_arrow",
+      "kind": "Arrow",
+      "spec": "Blue #6a9bcc, drawn on the planet, length 0.55 x speed x 1.05, tip length 0.14, buff 0."
+    },
+    {
+      "id": "stamped_arrows",
+      "kind": "VGroup of 12 Arrow",
+      "spec": "Velocity at mean anomalies k 2pi/12, k = 0..11, anchored on the orbit; the TRANSFORM target is the same arrows with tails at the velocity origin and full length 1.05 x speed."
+    },
+    {
+      "id": "hodograph_e06",
+      "kind": "glow Circle",
+      "spec": "Center (0, 0.75) and radius 1.25 in velocity units, blue, glow layers."
+    },
+    {
+      "id": "hodograph_formula",
+      "kind": "MathTex",
+      "spec": {
+        "latex_parts": [
+          "\\vec v",
+          "=",
+          "\\frac{GM}{h}",
+          "\\big(",
+          "-\\sin\\theta",
+          ",\\;",
+          "e",
+          "+",
+          "\\cos\\theta",
+          "\\big)"
+        ],
+        "font_size": 40,
+        "position": "(3.4, 2.85, 0) world space",
+        "colors": {
+          "0": "#6a9bcc",
+          "2": "#6a9bcc",
+          "6": "#d97757"
+        }
+      }
+    },
+    {
+      "id": "axis_bars",
+      "kind": "VGroup of Line",
+      "spec": "Five horizontal bars from x = -(1+e) to x = (1-e) (times 1.35) stacked below the family at y = -2.05 - 0.14 k, each in its orbit tint, with a bracket label 2a."
+    },
+    {
+      "id": "energy_period_formula",
+      "kind": "MathTex",
+      "spec": {
+        "latex_parts": [
+          "E",
+          "=",
+          "-\\frac{GM}{2a}",
+          "\\qquad",
+          "T",
+          "=",
+          "2\\pi\\sqrt{a^{3}/GM}"
+        ],
+        "font_size": 38,
+        "position": "(-3.35, 2.9, 0) world space",
+        "colors": {
+          "0": "#788c5d",
+          "2": "#788c5d",
+          "6": "#788c5d"
+        }
+      }
+    },
+    {
+      "id": "family_hodographs",
+      "kind": "VGroup of glow Circle",
+      "spec": "For each e: center (0, e/c), radius 1/c with c = sqrt(1 - e^2), velocity units, at RIGHT_CENTER, orbit tints."
+    },
+    {
+      "id": "hinge_points",
+      "kind": "VGroup of glow Dot",
+      "spec": "At velocity (+1, 0) and (-1, 0), gold #d4a27f, radius 0.06 with 3 glow disks, pulsing once."
+    },
+    {
+      "id": "p0_circle",
+      "kind": "DashedVMobject Circle",
+      "spec": "Radius p0 = 1 velocity unit, olive, dashed, opacity 0.8."
+    },
+    {
+      "id": "hinge_formula",
+      "kind": "MathTex",
+      "spec": {
+        "latex_parts": [
+          "R^{2}",
+          "=",
+          "d^{2}",
+          "+",
+          "p_0^{2}",
+          ",\\qquad",
+          "p_0",
+          "=",
+          "\\sqrt{-2E}"
+        ],
+        "font_size": 40,
+        "position": "(3.45, 3.0, 0) world space",
+        "colors": {
+          "0": "#6a9bcc",
+          "2": "#d97757",
+          "4": "#788c5d",
+          "6": "#788c5d",
+          "8": "#788c5d"
+        }
+      }
+    },
+    {
+      "id": "glass_sphere",
+      "kind": "VGroup of Polygon faces (shade_in_3d for depth sorting only)",
+      "spec": "Radius SPH = 1.75 world units (p0 after the 1.7x rescale around the velocity origin moved to ORIGIN); 30 x 60 faces; every frame each face gets Lambert key light, Fresnel rim (1 - |n.v|)^3 in gold, back faces dimmed; plus a camera-facing specular highlight of 6 soft disks at the half-vector point."
+    },
+    {
+      "id": "great_circles",
+      "kind": "VGroup of VMobject segments",
+      "spec": "For each e: points R_sph (cos s x_hat + sin s (0, c, e)), 120 segments per ring, shade_in_3d for depth sorting, stroke 3 plus a glow copy; opacity 1.0 facing the camera and 0.25 behind the glass."
+    },
+    {
+      "id": "projection_rays",
+      "kind": "VGroup of Line",
+      "spec": "24 lines from the north pole (0, 0, SPH) through points of the e = 0.55 plane circle, extended 10% past the plane, gold at opacity 0.35."
+    },
+    {
+      "id": "stereo_formula",
+      "kind": "MathTex (fixed in frame)",
+      "spec": {
+        "latex_parts": [
+          "\\vec u",
+          "\\;\\longmapsto\\;",
+          "\\frac{1}{|\\vec u|^{2}+p_0^{2}}",
+          "\\big(",
+          "2p_0^{2}\\,\\vec u",
+          ",\\;",
+          "p_0\\,(|\\vec u|^{2}-p_0^{2})",
+          "\\big)"
+        ],
+        "font_size": 34,
+        "position": "top center (0, 3.2)"
+      }
+    },
+    {
+      "id": "alpha_arc",
+      "kind": "ParametricFunction",
+      "spec": "In the plane perpendicular to the hinge axis, radius 0.62 SPH, from the equator line to the e = 0.55 ring, gold."
+    },
+    {
+      "id": "tilt_card",
+      "kind": "MathTex (world space)",
+      "spec": {
+        "latex_parts": [
+          "e",
+          "=",
+          "\\sin",
+          "\\alpha"
+        ],
+        "font_size": 60,
+        "position": "on the plane x = 0.2 facing the +x camera, at (0.2, 2.9, 1.35)",
+        "colors": {
+          "0": "#d97757",
+          "3": "#d4a27f"
+        }
+      }
+    },
+    {
+      "id": "orbit_inset",
+      "kind": "VGroup (fixed in frame)",
+      "spec": "Lower-left panel: star dot and an ellipse with a = 1 and e = sin(alpha) of the rotating ring, scale 0.62, redrawn every frame; label via caption only."
+    },
+    {
+      "id": "earth_halley_labels",
+      "kind": "MathTex (fixed in frame)",
+      "spec": "\\text{Earth}\\;\\; e=0.0167,\\;\\alpha=0.96^{\\circ} and \\text{Halley}\\;\\; e=0.967,\\;\\alpha=75.3^{\\circ}, font 30, beside the inset."
+    },
+    {
+      "id": "hydrogen_formula",
+      "kind": "MathTex (fixed in frame)",
+      "spec": {
+        "latex_parts": [
+          "E_n",
+          "=",
+          "-\\frac{13.6\\ \\mathrm{eV}}{n^{2}}",
+          ",\\qquad",
+          "n^{2}",
+          "\\ \\text{states per level}"
+        ],
+        "font_size": 38,
+        "position": "top center (0, 3.1)"
+      }
+    },
+    {
+      "id": "ring_runners",
+      "kind": "VGroup of Dot3D-like glow dots",
+      "spec": "One per ring, moving at the eccentric-anomaly rate: sphere point (-sin E, c cos E, e cos E) x SPH."
+    }
+  ],
+  "timeline": [
+    {
+      "beat": 1,
+      "verb": "TILT_3D",
+      "target": "orrery",
+      "params": {
+        "phi": 62,
+        "theta": -72,
+        "zoom": 1.0
+      },
+      "objects": [
+        "starfield",
+        "vignette",
+        "star",
+        "orbit_family",
+        "planets",
+        "comet_trails"
+      ]
+    },
+    {
+      "beat": 2,
+      "verb": "ORBIT",
+      "target": "orrery",
+      "params": {
+        "rate": 0.05,
+        "run_time": 9.0,
+        "t": [
+          0,
+          "2 pi"
+        ]
+      },
+      "caption": "Five orbits around one star. Watch them come home together."
+    },
+    {
+      "beat": 3,
+      "verb": "HEADLINE",
+      "text": "Where it is draws an ellipse.\nHow fast it goes draws a circle.",
+      "params": {
+        "font_size": 68,
+        "hold": 1.6
+      }
+    },
+    {
+      "beat": 4,
+      "verb": "RETURN_2D",
+      "params": {
+        "phi": 0,
+        "theta": -90,
+        "zoom": 1.0,
+        "run_time": 2.0
+      },
+      "objects_in": [
+        "orbit_e06",
+        "star (moved to LEFT_CENTER, scale 0.8)",
+        "velocity_plane"
+      ]
+    },
+    {
+      "beat": 5,
+      "verb": "SHOW",
+      "target": "velocity_arrow",
+      "params": {
+        "run_time": 4.0,
+        "t": [
+          0,
+          3.2
+        ]
+      },
+      "caption": "The blue arrow is the velocity: which way, and how fast."
+    },
+    {
+      "beat": 6,
+      "verb": "SHOW",
+      "target": "stamped_arrows",
+      "params": {
+        "run_time": 3.0,
+        "lag_ratio": 0.12
+      },
+      "caption": "Stamp it at twelve equal moments of the year."
+    },
+    {
+      "beat": 7,
+      "verb": "TRANSFORM",
+      "target": "stamped_arrows",
+      "params": {
+        "run_time": 2.6,
+        "path_arc": -0.4
+      },
+      "caption": "Now slide every arrow so all the tails meet."
+    },
+    {
+      "beat": 8,
+      "verb": "SHOW",
+      "target": "hodograph_e06",
+      "params": {
+        "run_time": 1.8
+      },
+      "caption": "The tips sit on a perfect circle. Hamilton, 1846."
+    },
+    {
+      "beat": 9,
+      "verb": "SHOW",
+      "target": "live_velocity_arrow",
+      "params": {
+        "run_time": 6.0,
+        "t": [
+          "3.2",
+          "3.2 + 2 pi"
+        ]
+      },
+      "caption": "The orbit is an ellipse. The velocity runs around a circle."
+    },
+    {
+      "beat": 10,
+      "verb": "SHOW",
+      "target": "hodograph_formula",
+      "params": {
+        "run_time": 1.4
+      },
+      "caption": "The velocity circle, written out."
+    },
+    {
+      "beat": 11,
+      "verb": "ZOOM_IN",
+      "target": "hodograph_formula",
+      "part_index": 2,
+      "params": {
+        "zoom": 2.4,
+        "run_time": 1.4
+      },
+      "caption": "GM over h sets the size: the circle's radius.",
+      "dim_others": 0.3
+    },
+    {
+      "beat": 12,
+      "verb": "ZOOM_IN",
+      "target": "hodograph_formula",
+      "part_index": 6,
+      "params": {
+        "zoom": 2.4,
+        "run_time": 1.0
+      },
+      "caption": "The eccentricity e only slides the circle's center upward."
+    },
+    {
+      "beat": 13,
+      "verb": "PULL_BACK",
+      "params": {
+        "frame_center": "ORIGIN",
+        "zoom": 1.0,
+        "run_time": 1.2
+      }
+    },
+    {
+      "beat": 14,
+      "verb": "HEADLINE",
+      "text": "Same energy, same year.",
+      "params": {
+        "font_size": 72,
+        "hold": 1.2
+      }
+    },
+    {
+      "beat": 15,
+      "verb": "SHOW",
+      "target": "orbit_family (left panel, focus at LEFT_CENTER)",
+      "params": {
+        "run_time": 2.4
+      },
+      "caption": "Five orbits, stretched differently, with the same long axis."
+    },
+    {
+      "beat": 16,
+      "verb": "SHOW",
+      "target": "axis_bars",
+      "params": {
+        "run_time": 1.6
+      },
+      "caption": "Each long axis has the same length, 2a. Only its position shifts."
+    },
+    {
+      "beat": 17,
+      "verb": "SHOW",
+      "target": "energy_period_formula",
+      "params": {
+        "run_time": 1.2
+      }
+    },
+    {
+      "beat": 18,
+      "verb": "ZOOM_IN",
+      "target": "energy_period_formula",
+      "part_index": 2,
+      "params": {
+        "zoom": 2.2,
+        "run_time": 1.2
+      },
+      "caption": "The energy depends only on a, never on the shape."
+    },
+    {
+      "beat": 19,
+      "verb": "PULL_BACK",
+      "params": {
+        "frame_center": "ORIGIN",
+        "zoom": 1.0,
+        "run_time": 1.0
+      }
+    },
+    {
+      "beat": 20,
+      "verb": "SHOW",
+      "target": "planets on orbit_family",
+      "params": {
+        "run_time": 6.0,
+        "t": [
+          0,
+          "2 pi"
+        ]
+      },
+      "caption": "Same a, same period: all five come home together."
+    },
+    {
+      "beat": 21,
+      "verb": "HEADLINE",
+      "text": "Every circle passes\nthrough the same two points.",
+      "params": {
+        "font_size": 66,
+        "hold": 1.4
+      }
+    },
+    {
+      "beat": 22,
+      "verb": "SHOW",
+      "target": "family_hodographs",
+      "params": {
+        "run_time": 2.4,
+        "lag_ratio": 0.2
+      },
+      "caption": "Their velocity circles come in every size and height."
+    },
+    {
+      "beat": 23,
+      "verb": "SHOW",
+      "target": "hinge_points",
+      "params": {
+        "run_time": 1.2
+      },
+      "caption": "Yet all five pass through the same two gold points."
+    },
+    {
+      "beat": 24,
+      "verb": "SHOW",
+      "target": "p0_circle",
+      "params": {
+        "run_time": 1.2
+      },
+      "caption": "The circular orbit's circle has radius p0, fixed by the energy."
+    },
+    {
+      "beat": 25,
+      "verb": "SHOW",
+      "target": "hinge_formula",
+      "params": {
+        "run_time": 1.2
+      }
+    },
+    {
+      "beat": 26,
+      "verb": "ZOOM_IN",
+      "target": "hinge_formula",
+      "part_index": 0,
+      "params": {
+        "zoom": 2.2,
+        "run_time": 1.2
+      },
+      "caption": "R: the radius of a velocity circle."
+    },
+    {
+      "beat": 27,
+      "verb": "ZOOM_IN",
+      "target": "hinge_formula",
+      "part_index": 2,
+      "params": {
+        "zoom": 2.2,
+        "run_time": 0.9
+      },
+      "caption": "d: how far its center sits above the origin."
+    },
+    {
+      "beat": 28,
+      "verb": "ZOOM_IN",
+      "target": "hinge_formula",
+      "part_index": 4,
+      "params": {
+        "zoom": 2.2,
+        "run_time": 0.9
+      },
+      "caption": "p0: the same for every orbit of this energy."
+    },
+    {
+      "beat": 29,
+      "verb": "PULL_BACK",
+      "params": {
+        "frame_center": "ORIGIN",
+        "zoom": 1.0,
+        "run_time": 1.2
+      }
+    },
+    {
+      "beat": 30,
+      "verb": "HEADLINE",
+      "text": "Lift the plane onto a sphere.",
+      "params": {
+        "font_size": 72,
+        "hold": 1.2
+      }
+    },
+    {
+      "beat": 31,
+      "verb": "TRANSFORM",
+      "target": "velocity picture",
+      "params": {
+        "shift_to": "ORIGIN",
+        "scale": 1.7,
+        "run_time": 1.8
+      }
+    },
+    {
+      "beat": 32,
+      "verb": "TILT_3D",
+      "params": {
+        "phi": 64,
+        "theta": -62,
+        "zoom": 0.95,
+        "run_time": 2.6
+      }
+    },
+    {
+      "beat": 33,
+      "verb": "SHOW",
+      "target": "glass_sphere",
+      "params": {
+        "run_time": 2.0
+      },
+      "caption": "A glass sphere of radius p0. Its equator is the p0 circle."
+    },
+    {
+      "beat": 34,
+      "verb": "SHOW",
+      "target": "projection_rays",
+      "params": {
+        "run_time": 3.2
+      },
+      "caption": "From the north pole, draw a line through each point."
+    },
+    {
+      "beat": 35,
+      "verb": "TRANSFORM",
+      "target": "family_hodographs -> great_circles",
+      "params": {
+        "run_time": 3.2,
+        "path": "each point moves along its projection ray"
+      },
+      "caption": "Every circle lands as a great circle, hinged on the gold points."
+    },
+    {
+      "beat": 36,
+      "verb": "ORBIT",
+      "params": {
+        "rate": 0.09,
+        "run_time": 5.0
+      },
+      "formula": "stereo_formula",
+      "caption": "Stereographic projection: circles stay circles."
+    },
+    {
+      "beat": 37,
+      "verb": "HEADLINE",
+      "text": "Eccentricity is an angle.",
+      "params": {
+        "font_size": 72,
+        "hold": 1.2
+      }
+    },
+    {
+      "beat": 38,
+      "verb": "TILT_3D",
+      "params": {
+        "phi": 90,
+        "theta": 0,
+        "zoom": 1.0,
+        "run_time": 3.0
+      },
+      "caption": "Look straight down the hinge: every ring becomes a line."
+    },
+    {
+      "beat": 39,
+      "verb": "SHOW",
+      "target": [
+        "alpha_arc",
+        "tilt_card"
+      ],
+      "params": {
+        "run_time": 1.6
+      }
+    },
+    {
+      "beat": 40,
+      "verb": "ZOOM_IN",
+      "target": "tilt_card",
+      "part_index": 3,
+      "params": {
+        "zoom": 3.0,
+        "run_time": 2.2,
+        "hold": 2.4
+      },
+      "caption": "Alpha, the ring's tilt, is the whole shape of the orbit."
+    },
+    {
+      "beat": 41,
+      "verb": "PULL_BACK",
+      "params": {
+        "frame_center": "ORIGIN",
+        "zoom": 1.0,
+        "run_time": 2.0
+      }
+    },
+    {
+      "beat": 42,
+      "verb": "SHOW",
+      "target": "alpha sweep of the e = 0.55 ring to 90 degrees",
+      "params": {
+        "run_time": 4.5
+      },
+      "caption": "Push e toward 1 and the ring stands up through the north pole."
+    },
+    {
+      "beat": 43,
+      "verb": "CAPTION",
+      "target": "north pole glow",
+      "caption": "A head-on fall reaches infinite speed. Here it is one point.",
+      "params": {
+        "hold": 2.2
+      }
+    },
+    {
+      "beat": 44,
+      "verb": "HEADLINE",
+      "text": "Rotate the sphere,\nchange the orbit.",
+      "params": {
+        "font_size": 68,
+        "hold": 1.2
+      }
+    },
+    {
+      "beat": 45,
+      "verb": "TILT_3D",
+      "params": {
+        "phi": 66,
+        "theta": -60,
+        "zoom": 1.0,
+        "run_time": 2.4
+      }
+    },
+    {
+      "beat": 46,
+      "verb": "SHOW",
+      "target": [
+        "rotating ring",
+        "orbit_inset"
+      ],
+      "params": {
+        "alpha_degrees": [
+          0,
+          75.27,
+          0.96
+        ],
+        "run_time": 7.0
+      },
+      "caption": "Rotate a ring about the hinge: the orbit stretches, same energy."
+    },
+    {
+      "beat": 47,
+      "verb": "SHOW",
+      "target": "earth_halley_labels",
+      "params": {
+        "run_time": 1.0
+      },
+      "caption": "Earth's ring tilts 0.96 degrees. Halley's comet's tilts 75.3."
+    },
+    {
+      "beat": 48,
+      "verb": "SHOW",
+      "target": "hydrogen_formula",
+      "params": {
+        "run_time": 1.2
+      },
+      "caption": "Fock, 1935: the same sphere, in four dimensions, organizes hydrogen."
+    },
+    {
+      "beat": 49,
+      "verb": "ORBIT",
+      "target": "ring_runners",
+      "params": {
+        "rate": 0.07,
+        "run_time": 5.0
+      }
+    },
+    {
+      "beat": 50,
+      "verb": "HEADLINE",
+      "text": "Every orbit is a great circle.",
+      "params": {
+        "font_size": 72,
+        "hold": 2.2
+      }
+    }
+  ],
+  "constraints": [
+    "Manim CE 0.19+ (validated on 0.20.1), Cairo renderer, single self-contained file, one ThreeDScene subclass",
+    "Camera moves only via self.move_camera / self.set_camera_orientation and ambient rotation; never .animate on the camera",
+    "Formulas that get zoomed (hodograph, energy_period, hinge_identity, tilt_card) live in world space; captions, headlines, stereo_formula, hydrogen_formula, labels and the inset are fixed in frame",
+    "camera.should_apply_shading is False; all lighting is computed explicitly per frame from the camera eye position, which is derived from phi and theta with generate_rotation_matrix so it is never stale",
+    "Depth sorting: sphere faces and ring segments set shade_in_3d = True so the ThreeDCamera orders them by depth",
+    "Planet motion obeys Kepler's equation; the synchronized return after 2 pi of sim time is exact",
+    "At most one headline or two text blocks on screen; captions replace each other",
+    "No external assets, no file IO, no network, seeded randomness only"
+  ],
+  "acceptance": [
+    "In the cold open and in Act 2 all planets are at perihelion at t = 0 and again at t = 2 pi (frame check: all planet dots on the +x axis).",
+    "The twelve stamped arrows land with their tips on the e = 0.6 hodograph circle to within 0.01 world units.",
+    "Every formula on screen has a caption on screen at the same time.",
+    "Each of the five lifted rings passes through both gold hinge points, and in the hinge-axis view every ring is a straight line through the sphere's center.",
+    "The camera reaches zoom 3.0 exactly once, on alpha in the tilt card, and returns to zoom 1.0 afterward.",
+    "Ring segments behind the glass render dimmer than segments in front in every 3D frame.",
+    "Earth's ring is shown at 0.96 degrees and Halley's at 75.3 degrees, matching arcsin(e).",
+    "Runtime is 150-175 seconds."
+  ]
+}

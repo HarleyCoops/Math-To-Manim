@@ -1,0 +1,52 @@
+{
+  "stage": "render review",
+  "reviewer": "the operating Claude session, from rendered frames (contact sheets and full-resolution crops)",
+  "note": "The six stage artifacts are kept exactly as the chain produced them. Changes made after looking at rendered frames live in the scene code and are listed here with the frame evidence that prompted them.",
+  "passes": [
+    {
+      "pass": 1,
+      "render": "full film, 480p15",
+      "result": "crashed after Act 1",
+      "finding": "FadeOut deep-copies its target; the billboard mobjects held a reference to the Scene, which cannot be copied.",
+      "fix": "Billboards, rings, sphere and silhouette hold a camera accessor function instead (functions deep-copy by reference)."
+    },
+    {
+      "pass": 2,
+      "render": "full film, 480p15, 167.3 s",
+      "result": "complete",
+      "findings_and_fixes": [
+        {"finding": "Acts 1-3: orbit and velocity circle each used about 20% of the frame width.", "fix": "Position scale 1.35 -> 1.7, velocity scale 0.95 -> 1.15, panels re-laid out."},
+        {"finding": "Cold open read as distant.", "fix": "Camera zoom 1.45 and phi 58 degrees."},
+        {"finding": "Gold hinge points and the dashed p0 circle were hard to pick out among five circles.", "fix": "Larger hinge glows; the other circles dim while the p0 circle and the triangle are introduced."},
+        {"finding": "R^2 = d^2 + p0^2 was only a symbol tour.", "fix": "Added the right triangle it describes: origin, circle center, hinge point (legs d and p0, hypotenuse R)."},
+        {"finding": "Formulas were small at zoom 1.", "fix": "Font 40 -> 48; olive text lifted to #a3b58a so it reads on the ink background."},
+        {"finding": "3D acts: the sphere filled about a fifth of the frame height.", "fix": "Camera zoom 1.4 after the lift, 1.3 in the hinge view, 1.45 in Act 6. The big zoom now goes 1.3 -> 3.9, a 3x dive as the charter asks, instead of an absolute 3.0."},
+        {"finding": "Full-resolution crop: ring glow was beaded where per-segment halos met.", "fix": "Each ring draws two continuous halo paths (front runs, back runs); depth-sorted segments keep only the sharp stroke."},
+        {"finding": "Act 6: two captions overlapped during a crossfade.", "fix": "A new caption waits 0.35 s for the old one to clear."},
+        {"finding": "3D shots lacked a spatial reference once the plane grid faded.", "fix": "Added an astrolabe plate in the velocity plane, built from depth-sorted segments so the glass occludes it correctly."}
+      ]
+    },
+    {
+      "pass": 3,
+      "render": "animations 59-99, 480p15",
+      "result": "complete",
+      "findings_and_fixes": [
+        {"finding": "Hinge view: the e = sin(alpha) card touched the sphere's rim.", "fix": "Card moved to (0.3, 3.25, 1.35)."},
+        {"finding": "Act 6: the Halley and Earth labels ran off the left edge.", "fix": "Labels left-aligned with the inset panel."},
+        {"finding": "The stereographic formula grazed the top of the sphere at zoom 1.5.", "fix": "Zoom 1.4 and a tighter top margin."}
+      ]
+    },
+    {
+      "pass": 4,
+      "render": "first 1080p60 slice (animations 0-77) plus two 1080p stills",
+      "result": "stopped and re-rendered; these defects are invisible at 480p",
+      "findings_and_fixes": [
+        {"finding": "Ring strokes showed a 'railroad track' of dark ticks: every depth-sorted segment left an antialiasing seam at its ends.", "fix": "Rings are drawn as continuous paths split into front and back runs; front runs draw on top, back runs are depth-sorted at the sphere's centre so the near glass still veils them."},
+        {"finding": "Star, planet and hinge glows showed concentric steps.", "fix": "soft_glow(): 9-14 nested disks whose combined opacity follows a smooth power falloff."},
+        {"finding": "The sphere's specular and Fresnel rim were shaded per face and showed as square facets near the highlight and the silhouette.", "fix": "Face shading keeps a broad soft sheen and a faint rim; the sharp highlight is a smooth billboard and the rim glow is three concentric strokes at the exact perspective silhouette; mesh 36 x 72."},
+        {"finding": "The Act 2 and Act 3 formulas sat 0.2 units from the left edge.", "fix": "Moved right to x = -3.05."}
+      ]
+    }
+  ],
+  "acceptance": "evaluated against the final render; see acceptance_results in manifest.json"
+}

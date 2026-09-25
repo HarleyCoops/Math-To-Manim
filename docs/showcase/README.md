@@ -31,6 +31,19 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 
 ---
 
+## Every Orbit Is a Great Circle · a Mythos film
+
+<a href="assets/every-orbit-great-circle.mp4"><img src="assets/every-orbit-great-circle.gif" alt="Velocity circles of five same-energy orbits lift onto a lit glass sphere and become great circles hinged on two gold points" width="90%" /></a>
+
+A planet's velocity runs around a circle (Hamilton's hodograph). Lift the
+velocity circles of all orbits with one energy onto a sphere and each
+becomes a great circle through the same two points; eccentricity is the
+sine of the circle's tilt. Earth's circle tilts 0.96°, Halley's comet's
+75.3°. Rendered at 1080p/60 with per-frame lighting on a glass sphere.
+[Watch the movie](assets/every-orbit-great-circle.mp4) ·
+[Production record](every-orbit-great-circle/README.md) ·
+[Scene](../../examples/mythos/every_orbit_great_circle.py)
+
 ## Morse Theory · four critical moments
 
 [Watch the 98-second movie](assets/astra-morse-torus.mp4) ·

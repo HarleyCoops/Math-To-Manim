@@ -1,0 +1,151 @@
+{
+  "target": "For Kepler motion about a star with GM fixed, the stereographic lift of each orbit's hodograph onto a sphere of radius p0 = sqrt(-2E) is a great circle; all orbits of energy E become great circles, the eccentricity of each is the sine of its tilt, collision orbits pass through the north pole, and rotations of the sphere carry orbits to orbits of the same energy.",
+  "nodes": [
+    {
+      "id": "great_circle_symmetry",
+      "name": "Orbits of one energy are great circles on one sphere",
+      "why_needed": "This is the core claim the film earns.",
+      "depth": 0,
+      "assumed": false,
+      "visual_seed": "A glass sphere wrapped in tilted brass rings, all hinged on the same two points, turning slowly like an armillary sphere."
+    },
+    {
+      "id": "eccentricity_angle",
+      "name": "Eccentricity is a tilt angle, e = sin alpha",
+      "why_needed": "It turns the abstract statement 'great circle' into something the viewer can measure and name.",
+      "depth": 1,
+      "assumed": false,
+      "visual_seed": "Seen edge-on, each ring is a line through the center; an arc marks alpha between the equator and the ring."
+    },
+    {
+      "id": "stereographic_lift",
+      "name": "Stereographic projection from the north pole",
+      "why_needed": "It is the operation that turns flat velocity circles into circles on the sphere.",
+      "depth": 2,
+      "assumed": false,
+      "visual_seed": "Thin rays from the north pole pierce the plane; each point slides up its ray onto the glass."
+    },
+    {
+      "id": "hinge_points",
+      "name": "All same-energy hodographs pass through two fixed points",
+      "why_needed": "A circle through two opposite points of the equator is exactly the kind of circle that lifts to a great circle.",
+      "depth": 2,
+      "assumed": false,
+      "visual_seed": "Nested circles of different sizes, all pinned at the same two gold points like pages bound to a spine."
+    },
+    {
+      "id": "equal_energy_equal_axis",
+      "name": "Equal energy means equal long axis and equal period",
+      "why_needed": "It defines the family of orbits the sphere collects, and gives the viewer a physical reason the family belongs together.",
+      "depth": 3,
+      "assumed": false,
+      "visual_seed": "Five planets leave perihelion together on five different ellipses and all return at the same instant."
+    },
+    {
+      "id": "hodograph",
+      "name": "Hamilton's hodograph: the velocity traces a circle",
+      "why_needed": "Everything on the sphere is a lifted velocity circle; without this node there is nothing to lift.",
+      "depth": 3,
+      "assumed": false,
+      "visual_seed": "Velocity arrows stamped around an ellipse slide across the screen, tail to tail, and their tips land on a perfect circle."
+    },
+    {
+      "id": "kepler_timing",
+      "name": "Planets move fast near the star and slow far away",
+      "why_needed": "The hodograph's uneven spacing and the synchronized return both need honest timing.",
+      "depth": 4,
+      "assumed": true,
+      "visual_seed": "A planet whipping around perihelion and drifting at aphelion, its comet trail stretching and bunching."
+    },
+    {
+      "id": "velocity_arrow",
+      "name": "Velocity is an arrow: direction and speed",
+      "why_needed": "The hodograph is built from velocity arrows moved to a common tail.",
+      "depth": 5,
+      "assumed": true,
+      "visual_seed": "A blue arrow riding the planet, always tangent to the path, long near the star and short far away."
+    },
+    {
+      "id": "ellipse",
+      "name": "Orbits are ellipses with the star at one focus",
+      "why_needed": "The starting picture of the film.",
+      "depth": 5,
+      "assumed": true,
+      "visual_seed": "Brass ellipses sharing one focus where the star glows."
+    },
+    {
+      "id": "collision_pole",
+      "name": "A head-on fall reaches the north pole",
+      "why_needed": "It shows the sphere includes the most singular orbit as an ordinary point, which is the moment of awe.",
+      "depth": 1,
+      "assumed": false,
+      "visual_seed": "As alpha approaches 90 degrees the ring stands upright and runs through the pole; the camera settles on that single point."
+    },
+    {
+      "id": "hydrogen",
+      "name": "Fock 1935: the same sphere in four dimensions explains hydrogen's degeneracy",
+      "why_needed": "The real-world payoff: this hidden symmetry is why 2s and 2p have equal energy.",
+      "depth": 1,
+      "assumed": false,
+      "visual_seed": "A column of energy levels with 1, 4, 9, 16 states lighting up."
+    }
+  ],
+  "edges": [
+    [
+      "ellipse",
+      "hodograph"
+    ],
+    [
+      "velocity_arrow",
+      "hodograph"
+    ],
+    [
+      "kepler_timing",
+      "hodograph"
+    ],
+    [
+      "kepler_timing",
+      "equal_energy_equal_axis"
+    ],
+    [
+      "hodograph",
+      "hinge_points"
+    ],
+    [
+      "equal_energy_equal_axis",
+      "hinge_points"
+    ],
+    [
+      "hinge_points",
+      "stereographic_lift"
+    ],
+    [
+      "stereographic_lift",
+      "eccentricity_angle"
+    ],
+    [
+      "eccentricity_angle",
+      "collision_pole"
+    ],
+    [
+      "eccentricity_angle",
+      "great_circle_symmetry"
+    ],
+    [
+      "collision_pole",
+      "great_circle_symmetry"
+    ],
+    [
+      "great_circle_symmetry",
+      "hydrogen"
+    ]
+  ],
+  "spine": [
+    "hodograph",
+    "equal_energy_equal_axis",
+    "hinge_points",
+    "stereographic_lift",
+    "eccentricity_angle",
+    "great_circle_symmetry"
+  ]
+}

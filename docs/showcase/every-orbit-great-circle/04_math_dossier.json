@@ -1,0 +1,270 @@
+{
+  "formulas": [
+    {
+      "id": "hodograph",
+      "act_number": 1,
+      "latex_parts": [
+        "\\vec v",
+        "=",
+        "\\frac{GM}{h}",
+        "\\big(",
+        "-\\sin\\theta",
+        ",\\;",
+        "e",
+        "+",
+        "\\cos\\theta",
+        "\\big)"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "The planet's velocity, drawn from one fixed origin.",
+          "identity": "light",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 2,
+          "plain_words": "GM over h is the circle's radius: gravity's strength over the orbit's spin.",
+          "identity": "light",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 4,
+          "plain_words": "Minus sine and cosine: a point running around a circle.",
+          "identity": "structure",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 6,
+          "plain_words": "Eccentricity only slides the circle's center upward.",
+          "identity": "matter",
+          "zoom_worthy": true
+        }
+      ],
+      "derivation_or_motivation": "For an orbit r = h^2/(GM (1 + e cos theta)) with perihelion on the +x axis, differentiating the position and using conservation of angular momentum r^2 dtheta/dt = h gives v = (GM/h)(-sin theta, e + cos theta). The theta-dependence is exactly a unit circle, so the tips of all velocity vectors lie on a circle of radius GM/h centered at (0, e GM/h). Hamilton named this curve the hodograph in 1846.",
+      "common_misreading": "Viewers expect the velocity curve to be an ellipse like the orbit. It is a circle for every conic; only its center moves with e. A second misreading: equally spaced times give equally spaced tips. They do not; tips crowd where the planet is slow."
+    },
+    {
+      "id": "energy_period",
+      "act_number": 2,
+      "latex_parts": [
+        "E",
+        "=",
+        "-\\frac{GM}{2a}",
+        "\\qquad",
+        "T",
+        "=",
+        "2\\pi\\sqrt{a^{3}/GM}"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "The orbit's energy per unit mass.",
+          "identity": "structure",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 2,
+          "plain_words": "Energy depends only on a, half the long axis, not on the shape.",
+          "identity": "structure",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 6,
+          "plain_words": "The period depends on the same a, so equal energy means equal year.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "Evaluate E = v^2/2 - GM/r at perihelion and aphelion and eliminate the speeds with conservation of angular momentum; the eccentricity cancels and E = -GM/(2a). Kepler's third law then gives T = 2 pi sqrt(a^3/GM). In the film GM = 1 and a = 1, so E = -1/2 and T = 2 pi for all five orbits.",
+      "common_misreading": "A long thin ellipse looks like it should take longer or carry more energy than a circle. With the same long axis it does neither."
+    },
+    {
+      "id": "hinge_identity",
+      "act_number": 3,
+      "latex_parts": [
+        "R^{2}",
+        "=",
+        "d^{2}",
+        "+",
+        "p_0^{2}",
+        ",\\qquad",
+        "p_0",
+        "=",
+        "\\sqrt{-2E}"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "R is the velocity circle's radius, GM over h.",
+          "identity": "light",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 2,
+          "plain_words": "d is how far its center sits from the origin: e times R.",
+          "identity": "matter",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 4,
+          "plain_words": "p0 is the same for every orbit of this energy.",
+          "identity": "structure",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 8,
+          "plain_words": "p0 is set by the energy alone: the square root of minus twice E.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "With R = GM/h, d = e GM/h and h^2 = GM a (1 - e^2): R^2 - d^2 = (GM/h)^2 (1 - e^2) = GM/a = -2E. A circle whose center is at distance d from the origin satisfies R^2 = d^2 + p0^2 exactly when it crosses the circle of radius p0 at two diametrically opposite points; here those points are (+p0, 0) and (-p0, 0), the velocities at the two ends of the minor axis, where r = a.",
+      "common_misreading": "That the shared points are a coincidence of the chosen eccentricities. The identity holds for every e in [0, 1)."
+    },
+    {
+      "id": "stereographic_lift",
+      "act_number": 4,
+      "latex_parts": [
+        "\\vec u",
+        "\\;\\longmapsto\\;",
+        "\\frac{1}{|\\vec u|^{2}+p_0^{2}}",
+        "\\big(",
+        "2p_0^{2}\\,\\vec u",
+        ",\\;",
+        "p_0\\,(|\\vec u|^{2}-p_0^{2})",
+        "\\big)"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "A point of the velocity plane.",
+          "identity": "light",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 4,
+          "plain_words": "Its horizontal position on the sphere.",
+          "identity": "structure",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 6,
+          "plain_words": "Its height: below the equator inside radius p0, above it outside.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "Place a sphere of radius p0 at the origin of the velocity plane and project from its north pole N = (0, 0, p0): the line from N through the plane point u meets the sphere again at this point. Stereographic projection sends circles to circles, and a plane circle meeting the equator (radius p0) at two opposite points lifts to a circle through two antipodal points of the sphere, which is a great circle.",
+      "common_misreading": "That lifting distorts the circles into ovals. Stereographic projection maps circles to circles exactly."
+    },
+    {
+      "id": "tilt",
+      "act_number": 5,
+      "latex_parts": [
+        "e",
+        "=",
+        "\\sin",
+        "\\alpha"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "The orbit's eccentricity: 0 for a circle, near 1 for a needle.",
+          "identity": "matter",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 3,
+          "plain_words": "Alpha: how far the orbit's great circle tilts away from the equator.",
+          "identity": "interaction",
+          "zoom_worthy": true
+        }
+      ],
+      "derivation_or_motivation": "The hodograph's lowest and highest points (0, (e - 1)/c) and (0, (e + 1)/c), with c = sqrt(1 - e^2) in units p0 = 1, lift to (0, -c, -e) and (0, c, e). So the great circle contains the hinge axis and the unit vector (0, c, e), which makes angle alpha with the equatorial plane where sin alpha = e. The point of the ring for true anomaly theta is (-sin E, c cos E, e cos E), with E the eccentric anomaly; perihelion (E = 0) is the ring's highest point, and as e -> 1 it reaches the north pole: the collision orbit's infinite perihelion speed becomes the pole itself (Moser, 1970).",
+      "common_misreading": "That alpha is the angle of the ellipse in the orbital plane. It is not a direction in physical space; it is a tilt in velocity space."
+    },
+    {
+      "id": "hydrogen",
+      "act_number": 6,
+      "latex_parts": [
+        "E_n",
+        "=",
+        "-\\frac{13.6\\ \\mathrm{eV}}{n^{2}}",
+        ",\\qquad",
+        "n^{2}",
+        "\\ \\text{states per level}"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 2,
+          "plain_words": "Hydrogen's energy depends only on n, not on the orbital's shape.",
+          "identity": "structure",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 4,
+          "plain_words": "n squared orbitals share each energy: 1, 4, 9, 16.",
+          "identity": "interaction",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "Fock (1935) applied the same stereographic lift to three-dimensional momentum space, landing on a sphere in four dimensions. The Coulomb problem becomes symmetric under four-dimensional rotations, which mix orbitals of different angular momentum at fixed n; that is why, without spin and relativistic corrections, level n holds n^2 degenerate states and E_n depends on n alone.",
+      "common_misreading": "That 2s and 2p share an energy by coincidence. The degeneracy is forced by the hidden rotation symmetry; its small breaking by relativity and spin is a separate effect not shown."
+    }
+  ],
+  "color_identity": {
+    "orbit, planet, e, d": "matter: coral #d97757",
+    "velocity v, hodograph circle, GM/h, R": "light: blue #6a9bcc",
+    "energy E, semi-major axis a, p0, the sphere's equator": "structure: olive #788c5d",
+    "hinge points, alpha, great circles on the sphere": "interaction: gold #d4a27f",
+    "per-orbit tint": "the five orbits and their circles share one tint on a ramp from blue (e = 0) through gold to coral (e = 0.9), so an orbit and its velocity circle are always the same color"
+  },
+  "numbers": [
+    {
+      "name": "GM",
+      "value": "1 (film units)",
+      "why": "Sets the scale; all shapes are exact under it."
+    },
+    {
+      "name": "a",
+      "value": "1",
+      "why": "Common semi-major axis of the family, so E = -1/2 and p0 = 1."
+    },
+    {
+      "name": "family eccentricities",
+      "value": "0, 0.3, 0.55, 0.75, 0.9",
+      "why": "Evenly spread tilts: alpha = 0, 17.46, 33.37, 48.59, 64.16 degrees."
+    },
+    {
+      "name": "featured orbit",
+      "value": "e = 0.6",
+      "why": "Act 1 hodograph: radius 1.25, center offset 0.75, visibly off center."
+    },
+    {
+      "name": "period",
+      "value": "T = 2 pi",
+      "why": "Equal for all five orbits; the synchronized return is exact."
+    },
+    {
+      "name": "Earth",
+      "value": "e = 0.0167, alpha = 0.96 degrees",
+      "why": "arcsin(0.0167086) = 0.957 degrees: Earth's ring is almost the equator."
+    },
+    {
+      "name": "Halley's comet",
+      "value": "e = 0.967, alpha = 75.3 degrees",
+      "why": "arcsin(0.96714) = 75.27 degrees: a steep ring close to the pole."
+    },
+    {
+      "name": "hydrogen",
+      "value": "13.6 eV",
+      "why": "Rydberg energy 13.6057 eV, rounded to three figures as usually quoted."
+    },
+    {
+      "name": "dates",
+      "value": "Hamilton 1846, Fock 1935, Moser 1970",
+      "why": "Hodograph; four-dimensional sphere for hydrogen; regularization that places collisions at the pole."
+    }
+  ]
+}

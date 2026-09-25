@@ -1,0 +1,24 @@
+{
+  "latex": {
+    "valid": true,
+    "errors": [],
+    "warnings": [],
+    "issues": []
+  },
+  "manim_code": {
+    "valid": true,
+    "scene_names": [
+      "HiddenSphereJourney"
+    ],
+    "errors": [],
+    "warnings": [],
+    "suggestions": []
+  },
+  "complexity": {
+    "scene_classes": 1,
+    "tex_calls": 11,
+    "wait_calls": 30
+  },
+  "ran_at": "2026-09-25T17:46:46.380267+00:00",
+  "source_sha256": "f1da1535081adc8483fb3210263267312bad560bad6d48a992d043328d7cde94"
+}

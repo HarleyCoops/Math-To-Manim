@@ -1,0 +1,146 @@
+{
+  "run_id": "20260925-161931-every-orbit-is-a-great-circle",
+  "prompt": "Every Kepler orbit is secretly a great circle. Start from Hamilton's hodograph: a planet's velocity vectors, placed tail to tail, always trace a perfect circle, even though its position traces an ellipse. Then show a family of orbits with the same energy (same long axis, different eccentricities): their velocity circles all pass through the same two points. Lift the velocity plane onto a sphere by stereographic projection and every one of those circles becomes a great circle hinged on those two points. Eccentricity turns out to be a tilt angle (e = sin alpha), a head-on fall toward the star passes through the north pole, and rotating the sphere turns one orbit into another of the same energy (Moser 1970; Fock 1935 found the four-dimensional version, which explains hydrogen's n^2 degeneracy). Planets must move with true Kepler timing and every number on screen must be exact.\n\nArt direction: an orrery at night. Ink-dark stage, brass and ivory linework, a lit glass sphere with Fresnel rim light and a soft specular highlight, great circles that dim when they pass behind the glass, a glowing star, planets with fading comet trails, a quiet starfield. Stunning 3D realism with the Mythos palette as the cast list.",
+  "model": "claude-opus-5-5 (Claude session operator)",
+  "command": "operator",
+  "offline": false,
+  "created_utc": "2026-09-25T16:19:31.323495+00:00",
+  "stages": [
+    {
+      "stage": "intent",
+      "artifact": "01_intent.json",
+      "bytes": 3842,
+      "seconds": 0.0
+    },
+    {
+      "stage": "cartographer",
+      "artifact": "02_knowledge_map.json",
+      "bytes": 4695,
+      "seconds": 0.0
+    },
+    {
+      "stage": "curriculum",
+      "artifact": "03_curriculum.json",
+      "bytes": 6438,
+      "seconds": 0.0
+    },
+    {
+      "stage": "math-director",
+      "artifact": "04_math_dossier.json",
+      "bytes": 8845,
+      "seconds": 0.0
+    },
+    {
+      "stage": "cinematographer",
+      "artifact": "05_shot_list.json",
+      "bytes": 11838,
+      "seconds": 0.0
+    },
+    {
+      "stage": "scene-composer",
+      "artifact": "06_scene_spec.json",
+      "bytes": 16333,
+      "seconds": 0.0
+    },
+    {
+      "stage": "codegen",
+      "artifact": "mythos_scene.py"
+    },
+    {
+      "stage": "render_review",
+      "artifact": "08_review.json",
+      "passes": 4
+    }
+  ],
+  "schema_version": 2,
+  "artifacts": {
+    "intent": "01_intent.json",
+    "knowledge_map": "02_knowledge_map.json",
+    "curriculum": "03_curriculum.json",
+    "math_dossier": "04_math_dossier.json",
+    "shot_list": "05_shot_list.json",
+    "scene_spec": "06_scene_spec.json",
+    "scene": "mythos_scene.py",
+    "manifest": "manifest.json",
+    "validation": "validation.json"
+  },
+  "status": {
+    "validation": "complete",
+    "render": "complete"
+  },
+  "operator_note": "Chain operated by a Claude session acting as the model backend (scripts/operate_mythos_chain.py): every stage received the harness's exact prompt (saved as NN_*.prompt.txt) and each reply was checked by validate_stage_artifact, the manifest schema and the static scene checks. Renders called Manim directly.",
+  "static_check": {
+    "passed": true,
+    "detail": null
+  },
+  "renders": [
+    {
+      "quality": "h",
+      "resolution": "1920x1080",
+      "fps": 60,
+      "exit_code": 0,
+      "where": "operator container (2 cores), Manim CE 0.20.1, Cairo",
+      "slices": [
+        "-n 0,79 (21.1 min)",
+        "-n 80,99 (16.8 min, in parallel)",
+        "-n 100,999 (8.3 min)"
+      ],
+      "joined": "ffmpeg concat demuxer, stream copy",
+      "master": "every_orbit_great_circle_1080p60.mp4",
+      "duration_seconds": 166.4,
+      "frames": 9984,
+      "decode_errors": 0
+    }
+  ],
+  "acceptance_results": [
+    {
+      "check": "All planets at perihelion at t = 0 and t = 2 pi",
+      "result": "pass",
+      "evidence": "tests/test_every_orbit_great_circle.py::test_all_family_orbits_return_together; frames at 0.0 s and 9.8 s"
+    },
+    {
+      "check": "Stamped arrow tips on the e = 0.6 hodograph within 0.01",
+      "result": "pass",
+      "evidence": "test_velocity_tips_lie_on_hamiltons_circle (error < 1e-10)"
+    },
+    {
+      "check": "Every formula has a caption on screen",
+      "result": "pass",
+      "evidence": "captions persist until replaced; contact sheet"
+    },
+    {
+      "check": "Each lifted ring passes through both hinge points; rings are lines in the hinge view",
+      "result": "pass",
+      "evidence": "test_stereographic_lift_gives_great_circles_tilted_by_arcsin_e; frames 122 s and 129 s"
+    },
+    {
+      "check": "Camera reaches zoom 3.0 exactly once",
+      "result": "revised",
+      "evidence": "After review pass 2 the establishing hinge shot is zoom 1.3 and the single deepest move is a 3x dive to zoom 3.9 on alpha; no other move exceeds zoom 2.4."
+    },
+    {
+      "check": "Ring arcs behind the glass render dimmer than arcs in front",
+      "result": "pass",
+      "evidence": "back runs at 24% opacity, depth-sorted behind the near glass; poster frame"
+    },
+    {
+      "check": "Earth 0.96 deg and Halley 75.3 deg match arcsin(e)",
+      "result": "pass",
+      "evidence": "test_numbers_on_screen"
+    },
+    {
+      "check": "Runtime 150-175 s",
+      "result": "pass",
+      "evidence": "ffprobe: 166.4 s"
+    }
+  ],
+  "outputs": {
+    "master_1080p60": "every_orbit_great_circle_1080p60.mp4",
+    "repo_mp4_1080p30": "docs/showcase/assets/every-orbit-great-circle.mp4",
+    "repo_gif": "docs/showcase/assets/every-orbit-great-circle.gif",
+    "poster": "docs/showcase/assets/every-orbit-great-circle-poster.png",
+    "contact_sheet": "docs/showcase/assets/every-orbit-great-circle-contact-sheet.png",
+    "example_scene": "examples/mythos/every_orbit_great_circle.py"
+  },
+  "completed_utc": "2026-09-25T18:28:35.763294+00:00"
+}

@@ -1,0 +1,632 @@
+{
+  "shots": [
+    {
+      "beat": 1,
+      "act_number": 1,
+      "verb": "TILT_3D",
+      "target": "orrery",
+      "params": {
+        "phi": 62,
+        "theta": -72,
+        "zoom": 1.0,
+        "run_time": 0.0
+      },
+      "seconds": 0.5,
+      "note": "Cold open already tilted: star with glow, five brass ellipses sharing a focus, starfield."
+    },
+    {
+      "beat": 2,
+      "act_number": 1,
+      "verb": "ORBIT",
+      "target": "orrery",
+      "params": {
+        "rate": 0.05,
+        "run_time": 9.0
+      },
+      "caption_text": "Five orbits around one star. Watch them come home together.",
+      "seconds": 9.0,
+      "note": "Planets leave perihelion together with true Kepler timing and return together after one period."
+    },
+    {
+      "beat": 3,
+      "act_number": 1,
+      "verb": "HEADLINE",
+      "target": "headline_act1",
+      "params": {
+        "font_size": 68,
+        "hold": 1.6
+      },
+      "caption_text": "Where it is draws an ellipse.\nHow fast it goes draws a circle.",
+      "seconds": 3.4
+    },
+    {
+      "beat": 4,
+      "act_number": 1,
+      "verb": "RETURN_2D",
+      "target": "split_stage",
+      "params": {
+        "phi": 0,
+        "theta": -90,
+        "zoom": 1.0,
+        "run_time": 2.0
+      },
+      "seconds": 2.0,
+      "note": "Left: e = 0.6 orbit and star. Right: velocity plane with faint polar grid and origin."
+    },
+    {
+      "beat": 5,
+      "act_number": 1,
+      "verb": "SHOW",
+      "target": "planet_with_velocity_arrow",
+      "params": {
+        "position": "left panel",
+        "run_time": 4.0
+      },
+      "caption_text": "The blue arrow is the velocity: which way, and how fast.",
+      "seconds": 4.0
+    },
+    {
+      "beat": 6,
+      "act_number": 1,
+      "verb": "SHOW",
+      "target": "stamped_arrows",
+      "params": {
+        "count": 12,
+        "run_time": 3.0
+      },
+      "caption_text": "Stamp it at twelve equal moments of the year.",
+      "seconds": 3.0
+    },
+    {
+      "beat": 7,
+      "act_number": 1,
+      "verb": "TRANSFORM",
+      "target": "stamped_arrows -> tail_to_tail_arrows",
+      "params": {
+        "run_time": 2.6
+      },
+      "caption_text": "Now slide every arrow so all the tails meet.",
+      "seconds": 2.6,
+      "why": "Moving arrows without turning or stretching them keeps each velocity intact."
+    },
+    {
+      "beat": 8,
+      "act_number": 1,
+      "verb": "SHOW",
+      "target": "hodograph_circle_e06",
+      "params": {
+        "run_time": 1.8
+      },
+      "caption_text": "The tips sit on a perfect circle. Hamilton, 1846.",
+      "seconds": 2.8
+    },
+    {
+      "beat": 9,
+      "act_number": 1,
+      "verb": "SHOW",
+      "target": "live_velocity_arrow",
+      "params": {
+        "run_time": 6.0
+      },
+      "caption_text": "The orbit is an ellipse. The velocity runs around a circle.",
+      "seconds": 6.0
+    },
+    {
+      "beat": 10,
+      "act_number": 1,
+      "verb": "SHOW",
+      "target": "hodograph_formula",
+      "formula_id": "hodograph",
+      "params": {
+        "position": "upper right, world space",
+        "run_time": 1.4
+      },
+      "caption_text": "The velocity circle, written out.",
+      "seconds": 2.2
+    },
+    {
+      "beat": 11,
+      "act_number": 1,
+      "verb": "TERM_TOUR",
+      "target": "hodograph_formula",
+      "formula_id": "hodograph",
+      "part_index": 2,
+      "params": {
+        "zoom": 2.4,
+        "run_time": 1.4
+      },
+      "caption_text": "GM over h sets the size: the circle's radius.",
+      "seconds": 2.6
+    },
+    {
+      "beat": 12,
+      "act_number": 1,
+      "verb": "TERM_TOUR",
+      "target": "hodograph_formula",
+      "formula_id": "hodograph",
+      "part_index": 6,
+      "params": {
+        "zoom": 2.4,
+        "run_time": 1.0
+      },
+      "caption_text": "The eccentricity e only slides the circle's center upward.",
+      "seconds": 2.6
+    },
+    {
+      "beat": 13,
+      "act_number": 1,
+      "verb": "PULL_BACK",
+      "target": "split_stage",
+      "params": {
+        "zoom": 1.0,
+        "run_time": 1.2
+      },
+      "seconds": 1.4
+    },
+    {
+      "beat": 14,
+      "act_number": 2,
+      "verb": "HEADLINE",
+      "target": "headline_act2",
+      "params": {
+        "font_size": 72,
+        "hold": 1.2
+      },
+      "caption_text": "Same energy, same year.",
+      "seconds": 3.0
+    },
+    {
+      "beat": 15,
+      "act_number": 2,
+      "verb": "SHOW",
+      "target": "orbit_family",
+      "params": {
+        "position": "left panel",
+        "eccentricities": [
+          0,
+          0.3,
+          0.55,
+          0.75,
+          0.9
+        ],
+        "run_time": 2.4
+      },
+      "caption_text": "Five orbits, stretched differently, with the same long axis.",
+      "seconds": 3.0
+    },
+    {
+      "beat": 16,
+      "act_number": 2,
+      "verb": "SHOW",
+      "target": "axis_bars",
+      "params": {
+        "position": "under the family",
+        "run_time": 1.6
+      },
+      "caption_text": "Each long axis has the same length, 2a. Only its position shifts.",
+      "seconds": 2.6
+    },
+    {
+      "beat": 17,
+      "act_number": 2,
+      "verb": "SHOW",
+      "target": "energy_period_formula",
+      "formula_id": "energy_period",
+      "params": {
+        "position": "upper left, world space",
+        "run_time": 1.2
+      },
+      "seconds": 1.2
+    },
+    {
+      "beat": 18,
+      "act_number": 2,
+      "verb": "ZOOM_IN",
+      "target": "energy_period_formula",
+      "formula_id": "energy_period",
+      "part_index": 2,
+      "params": {
+        "zoom": 2.2,
+        "run_time": 1.2
+      },
+      "caption_text": "The energy depends only on a, never on the shape.",
+      "seconds": 2.6
+    },
+    {
+      "beat": 19,
+      "act_number": 2,
+      "verb": "PULL_BACK",
+      "target": "left_panel",
+      "params": {
+        "zoom": 1.0,
+        "run_time": 1.0
+      },
+      "seconds": 1.0
+    },
+    {
+      "beat": 20,
+      "act_number": 2,
+      "verb": "SHOW",
+      "target": "family_release",
+      "params": {
+        "run_time": 6.0
+      },
+      "caption_text": "Same a, same period: all five come home together.",
+      "seconds": 6.4
+    },
+    {
+      "beat": 21,
+      "act_number": 3,
+      "verb": "HEADLINE",
+      "target": "headline_act3",
+      "params": {
+        "font_size": 66,
+        "hold": 1.4
+      },
+      "caption_text": "Every circle passes\nthrough the same two points.",
+      "seconds": 3.2
+    },
+    {
+      "beat": 22,
+      "act_number": 3,
+      "verb": "SHOW",
+      "target": "family_hodographs",
+      "params": {
+        "position": "right panel",
+        "run_time": 2.4
+      },
+      "caption_text": "Their velocity circles come in every size and height.",
+      "seconds": 3.0
+    },
+    {
+      "beat": 23,
+      "act_number": 3,
+      "verb": "SHOW",
+      "target": "hinge_points",
+      "params": {
+        "run_time": 1.2
+      },
+      "caption_text": "Yet all five pass through the same two gold points.",
+      "seconds": 3.0
+    },
+    {
+      "beat": 24,
+      "act_number": 3,
+      "verb": "SHOW",
+      "target": "p0_circle",
+      "params": {
+        "run_time": 1.2
+      },
+      "caption_text": "The circular orbit's circle has radius p0, fixed by the energy.",
+      "seconds": 2.6
+    },
+    {
+      "beat": 25,
+      "act_number": 3,
+      "verb": "SHOW",
+      "target": "hinge_formula",
+      "formula_id": "hinge_identity",
+      "params": {
+        "position": "upper right, world space",
+        "run_time": 1.2
+      },
+      "seconds": 1.2
+    },
+    {
+      "beat": 26,
+      "act_number": 3,
+      "verb": "TERM_TOUR",
+      "target": "hinge_formula",
+      "formula_id": "hinge_identity",
+      "part_index": 0,
+      "params": {
+        "zoom": 2.2,
+        "run_time": 1.2
+      },
+      "caption_text": "R: the radius of a velocity circle.",
+      "seconds": 2.2
+    },
+    {
+      "beat": 27,
+      "act_number": 3,
+      "verb": "TERM_TOUR",
+      "target": "hinge_formula",
+      "formula_id": "hinge_identity",
+      "part_index": 2,
+      "params": {
+        "zoom": 2.2,
+        "run_time": 0.9
+      },
+      "caption_text": "d: how far its center sits above the origin.",
+      "seconds": 2.0
+    },
+    {
+      "beat": 28,
+      "act_number": 3,
+      "verb": "TERM_TOUR",
+      "target": "hinge_formula",
+      "formula_id": "hinge_identity",
+      "part_index": 4,
+      "params": {
+        "zoom": 2.2,
+        "run_time": 0.9
+      },
+      "caption_text": "p0: the same for every orbit of this energy.",
+      "seconds": 2.2
+    },
+    {
+      "beat": 29,
+      "act_number": 3,
+      "verb": "PULL_BACK",
+      "target": "right_panel",
+      "params": {
+        "zoom": 1.0,
+        "run_time": 1.2
+      },
+      "seconds": 1.2
+    },
+    {
+      "beat": 30,
+      "act_number": 4,
+      "verb": "HEADLINE",
+      "target": "headline_act4",
+      "params": {
+        "font_size": 72,
+        "hold": 1.2
+      },
+      "caption_text": "Lift the plane onto a sphere.",
+      "seconds": 3.0
+    },
+    {
+      "beat": 31,
+      "act_number": 4,
+      "verb": "TRANSFORM",
+      "target": "velocity_plane -> center_stage",
+      "params": {
+        "scale": 1.7,
+        "run_time": 1.8
+      },
+      "seconds": 1.8,
+      "why": "The velocity picture becomes the whole world; the orbits have done their job."
+    },
+    {
+      "beat": 32,
+      "act_number": 4,
+      "verb": "TILT_3D",
+      "target": "center_stage",
+      "params": {
+        "phi": 64,
+        "theta": -62,
+        "zoom": 0.95,
+        "run_time": 2.6
+      },
+      "seconds": 2.6
+    },
+    {
+      "beat": 33,
+      "act_number": 4,
+      "verb": "SHOW",
+      "target": "glass_sphere",
+      "params": {
+        "radius": "p0",
+        "run_time": 2.0
+      },
+      "caption_text": "A glass sphere of radius p0. Its equator is the p0 circle.",
+      "seconds": 2.6
+    },
+    {
+      "beat": 34,
+      "act_number": 4,
+      "verb": "SHOW",
+      "target": "projection_rays_e055",
+      "params": {
+        "rays": 24,
+        "run_time": 3.2
+      },
+      "caption_text": "From the north pole, draw a line through each point.",
+      "seconds": 3.4
+    },
+    {
+      "beat": 35,
+      "act_number": 4,
+      "verb": "TRANSFORM",
+      "target": "plane_circles -> great_circles",
+      "params": {
+        "run_time": 3.2
+      },
+      "caption_text": "Every circle lands as a great circle, hinged on the gold points.",
+      "seconds": 3.6,
+      "why": "Stereographic projection maps circles to circles; the shared antipodal points force great circles."
+    },
+    {
+      "beat": 36,
+      "act_number": 4,
+      "verb": "ORBIT",
+      "target": "sphere_with_rings",
+      "params": {
+        "rate": 0.09,
+        "run_time": 5.0
+      },
+      "formula_id": "stereographic_lift",
+      "caption_text": "Stereographic projection: circles stay circles.",
+      "seconds": 5.0
+    },
+    {
+      "beat": 37,
+      "act_number": 5,
+      "verb": "HEADLINE",
+      "target": "headline_act5",
+      "params": {
+        "font_size": 72,
+        "hold": 1.2
+      },
+      "caption_text": "Eccentricity is an angle.",
+      "seconds": 3.0
+    },
+    {
+      "beat": 38,
+      "act_number": 5,
+      "verb": "TILT_3D",
+      "target": "hinge_axis_view",
+      "params": {
+        "phi": 90,
+        "theta": 0,
+        "zoom": 1.0,
+        "run_time": 3.0
+      },
+      "caption_text": "Look straight down the hinge: every ring becomes a line.",
+      "seconds": 3.6
+    },
+    {
+      "beat": 39,
+      "act_number": 5,
+      "verb": "SHOW",
+      "target": "alpha_arc_and_tilt_card",
+      "formula_id": "tilt",
+      "params": {
+        "position": "world space, facing the camera",
+        "run_time": 1.6
+      },
+      "seconds": 2.0
+    },
+    {
+      "beat": 40,
+      "act_number": 5,
+      "verb": "ZOOM_IN",
+      "target": "tilt_card",
+      "formula_id": "tilt",
+      "part_index": 3,
+      "params": {
+        "zoom": 3.0,
+        "run_time": 2.2,
+        "hold": 2.4
+      },
+      "caption_text": "Alpha, the ring's tilt, is the whole shape of the orbit.",
+      "seconds": 4.6,
+      "note": "THE BIG ZOOM: slowest, deepest move of the film."
+    },
+    {
+      "beat": 41,
+      "act_number": 5,
+      "verb": "PULL_BACK",
+      "target": "hinge_axis_view",
+      "params": {
+        "zoom": 1.0,
+        "run_time": 2.0
+      },
+      "seconds": 2.0
+    },
+    {
+      "beat": 42,
+      "act_number": 5,
+      "verb": "SHOW",
+      "target": "alpha_sweep_to_pole",
+      "params": {
+        "run_time": 4.5
+      },
+      "caption_text": "Push e toward 1 and the ring stands up through the north pole.",
+      "seconds": 4.8
+    },
+    {
+      "beat": 43,
+      "act_number": 5,
+      "verb": "CAPTION",
+      "target": "north_pole",
+      "params": {
+        "run_time": 0.6
+      },
+      "caption_text": "A head-on fall reaches infinite speed. Here it is one point.",
+      "seconds": 2.8
+    },
+    {
+      "beat": 44,
+      "act_number": 6,
+      "verb": "HEADLINE",
+      "target": "headline_act6",
+      "params": {
+        "font_size": 68,
+        "hold": 1.2
+      },
+      "caption_text": "Rotate the sphere,\nchange the orbit.",
+      "seconds": 3.0
+    },
+    {
+      "beat": 45,
+      "act_number": 6,
+      "verb": "TILT_3D",
+      "target": "sphere_with_rings",
+      "params": {
+        "phi": 66,
+        "theta": -60,
+        "zoom": 1.0,
+        "run_time": 2.4
+      },
+      "seconds": 2.4
+    },
+    {
+      "beat": 46,
+      "act_number": 6,
+      "verb": "SHOW",
+      "target": "rotating_ring_with_orbit_inset",
+      "params": {
+        "alpha_path_degrees": [
+          0,
+          75.27,
+          0.96
+        ],
+        "run_time": 7.0
+      },
+      "caption_text": "Rotate a ring about the hinge: the orbit stretches, same energy.",
+      "seconds": 7.0
+    },
+    {
+      "beat": 47,
+      "act_number": 6,
+      "verb": "SHOW",
+      "target": "earth_and_halley_labels",
+      "params": {
+        "run_time": 1.0
+      },
+      "caption_text": "Earth's ring tilts 0.96 degrees. Halley's comet's tilts 75.3.",
+      "seconds": 3.4
+    },
+    {
+      "beat": 48,
+      "act_number": 6,
+      "verb": "SHOW",
+      "target": "hydrogen_formula",
+      "formula_id": "hydrogen",
+      "params": {
+        "position": "fixed in frame, upper third",
+        "run_time": 1.2
+      },
+      "caption_text": "Fock, 1935: the same sphere, in four dimensions, organizes hydrogen.",
+      "seconds": 4.4
+    },
+    {
+      "beat": 49,
+      "act_number": 6,
+      "verb": "ORBIT",
+      "target": "armillary_final",
+      "params": {
+        "rate": 0.07,
+        "run_time": 5.0
+      },
+      "seconds": 5.0,
+      "note": "Planets run along their rings at the eccentric-anomaly rate."
+    },
+    {
+      "beat": 50,
+      "act_number": 6,
+      "verb": "HEADLINE",
+      "target": "end_title",
+      "params": {
+        "font_size": 72,
+        "hold": 2.2
+      },
+      "caption_text": "Every orbit is a great circle.",
+      "seconds": 4.2
+    }
+  ],
+  "camera_score": "The film opens already airborne, a slow drift around a working orrery, and then drops flat to the drafting table for the careful work: Acts 1 to 3 are top-down, with short, crisp zooms into single terms and immediate pull-backs, like a lecturer tapping symbols on a board. The camera moves only when a symbol deserves it and otherwise holds still while the planets do the moving. Act 4 is the first release of tension: the table tilts, the sphere rises, and the camera begins to circle. Act 5 is the conductor's fermata: the camera swings to look straight down the hinge, makes its one 3x dive into alpha and holds there longer than anywhere else in the film before pulling back to watch the ring stand up through the pole. Act 6 resumes the slow orbit of the opening, now around a glass sphere instead of a star, and lets it run under the final title."
+}

@@ -42,7 +42,69 @@ the animation segments, then extracts review frames. Output is marked
 [Run the chain](#installation) · [How jev works](#astra-and-jev) ·
 [Creation story](#the-morning-of-january-20-2025) · [Older films](docs/showcase/README.md)
 
-## The New Film: Morse Theory On A Torus
+## The New Film: Every Orbit Is a Great Circle
+
+A planet's position traces an ellipse, but its velocity traces a circle. Lift
+the velocity circles of every orbit with one energy onto a sphere and each one
+becomes a great circle through the same two points. An orbit's eccentricity is
+the sine of its circle's tilt, a head-on fall toward the star is the circle
+through the north pole, and changing an orbit's shape at fixed energy is a
+rotation of the sphere.
+
+$$
+\vec v=\frac{GM}{h}\,(-\sin\theta,\;e+\cos\theta),\qquad e=\sin\alpha .
+$$
+
+Earth's circle tilts 0.96°; Halley's comet's tilts 75.3°.
+
+**166 seconds, rendered at 1080p and 60 fps.**
+
+[![Velocity circles lift onto a glass sphere and become great circles hinged on two gold points](docs/showcase/assets/every-orbit-great-circle.gif)](docs/showcase/assets/every-orbit-great-circle.mp4)
+
+[Watch the full movie](docs/showcase/assets/every-orbit-great-circle.mp4) ·
+[View the contact sheet](docs/showcase/assets/every-orbit-great-circle-contact-sheet.png) ·
+[Inspect the Manim source](examples/mythos/every_orbit_great_circle.py) ·
+[Read the production record](docs/showcase/every-orbit-great-circle/README.md) ·
+[Production request](docs/prompts/every-orbit-great-circle.md)
+
+### How it was made
+
+**A Claude session was the model inside the Mythos six-agent chain.** The
+Mythos harness builds a prompt for each stage: intent, knowledge map,
+curriculum, math dossier, shot list and scene spec. Each prompt holds the stage
+charter, the previous stage's JSON and the Cinematic Charter. The session
+answered every prompt and then wrote the Manim scene. The harness's own checks
+judged each answer: `validate_stage_artifact`, the versioned run manifest and
+the static scene checks (AST, LaTeX fragments and charter lint).
+[`scripts/operate_mythos_chain.py`](scripts/operate_mythos_chain.py)
+runs the chain this way for any operator. It writes the next stage's exact
+prompt, waits for the reply, validates it and records the run.
+
+**The session reviewed its own renders.** Four passes over contact sheets and
+full-resolution crops changed the scene. The drawings got larger, the camera
+gained a 3× dive into α, and a right triangle now shows why
+$R^2=d^2+p_0^2$. Three defects that only appear at 1080p were fixed: seams in
+the rings, banding in the glows and faceted highlights. The six stage artifacts
+are unchanged; each revision and the frame that prompted it is logged in
+[`08_review.json`](docs/showcase/every-orbit-great-circle/08_review.json).
+
+**The lighting is computed in the scene.** Manim's built-in shading is off.
+Every frame, the glass sphere's 2,592 faces get key light, a soft sheen and a
+faint Fresnel term from the true camera position. The sharp highlight and the
+rim glow are smooth layers that face the camera. Each great circle is split
+into the arcs in front of the glass and the arcs behind it, so the near half of
+the glass veils the far half. Planets move by Kepler's equation, so they speed
+up near the star and slow down far from it.
+
+**The numbers are tested.**
+[`tests/test_every_orbit_great_circle.py`](tests/test_every_orbit_great_circle.py)
+checks Kepler timing, the velocity circle, equal energy across the family, the
+two shared points, the lift to great circles and every angle quoted on screen.
+The film was rendered with Manim in parallel animation ranges and joined
+without re-encoding. FFprobe and a full FFmpeg decode verified the result. No Astra or
+Jev calls were made.
+
+## Morse Theory On A Torus
 
 A horizontal plane rises through an upright torus. The included surface changes
 from a disk to a cylinder, then a punctured torus, and finally a closed torus.
