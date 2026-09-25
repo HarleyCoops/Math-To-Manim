@@ -15,7 +15,7 @@
   </picture>
 </a>
 
-*Six real renders from the new Astra film and the existing showcase. [Explore the films →](docs/showcase/README.md)*
+*Six real renders from the Astra Morse film and the existing showcase. [Explore the films →](docs/showcase/README.md)*
 
 ### A question becomes a mathematical world you can move through.
 

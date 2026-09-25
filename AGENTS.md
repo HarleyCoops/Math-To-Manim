@@ -3,7 +3,9 @@
 Math-To-Manim's primary product is the Astra-native Codex SDK chain in `astra/`.
 The user's September 24, 2026 direction supersedes the former multi-provider
 homepage and requirement to preserve its featured GIF block. Keep the star
-chart and older showcase files; feature new verified Astra films on the homepage.
+chart and older showcase files; feature new verified films on the homepage from
+any pipeline (Astra, Mythos or another provider). The user corrected this on
+September 25, 2026: the homepage is not limited to Astra films.
 
 ## Architecture
 
@@ -16,6 +18,9 @@ chart and older showcase files; feature new verified Astra films on the homepage
 - `docs/JEV.md`, `docs/ASTRA_PIPELINE.md`: evaluation and architecture contracts.
 - `mythos/`, `sol/`, `grok/`, `glm/`, `mimo/`: compatibility pipelines, accessed
   by explicit provider commands; do not route Astra through their orchestration.
+- `scripts/operate_mythos_chain.py`: runs the Mythos chain with a session as the
+  model backend; the harness validates every reply (see
+  `docs/showcase/every-orbit-great-circle/`).
 
 ## Working rules
 
