@@ -13,12 +13,30 @@ geometry, through a local phase-winding closeup, into the manuscript's
 reciprocal-L continuation argument. The September 30 paper reports the
 frontier `Re(s)>7/8`; the full Riemann hypothesis remains open in the source.
 
+## Complete film
+
+**221.03 seconds, 1280×720 at 30 fps**, rendered on GitHub Actions from the
+retained Astra candidate. The completed manifest, exact source binding and
+movie hash were verified; the entire MP4 decoded without errors.
+
+[Watch or download the complete film](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4) ·
+[Public render evidence](https://github.com/HarleyCoops/Math-To-Manim/releases/tag/quasi-riemann-film-2026-10-07) ·
+[Astra bundle pathway](../../docs/ASTRA_BUNDLE.md)
+
+![Sampled frames from the completed film](../../docs/assets/quasi-riemann-film-contact-sheet.png)
+
+The cloud render made zero model calls and retains `not_reviewed` status.
+The earlier Astra authoring and source audits remain separate. Sampled frames
+cover composition and readability; no Jev approval or continuous-motion
+certification is claimed. See the [completed cloud manifest](production/cloud-render-manifest.json)
+and [delivery verification](production/film-evidence.json).
+
 ## Actual execution stills
 
 The current 220-second Astra scene completes a real Manim execution probe.
 These images show selected scene states and the final frame, with the
 formula band and continuation labels corrected. They are execution stills;
-the complete cloud movie is pending.
+the completed cloud movie is linked above.
 
 ![Zeta valley with its displayed height formula](../../docs/assets/quasi-riemann-execution-landscape.png)
 
@@ -33,7 +51,7 @@ the complete cloud movie is pending.
 
 These still studies plot the actual numerical geometry specified by the
 Astra dossier. They show the planned palette and mathematical compositions;
-the animated Manim render is pending.
+the completed Manim film is linked above.
 
 ![Numerical zeta landscape and the manuscript's frontier](../../docs/assets/quasi-riemann-geometry-preview.png)
 

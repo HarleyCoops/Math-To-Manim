@@ -32,13 +32,16 @@ Strict gates remain available with `--review-mode gated`.
 Use `--review-mode off` to skip Jev and its credential requirement while keeping
 independent Astra audits. These runs are labeled `astra_only`.
 `math-to-manim serve-mcp` now exposes this same Astra chain over MCP.
+The [Astra bundle pathway](docs/ASTRA_BUNDLE.md) distributes the installable
+package, locked Codex runtime, completed Quasi-Riemann film and its evidence.
 The [OpenAI mathematics in 3D series](papers/README.md) starts with the Mahler
 pilot, *The Shape and Its Shadow*: a completed three-minute cloud render with
 independent Astra review of its source and 23 actual frames.
-Its new flagship in production is the Quasi-Riemann film,
+Its completed flagship is the Quasi-Riemann film,
 *A Frontier for the Zeros*: bone backgrounds, sculptural zeta landscapes,
 phase-winding closeups, and a journey into the manuscript's zero-free frontier.
-The Quasi-Riemann film remains in production until its actual render is verified.
+The 221-second cloud movie is now available at 720p/30 fps with a completed
+manifest, matching source and movie hashes, and a successful full-file decode.
 
 ### OpenAI Mathematics in 3D
 
@@ -46,7 +49,7 @@ An open film project inspired by the [OpenAI manuscript map](https://github.com/
 Each episode follows one mathematical idea through space: geometry first,
 readable LaTeX at the moment it matters, and camera motion that explains.
 
-**In production: [A Frontier for the Zeros](papers/quasi-riemann/README.md).**
+**Watch [A Frontier for the Zeros](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4).**
 The September 30 Quasi-Riemann manuscript reports that zeta and every
 Dirichlet L-function have no zeros in `Re(s)>7/8`, with principal poles
 allowed. The film explains how the paper's two estimates lead to a
@@ -69,6 +72,28 @@ the animation segments, then extracts review frames. Output is marked
 
 [Run the chain](#installation) · [How jev works](#astra-and-jev) ·
 [Creation story](#the-morning-of-january-20-2025) · [Older films](docs/showcase/README.md)
+
+## OpenAI Mathematics in 3D: A Frontier for the Zeros
+
+Primes become sculptural zeta landscapes. A loop around a sampled zero winds
+once in the image plane. The camera then travels through the manuscript's
+comparison estimates and reciprocal-L continuation argument, with LaTeX at
+each step and the strict 7/8 frontier kept visible.
+
+**221.03 seconds, rendered on GitHub Actions at 720p/30 fps.** Astra source
+audits are retained. The saved scene was rendered with zero model calls and
+retains `not_reviewed` status; Jev was off.
+
+[![The numerical zeta landscape and the manuscript's zero-free frontier](docs/assets/quasi-riemann-film-poster.png)](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4)
+
+[Watch the complete film](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4) ·
+[Get the Astra bundle](https://github.com/HarleyCoops/Math-To-Manim/releases/tag/v2.0.0) ·
+[View the rendered frames](docs/assets/quasi-riemann-film-contact-sheet.png) ·
+[Read the episode and scope](papers/quasi-riemann/README.md)
+
+The film illustrates the manuscript's reported result. The full Riemann
+hypothesis remains open; this project has not independently verified the
+complete proof or Lean artifacts.
 
 ## OpenAI Mathematics in 3D: The Shape and Its Shadow
 
@@ -313,6 +338,27 @@ See the [complete design and optimization map](docs/JEV_DESIGN_MAP.md) and
 
 ## Installation
 
+The [Astra bundle](https://github.com/HarleyCoops/Math-To-Manim/releases/tag/v2.0.0)
+includes the wheel, source distribution, locked runtime manifests, finished
+Quasi-Riemann film, retained scene and checksums. Follow the
+[bundle guide](docs/ASTRA_BUNDLE.md), or install its wheel directly:
+
+```bash
+python -m pip install "math-to-manim[astra] @ https://github.com/HarleyCoops/Math-To-Manim/releases/download/v2.0.0/math_to_manim-2.0.0-py3-none-any.whl"
+math-to-manim setup
+math-to-manim login
+math-to-manim doctor --review-mode off
+math-to-manim run "Explain a mathematical idea through 3D geometry" -q m --review-mode off
+```
+
+This pathway uses Codex ChatGPT login and independent Astra audits. Install
+Python 3.10+, Node.js 18+ and npm, plus Manim's system dependencies, FFmpeg
+and LaTeX. `setup` installs the locked SDK in a user-writable cache; runs go
+under `runs/astra/` in the current working directory. Jev-off mode needs no
+TypeSafe credential.
+
+### Install from source
+
 Install Python 3.10+, Node.js 18+, Manim's system dependencies, FFmpeg and LaTeX.
 Then, in the repository:
 
@@ -327,7 +373,7 @@ math-to-manim doctor
 math-to-manim run "Explain a new mathematical or physical idea" -q h
 ```
 
-The pinned Codex SDK and CLI are **0.156.1**. Astra uses **GPT-6 Astra**; TypeSafe SDK **0.7.1** calls **Jev 1.13.0**.
+The pinned Codex SDK and CLI are **0.156.1**. Astra uses **GPT-6 Astra**; TypeSafe SDK **0.7.2** calls **Jev 1.13.0**.
 Use `--effort high`, `xhigh`, or `max`; `high` is the default. `-q h` renders
 1080p at 60 fps with Manim's high quality preset. `--max-revisions 6` bounds the
 repair loop. `--no-render` stops after the checked scene and produces no film.

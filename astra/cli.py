@@ -7,11 +7,14 @@ from astra import __version__
 from astra.client import clean_environment
 from astra.models import Request
 from astra.pipeline import Pipeline, ROOT
+from astra.runtime import setup_runtime, codex_command
 
 def main(argv=None):
     p=argparse.ArgumentParser(prog='math-to-manim',description='Astra-native films with independent jev review at each step.')
     p.add_argument('--version',action='version',version=f'math-to-manim Astra {__version__}')
     commands=p.add_subparsers(dest='command',required=True)
+    commands.add_parser('setup',help='Install the pinned Astra Codex runtime')
+    commands.add_parser('login',help='Sign in to Codex with ChatGPT')
     run=commands.add_parser('run');run.add_argument('prompt');run.add_argument('-q','--quality',choices=['l','m','h'],default='h')
     run.add_argument('--effort',choices=['high','xhigh','max'],default='high')
     run.add_argument('--max-revisions',type=int,default=6);run.add_argument('--no-render',action='store_true')
@@ -37,6 +40,12 @@ def main(argv=None):
     server.add_argument('--transport',choices=['stdio','streamable-http'],default='stdio')
     server.add_argument('--port',type=int,default=8644)
     args=p.parse_args(argv)
+    if args.command=='setup':
+        print(f'Codex runtime installed: {setup_runtime()}')
+        print('Authenticate with: math-to-manim login')
+        return 0
+    if args.command=='login':
+        return subprocess.run(codex_command('login'),env=clean_environment()).returncode
     if args.command=='serve-mcp':
         from astra.mcp_server import main as serve
         serve(args.transport,args.port)
@@ -54,7 +63,11 @@ def main(argv=None):
         print(json.dumps(recommend(args.run_dir,args.stage,args.attempt,args.execute,args.design),indent=2))
         return 0
     if args.command=='doctor':
-        result=subprocess.run(['node',str(ROOT/'node_modules/@openai/codex/bin/codex.js'),'login','status'],env=clean_environment())
+        try:
+            result=subprocess.run(codex_command('login','status'),env=clean_environment())
+        except RuntimeError as exc:
+            print(str(exc))
+            return 1
         for tool in ['ffmpeg','latex']:
             import shutil
             print(f'{tool}: {shutil.which(tool) or "missing"}')

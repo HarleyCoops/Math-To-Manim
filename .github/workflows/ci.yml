@@ -8,6 +8,23 @@ on:
   workflow_dispatch:
 
 jobs:
+  distribution:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Build and check the Astra distribution
+        run: |
+          python -m pip install build twine
+          python -m build
+          python -m twine check dist/*
+          python scripts/check_astra_distribution.py dist/*.whl
+
   paper-film:
     if: github.event_name == 'workflow_dispatch' && startsWith(github.ref_name, 'codex/mahler-')
     uses: ./.github/workflows/paper-film.yml

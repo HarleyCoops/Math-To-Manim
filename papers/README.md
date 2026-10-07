@@ -20,13 +20,13 @@ storyboard is not a finished episode.
 | Episode | Paper | Status |
 | --- | --- | --- |
 | 01 · The Shape and Its Shadow | [Symmetric Mahler and its equality cases](mahler/README.md), family 087 | Complete 179.8-second 720p/30 fps cloud film; Astra source and 23 rendered frames reviewed; Jev off |
-| 02 · A Frontier for the Zeros | [The Quasi-Riemann hypothesis](quasi-riemann/README.md), family 003 | Current flagship; 220-second Astra source audited and actual execution stills retained; cloud film pending |
+| 02 · A Frontier for the Zeros | [The Quasi-Riemann hypothesis](quasi-riemann/README.md), family 003 | Complete 221.03-second 720p/30 fps cloud film; Astra source audits retained; render-existing not_reviewed; Jev off |
 
 The Quasi-Riemann episode uses a bone background, deep teal numerical
 surfaces, copper phase curves and gold frontier geometry. A camera journey
 connects primes, the critical strip, winding around a sampled zero, and the
-paper's reciprocal-L continuation argument. The target is 210-230 seconds
-with a 720p/30 fps delivery and a separate inspection copy.
+paper's reciprocal-L continuation argument. The completed film runs 221.03
+seconds at 720p/30 fps, with a separate 480p inspection copy.
 
 ## Curated next episodes
 
@@ -77,7 +77,9 @@ contact sheet, source and logs as a 30-day artifact. That separate render is
 `not_reviewed` until actual rendered evidence is inspected. The Mahler pilot's
 MP4, preview and review records are now public in its episode folder. Its rendered
 frame review does not certify every transition or the manuscript proof.
-The Quasi-Riemann film and its rendered evidence remain pending.
+The [Quasi-Riemann film and its rendered evidence](https://github.com/HarleyCoops/Math-To-Manim/releases/tag/quasi-riemann-film-2026-10-07)
+are public, and the [Astra bundle pathway](../docs/ASTRA_BUNDLE.md) packages
+the completed film alongside the installable pipeline.
 
 The export command checks the completed run's source bindings and retains
 the exact scene plus its Astra audit record in `production.json`. It does

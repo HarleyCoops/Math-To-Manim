@@ -1,5 +1,12 @@
 # Astra-native animation pipeline
 
+The [Astra bundle pathway](ASTRA_BUNDLE.md) distributes the wheel, source
+package, locked Codex runtime manifests and a completed film with its evidence.
+`math-to-manim setup` installs the pinned runtime in a user-writable cache;
+`math-to-manim login` opens Codex ChatGPT authentication. Installed packages
+write `runs/astra/` in the working directory and work outside a source checkout.
+An existing source install continues to use its matching `node_modules` runtime.
+
 The primary CLI runs `astra.pipeline.Pipeline`: brief → mathematics → storyboard
 → scene → local render. Default reviews are advisory: each checkpoint receives
 an Astra audit and one Jev evaluation, without Jev-triggered retries or extra

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "math-to-manim"
 version = "2.0.0"
-description = "Astra-native mathematical films with independent jev review at every reasoning and rendering step."
+description = "Astra-native mathematical films through the Codex SDK, with independent evidence audits and optional Jev review."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -17,6 +17,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+astra = [
+  "manim>=0.19,<0.20",
+  "mcp>=2.0,<3",
+]
 dev = [
   "pytest>=8",
   "tomli>=2; python_version < '3.11'",
@@ -62,7 +66,7 @@ Repository = "https://github.com/HarleyCoops/Math-To-Manim"
 include = ["astra*", "mythos*", "sol*", "grok*", "glm*", "mimo*"]
 
 [tool.setuptools.package-data]
-astra = ["*.mjs"]
+astra = ["*.mjs", "node/*.json"]
 mythos = ["agents/*.md"]
 grok = ["agents/*.md"]
 glm = ["agents/*.md"]

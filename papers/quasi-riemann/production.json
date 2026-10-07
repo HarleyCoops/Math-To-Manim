@@ -4,7 +4,7 @@
   "authoring_status": "completed",
   "review_mode": "off",
   "review_status": "astra_only",
-  "film_status": "pending_cloud_render",
+  "film_status": "completed",
   "completed_utc": "2026-10-07T02:19:00.099090+00:00",
   "candidate_sha256": "cb93e00e4989997cd2c3fd1390fbca5c17dd958b8888c018535b9bff555aad84",
   "stage_bindings": {
@@ -219,5 +219,21 @@
     "Completed authoring is not evidence of a completed film.",
     "Cloud render-existing output is not_reviewed until actual evidence is inspected.",
     "Astra scores are uncalibrated model judgments, not independent proof certificates."
-  ]
+  ],
+  "delivery": {
+    "manifest": "production/cloud-render-manifest.json",
+    "verification": "production/film-evidence.json",
+    "cloud_run": "https://github.com/HarleyCoops/Math-To-Manim/actions/runs/37561603150",
+    "video_url": "https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4",
+    "duration_seconds": 221.033333,
+    "resolution": [
+      1280,
+      720
+    ],
+    "frames_per_second": 30,
+    "video_sha256": "8fa639ed242e14f9224add6c7da6464af0f0ab20ccc2933a3b26da7e725dd142",
+    "review_status": "not_reviewed",
+    "evaluator": "disabled",
+    "completed_utc": "2026-10-07T02:38:57.538286+00:00"
+  }
 }

@@ -1,0 +1,40 @@
+{
+  "status": "completed",
+  "github_run": "https://github.com/HarleyCoops/Math-To-Manim/actions/runs/37561603150",
+  "frozen_source_commit": "1f08b1f14862e2e8aca88bb19077f3c7c9c34f87",
+  "candidate_sha256": "cb93e00e4989997cd2c3fd1390fbca5c17dd958b8888c018535b9bff555aad84",
+  "rendered_source_sha256": "3cda974c304f95229a1e727d7713c47a25e8c28786f6c4d3a0fdd5ad8ecb2e5a",
+  "video_sha256": "8fa639ed242e14f9224add6c7da6464af0f0ab20ccc2933a3b26da7e725dd142",
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "pix_fmt": "yuv420p",
+        "avg_frame_rate": "30/1",
+        "duration": "221.033333",
+        "nb_frames": "6631"
+      }
+    ],
+    "format": {
+      "duration": "221.033333",
+      "size": "18765621"
+    }
+  },
+  "checks": {
+    "completed_manifest": true,
+    "candidate_and_scene_bytes_match": true,
+    "video_hash_matches_manifest": true,
+    "full_ffmpeg_decode_exit_code": 0,
+    "contact_sheet_inspected": true
+  },
+  "review_status": "not_reviewed",
+  "evaluator": "disabled",
+  "limitations": [
+    "Sampled frames cover composition and captions, not continuous-motion certification.",
+    "The film explains the manuscript claim; it does not independently verify the full proof."
+  ]
+}
