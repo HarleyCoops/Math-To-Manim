@@ -67,6 +67,11 @@ jobs:
         run: |
           gh release download quasi-riemann-film-2026-10-07 --repo "$GITHUB_REPOSITORY" --pattern 'quasi-riemann-*' --dir build/film
 
+      - name: Install film inspection tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
       - name: Build the Astra bundle and checksums
         run: python scripts/build_astra_bundle.py --dist dist --film-dir build/film
 

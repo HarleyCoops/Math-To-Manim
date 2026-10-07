@@ -63,9 +63,20 @@ def test_explicit_jev_off_needs_no_credential(tmp_path, monkeypatch):
 def test_doctor_off_does_not_load_jev_credentials(monkeypatch):
     from astra.cli import main
     from subprocess import CompletedProcess
+    monkeypatch.setattr('astra.cli.codex_command', lambda *args: ['codex', *args])
     monkeypatch.setattr('astra.cli.subprocess.run', lambda *a, **kw: CompletedProcess(a,0))
     monkeypatch.setattr('astra.jev.load_api_key', lambda: pytest.fail('Jev is off'))
     assert main(['doctor','--review-mode','off'])==0
+
+
+def test_doctor_missing_runtime_reports_setup(monkeypatch, capsys):
+    from astra.cli import main
+    def missing(*args):
+        raise RuntimeError('Codex runtime missing. Run: math-to-manim setup')
+    monkeypatch.setattr('astra.cli.codex_command', missing)
+    monkeypatch.setattr('astra.jev.load_api_key', lambda: pytest.fail('Runtime setup must precede Jev'))
+    assert main(['doctor', '--review-mode', 'off']) == 1
+    assert 'math-to-manim setup' in capsys.readouterr().out
 
 
 @pytest.mark.parametrize('run_id', ['../other', 'C:/outside', 'wrong-provider'])
