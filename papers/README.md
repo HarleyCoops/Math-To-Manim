@@ -13,7 +13,7 @@ storyboard is not a finished episode.
 
 | Episode | Paper | Status |
 | --- | --- | --- |
-| 01 · The Shape and Its Shadow | [Symmetric Mahler and its equality cases](mahler/source-context.md), family 087 | Source checked and production brief prepared; film pending |
+| 01 · The Shape and Its Shadow | [Symmetric Mahler and its equality cases](mahler/README.md), family 087 | Three-minute Astra source audited and execution stills rendered; full cloud film pending |
 
 The pilot begins with a cube and its polar octahedron, computes the exact
 volume product, follows inverse-transpose duality, and reveals the manuscript's
