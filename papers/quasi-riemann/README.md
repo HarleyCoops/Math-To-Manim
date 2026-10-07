@@ -13,6 +13,22 @@ geometry, through a local phase-winding closeup, into the manuscript's
 reciprocal-L continuation argument. The September 30 paper reports the
 frontier `Re(s)>7/8`; the full Riemann hypothesis remains open in the source.
 
+## Actual execution stills
+
+The current 220-second Astra scene completes a real Manim execution probe.
+These images show selected scene states and the final frame, with the
+formula band and continuation labels corrected. They are execution stills;
+the complete cloud movie is pending.
+
+![Zeta valley with its displayed height formula](../../docs/assets/quasi-riemann-execution-landscape.png)
+
+![The reciprocal continuation region and its labeled boundary](../../docs/assets/quasi-riemann-execution-proof.png)
+
+![Final numerical landscape and the manuscript frontier](../../docs/assets/quasi-riemann-execution-final.png)
+
+[Retained scene](scene.py) · [Authoring and source audits](production.json) ·
+[Execution evidence](production/execution-stills.json)
+
 ## Geometry previews
 
 These still studies plot the actual numerical geometry specified by the
@@ -27,8 +43,11 @@ the animated Manim render is pending.
 
 The [source dossier](source-context.md) records the exact hypotheses,
 the two-stage proof map, numerical geometry and limits of the explanation.
-The [production brief](prompt.txt) targets a 210-230 second silent film at
-1920x1080 and 60 fps. A scene or storyboard alone is not a completed film.
+The [production brief](prompt.txt) targets a 210-230 second silent film.
+The user's latest delivery choice is **1280x720 at 30 fps**, superseding the
+original 1080p/60 fps authoring brief. The renderer applies this delivery
+profile after loading the retained scene. A scene or storyboard alone is
+not a completed film.
 
 ```bash
 python scripts/drive_astra_mcp.py papers/quasi-riemann --quality h --effort max --review-mode off --no-render
@@ -39,10 +58,10 @@ Authoring and independent evidence audits use `gpt-6-astra` with Codex
 ChatGPT login. This episode uses Jev-off mode because TypeSafe credentials
 are unavailable. It retains Astra audits and claims no Jev approval.
 
-After an authored candidate is retained as `candidate.json`, dispatch
+The authored candidate is retained as `candidate.json`. Dispatch
 **Quasi-Riemann preview and final film** in GitHub Actions. Two independent
 cloud jobs render the same source: a 480p/15 fps inspection copy and a
-1080p/60 fps delivery. These jobs make no model calls and receive no model
+720p/30 fps delivery. These jobs make no model calls and receive no model
 credentials. Each saves the MP4, a source-bound manifest, 12 sampled frames,
 contact sheet, metadata and execution logs for 30 days. Failures retain their
 available evidence as well.
@@ -55,5 +74,12 @@ Only a completed manifest and actual MP4 establish a completed render.
 
 OpenAI, *The Quasi-Riemann Hypothesis: A Zero-Free Half-Plane Re(s)>7/8*,
 September 30, 2026. [Pinned manuscript](https://github.com/HarleyCoops/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/The-Quasi-Riemann-Hypothesis-September-30-2026/paper.pdf).
+The repository also publishes the [original LaTeX manuscript](https://github.com/HarleyCoops/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/The-Quasi-Riemann-Hypothesis-September-30-2026/build/paper.tex).
+Astra reads that source directly. The continuation argument's displayed
+formulas come from Proposition 2.1 and its proof, including the equation
+labels `eq:common-residue`, `eq:low-probe-contract`,
+`eq:high-probe-contract` and `eq:uniform-saving`.
+Manim typesets selected expressions with `MathTex`; explanatory labels and
+local numerical examples are added for the film and are not manuscript excerpts.
 The source reports Lean formalizations for specified results. This project
 has not independently checked the complete proof or rebuilt those artifacts.

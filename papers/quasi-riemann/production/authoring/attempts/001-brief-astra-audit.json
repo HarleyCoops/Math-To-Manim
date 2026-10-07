@@ -1,0 +1,18 @@
+{
+  "mathematics": 1.0,
+  "pedagogy": 0.95,
+  "visual_design": 1.0,
+  "implementation": 1.0,
+  "verified": true,
+  "defects": [],
+  "feedback": "The brief satisfies this checkpoint. Acts 3 and 8 preserve strict boundary exclusion, the unresolved central strip, fixed sampled zeros, principal poles, manuscript attribution and the distinction from RH. Act 7's comparisons, common saving and supremum-based reciprocal-pole contradiction match the retained Proposition 2.1. Independently checked 11/12>7/8, the mirrored 1/8 frontier and C(7/8)=3/16. The eight contiguous act intervals total 220 seconds. The visual plan specifies substantive 3D geometry, the requested palette, readable overlay limits and connected transitions. The production constraints appropriately specify Cairo, permitted imports, camera APIs and precomputed geometry.",
+  "evidence": [
+    "attempts/001-brief-candidate.json"
+  ],
+  "limitations": [
+    "Act 7 packs substantial terminology and three exact formula reveals into 46 seconds. The storyboard should verify comprehension pauses; Act 8 also needs enough reading time for theorem scope and the source card.",
+    "The candidate's numerical residuals and winding figures are self-reported and were not independently reproduced here. Later validation should check the retained numerical kernel, sampled domain and radius-0.1 mapped loop against an independent numerical reference.",
+    "Verification covers the brief and relevant source excerpts. No scene or render is required at this checkpoint; visual execution, synchronization and actual duration remain unverified. This is not an independent validation of the full proof or Lean build."
+  ],
+  "repair_stage": "brief"
+}

@@ -6,10 +6,23 @@
   "source_repository": "https://github.com/HarleyCoops/math",
   "source_revision": "adc7f1241b42e322a6451854ab7e4b4c146bf78a",
   "pdf_path": "preprints/The-Quasi-Riemann-Hypothesis-September-30-2026/paper.pdf",
+  "latex_path": "preprints/The-Quasi-Riemann-Hypothesis-September-30-2026/build/paper.tex",
   "film_title": "A Frontier for the Zeros",
-  "target_duration_seconds": [210, 230],
+  "target_duration_seconds": [
+    210,
+    230
+  ],
+  "delivery": {
+    "quality": "m",
+    "width": 1280,
+    "height": 720,
+    "fps": 30
+  },
+  "delivery_note": "Latest user choice supersedes the original 1080p/60 fps authoring brief.",
   "background": "#F3EFE6",
   "pipeline": "astra",
-  "status": "production_brief_ready",
-  "verification": "Source scope checked; full proof and Lean build not independently verified."
+  "status": "scene_ready_pending_cloud_render",
+  "verification": "Source scope checked; full proof and Lean build not independently verified.",
+  "authoring_run": "20261007-011950-02f3ff",
+  "source_sha256": "3cda974c304f95229a1e727d7713c47a25e8c28786f6c4d3a0fdd5ad8ecb2e5a"
 }

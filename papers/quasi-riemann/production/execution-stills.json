@@ -1,0 +1,32 @@
+{
+  "kind": "actual_manim_execution_stills",
+  "run_id": "20261007-011950-02f3ff",
+  "source_sha256": "3cda974c304f95229a1e727d7713c47a25e8c28786f6c4d3a0fdd5ad8ecb2e5a",
+  "stills": [
+    {
+      "scene_seconds": 18,
+      "original_evidence": "snapshots/scene-005/t018/images/AstraFilm.png",
+      "published_image": "docs/assets/quasi-riemann-execution-landscape.png",
+      "image_sha256": "6beab84246bf5157de50945dc725b5ed70da0f529c2de81211b8f56615660e14",
+      "source_sha256": "3cda974c304f95229a1e727d7713c47a25e8c28786f6c4d3a0fdd5ad8ecb2e5a"
+    },
+    {
+      "scene_seconds": 190,
+      "original_evidence": "snapshots/scene-005/t190/images/AstraFilm.png",
+      "published_image": "docs/assets/quasi-riemann-execution-proof.png",
+      "image_sha256": "7f5d699f45bad86b1490857e3c85da9ba9badd3354cbb5e7bd77aef1fe4068fb",
+      "source_sha256": "3cda974c304f95229a1e727d7713c47a25e8c28786f6c4d3a0fdd5ad8ecb2e5a"
+    },
+    {
+      "scene_seconds": 220,
+      "original_evidence": "probes/009/media/images/AstraFilm.png",
+      "published_image": "docs/assets/quasi-riemann-execution-final.png",
+      "image_sha256": "ce4f80a896e8990695fa59af668ac5273149c77dd1f5c24d508dbd767f59c770",
+      "source_sha256": "3cda974c304f95229a1e727d7713c47a25e8c28786f6c4d3a0fdd5ad8ecb2e5a"
+    }
+  ],
+  "limitations": [
+    "Animations skipped to selected beat endpoints or the final scene state.",
+    "These stills do not establish a completed movie or continuous motion."
+  ]
+}

@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        quality: [l, h]
+        quality: [l, m]
     uses: ./.github/workflows/paper-film.yml
     with:
       paper: quasi-riemann

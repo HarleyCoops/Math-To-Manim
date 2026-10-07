@@ -1,0 +1,52 @@
+{
+  "original_run_id": "20261007-011950-02f3ff",
+  "files": [
+    "request.json",
+    "brief.json",
+    "mathematics.json",
+    "storyboard.json",
+    "scene.json",
+    "attempts/001-brief-candidate.json",
+    "attempts/002-mathematics-candidate.json",
+    "attempts/003-storyboard-candidate.json",
+    "attempts/004-scene-candidate.json",
+    "attempts/005-scene-candidate.json",
+    "attempts/001-brief-astra-audit.json",
+    "attempts/002-mathematics-astra-audit.json",
+    "attempts/003-storyboard-astra-audit.json",
+    "attempts/004-scene-astra-audit.json",
+    "attempts/005-scene-astra-audit.json",
+    "attempts/001-brief-astra-audit.record.json",
+    "attempts/002-mathematics-astra-audit.record.json",
+    "attempts/003-storyboard-astra-audit.record.json",
+    "attempts/004-scene-astra-audit.record.json",
+    "attempts/005-scene-astra-audit.record.json"
+  ],
+  "byte_hashes": {
+    "request.json": "3cac2a69b43103c78dde957326e1c7b871aceff8fce2f3eb0fdbb0ad1de14888",
+    "brief.json": "cd789c2ebee6039a836d881623d2fa9f56b510a0f10c2ad966554913a4cbf2a1",
+    "mathematics.json": "01af3f5088f11187b3557a82abc43ea55d2f4fea201b065df310e8db83a82d50",
+    "storyboard.json": "93efef7fbc58710db435650f3cf5d7b50247067e51f31adf2558e6368ee1af6c",
+    "scene.json": "cb93e00e4989997cd2c3fd1390fbca5c17dd958b8888c018535b9bff555aad84",
+    "attempts/001-brief-candidate.json": "cd789c2ebee6039a836d881623d2fa9f56b510a0f10c2ad966554913a4cbf2a1",
+    "attempts/002-mathematics-candidate.json": "01af3f5088f11187b3557a82abc43ea55d2f4fea201b065df310e8db83a82d50",
+    "attempts/003-storyboard-candidate.json": "93efef7fbc58710db435650f3cf5d7b50247067e51f31adf2558e6368ee1af6c",
+    "attempts/004-scene-candidate.json": "43bd3696ad2da5a6787f492bc84e4e209adbafb1415eb9b72d65107d7eed2bcb",
+    "attempts/005-scene-candidate.json": "cb93e00e4989997cd2c3fd1390fbca5c17dd958b8888c018535b9bff555aad84",
+    "attempts/001-brief-astra-audit.json": "6bbf250b1244ffbf510233bd65fc8d9988fe90e0886f99a04fd1f96f281471d4",
+    "attempts/002-mathematics-astra-audit.json": "c835fa583b33058deaeb9e1a3037c24b9b00b85d89f6e6849b6d1babcd4868b5",
+    "attempts/003-storyboard-astra-audit.json": "0158712d53563159ee1bdbcc0f3d988c5cd6b3d77710a8a5efe165b343c21f05",
+    "attempts/004-scene-astra-audit.json": "7d7ee0a3ca62ca08d6856d1bed6ce8b5c8261fbd5f31844ccc0b2a92dc4f5c75",
+    "attempts/005-scene-astra-audit.json": "9f07384526c7190b213813a0944d19b6ab6d0ffb820406b067f0653c8bb7151d",
+    "attempts/001-brief-astra-audit.record.json": "965140346db1f56f40c30b4886d041275f3aaaeb70c1e0237de8d8fff39bbf07",
+    "attempts/002-mathematics-astra-audit.record.json": "8fbf7a8b930a47ad139467633c027fd92a6d22d2e8415fe8d15b874e72cbbaa5",
+    "attempts/003-storyboard-astra-audit.record.json": "e541e51382d12f57371d4fb2b21887525cf8e453d819066aba20701aa01c0472",
+    "attempts/004-scene-astra-audit.record.json": "23f879458afc07506f54891122a3af48b6928e8ac2e2271fcb522f3dba2ffbb6",
+    "attempts/005-scene-astra-audit.record.json": "b01aa55e6d8a62a4c8110820685637bc1942514167cf29e6629e842a12be1b9c"
+  },
+  "publication_prefix": "production/authoring/",
+  "limitations": [
+    "Authoring and source audits do not establish a completed movie.",
+    "SDK traces and login/session material are not published."
+  ]
+}

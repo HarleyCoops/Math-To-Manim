@@ -1,0 +1,3 @@
+# Preserve retained authoring evidence bytes and their recorded SHA-256 hashes.
+papers/quasi-riemann/candidate.json -text
+papers/quasi-riemann/production/** -text

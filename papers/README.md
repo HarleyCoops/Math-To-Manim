@@ -20,13 +20,13 @@ storyboard is not a finished episode.
 | Episode | Paper | Status |
 | --- | --- | --- |
 | 01 · The Shape and Its Shadow | [Symmetric Mahler and its equality cases](mahler/README.md), family 087 | Complete 179.8-second 720p/30 fps cloud film; Astra source and 23 rendered frames reviewed; Jev off |
-| 02 · A Frontier for the Zeros | [The Quasi-Riemann hypothesis](quasi-riemann/README.md), family 003 | Current flagship; source checked and Astra authoring launched; film pending |
+| 02 · A Frontier for the Zeros | [The Quasi-Riemann hypothesis](quasi-riemann/README.md), family 003 | Current flagship; 220-second Astra source audited and actual execution stills retained; cloud film pending |
 
 The Quasi-Riemann episode uses a bone background, deep teal numerical
 surfaces, copper phase curves and gold frontier geometry. A camera journey
 connects primes, the critical strip, winding around a sampled zero, and the
 paper's reciprocal-L continuation argument. The target is 210-230 seconds
-with a 1080p/60 fps delivery and a separate inspection copy.
+with a 720p/30 fps delivery and a separate inspection copy.
 
 ## Curated next episodes
 
@@ -84,7 +84,7 @@ the exact scene plus its Astra audit record in `production.json`. It does
 not turn completed authoring into a claim that a film has been rendered.
 
 The `Quasi-Riemann preview and final film` workflow launches separate 480p
-and 1080p cloud jobs from the same retained Astra source. Evidence lives in
+and 720p cloud jobs from the same retained Astra source. Evidence lives in
 `runs/astra/` within each artifact. Stills assess composition and readability;
 continuous playback must assess motion. Only verified completed films will
 be featured as finished episodes on the homepage.

@@ -1,0 +1,11 @@
+{
+  "model": "gpt-6-astra",
+  "input_hashes": {
+    "brief.json": "cd789c2ebee6039a836d881623d2fa9f56b510a0f10c2ad966554913a4cbf2a1",
+    "mathematics.json": "01af3f5088f11187b3557a82abc43ea55d2f4fea201b065df310e8db83a82d50",
+    "storyboard.json": "93efef7fbc58710db435650f3cf5d7b50247067e51f31adf2558e6368ee1af6c",
+    "attempts/004-scene-candidate.json": "43bd3696ad2da5a6787f492bc84e4e209adbafb1415eb9b72d65107d7eed2bcb"
+  },
+  "role": "astra-evidence-auditor",
+  "score_kind": "uncalibrated_model_judgment"
+}
