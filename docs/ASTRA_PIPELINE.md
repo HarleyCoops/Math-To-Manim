@@ -5,6 +5,20 @@ The primary CLI runs `astra.pipeline.Pipeline`: brief → mathematics → storyb
 an Astra audit and one Jev evaluation, without Jev-triggered retries or extra
 investigations. `--review-mode gated` enables the strict [gate contract](JEV.md).
 
+`--review-mode off` explicitly disables Jev, including credential loading and
+all TypeSafe calls. Independent Astra evidence audits still run. The manifest
+records `review_status: astra_only`; it does not claim Jev approval.
+
+The same pipeline is exposed through `math-to-manim serve-mcp` (stdio by
+default, or loopback streamable HTTP on port 8644). Its tools create an operator
+Astra/Jev worker, inspect a durable manifest, list runs, and retrieve scene
+source. Worker diagnostics go to `worker.log`, keeping MCP stdout clean.
+Keep the MCP server alive until completion. The reference client waits for a
+terminal manifest; Windows MCP clients terminate server descendants on shutdown.
+The existing explicit Mythos/Grok MCP entry points keep their provider routing.
+See [the paper-film pilot](../papers/README.md) and
+`scripts/drive_astra_mcp.py` for a real MCP client example.
+
 `render-existing RUN --candidate FILE -q m` finishes retained scene code with
 zero model/API calls. Manim joins its animation segments into one MP4. This
 path records `review_status: not_reviewed` and preserves earlier verdicts.

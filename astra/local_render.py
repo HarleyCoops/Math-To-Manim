@@ -13,7 +13,7 @@ def render_existing(run_dir, candidate, quality='m'):
     if candidate.suffix=='.json':source=json.loads(source)['content']
     validate_source(source)
     ledger_path=folder/'manifest.json'
-    ledger=json.loads(ledger_path.read_text())
+    ledger=json.loads(ledger_path.read_text(encoding='utf-8'))
     attempt=max([int(p.name) for p in (folder/'renders').glob('*') if p.name.isdigit()]+[0])+1
     ledger.update(status='rendering',error=None,review_mode='disabled_for_local_render',
                   review_status='not_reviewed',render_quality=quality)

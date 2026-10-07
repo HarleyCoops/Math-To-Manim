@@ -92,7 +92,7 @@ def probe(run_dir, source, attempt):
     scene.write_text(source,encoding='utf-8')
     settings=Path(run_dir)/'delivery.json'
     if not settings.exists():settings=Path(run_dir)/'request.json'
-    quality=json.loads(settings.read_text()).get('quality','h') if settings.exists() else 'h'
+    quality=json.loads(settings.read_text(encoding='utf-8')).get('quality','h') if settings.exists() else 'h'
     result=subprocess.run([sys.executable,str(Path(__file__).with_name('render_worker.py')),
         str(scene),str(folder/'media'),quality,'still'],
         cwd=folder,env=clean_environment(),capture_output=True,text=True,

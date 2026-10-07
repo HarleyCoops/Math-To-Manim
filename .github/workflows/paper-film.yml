@@ -1,0 +1,47 @@
+name: Render a paper film
+
+on:
+  workflow_call:
+    inputs:
+      quality:
+        type: string
+        default: m
+  workflow_dispatch:
+    inputs:
+      quality:
+        description: Delivery quality (m = 720p/30 fps, h = 1080p/60 fps)
+        type: choice
+        default: m
+        options: [l, m, h]
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    container:
+      image: manimcommunity/manim:v0.19.0
+      options: --user root
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install FFmpeg and the project
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends ffmpeg
+          python -m pip install -e .
+      - name: Render the retained Astra Mahler candidate
+        run: >-
+          python scripts/render_paper_cloud.py
+          --candidate papers/mahler/candidate.json
+          --output runs/astra/cloud-${{ github.run_id }}
+          --quality ${{ inputs.quality }}
+      - name: Save video, frames, source and render logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mahler-film-${{ inputs.quality }}-${{ github.run_id }}
+          path: runs/astra/cloud-${{ github.run_id }}/
+          retention-days: 30
+          if-no-files-found: error
