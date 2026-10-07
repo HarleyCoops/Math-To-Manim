@@ -6,7 +6,8 @@ The original request, pinned manuscript and source distinctions are in
 [source-context.md](source-context.md).
 
 The retained [Astra scene](scene.py) and [renderable artifact](candidate.json)
-are ready for a GitHub Actions cloud render. No completed movie is claimed yet.
+are running in a [GitHub Actions cloud render](https://github.com/HarleyCoops/Math-To-Manim/actions/runs/37557454747).
+No completed movie is claimed yet.
 The real Codex SDK / GPT-6 Astra chain was launched through MCP, with Jev off.
 
 These are actual Manim execution stills from the corrected source:
