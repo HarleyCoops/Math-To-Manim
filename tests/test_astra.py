@@ -66,6 +66,19 @@ def test_advisory_rejection_does_not_retry_or_claim_approval(tmp_path):
     assert any(e.get('approved') is False for e in result['events'])
 
 
+def test_jev_off_retains_astra_audits_without_constructing_jev(tmp_path,monkeypatch):
+    monkeypatch.setattr('astra.pipeline.JevClient', lambda: pytest.fail('Jev must remain off'))
+    client=FakeSDK()
+    pipe=Pipeline(client,tmp_path,fake_render,prober=fake_probe)
+    result=pipe.run(Request(prompt='Explain topology',review_mode='off'))
+    assert result['status']=='completed' and result['review_status']=='astra_only'
+    assert len(client.calls)==9 and result['video_sha256']
+    assert all(e['review']['evaluator']=='disabled' and not e['approved'] for e in result['events'])
+    client.calls.clear()
+    resumed=pipe.run(None,folder=Path(result['run_dir']))
+    assert resumed['review_status']=='astra_only' and len(client.calls)==1
+
+
 def test_advisory_api_failure_is_recorded_without_retry(tmp_path):
     class UnavailableJev:
         calls=0

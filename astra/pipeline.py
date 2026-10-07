@@ -7,7 +7,7 @@ import shutil
 import uuid
 
 from astra.client import CodexSDK, MODEL
-from astra.jev import JevClient, GateDecision, POLICY_VERSION
+from astra.jev import JevClient, GateDecision, POLICY_VERSION, JEV_MODEL
 from astra.evidence import text_evidence, design_summary
 from astra.models import Artifact, Assessment, Request, STAGES
 from astra.prompts import specialist_prompt, judge_prompt
@@ -50,6 +50,13 @@ class Pipeline:
             raise RuntimeError('Render review must cite actual frames')
         save(output.with_suffix('.record.json'),dict(model=MODEL,input_hashes=hashes,
              role='astra-evidence-auditor',score_kind='uncalibrated_model_judgment'))
+        if request.review_mode == 'off':
+            decision = GateDecision(approved=False,
+                repair_stage='scene' if stage=='render' else stage,
+                feedback='TypeSafe Jev disabled by request. Astra evidence audit retained; no Jev approval claimed.',
+                defects=[], evaluator='disabled', model='disabled', answers={})
+            save(folder/f'attempts/{index:03d}-{stage}-review-disabled.json', decision.model_dump())
+            return decision
         state={'checkpoint':stage,'original_request':request.prompt,
                'artifacts':text_evidence(folder,paths),
                'astra_evidence_audit':result.model_dump(),
@@ -107,38 +114,40 @@ class Pipeline:
         return decision
 
     def run(self, request, *, folder=None, feedback='', render_quality=None):
+        if folder is not None:
+            folder=Path(folder).resolve()
+            request=Request.model_validate_json((folder/'request.json').read_text(encoding='utf-8'))
         # Fail before consuming Codex usage if the real Jev credentials are absent.
-        if self.jev is None:
+        if self.jev is None and request.review_mode != 'off':
             self.jev = JevClient()
         if folder is None:
             folder=self.runs_dir/(datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')+'-'+uuid.uuid4().hex[:6])
             folder.mkdir(parents=True)
             save(folder/'request.json',request.model_dump())
-        else:
-            folder=Path(folder).resolve()
-            request=Request.model_validate_json((folder/'request.json').read_text(encoding='utf-8'))
         (folder/'attempts').mkdir(exist_ok=True)
         # A local resume reuses only accepted artifacts whose exact hashes still match.
         ledger_path=folder/'manifest.json'
-        ledger=json.loads(ledger_path.read_text()) if ledger_path.exists() else dict(model=MODEL,stages={},events=[])
-        if ledger.get('evaluator_policy') != POLICY_VERSION:
+        ledger=json.loads(ledger_path.read_text(encoding='utf-8')) if ledger_path.exists() else dict(model=MODEL,stages={},events=[])
+        policy = 'astra-only-v1' if request.review_mode=='off' else POLICY_VERSION
+        if ledger.get('evaluator_policy') != policy:
             ledger['stages'] = {}
         delivery_path=folder/'delivery.json'
         if render_quality is not None:
             if render_quality not in {'l','m','h'}:raise ValueError('Invalid render quality')
             delivery={'quality':render_quality}
-            if not delivery_path.exists() or json.loads(delivery_path.read_text())!=delivery:
+            if not delivery_path.exists() or json.loads(delivery_path.read_text(encoding='utf-8'))!=delivery:
                 save(delivery_path,delivery)
                 ledger['stages'].pop('scene',None)
                 ledger['events'].append(dict(stage='delivery',attempt=0,quality=render_quality,
                     reason='User changed delivery quality; scene and render require fresh review.'))
         if delivery_path.exists():
-            quality=json.loads(delivery_path.read_text())['quality']
+            quality=json.loads(delivery_path.read_text(encoding='utf-8'))['quality']
             from astra.render_worker import PROFILES
             width,height,fps=PROFILES[quality]
             request=request.model_copy(update={'quality':quality,'prompt':request.prompt+
                 f'\nLatest user delivery override: {width}x{height} at {fps} fps supersedes all earlier resolution/fps requirements. Preserve the mathematical content and visual design.'})
-        ledger.update(status='running',error=None,run_dir=str(folder),evaluator_policy=POLICY_VERSION)
+        ledger.update(status='running',error=None,run_dir=str(folder),evaluator_policy=policy,
+                      evaluator='disabled' if request.review_mode=='off' else JEV_MODEL)
         save(ledger_path,ledger)
         revisions=0; i=0
         attempt=max([int(p.name.split('-')[0]) for p in (folder/'attempts').iterdir()
@@ -184,7 +193,7 @@ class Pipeline:
                             if revisions>request.max_revisions:raise
                             feedback=str(exc);save(ledger_path,ledger);continue
                         paths.extend([execution,frame]);images=[frame]
-                    print(f'Astra evidence audit -> TypeSafe Jev: {stage}',flush=True)
+                    print(f'Astra evidence audit{ " (Jev off)" if request.review_mode=="off" else " -> TypeSafe Jev" }: {stage}',flush=True)
                     review=self._judge(folder,request,stage,paths,images,attempt)
                     ledger['events'].append(dict(stage=stage,attempt=attempt,approved=review.approved,
                                                review=review.model_dump()))
@@ -202,7 +211,7 @@ class Pipeline:
                     save(ledger_path,ledger); i+=1;feedback=''
                 if not request.render: break
                 attempt+=1
-                source=Artifact.model_validate_json((folder/'scene.json').read_text()).content
+                source=Artifact.model_validate_json((folder/'scene.json').read_text(encoding='utf-8')).content
                 (folder/'scene.py').write_text(source,encoding='utf-8')
                 print(f'Rendering {request.quality}, attempt {attempt}',flush=True)
                 try:
@@ -217,12 +226,12 @@ class Pipeline:
                 metadata=sheet.parent/'metadata.json'
                 if metadata.exists():paths.append(metadata)
                 if delivery_path.exists():paths.append(delivery_path)
-                print('Astra frame inspection -> TypeSafe Jev decision',flush=True)
+                print('Astra frame inspection' + (' (Jev off)' if request.review_mode=='off' else ' -> TypeSafe Jev decision'),flush=True)
                 review=self._judge(folder,request,'render',paths,frames+[sheet],attempt)
                 ledger['events'].append(dict(stage='render',attempt=attempt,approved=review.approved,
                                            review=review.model_dump()))
                 save(ledger_path,ledger)
-                if review.approved or request.review_mode=='advisory':
+                if review.approved or request.review_mode!='gated':
                     ledger.update(video=str(video.relative_to(folder)),contact_sheet=str(sheet.relative_to(folder)),
                                   video_sha256=digest(video))
                     break
@@ -231,7 +240,7 @@ class Pipeline:
                 i=STAGES.index(review.repair_stage);feedback=review.model_dump_json()
                 for name in STAGES[i:]:ledger['stages'].pop(name,None)
             ledger.update(status='completed',review_mode=request.review_mode,
-                          review_status='advisory' if request.review_mode=='advisory' else 'approved',
+                          review_status={'advisory':'advisory','gated':'approved','off':'astra_only'}[request.review_mode],
                           completed_utc=datetime.now(timezone.utc).isoformat())
         except Exception as exc:
             ledger.update(status='failed',error=f'{type(exc).__name__}: {exc}')

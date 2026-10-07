@@ -15,7 +15,7 @@ def main(argv=None):
     run=commands.add_parser('run');run.add_argument('prompt');run.add_argument('-q','--quality',choices=['l','m','h'],default='h')
     run.add_argument('--effort',choices=['high','xhigh','max'],default='high')
     run.add_argument('--max-revisions',type=int,default=6);run.add_argument('--no-render',action='store_true')
-    run.add_argument('--review-mode',choices=['advisory','gated'],default='advisory')
+    run.add_argument('--review-mode',choices=['advisory','gated','off'],default='advisory')
     local=commands.add_parser('render-existing',help='Render saved scene code with zero model/API calls')
     local.add_argument('run_dir',type=Path)
     local.add_argument('--candidate',type=Path,required=True,help='Saved candidate JSON or scene Python file')
@@ -32,7 +32,14 @@ def main(argv=None):
     design_map.add_argument('--stage',choices=['brief','mathematics','storyboard','scene','render'])
     commands.add_parser('doctor')
     commands.add_parser('runs')
+    server=commands.add_parser('serve-mcp',help='Serve the Astra SDK / TypeSafe Jev MCP connection')
+    server.add_argument('--transport',choices=['stdio','streamable-http'],default='stdio')
+    server.add_argument('--port',type=int,default=8644)
     args=p.parse_args(argv)
+    if args.command=='serve-mcp':
+        from astra.mcp_server import main as serve
+        serve(args.transport,args.port)
+        return 0
     if args.command=='render-existing':
         from astra.local_render import render_existing
         print(json.dumps(render_existing(args.run_dir,args.candidate,args.quality),indent=2))
@@ -60,7 +67,7 @@ def main(argv=None):
         return result.returncode
     if args.command=='runs':
         for path in sorted((ROOT/'runs/astra').glob('*/manifest.json')):
-            data=json.loads(path.read_text());print(path.parent.name,data['status'])
+            data=json.loads(path.read_text(encoding='utf-8'));print(path.parent.name,data['status'])
         return 0
     if args.command=='resume':
         result=Pipeline().run(None,folder=args.run_dir,render_quality=args.quality)

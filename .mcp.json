@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "math-to-manim-astra": {
+      "command": "python",
+      "args": ["-m", "astra.cli", "serve-mcp"]
+    }
+  }
+}

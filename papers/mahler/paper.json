@@ -1,0 +1,18 @@
+{
+  "family": "087",
+  "title": "The symmetric Mahler conjecture and its equality cases",
+  "author": "OpenAI",
+  "date": "2026-09-22",
+  "source_repository": "https://github.com/HarleyCoops/math",
+  "source_revision": "adc7f1241b42e322a6451854ab7e4b4c146bf78a",
+  "pdf_path": "preprints/The-symmetric-Mahler-conjecture-and-its-equality-cases-September-22-2026/paper.pdf",
+  "pdf_sha256": "0560a02b890de6637a1e007f2d438e8dec93575b4e12a66a6313511348ddd6a6",
+  "pages": 26,
+  "verification": "Source reports formalization; not independently checked for this film",
+  "production_model": "gpt-6-astra",
+  "production_engine": "astra",
+  "status": "astra_authoring",
+  "review_mode": "off",
+  "astra_run_id": "20261007-010529-b10210",
+  "pipeline_base_revision": "b3c52d75f720e9ef3d7863fff8af6c40680457b4"
+}

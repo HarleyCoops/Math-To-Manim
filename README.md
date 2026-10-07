@@ -29,6 +29,13 @@ the scene, and reviews the actual render. Jev reviews are **advisory by default*
 their scores are retained, but do not trigger regeneration or extra investigations.
 Strict gates remain available with `--review-mode gated`.
 
+Use `--review-mode off` to skip Jev and its credential requirement while keeping
+independent Astra audits. These runs are labeled `astra_only`.
+`math-to-manim serve-mcp` now exposes this same Astra chain over MCP.
+The [OpenAI mathematics in 3D series](papers/README.md) starts with the Mahler
+pilot, *The Shape and Its Shadow*; its production brief is ready and the film
+is pending.
+
 To finish an existing scene without spending additional model credits:
 
 ```bash

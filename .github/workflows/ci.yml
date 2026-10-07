@@ -8,6 +8,12 @@ on:
   workflow_dispatch:
 
 jobs:
+  paper-film:
+    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref_name, 'codex/mahler-')
+    uses: ./.github/workflows/paper-film.yml
+    with:
+      quality: m
+
   test:
     runs-on: ubuntu-latest
     strategy:
