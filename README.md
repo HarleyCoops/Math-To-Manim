@@ -33,8 +33,8 @@ Use `--review-mode off` to skip Jev and its credential requirement while keeping
 independent Astra audits. These runs are labeled `astra_only`.
 `math-to-manim serve-mcp` now exposes this same Astra chain over MCP.
 The [OpenAI mathematics in 3D series](papers/README.md) starts with the Mahler
-pilot, *The Shape and Its Shadow*; its production brief is ready and the film
-is pending.
+pilot, *The Shape and Its Shadow*: a completed three-minute cloud render with
+independent Astra review of its source and 23 actual frames.
 
 To finish an existing scene without spending additional model credits:
 
@@ -48,6 +48,26 @@ the animation segments, then extracts review frames. Output is marked
 
 [Run the chain](#installation) · [How jev works](#astra-and-jev) ·
 [Creation story](#the-morning-of-january-20-2025) · [Older films](docs/showcase/README.md)
+
+## OpenAI Mathematics in 3D: The Shape and Its Shadow
+
+A coral cube reveals its cyan polar octahedron. Eight exact tetrahedra earn the
+volume product $32/3$; reciprocal stretches preserve it. The camera then follows
+the manuscript's tilted analytic lens, feasible simplices and integrated-volume
+argument, flying into the LaTeX terms before returning to the full inequality.
+
+**179.8 seconds, rendered on GitHub Actions at 720p/30 fps.** Codex SDK / GPT-6
+Astra authoring and evidence audits; Jev explicitly off for this pilot.
+
+[![An isolated gold tetrahedron explains the octahedron's exact volume](docs/showcase/assets/mahler-film.gif)](docs/showcase/assets/mahler-film.mp4)
+
+[Watch the complete movie](docs/showcase/assets/mahler-film.mp4) ·
+[See the rendered frames](docs/showcase/assets/mahler-contact-sheet.png) ·
+[Read the episode and review scope](papers/mahler/README.md) ·
+[Inspect the scene](papers/mahler/scene.py)
+
+The all-dimensional theorem and reported formalization are attributed manuscript
+claims. The film explains the route; it does not independently validate the proof.
 
 ## The New Film: Every Orbit Is a Great Circle
 

@@ -1,0 +1,131 @@
+{
+  "title": "The Shape and Its Shadow",
+  "episode": 1,
+  "paper_family": "087",
+  "status": "completed",
+  "source_manuscript": {
+    "family": "087",
+    "title": "The symmetric Mahler conjecture and its equality cases",
+    "author": "OpenAI",
+    "date": "2026-09-22",
+    "source_repository": "https://github.com/HarleyCoops/math",
+    "source_revision": "adc7f1241b42e322a6451854ab7e4b4c146bf78a",
+    "pdf_path": "preprints/The-symmetric-Mahler-conjecture-and-its-equality-cases-September-22-2026/paper.pdf",
+    "pdf_sha256": "0560a02b890de6637a1e007f2d438e8dec93575b4e12a66a6313511348ddd6a6",
+    "pages": 26,
+    "verification": "Source reports formalization; not independently checked for this film",
+    "production_model": "gpt-6-astra",
+    "production_engine": "astra",
+    "status": "astra_authoring",
+    "review_mode": "off",
+    "astra_run_id": "20261007-010529-b10210",
+    "pipeline_base_revision": "b3c52d75f720e9ef3d7863fff8af6c40680457b4"
+  },
+  "authoring": {
+    "run_id": "20261007-010529-b10210",
+    "model": "gpt-6-astra",
+    "transport": "Astra MCP front door",
+    "backend": "official Codex SDK with cached ChatGPT login",
+    "stages": [
+      "brief",
+      "mathematics",
+      "storyboard",
+      "scene"
+    ],
+    "curation": "Codex revisions informed by independent Astra source and actual-render audits"
+  },
+  "renderer": {
+    "provider": "GitHub Actions",
+    "image": "manimcommunity/manim:v0.19.0",
+    "quality": "m",
+    "run_id": 37558520865,
+    "url": "https://github.com/HarleyCoops/Math-To-Manim/actions/runs/37558520865"
+  },
+  "video": "docs/showcase/assets/mahler-film.mp4",
+  "preview": "docs/showcase/assets/mahler-film.gif",
+  "contact_sheet": "docs/showcase/assets/mahler-contact-sheet.png",
+  "scene": "papers/mahler/scene.py",
+  "candidate": "papers/mahler/candidate.json",
+  "video_sha256": "1365012ee999c2400e72f497dedd339d2c2b3bbac927209543a6629e686769d9",
+  "scene_sha256": "8d5098fec0ef7ce60b3298f59f463dcfdb9a0f6f982a1716bd461109d551285a",
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1280,
+        "height": 720,
+        "r_frame_rate": "30/1",
+        "nb_frames": "5393"
+      }
+    ],
+    "format": {
+      "duration": "179.766667"
+    }
+  },
+  "full_decode": {
+    "exit_code": 0,
+    "stderr": ""
+  },
+  "review_mode": "off",
+  "evaluator": "disabled",
+  "review_status": "astra_render_frames_reviewed",
+  "auditor_model": "gpt-6-astra",
+  "review_scope": "Published source, 23 decoded movie frames and recorded checks",
+  "scores_are": "uncalibrated model judgments",
+  "assessment": "final-render-audit.json",
+  "audit_record": "final-render-audit-record.json",
+  "original_text_bytes": "audited-text-inputs.json",
+  "frame_path_map": {
+    "cloud-render-v2/review/t008.png": "docs/showcase/assets/mahler-review-t008.png",
+    "cloud-render-v2/review/t018.png": "docs/showcase/assets/mahler-review-t018.png",
+    "cloud-render-v2/review/t025.png": "docs/showcase/assets/mahler-review-t025.png",
+    "cloud-render-v2/review/t034.png": "docs/showcase/assets/mahler-review-t034.png",
+    "cloud-render-v2/review/t038.png": "docs/showcase/assets/mahler-review-t038.png",
+    "cloud-render-v2/review/t046.png": "docs/showcase/assets/mahler-review-t046.png",
+    "cloud-render-v2/review/t058.png": "docs/showcase/assets/mahler-review-t058.png",
+    "cloud-render-v2/review/t064.png": "docs/showcase/assets/mahler-review-t064.png",
+    "cloud-render-v2/review/t080.png": "docs/showcase/assets/mahler-review-t080.png",
+    "cloud-render-v2/review/t096.png": "docs/showcase/assets/mahler-review-t096.png",
+    "cloud-render-v2/review/t114.png": "docs/showcase/assets/mahler-review-t114.png",
+    "cloud-render-v2/review/t123.png": "docs/showcase/assets/mahler-review-t123.png",
+    "cloud-render-v2/review/t126.png": "docs/showcase/assets/mahler-review-t126.png",
+    "cloud-render-v2/review/t129.png": "docs/showcase/assets/mahler-review-t129.png",
+    "cloud-render-v2/review/t138.png": "docs/showcase/assets/mahler-review-t138.png",
+    "cloud-render-v2/review/t141.png": "docs/showcase/assets/mahler-review-t141.png",
+    "cloud-render-v2/review/t143.png": "docs/showcase/assets/mahler-review-t143.png",
+    "cloud-render-v2/review/t148.png": "docs/showcase/assets/mahler-review-t148.png",
+    "cloud-render-v2/review/t154.png": "docs/showcase/assets/mahler-review-t154.png",
+    "cloud-render-v2/review/t160.png": "docs/showcase/assets/mahler-review-t160.png",
+    "cloud-render-v2/review/t167.png": "docs/showcase/assets/mahler-review-t167.png",
+    "cloud-render-v2/review/t170.png": "docs/showcase/assets/mahler-review-t170.png",
+    "cloud-render-v2/review/t177.png": "docs/showcase/assets/mahler-review-t177.png"
+  },
+  "continuous_playback_independently_inspected": false,
+  "limitations": [
+    "Verification covers supplied stills, inspected source and recorded render checks. Continuous playback was not inspected; stills and successful decoding do not establish smooth motion or readability throughout transitions.",
+    "Duration and full-video decoding results are reported by verification.json, not independently reproduced during this audit.",
+    "The manuscript's all-dimensional theorem, analytic estimate and formalization were not independently validated. This assessment is neither a formal proof certificate nor TypeSafe Jev approval."
+  ],
+  "validation": [
+    "Full offline suite passed locally and in GitHub CI on Python 3.10 and 3.12.",
+    "Sixteen displayed simplex containment checks passed.",
+    "The complete revised scene executed to its final still in Manim.",
+    "The completed video decoded fully without errors and matches the retained source.",
+    "Final independent Astra rendered-evidence assessment found no blocking defects."
+  ],
+  "history": [
+    {
+      "cloud_run": 37557454747,
+      "source_sha256": "712b13e47d1a9d3dc0ac4fdba7d19b2180b6e4814eba84f7deb1d135b7fa5da9",
+      "assessment": "first-render-audit.json",
+      "result": "Completed render; presentation repairs requested"
+    },
+    {
+      "cloud_run": 37558520865,
+      "source_sha256": "8d5098fec0ef7ce60b3298f59f463dcfdb9a0f6f982a1716bd461109d551285a",
+      "assessment": "final-render-audit.json",
+      "result": "Completed render; no blocking defects on inspected evidence"
+    }
+  ]
+}

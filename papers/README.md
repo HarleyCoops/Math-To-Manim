@@ -13,7 +13,7 @@ storyboard is not a finished episode.
 
 | Episode | Paper | Status |
 | --- | --- | --- |
-| 01 · The Shape and Its Shadow | [Symmetric Mahler and its equality cases](mahler/README.md), family 087 | Three-minute Astra source audited and execution stills rendered; full cloud film pending |
+| 01 · The Shape and Its Shadow | [Symmetric Mahler and its equality cases](mahler/README.md), family 087 | Complete 179.8-second 720p/30 fps cloud film; Astra source and 23 rendered frames reviewed; Jev off |
 
 The pilot begins with a cube and its polar octahedron, computes the exact
 volume product, follows inverse-transpose duality, and reveals the manuscript's
@@ -43,5 +43,6 @@ The `Render a paper film` GitHub Actions workflow renders the retained
 `papers/mahler/candidate.json`, with no model calls or API keys. It installs
 FFmpeg alongside the pinned Manim image and saves the MP4, sampled frames,
 contact sheet, source and logs as a 30-day artifact. That separate render is
-`not_reviewed` until actual rendered evidence is inspected. Public media
-publication remains pending; no finished episode is claimed here.
+`not_reviewed` until actual rendered evidence is inspected. The Mahler pilot's
+MP4, preview and review records are now public in its episode folder. Its rendered
+frame review does not certify every transition or the manuscript proof.
