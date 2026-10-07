@@ -64,7 +64,8 @@ def build_bundle(root, dist, film_dir):
                  'quasi-riemann-render-manifest.json', 'quasi-riemann-film-evidence.json'):
         entries[f'films/{name}'] = (film_dir / name).read_bytes()
     # Enumerate tracked episode evidence, never arbitrary workspace files or runs.
-    tracked = subprocess.check_output(['git', 'ls-files', '-z', 'papers/quasi-riemann'], cwd=root)
+    tracked = subprocess.check_output(['git', 'ls-files', '-z', 'papers/quasi-riemann',
+                                       'docs/assets/quasi-riemann-*'], cwd=root)
     for name in tracked.decode().split('\0'):
         if name:
             entries[name] = (root / name).read_bytes()
