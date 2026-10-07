@@ -13,6 +13,16 @@ geometry, through a local phase-winding closeup, into the manuscript's
 reciprocal-L continuation argument. The September 30 paper reports the
 frontier `Re(s)>7/8`; the full Riemann hypothesis remains open in the source.
 
+## Geometry previews
+
+These still studies plot the actual numerical geometry specified by the
+Astra dossier. They show the planned palette and mathematical compositions;
+the animated Manim render is pending.
+
+![Numerical zeta landscape and the manuscript's frontier](../../docs/assets/quasi-riemann-geometry-preview.png)
+
+![A circle around a sampled zero and its computed zeta image](../../docs/assets/quasi-riemann-winding-preview.png)
+
 ## Production
 
 The [source dossier](source-context.md) records the exact hypotheses,

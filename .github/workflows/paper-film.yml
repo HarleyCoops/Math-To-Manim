@@ -1,4 +1,5 @@
 name: Render a paper film
+run-name: ${{ inputs.paper }} film - ${{ inputs.quality == 'h' && '1080p final' || inputs.quality == 'm' && '720p' || '480p inspection' }}
 
 on:
   workflow_call:
