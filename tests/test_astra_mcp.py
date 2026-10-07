@@ -17,7 +17,7 @@ def test_mcp_registry_uses_astra_and_typed_request():
     assert {'m2m_get_job', 'm2m_list_runs', 'm2m_get_scene_code'} <= tools.keys()
 
 
-def test_detached_worker_keeps_request_and_separates_credentials(tmp_path, monkeypatch):
+def test_worker_keeps_request_and_separates_credentials(tmp_path, monkeypatch):
     calls = []
     monkeypatch.setattr(server, 'RUNS', tmp_path)
     monkeypatch.setattr(server, 'load_api_key', lambda: 'fake-jev-credential')
@@ -58,6 +58,14 @@ def test_explicit_jev_off_needs_no_credential(tmp_path, monkeypatch):
     monkeypatch.setattr(server.subprocess, 'Popen', lambda *a, **kw: options.append(kw) or Process())
     state = json.loads(server.m2m_create_animation(Request(prompt='Explain polar convex bodies',review_mode='off')))
     assert state['evaluator']=='disabled' and 'TYPESAFE_API_KEY' not in options[0]['env']
+
+
+def test_doctor_off_does_not_load_jev_credentials(monkeypatch):
+    from astra.cli import main
+    from subprocess import CompletedProcess
+    monkeypatch.setattr('astra.cli.subprocess.run', lambda *a, **kw: CompletedProcess(a,0))
+    monkeypatch.setattr('astra.jev.load_api_key', lambda: pytest.fail('Jev is off'))
+    assert main(['doctor','--review-mode','off'])==0
 
 
 @pytest.mark.parametrize('run_id', ['../other', 'C:/outside', 'wrong-provider'])

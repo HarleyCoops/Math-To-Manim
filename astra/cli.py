@@ -30,7 +30,8 @@ def main(argv=None):
     rec.add_argument('--design',action='store_true',help='Evaluate the detailed artistic and teaching decision map first')
     design_map=commands.add_parser('design-map',help='Print the complete Jev design rubric without API calls')
     design_map.add_argument('--stage',choices=['brief','mathematics','storyboard','scene','render'])
-    commands.add_parser('doctor')
+    doctor=commands.add_parser('doctor')
+    doctor.add_argument('--review-mode',choices=['advisory','gated','off'],default='advisory')
     commands.add_parser('runs')
     server=commands.add_parser('serve-mcp',help='Serve the Astra SDK / TypeSafe Jev MCP connection')
     server.add_argument('--transport',choices=['stdio','streamable-http'],default='stdio')
@@ -57,6 +58,9 @@ def main(argv=None):
         for tool in ['ffmpeg','latex']:
             import shutil
             print(f'{tool}: {shutil.which(tool) or "missing"}')
+        if args.review_mode=='off':
+            print('TypeSafe: disabled by request; no credential needed')
+            return result.returncode
         from astra.jev import load_api_key
         try:
             load_api_key()
