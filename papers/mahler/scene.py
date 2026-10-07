@@ -66,7 +66,7 @@ class AstraFilm(ThreeDScene):
 
     def clear_equation(self):
         if self.eq is not None:
-            self.remove_fixed_orientation_mobjects(self.eq)
+            self.eq.clear_updaters()
             self.remove(*self.eq.get_family())
             self.eq = None
 
@@ -75,9 +75,26 @@ class AstraFilm(ThreeDScene):
         self.eq = MathTex(*parts, font_size=size, color=WHITE)
         if self.eq.width > 12.1:
             self.eq.scale_to_fit_width(12.1)
+        self.eq.move_to(ORIGIN)
+        reference = self.eq.copy().scale(1 / self.zoom)
         _, up = self.screen_basis()
-        self.eq.move_to(self.focus + up * y / self.zoom)
-        self.add_fixed_orientation_mobjects(self.eq)
+        anchor = self.focus + up * y / self.zoom
+
+        def face_camera(mob):
+            p, t = self.camera.get_phi(), self.camera.get_theta()
+            right = np.array([-math.sin(t), math.cos(t), 0.0])
+            up = np.array([-math.cos(p) * math.cos(t),
+                           -math.cos(p) * math.sin(t), math.sin(p)])
+            basis = np.column_stack((right, up, np.cross(right, up)))
+            for target, original in zip(mob.family_members_with_points(),
+                                        reference.family_members_with_points()):
+                target.set_points(original.get_points() @ basis.T + anchor)
+
+        # Real world-space glyphs: camera zoom magnifies them, while billboarding
+        # keeps their plane facing the moving camera. No fixed-orientation override.
+        self.eq.add_updater(face_camera)
+        face_camera(self.eq)
+        self.add(self.eq)
         return self.eq
 
     def label(self, tex, point, color=WHITE, size=26):
@@ -176,7 +193,7 @@ class AstraFilm(ThreeDScene):
 
         surface = Surface(
             lambda r, t: embed(r * width(t), t),
-            u_range=[-1, 1], v_range=[-1, 1], resolution=(16, 32),
+            u_range=[-1, 1], v_range=[-1, 1], resolution=(12, 24),
             fill_opacity=0.35, checkerboard_colors=[self.VIOLET, "#665392"],
             stroke_color=self.VIOLET, stroke_width=0.35)
         contour_points = ([embed(width(t), t) for t in self.lens_t] +
@@ -298,9 +315,14 @@ class AstraFilm(ThreeDScene):
         self.caption("Dissection: eight translated tetrahedra, one from each orthant.")
         self.play_for(2, *[p.animate.shift(0.55 * s) for p, s in zip(pieces, signs)],
                       cube[0].animate.set_fill(opacity=0.025))
-        self.fly(2, phi=55 * DEGREES, theta=-25 * DEGREES, zoom=1.02,
-                 frame_center=right + np.array([0.2, 0.2, 0.2]))
-        origin = right + 0.55 * np.ones(3)
+        isolated_shift = -(right + 0.55 * np.ones(3))
+        self.play_for(1, pieces[7].animate.shift(isolated_shift),
+                      *[p[0].animate.set_fill(opacity=0.008) for p in pieces[:7]],
+                      *[p[1].animate.set_stroke(opacity=0.05) for p in pieces[:7]],
+                      cube[1].animate.set_stroke(opacity=0.1))
+        self.fly(1, phi=55 * DEGREES, theta=-35 * DEGREES, zoom=1.6,
+                 frame_center=np.array([0.5, 0.5, 0.5]))
+        origin = ORIGIN
         base = Polygon(origin, origin + 1.5 * RIGHT, origin + 1.5 * UP,
                        stroke_color=self.GOLD, fill_color=self.GOLD,
                        fill_opacity=0.5, stroke_width=2)
@@ -309,13 +331,21 @@ class AstraFilm(ThreeDScene):
                            r"=\frac13\cdot\frac12\cdot1=\frac16", size=38)
         eq[1].set_color(self.GOLD)
         eq[2].set_color(self.GOLD)
-        self.caption("The triangular base has area B = 1/2; its perpendicular height h is 1.")
+        self.caption("Base area 1/2; perpendicular height 1.")
+        self.label(r"B=1/2", [0.6, 0.6, -0.18], self.GOLD, size=26)
+        self.label(r"h=1", [-0.26, 0, 0.9], self.GOLD, size=26)
         self.play_for(0.8, FadeIn(base), Create(height))
         self.play_for(0.8, Indicate(eq[3], color=self.GOLD, scale_factor=1.06))
         self.until(40)
         self.remove(base, height)
+        self.clear_labels()
         self.clear_equation()
-        self.fly(1.2, zoom=0.82, frame_center=ORIGIN)
+        self.fly(1.2, phi=55 * DEGREES, theta=-25 * DEGREES,
+                 zoom=0.82, frame_center=ORIGIN,
+                 added_anims=[pieces[7].animate.shift(-isolated_shift),
+                              *[p[0].animate.set_fill(opacity=0.16) for p in pieces[:7]],
+                              *[p[1].animate.set_stroke(opacity=1) for p in pieces[:7]],
+                              cube[1].animate.set_stroke(opacity=1)])
         self.equation(r"|K^\circ|=8\cdot\frac16=\frac43", size=42)[0].set_color(self.CYAN)
         self.caption("Restored exactly: the eight tetrahedra tile the whole octahedron.")
         self.play_for(2, *[p.animate.shift(-0.55 * s) for p, s in zip(pieces, signs)])
@@ -388,7 +418,7 @@ class AstraFilm(ThreeDScene):
         sphere = Surface(
             lambda u, v: 1.45 * np.array([math.sin(v) * math.cos(u),
                                           math.sin(v) * math.sin(u), math.cos(v)]),
-            u_range=[0, TAU], v_range=[0, PI], resolution=(32, 16),
+            u_range=[0, TAU], v_range=[0, PI], resolution=(24, 12),
             checkerboard_colors=["#844B51", "#A65F64"], fill_opacity=0.55,
             stroke_color=self.CYAN, stroke_width=0.55)
         self.caption("The Euclidean unit ball contains precisely the vectors of length at most 1.")
@@ -484,23 +514,28 @@ class AstraFilm(ThreeDScene):
         self.until(118)
         self.caption("Feasible means Y satisfies every constraint.")
         self.until(121)
-        self.equation(r"\operatorname{conv}(0,\varepsilon_1e_1,"
-                       r"\varepsilon_2e_2,\varepsilon_3e_3)", size=38)
-        self.caption("Coordinate rows yield these exact tetrahedra.")
+        self.clear_equation()
+        self.caption("One signed basis gives one tetrahedron.")
         pieces = VGroup(*[
             self.tetrahedron(s, interpolate_color(ManimColor(self.CYAN), WHITE, 0.04 * i))
             .scale(1.35, about_point=ORIGIN).shift(right) for i, s in enumerate(signs)
         ])
-        self.play_for(1, FadeIn(pieces[7]))
-        self.play_for(2, LaggedStart(*[FadeIn(pieces[i]) for i in range(7)],
+        self.play_for(0.7, FadeIn(pieces[7]))
+        self.fly(0.8, phi=55 * DEGREES, theta=-25 * DEGREES,
+                 zoom=1.25, frame_center=right)
+        self.equation(r"\operatorname{conv}(0,e_1,e_2,e_3)", size=38)
+        self.until(125)
+        self.clear_equation()
+        self.caption("Feasible simplices have disjoint interiors almost everywhere.")
+        self.play_for(1, LaggedStart(*[FadeIn(pieces[i]) for i in range(7)],
                                     lag_ratio=0.12))
         self.add(pieces)
-        self.until(124)
-        self.equation(r"\Sigma_X\subseteq A^\circ", size=48)
-        self.caption("Feasible simplices have disjoint interiors almost everywhere.")
+        self.fly(1, phi=60 * DEGREES, theta=-28 * DEGREES,
+                 zoom=0.9, frame_center=ORIGIN)
         self.clear_labels()
-        self.until(127)
-        self.caption("The cube tiles its polar; general bodies can leave gaps.")
+        self.until(128)
+        self.equation(r"\Sigma_X\subseteq A^\circ", size=48)
+        self.caption("Cube tiles; general bodies can leave gaps.")
 
         def cube_path(alpha):
             return np.array([0.55 * math.cos(TAU * alpha),
@@ -508,11 +543,10 @@ class AstraFilm(ThreeDScene):
                              0.35 * math.sin(2 * TAU * alpha)])
 
         start = xdot.get_center().copy()
-        self.play_for(1, UpdateFromAlphaFunc(xdot, lambda m, a:
+        self.play_for(0.6, UpdateFromAlphaFunc(xdot, lambda m, a:
                       m.move_to((1 - a) * start + a * (left + 0.95 * cube_path(0)))))
-        self.fly(2, theta=-28 * DEGREES, zoom=0.9,
-                 added_anims=[UpdateFromAlphaFunc(xdot, lambda m, a:
-                              m.move_to(left + 0.95 * cube_path(a)))])
+        self.play_for(1.4, UpdateFromAlphaFunc(xdot, lambda m, a:
+                      m.move_to(left + 0.95 * cube_path(a))))
         self.until(130)
         self.header("MANUSCRIPT PROOF ROUTE  /  ANALYTIC INPUT + GEOMETRY")
         self.equation(r"S=\sum_I P_I", size=49)
@@ -524,14 +558,15 @@ class AstraFilm(ThreeDScene):
                            r"\int_A", r"|\Sigma_X|", r"\,dX", size=46)
         eq[3].set_color(self.CYAN)
         self.caption("|Sigma_X| is the volume of the feasible union.")
-        self.play_for(0.8, Indicate(eq[3], color=self.GOLD, scale_factor=1.13))
+        self.fly(0.8, zoom=1.7, frame_center=eq[3].get_center())
         self.until(139)
         self.caption("dX integrates over every position X in A.")
-        self.play_for(0.8, Indicate(eq[2], color=self.GOLD, scale_factor=1.08))
+        self.fly(0.8, zoom=1.7, frame_center=eq[4].get_center())
         self.until(142)
         self.caption("n!/4^n normalizes the boundary-sampling volume identity.")
-        self.play_for(0.8, Indicate(eq[1], color=self.GOLD, scale_factor=1.08))
-        self.until(145)
+        self.fly(0.8, zoom=1.7, frame_center=eq[1].get_center())
+        self.until(144)
+        self.fly(1, zoom=0.9, frame_center=ORIGIN)
         eq = self.equation(r"1\leq S=", r"\frac{n!}{4^n}\int_A|\Sigma_X|\,dX",
                            r"\leq", r"\frac{n!}{4^n}|A|\,|A^\circ|", size=35)
         eq[0].set_color(self.GOLD)
@@ -562,7 +597,7 @@ class AstraFilm(ThreeDScene):
                       FadeOut(xdot), FadeIn(h_cube), FadeIn(h_oct))
         self.until(158)
         self.equation(r"H_1\times H_2", size=48)
-        self.caption("Product at left; dual convex hull at right.")
+        self.caption("Construction schematic: product at left; hull at right.")
         self.play_for(1.5,
                       UpdateFromAlphaFunc(h_cube, lambda m, a:
                           self.deform(m, h_cube_ref, [1, a, 0], left, 1.05)),
@@ -572,7 +607,7 @@ class AstraFilm(ThreeDScene):
                       self.deform(m, h_cube_ref, [1, 1, a], left, 1.05)))
         self.until(161)
         self.equation(r"\operatorname{conv}\big((H_1,0)\cup(0,H_2)\big)", size=39)
-        self.caption("Convex hull: join factors in separate coordinates.")
+        self.caption("Schematic growth; the completed solids form a polar pair.")
         self.play_for(1.5, UpdateFromAlphaFunc(h_oct, lambda m, a:
                       self.deform(m, h_oct_ref, [1, 1, a], right, 1.35)))
         self.until(164)
@@ -583,7 +618,7 @@ class AstraFilm(ThreeDScene):
             [[-1, -1, 0], [1, -1, 0], [1, 1, 0], [-1, 1, 0], [0, 0, 1], [0, 0, -1]],
             [[0, 1, 4], [1, 2, 4], [2, 3, 4], [3, 0, 4],
              [1, 0, 5], [2, 1, 5], [3, 2, 5], [0, 3, 5]],
-            self.VIOLET, opacity=0.2).scale(0.65)
+            self.VIOLET, opacity=0.2).scale(0.55).shift(1.6 * DOWN)
         self.play_for(0.7, FadeIn(mixed))
         self.fly(2, phi=55 * DEGREES, theta=-15 * DEGREES, zoom=0.8)
         self.until(168)

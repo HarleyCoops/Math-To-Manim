@@ -34,3 +34,26 @@ independent validation of the theorem or its formalization.
 
 Render status and actual evidence will be recorded after the cloud job. A source
 audit and a final-frame execution probe do not establish continuous-film quality.
+
+## Revisions from the first full cloud render
+
+[Cloud run 37557454747](https://github.com/HarleyCoops/Math-To-Manim/actions/runs/37557454747)
+produced a 179.766667-second 720p/30 fps MP4. Its source hash matched the retained
+candidate, and the full file decoded without errors. An independent Astra audit
+of 21 actual frames identified three presentation defects. That
+[first render assessment](production/first-render-audit.json) is retained.
+
+The revised source isolates the positive tetrahedron at the origin, dims its
+seven companions, and labels the exact base area and perpendicular height.
+It restores the selected piece before reassembling the octahedron. The proof
+route now flies into one signed simplex and into the feasible-volume term,
+integration variable and normalization, then returns to the complete inequality.
+LaTeX uses actual world-space glyphs with camera-facing planes, so camera zoom
+physically magnifies the formulas. Hanner growth is explicitly a construction
+schematic; polarity is stated for the completed objects. The mixed example is
+separated from the cube, and the lens and sphere meshes are less dense.
+
+Real Manim execution stills confirmed the isolated volume calculation and the
+camera zoom into the integration variable. The revised complete movie and its
+render audit are pending; the original cloud success is not approval of this
+new source.
