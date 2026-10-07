@@ -1,0 +1,25 @@
+{
+  "mathematics": 0.96,
+  "pedagogy": 0.84,
+  "visual_design": 0.88,
+  "implementation": 0.9,
+  "verified": true,
+  "defects": [],
+  "feedback": "The curated candidate resolves the previous blocking findings. In curated-scene.json content lines 292–295 and 490–492, origin-based scaling preserves the tetrahedra’s shared vertex, exact octahedron tiling and containment. Independent calculations confirm volumes 1/6, 4/3 and 8; product 32/3; stretched volumes 12 and 8/9; normalized cube integral S=1; and ball product approximately 17.545963. Reciprocal deformation preserves the contact dot product throughout sampled parameters.\n\nAST inspection confirms valid Python, one ThreeDScene, a scheduled 180 seconds without beat overruns, and no explicit network, custom file IO or SciPy dependency. Lines 518–550 now give the probability sum, integral terms and bounds separate explanatory beats. Lines 590–613 provide six seconds for classification and six for attribution. The source uses genuine polygonal solids, a tilted lens mesh, camera flights and world-positioned formulas. Manuscript attribution, origin symmetry, general-body gaps and the formalization caveat remain explicit.\n\nMinor refinements: at line 443, replace 't is imaginary' with 't is the imaginary coordinate'; t itself is real. At lines 564–570, identify the cyan diamond as the parallel convex-hull construction, since it currently grows beneath the product caption. Explicitly call n the dimension near lines 420–426.",
+  "evidence": [
+    "brief.json",
+    "mathematics.json",
+    "storyboard.json",
+    "curated-scene.json",
+    "curation.md",
+    "attempts/004-scene-astra-audit.json",
+    "attempts/003-storyboard-astra-audit.json"
+  ],
+  "limitations": [
+    "Verification is scoped to scene-source evidence. Candidate code was not executed or rendered; Manim runtime compatibility, actual encoded duration, readability, occlusion and continuous motion remain downstream checks.",
+    "Several two-second captions remain, particularly at 61–65, 73–79 and 82–91 seconds. Check reading comfort alongside formulas during the render audit.",
+    "Term emphasis uses Indicate animations rather than dedicated camera flights toward formula terms; assess whether the rendered treatment delivers the requested term zooms.",
+    "The manuscript proof and reported Lean formalization were not independently validated. This is an Astra assessment, not TypeSafe Jev approval."
+  ],
+  "repair_stage": "scene"
+}

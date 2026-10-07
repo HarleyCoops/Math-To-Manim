@@ -104,7 +104,7 @@ jobs:
           PY
 
   render-smoke:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && !startsWith(github.ref_name, 'codex/mahler-')
     runs-on: ubuntu-latest
     continue-on-error: true
 

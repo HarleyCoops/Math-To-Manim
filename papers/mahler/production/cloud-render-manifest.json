@@ -1,0 +1,27 @@
+{
+  "status": "completed",
+  "model": "gpt-6-astra",
+  "evaluator": "disabled",
+  "review_status": "not_reviewed",
+  "events": [
+    {
+      "stage": "local_render",
+      "attempt": 1,
+      "candidate": "/__w/Math-To-Manim/Math-To-Manim/papers/mahler/candidate.json",
+      "candidate_sha256": "f3cbec87431dd602242a11e46b4b5fd62a44954a01b3147aeee5db783d07284f",
+      "quality": "m",
+      "reason": "User requested no further Jev blockers or model spending. Local rendering only; no approval inferred."
+    }
+  ],
+  "source_candidate": "papers/mahler/candidate.json",
+  "source_candidate_sha256": "f3cbec87431dd602242a11e46b4b5fd62a44954a01b3147aeee5db783d07284f",
+  "execution": "cloud_render_existing",
+  "error": null,
+  "review_mode": "disabled_for_local_render",
+  "render_quality": "m",
+  "video": "renders/001/media/videos/720p30/AstraFilm.mp4",
+  "video_sha256": "1365012ee999c2400e72f497dedd339d2c2b3bbac927209543a6629e686769d9",
+  "contact_sheet": "renders/001/contact_sheet.png",
+  "rendered_source": "renders/001/scene.py",
+  "completed_utc": "2026-10-07T01:46:21.423707+00:00"
+}

@@ -1,0 +1,23 @@
+{
+  "mathematics": 0.72,
+  "pedagogy": 0.68,
+  "visual_design": 0.8,
+  "implementation": 0.6,
+  "verified": false,
+  "defects": [
+    "Acts 2 and 6 scale individual tetrahedra about their own centers, destroying the claimed exact tiling and polar containment.",
+    "Several essential captions and formulas receive only one or two seconds, undermining the required caption-led explanation."
+  ],
+  "feedback": "Repair the scene source in attempts/004-scene-candidate.json. At content lines 292–295 and 490–493, use .scale(1.5, about_point=ORIGIN) and .scale(1.35, about_point=ORIGIN) before shifting. Manim's default center-based scaling translates each tetrahedron differently. In Act 2, the positive tetrahedron's intended shared origin becomes (-1/4,-1/4,-1/4) relative to the display origin, and its x-tip becomes (5/4,-1/4,-1/4), outside the displayed polar of radius 3/2. The eight pieces overlap near the origin, and the base/height annotations at lines 303–307 do not match the highlighted piece. Act 6 repeats this error: a tip has l1 norm 61/40, exceeding the polar radius 27/20. Explicit origin-based scaling restores the intended geometry; verify common origins, signed-axis endpoints, containment and matching base/height annotations. Also revise caption timing, especially lines 489–496 (120–121 seconds: 13 words plus a new simplex formula) and 544–550 (149–150 seconds: approximation caption plus the complete inequality). Numerous two-second explanations also compete with formulas. Shorten captions and redistribute holds within 150–180 seconds. Independent AST inspection confirms one ThreeDScene, valid Python syntax, a scheduled 170 seconds and no beat overruns. Independent arithmetic confirms the stated volumes, products and reciprocal contact invariance. Attribution, symmetry hypotheses, schematic lens labeling, general-body gaps and the formalization caveat are appropriately handled.",
+  "evidence": [
+    "brief.json",
+    "mathematics.json",
+    "storyboard.json",
+    "attempts/004-scene-candidate.json"
+  ],
+  "limitations": [
+    "Source-only scene audit: candidate code was not executed or rendered. Manim compatibility, actual runtime, formula readability, occlusion and continuous motion remain render-stage checks.",
+    "The manuscript's all-dimensional proof and reported Lean formalization were not independently validated. This is an Astra audit, not Jev approval."
+  ],
+  "repair_stage": "scene"
+}

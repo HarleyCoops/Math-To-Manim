@@ -47,9 +47,9 @@ async def main():
                     'effort': args.effort, 'max_revisions': 2, 'review_mode': args.review_mode}})
             for block in result.content:
                 if getattr(block, 'text', None):
-                    print(block.text)
+                    print(block.text,flush=True)
             if result.is_error:
-                raise SystemExit(1)
+                return 1
             if not args.inspect:
                 state=json.loads(next(block.text for block in result.content if getattr(block,'text',None)))
                 run_id=state['run_id']
@@ -66,8 +66,9 @@ async def main():
                             'stages':list(state.get('stages',{})),'error':state.get('error')}),flush=True)
                         previous=progress
                 if state['status']!='completed':
-                    raise SystemExit(1)
+                    return 1
+    return 0
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    raise SystemExit(asyncio.run(main()))

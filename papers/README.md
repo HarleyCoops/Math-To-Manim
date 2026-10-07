@@ -19,7 +19,7 @@ storyboard is not a finished episode.
 
 | Episode | Paper | Status |
 | --- | --- | --- |
-| 01 · The Shape and Its Shadow | [Symmetric Mahler and its equality cases](mahler/source-context.md), family 087 | Source checked and production brief prepared; film pending |
+| 01 · The Shape and Its Shadow | [Symmetric Mahler and its equality cases](mahler/README.md), family 087 | Complete 179.8-second 720p/30 fps cloud film; Astra source and 23 rendered frames reviewed; Jev off |
 | 02 · A Frontier for the Zeros | [The Quasi-Riemann hypothesis](quasi-riemann/README.md), family 003 | Current flagship; source checked and Astra authoring launched; film pending |
 
 The Quasi-Riemann episode uses a bone background, deep teal numerical
@@ -74,8 +74,10 @@ The `Render a paper film` GitHub Actions workflow accepts a paper folder
 and renders its retained `candidate.json`, with no model calls or API keys. It installs
 FFmpeg alongside the pinned Manim image and saves the MP4, sampled frames,
 contact sheet, source and logs as a 30-day artifact. That separate render is
-`not_reviewed` until actual rendered evidence is inspected. Public media
-publication remains pending; no finished episode is claimed here.
+`not_reviewed` until actual rendered evidence is inspected. The Mahler pilot's
+MP4, preview and review records are now public in its episode folder. Its rendered
+frame review does not certify every transition or the manuscript proof.
+The Quasi-Riemann film and its rendered evidence remain pending.
 
 The export command checks the completed run's source bindings and retains
 the exact scene plus its Astra audit record in `production.json`. It does

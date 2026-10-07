@@ -1,0 +1,14 @@
+{
+  "kind": "actual_manim_final_frame_probe",
+  "source_sha256": "8d5098fec0ef7ce60b3298f59f463dcfdb9a0f6f982a1716bd461109d551285a",
+  "delivery_quality": "m",
+  "resolution": [
+    1280,
+    720
+  ],
+  "exit_code": 0,
+  "image": "probes/007/media/images/AstraFilm.png",
+  "limitations": [
+    "Final still only; no continuous movie rendered or inspected."
+  ]
+}

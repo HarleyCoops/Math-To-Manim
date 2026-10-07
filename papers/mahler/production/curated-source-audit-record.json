@@ -1,0 +1,14 @@
+{
+  "model": "gpt-6-astra",
+  "input_hashes": {
+    "brief.json": "f6ad93cab3761de5c64f70f1f219043159a5f72fd4242012bd893711153f9c8a",
+    "mathematics.json": "8af74a7a652c779e788ae9b8256bdce8403332e13bb5bd2ded340b2471b2e40a",
+    "storyboard.json": "7d84453b7c45ae82b7fc5113bee04bd3d91d0dfd70d2bac62e47eee3ae30d19f",
+    "curated-scene.json": "756e943a3d97ff668744daa9135d5f5887ffd5c45fe4fe72eecdf3123630a61f",
+    "curation.md": "abeceeeef2ac7ce1c58434ea09678c9d2a6f727e45a87a3d9cedef6432d0d433",
+    "attempts/004-scene-astra-audit.json": "e5725918f2c27952775b051f6e7b7372230f7589bcf5bd70bfe31b030e86921a",
+    "attempts/003-storyboard-astra-audit.json": "2a6147952c58f0a04859a95b9068cde25946448b7a6be868847bafcda774f504"
+  },
+  "role": "astra-evidence-auditor",
+  "score_kind": "uncalibrated_model_judgment"
+}
