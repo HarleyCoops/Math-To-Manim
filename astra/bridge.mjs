@@ -1,9 +1,19 @@
 /** Codex SDK bridge: cached ChatGPT login only, one independent thread per call. */
-import { Codex } from '@openai/codex-sdk';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { readFile, writeFile, appendFile } from 'node:fs/promises';
+const checkRuntime = process.argv[2] === '--check-runtime';
 let input = '';
-for await (const chunk of process.stdin) input += chunk;
-const req = JSON.parse(input);
+if (!checkRuntime) for await (const chunk of process.stdin) input += chunk;
+const req = checkRuntime ? {runtime: process.argv[3]} : JSON.parse(input);
+const sdkRoot = join(req.runtime, 'node_modules/@openai/codex-sdk');
+const sdkPackage = JSON.parse(await readFile(join(sdkRoot, 'package.json'), 'utf8'));
+const { Codex } = await import(pathToFileURL(join(sdkRoot, sdkPackage.exports['.'].import)).href);
+if (checkRuntime) {
+  if (typeof Codex !== 'function') throw new Error('Codex SDK export missing');
+  process.stdout.write(JSON.stringify({model: 'gpt-6-astra', sdk_version: sdkPackage.version}));
+  process.exit(0);
+}
 const env = Object.fromEntries(Object.entries(process.env).filter(([key]) =>
   !/^(OPENAI_API_KEY|CODEX_API_KEY|OPENAI_BASE_URL)$/.test(key)));
 const codex = new Codex({ env, config: {

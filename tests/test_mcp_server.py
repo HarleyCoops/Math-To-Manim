@@ -75,7 +75,13 @@ def test_mcp2_dependency_and_import_surface():
     source = (root / "grok/mcp_server.py").read_text(encoding="utf-8")
     shim = (root / "mythos/mcp_server.py").read_text(encoding="utf-8")
 
-    assert project.count('"mcp>=2.0,<3"') == 2
+    try:
+        import tomllib
+    except ImportError:
+        import tomli as tomllib
+    extras = tomllib.loads(project)['project']['optional-dependencies']
+    for name in ('astra', 'dev', 'mcp'):
+        assert 'mcp>=2.0,<3' in extras[name]
     assert "from mcp.server import MCPServer" in source
     assert "GrokService" in source
     assert "MythosService" not in source

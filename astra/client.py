@@ -24,6 +24,8 @@ class CodexSDK:
                        trace=str(trace), schema=output_schema,
                        images=[str(Path(p).resolve()) for p in images], effort=effort,
                        sandbox="read-only", search=search, timeoutMs=1800000)
+        from astra.runtime import runtime_directory
+        payload['runtime'] = str(runtime_directory())
         output.with_suffix(".prompt.txt").write_text(prompt, encoding="utf-8")
         result = subprocess.run(["node", str(BRIDGE)], input=json.dumps(payload),
                                 text=True, encoding="utf-8", capture_output=True,

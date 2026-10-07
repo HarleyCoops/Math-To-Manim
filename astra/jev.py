@@ -99,7 +99,7 @@ def load_api_key(root=None):
     """Read only the TypeSafe credential; never export it to child processes."""
     if os.environ.get('TYPESAFE_API_KEY'):
         return os.environ['TYPESAFE_API_KEY']
-    path = Path(root or Path(__file__).resolve().parents[1]) / '.env.local'
+    path = Path(root or Path.cwd()) / '.env.local'
     if path.is_file():
         for line in path.read_text(encoding='utf-8-sig').splitlines():
             name, separator, value = line.strip().removeprefix('export ').partition('=')
@@ -109,7 +109,7 @@ def load_api_key(root=None):
                     value = value[1:-1]
                 if value:
                     return value
-    raise RuntimeError('Save TYPESAFE_API_KEY in the repository .env.local or process environment')
+    raise RuntimeError('Save TYPESAFE_API_KEY in the working directory .env.local or process environment')
 
 
 class JevClient:

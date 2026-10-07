@@ -13,7 +13,7 @@ from astra.models import Artifact, Assessment, Request, STAGES
 from astra.prompts import specialist_prompt, judge_prompt
 from astra.rendering import render, probe, validate_source
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path.cwd().resolve()
 
 def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()

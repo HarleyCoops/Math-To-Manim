@@ -1,0 +1,27 @@
+{
+  "status": "completed",
+  "model": "gpt-6-astra",
+  "evaluator": "disabled",
+  "review_status": "not_reviewed",
+  "events": [
+    {
+      "stage": "local_render",
+      "attempt": 1,
+      "candidate": "/__w/Math-To-Manim/Math-To-Manim/papers/quasi-riemann/candidate.json",
+      "candidate_sha256": "cb93e00e4989997cd2c3fd1390fbca5c17dd958b8888c018535b9bff555aad84",
+      "quality": "m",
+      "reason": "User requested no further Jev blockers or model spending. Local rendering only; no approval inferred."
+    }
+  ],
+  "source_candidate": "papers/quasi-riemann/candidate.json",
+  "source_candidate_sha256": "cb93e00e4989997cd2c3fd1390fbca5c17dd958b8888c018535b9bff555aad84",
+  "execution": "cloud_render_existing",
+  "error": null,
+  "review_mode": "disabled_for_local_render",
+  "render_quality": "m",
+  "video": "renders/001/media/videos/720p30/AstraFilm.mp4",
+  "video_sha256": "8fa639ed242e14f9224add6c7da6464af0f0ab20ccc2933a3b26da7e725dd142",
+  "contact_sheet": "renders/001/contact_sheet.png",
+  "rendered_source": "renders/001/scene.py",
+  "completed_utc": "2026-10-07T02:38:57.538286+00:00"
+}
