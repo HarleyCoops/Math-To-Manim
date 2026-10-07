@@ -61,6 +61,7 @@ the git-ignored `.env.local`. Never commit that file.
 python scripts/drive_astra_mcp.py papers/mahler --quality m --review-mode off --no-render
 python scripts/drive_astra_mcp.py papers/mahler --inspect <run-id>
 python scripts/drive_astra_mcp.py papers/quasi-riemann --quality h --effort max --review-mode off --no-render
+python scripts/export_paper_candidate.py papers/quasi-riemann runs/astra/<run-id>
 ```
 
 This client uses the real MCP protocol. The new Astra MCP front door invokes
@@ -75,6 +76,10 @@ FFmpeg alongside the pinned Manim image and saves the MP4, sampled frames,
 contact sheet, source and logs as a 30-day artifact. That separate render is
 `not_reviewed` until actual rendered evidence is inspected. Public media
 publication remains pending; no finished episode is claimed here.
+
+The export command checks the completed run's source bindings and retains
+the exact scene plus its Astra audit record in `production.json`. It does
+not turn completed authoring into a claim that a film has been rendered.
 
 The `Quasi-Riemann preview and final film` workflow launches separate 480p
 and 1080p cloud jobs from the same retained Astra source. Evidence lives in

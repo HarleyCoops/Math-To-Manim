@@ -22,6 +22,7 @@ The [production brief](prompt.txt) targets a 210-230 second silent film at
 
 ```bash
 python scripts/drive_astra_mcp.py papers/quasi-riemann --quality h --effort max --review-mode off --no-render
+python scripts/export_paper_candidate.py papers/quasi-riemann runs/astra/<run-id>
 ```
 
 Authoring and independent evidence audits use `gpt-6-astra` with Codex
