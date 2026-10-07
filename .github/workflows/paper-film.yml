@@ -1,13 +1,21 @@
 name: Render a paper film
+run-name: ${{ inputs.paper }} film - ${{ inputs.quality == 'h' && '1080p' || inputs.quality == 'm' && '720p final' || '480p inspection' }}
 
 on:
   workflow_call:
     inputs:
+      paper:
+        type: string
+        default: quasi-riemann
       quality:
         type: string
         default: m
   workflow_dispatch:
     inputs:
+      paper:
+        description: Paper folder under papers/ with a retained candidate.json
+        type: string
+        default: quasi-riemann
       quality:
         description: Delivery quality (m = 720p/30 fps, h = 1080p/60 fps)
         type: choice
@@ -20,7 +28,7 @@ permissions:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 150
     container:
       image: manimcommunity/manim:v0.19.0
       options: --user root
@@ -31,17 +39,20 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends ffmpeg
           python -m pip install -e .
-      - name: Render the retained Astra Mahler candidate
-        run: >-
-          python scripts/render_paper_cloud.py
-          --candidate papers/mahler/candidate.json
-          --output runs/astra/cloud-${{ github.run_id }}
-          --quality ${{ inputs.quality }}
+      - name: Render the retained Astra paper candidate
+        env:
+          PAPER: ${{ inputs.paper }}
+          QUALITY: ${{ inputs.quality }}
+        run: |
+          python scripts/render_paper_cloud.py \
+            --candidate "papers/${PAPER}/candidate.json" \
+            --output "runs/astra/cloud-${GITHUB_RUN_ID}-${QUALITY}" \
+            --quality "${QUALITY}"
       - name: Save video, frames, source and render logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mahler-film-${{ inputs.quality }}-${{ github.run_id }}
-          path: runs/astra/cloud-${{ github.run_id }}/
+          name: paper-film-${{ inputs.quality }}-${{ github.run_id }}
+          path: runs/astra/cloud-${{ github.run_id }}-${{ inputs.quality }}/
           retention-days: 30
           if-no-files-found: error

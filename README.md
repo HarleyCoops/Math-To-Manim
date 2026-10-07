@@ -35,6 +35,27 @@ independent Astra audits. These runs are labeled `astra_only`.
 The [OpenAI mathematics in 3D series](papers/README.md) starts with the Mahler
 pilot, *The Shape and Its Shadow*: a completed three-minute cloud render with
 independent Astra review of its source and 23 actual frames.
+Its new flagship in production is the Quasi-Riemann film,
+*A Frontier for the Zeros*: bone backgrounds, sculptural zeta landscapes,
+phase-winding closeups, and a journey into the manuscript's zero-free frontier.
+The Quasi-Riemann film remains in production until its actual render is verified.
+
+### OpenAI Mathematics in 3D
+
+An open film project inspired by the [OpenAI manuscript map](https://github.com/HarleyCoops/math).
+Each episode follows one mathematical idea through space: geometry first,
+readable LaTeX at the moment it matters, and camera motion that explains.
+
+**In production: [A Frontier for the Zeros](papers/quasi-riemann/README.md).**
+The September 30 Quasi-Riemann manuscript reports that zeta and every
+Dirichlet L-function have no zeros in `Re(s)>7/8`, with principal poles
+allowed. The film explains how the paper's two estimates lead to a
+holomorphic continuation of the reciprocal. The full Riemann hypothesis
+remains open in the source.
+
+[Explore the series and proposed episodes](papers/README.md) ·
+[Read the source dossier](papers/quasi-riemann/source-context.md) ·
+[Cloud film jobs](https://github.com/HarleyCoops/Math-To-Manim/actions/workflows/quasi-riemann-film.yml)
 
 To finish an existing scene without spending additional model credits:
 

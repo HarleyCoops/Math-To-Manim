@@ -1,0 +1,10 @@
+{
+  "quality": "m",
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "inspection_quality": "l",
+  "reason": "User selected 720p for quicker cloud rendering.",
+  "applies_to": "cloud_render_existing",
+  "authoring_source_unchanged": true
+}

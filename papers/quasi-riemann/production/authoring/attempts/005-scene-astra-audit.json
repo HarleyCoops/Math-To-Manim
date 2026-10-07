@@ -1,0 +1,22 @@
+{
+  "mathematics": 0.98,
+  "pedagogy": 0.92,
+  "visual_design": 0.9,
+  "implementation": 0.91,
+  "verified": true,
+  "defects": [],
+  "feedback": "Verified at the scene-source checkpoint; no blocking defect identified. Independently checked the numerical formula against high-precision Euler-transformed eta values: maximum discrepancy 6.67e-14 across nine points, four zero residuals below 1.21e-14, and image-loop winding 1.0. Source lines 355–368 synchronize both markers through identical segment interpolation. The frontier moves correctly by -1/24 while known zeros remain fixed. Lines 709–770 preserve the supremum, common saving and reciprocal-pole contradiction without assuming an attained rightmost zero. Syntax parses, imports meet the restrictions, and scheduled durations total 220 seconds. The source provides genuine 3D landscapes, curtains, paired planes, lifted lattice and proof sculptures with reserved caption bands. Minor pedagogical improvement at lines 753–758: explicitly call H_eta holomorphic as well as nonvanishing when explaining the reciprocal continuation.",
+  "evidence": [
+    "brief.json",
+    "mathematics.json",
+    "storyboard.json",
+    "attempts/005-scene-candidate.json"
+  ],
+  "limitations": [
+    "Scene-source verification only. No current-candidate render images or movie were supplied as allowed evidence; visual scores assess implemented design, not observed output.",
+    "Local Manim, NumPy and mpmath were unavailable. Numerical checks used an independently transcribed scalar kernel and high-precision Decimal reference; the candidate and LaTeX were not executed.",
+    "Render-stage inspection should check Cairo cache invalidation during pans, caption readability, label collisions, surface occlusion, continuous marker attachment and actual movie duration.",
+    "The manuscript's full proof and Lean build were not independently validated."
+  ],
+  "repair_stage": "scene"
+}
