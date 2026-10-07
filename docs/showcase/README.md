@@ -31,6 +31,23 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 
 ---
 
+## The Shape and Its Shadow · an Astra paper film
+
+[![The polar octahedron opens into exact tetrahedra and one gold base-height calculation](assets/mahler-film.gif)](assets/mahler-film.mp4)
+
+Cube–octahedron polarity, the exact volume product, reciprocal deformation and a
+tilted complex lens lead into the manuscript's integrated-volume argument.
+Camera flights magnify its LaTeX terms inside the 3D world. The 179.8-second
+720p/30 fps movie rendered on GitHub Actions. Jev was off; independent Astra
+audits reviewed the source and 23 actual frames.
+
+[Watch the movie](assets/mahler-film.mp4) ·
+[Contact sheet](assets/mahler-contact-sheet.png) ·
+[Scene and production record](../../papers/mahler/README.md)
+
+The paper's theorem and formalization remain attributed claims. The recorded
+frame review does not certify every transition or the manuscript proof.
+
 ## Every Orbit Is a Great Circle · a Mythos film
 
 <a href="assets/every-orbit-great-circle.mp4"><img src="assets/every-orbit-great-circle.gif" alt="Velocity circles of five same-energy orbits lift onto a lit glass sphere and become great circles hinged on two gold points" width="90%" /></a>

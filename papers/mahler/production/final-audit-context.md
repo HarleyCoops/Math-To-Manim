@@ -51,18 +51,9 @@ integration variable and normalization, then returns to the complete inequality.
 LaTeX uses actual world-space glyphs with camera-facing planes, so camera zoom
 physically magnifies the formulas. Hanner growth is explicitly a construction
 schematic; polarity is stated for the completed objects. The mixed example is
-shifted in world space, and the lens and sphere meshes are less dense.
+separated from the cube, and the lens and sphere meshes are less dense.
 
 Real Manim execution stills confirmed the isolated volume calculation and the
-camera zoom into the integration variable. The revised complete movie then succeeded in
-[cloud run 37558520865](https://github.com/HarleyCoops/Math-To-Manim/actions/runs/37558520865).
-Its 179.766667-second MP4 decoded fully without errors. An independent Astra
-audit of the revised source and 23 actual frames found no blocking defects.
-The exact [assessment](production/final-render-audit.json),
-[hash record](production/final-render-audit-record.json) and
-[verification](production/render-verification.json) are published.
-
-The small violet mixed example still overlaps the cube's lower edge in projection;
-several captions remain brief. These are recorded presentation refinements.
-Continuous playback was not independently inspected by the auditor. No Jev verdict,
-proof certificate or independent verification of the manuscript is claimed.
+camera zoom into the integration variable. The revised complete movie and its
+render audit are pending; the original cloud success is not approval of this
+new source.
