@@ -1,0 +1,15 @@
+{
+  "family": "003",
+  "title": "The Quasi-Riemann Hypothesis: A Zero-Free Half-Plane Re(s)>7/8",
+  "author": "OpenAI",
+  "date": "2026-09-30",
+  "source_repository": "https://github.com/HarleyCoops/math",
+  "source_revision": "adc7f1241b42e322a6451854ab7e4b4c146bf78a",
+  "pdf_path": "preprints/The-Quasi-Riemann-Hypothesis-September-30-2026/paper.pdf",
+  "film_title": "A Frontier for the Zeros",
+  "target_duration_seconds": [210, 230],
+  "background": "#F3EFE6",
+  "pipeline": "astra",
+  "status": "production_brief_ready",
+  "verification": "Source scope checked; full proof and Lean build not independently verified."
+}

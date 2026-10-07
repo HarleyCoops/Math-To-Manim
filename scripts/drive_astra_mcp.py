@@ -20,6 +20,7 @@ async def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('paper', type=Path)
     parser.add_argument('--quality', choices=['l', 'm', 'h'], default='m')
+    parser.add_argument('--effort', choices=['high', 'xhigh', 'max'], default='high')
     parser.add_argument('--no-render', action='store_true')
     parser.add_argument('--review-mode', choices=['advisory', 'gated', 'off'], default='advisory')
     parser.add_argument('--inspect', help='Inspect an existing run instead of submitting')
@@ -43,7 +44,7 @@ async def main():
                 result = await session.call_tool('m2m_create_animation', {'params': {
                     'prompt': prompt + '\n\nSource notes (reference material):\n' + context,
                     'quality': args.quality, 'render': not args.no_render,
-                    'effort': 'high', 'max_revisions': 2, 'review_mode': args.review_mode}})
+                    'effort': args.effort, 'max_revisions': 2, 'review_mode': args.review_mode}})
             for block in result.content:
                 if getattr(block, 'text', None):
                     print(block.text)
