@@ -28,7 +28,14 @@ class RunRequest(BaseModel):
     quality: Literal["l", "m", "h", "p", "k"] = "l"
     reasoning_effort: Literal["low", "medium", "high", "xhigh"] = "high"
     max_repairs: int = Field(default=2, ge=0, le=5)
+    max_revisions: int = Field(default=2, ge=0, le=5)
     offline: bool = False
+    backend: Literal["xai-api", "xai-responses", "grok-build", "offline"] = "xai-api"
+    review: Literal["advisory", "gated", "off"] = "advisory"
+    render_timeout: float = 7200
+    min_duration: float = 20
+    max_duration: float = 240
+    model: str | None = None
 
 
 class RunManifest(BaseModel):
@@ -36,12 +43,12 @@ class RunManifest(BaseModel):
     run_id: str
     prompt: str
     model: str
-    backend: Literal["xai-responses"] = "xai-responses"
+    backend: Literal["xai-api", "xai-responses", "grok-build", "offline"] = "xai-api"
     offline: bool
     render_requested: bool
     quality: str
     image: str | None = None
-    status: Literal["running", "completed", "failed"] = "running"
+    status: Literal["running", "completed", "failed", "rendering"] = "running"
     created_utc: str
     completed_utc: str | None = None
     stages: list[dict] = Field(default_factory=list)
@@ -52,6 +59,10 @@ class RunManifest(BaseModel):
     artifacts: dict[str, str] = Field(default_factory=dict)
     status_detail: dict[str, str] = Field(default_factory=dict)
     error: str | None = None
+    review: Literal["advisory", "gated", "off"] = "advisory"
+    review_status: str | None = None
+    auth_source: str | None = None
+    ledger: dict = Field(default_factory=dict)
 
 
 class StageCallResult(BaseModel):
@@ -61,3 +72,4 @@ class StageCallResult(BaseModel):
     thinking: list[str] = Field(default_factory=list)
     images: list[dict] = Field(default_factory=list)
     raw: dict = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list)

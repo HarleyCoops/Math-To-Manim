@@ -530,6 +530,27 @@ commands: `math-to-manim-mythos`, `math-to-manim-sol`, `math-to-manim-grok`,
 `math-to-manim-glm`, and `math-to-manim-mimo`. They do not orchestrate the new
 Astra chain. The primary `math-to-manim` and `m2m` commands now run Astra.
 
+### Grok silo
+
+`math-to-manim-grok` is the xAI chain at the same evidence standard: typed
+stage outputs, an independent audit, a final-frame probe, a clean-environment
+render, twelve frames, and a hash-bound ledger. The default model is
+`grok-4.7` (`XAI_MODEL` or `--model`).
+
+```bash
+math-to-manim-grok login
+math-to-manim-grok doctor
+math-to-manim-grok run "the heat equation"
+math-to-manim-grok resume <run-id>
+math-to-manim-grok render-existing <run-id>
+math-to-manim-grok serve-mcp
+```
+
+`render-existing` makes zero model calls and is labeled `not_reviewed`.
+Reviews are advisory unless you pass `--review gated`. Authenticate with
+`XAI_API_KEY`, or with a cached Grok Build `grok login` session. See
+[the Grok silo](docs/GROK_SILO.md).
+
 The [motion showcase](docs/showcase/README.md) retains the older films.
 Legacy service and pipeline references remain in [the documentation](docs/).
 

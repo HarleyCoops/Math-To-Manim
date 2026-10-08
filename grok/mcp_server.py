@@ -1,11 +1,10 @@
 """Grok-native Math-To-Manim MCP server.
 
-``math-to-manim serve-mcp`` is the operator command. Every tool runs the
-Grok 4.6 chain (or inspects a Grok run). Existing tool names are unchanged
-so current MCP clients keep working.
+``math-to-manim-grok serve-mcp`` serves this chain directly. The Mythos
+command re-exports the same server object. Existing tool names are unchanged.
 
-    math-to-manim serve-mcp
-    math-to-manim serve-mcp --transport streamable-http --port 8643
+    math-to-manim-grok serve-mcp
+    math-to-manim-grok serve-mcp --transport http --port 8643
 """
 
 from __future__ import annotations
@@ -27,11 +26,11 @@ from grok.charters import cinematic_charter
 from grok.models import RunRequest
 from grok.service import GrokService
 
-DEFAULT_MCP_MODEL = "grok-4.6"
+DEFAULT_MCP_MODEL = "grok-4.7"
 
 mcp = MCPServer(
     "math_to_manim_mcp",
-    description="Turn a mathematics question into an inspectable Grok 4.6 Manim run.",
+    description="Turn a mathematics question into an inspectable Grok Manim run.",
     version=__version__,
 )
 _service = GrokService()
@@ -76,7 +75,7 @@ class CreateAnimationInput(BaseModel):
     )
     model: str = Field(
         default=DEFAULT_MCP_MODEL,
-        description="Grok Responses model id. Default grok-4.6. Claude/Codex ids are ignored.",
+        description="Grok Responses model id. Default grok-4.7. Override with XAI_MODEL or this field.",
     )
     image: Optional[str] = Field(
         default=None,
@@ -147,7 +146,7 @@ class ListRunsInput(BaseModel):
     ),
 )
 def m2m_create_animation(params: CreateAnimationInput) -> str:
-    """Start a Grok 4.6 animation run: intent, reverse cartography, curriculum,
+    """Start a Grok animation run: intent, reverse cartography, curriculum,
     math-director (code_interpreter), cinematographer, and composer write a
     complete cinematic Manim scene (grok_scene.py).
 
@@ -199,8 +198,8 @@ def m2m_get_job(job_id: str) -> str:
     job = _service.get_job(job_id.strip())
     if job is None:
         return (
-            f"Error: no job {job_id!r}. Jobs live in server memory; "
-            "use m2m_list_runs for on-disk history."
+            f"Error: no job {job_id!r}. Job records are stored under the runs "
+            "directory and survive a restart; use m2m_list_runs for finished runs."
         )
     return _json(job.to_dict())
 
@@ -319,16 +318,80 @@ def m2m_cinematic_charter() -> str:
     return cinematic_charter()
 
 
+class RenderExistingInput(RunIdInput):
+    """Input for rendering a saved scene with zero model calls."""
+
+    quality: Literal["l", "m", "h", "p", "k"] = Field(
+        default="l",
+        description="Manim quality: l=480p (fast), m=720p, h=1080p, p=1440p, k=4K.",
+    )
+
+
+@mcp.tool(
+    name="m2m_resume_run",
+    annotations=ToolAnnotations(
+        title="Resume Animation Run",
+        read_only_hint=False,
+        destructive_hint=False,
+        idempotent_hint=False,
+        open_world_hint=True,
+    ),
+)
+def m2m_resume_run(params: RunIdInput) -> str:
+    """Resume a hash-bound Grok run from the first stale stage.
+
+    Accepted stages whose files still match the ledger are not sent to the
+    model. Returns a job record; poll with m2m_get_job.
+
+    Returns:
+        str: JSON job record with status queued|running|completed|failed.
+    """
+    try:
+        job = _service.submit_resume(params.run_id)
+        return _json(job.to_dict())
+    except (FileNotFoundError, ValueError) as exc:
+        return f"Error: {exc}"
+
+
+@mcp.tool(
+    name="m2m_render_existing",
+    annotations=ToolAnnotations(
+        title="Render Existing Scene",
+        read_only_hint=False,
+        destructive_hint=False,
+        idempotent_hint=False,
+        open_world_hint=False,
+    ),
+)
+def m2m_render_existing(params: RenderExistingInput) -> str:
+    """Render grok_scene.py from a saved run. Makes zero model calls.
+
+    The manifest is labeled not_reviewed. Previous audit files stay on disk.
+
+    Returns:
+        str: JSON job record. When completed, manifest.review_status is
+        not_reviewed and video_path names the MP4.
+    """
+    try:
+        job = _service.submit_render_existing(params.run_id, quality=params.quality)
+        return _json(job.to_dict())
+    except (FileNotFoundError, ValueError) as exc:
+        return f"Error: {exc}"
+
+
 def main(transport: str = "stdio", port: int = 8643) -> None:
-    """Entry point used by `math-to-manim serve-mcp`."""
+    """Entry point for `math-to-manim-grok serve-mcp` and the Mythos re-export."""
     if transport == "stdio":
         mcp.run()
-    else:
+        return
+    if transport in {"http", "streamable-http"}:
         mcp.run(
             transport="streamable-http",
             host="127.0.0.1",
             port=port,
         )
+        return
+    raise ValueError(f"unsupported MCP transport: {transport}")
 
 
 if __name__ == "__main__":

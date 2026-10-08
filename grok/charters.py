@@ -82,7 +82,7 @@ def cinematic_charter() -> str:
     """Composer + cinematography contract for MCP and review tools."""
     return (
         "GROK CINEMATIC CONTRACT\n"
-        "Grok 4.6 writes grok_scene.py as a single Manim CE ThreeDScene.\n"
+        "Grok writes grok_scene.py as a single Manim CE ThreeDScene.\n"
         "Camera: move_camera() or set_camera_orientation() only. "
         "Never .animate on self.camera.\n"
         "CAMERA IS THE NARRATOR. Headlines before symbols. "

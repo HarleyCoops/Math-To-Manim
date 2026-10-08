@@ -77,7 +77,7 @@ jobs:
         run: python -m pytest -q tests/integration
 
       - name: Compile package
-        run: python -m compileall -q astra mythos
+        run: python -m compileall -q astra mythos grok
 
       - name: Check CLI help
         run: |
@@ -98,6 +98,11 @@ jobs:
         run: |
           math-to-manim-mythos run "Explain why derivatives are slopes" --offline
           math-to-manim-mythos runs --limit 3
+
+      - name: Offline Grok chain smoke (no model calls)
+        run: |
+          math-to-manim-grok run "Pythagorean theorem" --backend offline
+          math-to-manim-grok --version
 
       - name: API boots and answers /health
         run: |

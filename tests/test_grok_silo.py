@@ -1,5 +1,8 @@
 import ast
 import json
+import re
+import subprocess
+import time
 from pathlib import Path
 
 import pytest
@@ -26,13 +29,18 @@ from grok.validation import normalize_reverse_tree, validate_reverse_tree, valid
 GROK_DIR = Path("grok")
 
 
+def _marker(index: int) -> str:
+    """Neutral stand-in. Joined at runtime so the source has no credential literal."""
+    return "SENTINEL_VALUE_" + str(index)
+
+
 def test_offline_run_writes_complete_film_bundle(tmp_path):
     manifest = GrokHarness(runs_dir=tmp_path).run(
         RunRequest(prompt="the heat equation", offline=True)
     )
     run_dir = tmp_path / manifest["run_id"]
     assert manifest["status"] == "completed"
-    assert manifest["backend"] == "xai-responses"
+    assert manifest["backend"] == "offline"
     assert manifest["model"] == "offline"
     assert all((run_dir / name).is_file() for name in ARTIFACT_NAMES)
     assert (run_dir / "traces" / "cartographer.json").is_file()
@@ -96,7 +104,7 @@ def test_cli_run_help_mentions_offline_and_image(capsys):
 
 
 def test_doctor_checks_key_without_printing_it(monkeypatch, capsys):
-    secret = "xai-super-secret-value-do-not-leak"
+    secret = _marker(1)
     monkeypatch.setenv("XAI_API_KEY", secret)
     monkeypatch.setenv("XAI_MODEL", "grok-4.6")
     monkeypatch.setattr(
@@ -118,7 +126,7 @@ def test_doctor_checks_key_without_printing_it(monkeypatch, capsys):
 
 
 def test_doctor_fails_on_rejected_key_without_printing_it(monkeypatch, capsys):
-    secret = "xai-invalid-key-must-stay-hidden"
+    secret = _marker(2)
     monkeypatch.setenv("XAI_API_KEY", secret)
 
     def fake_post(self, payload, previous_response_id=None):
@@ -142,13 +150,14 @@ def test_doctor_does_not_ping_when_key_missing(monkeypatch, capsys):
 
 
 def test_api_key_status_never_returns_the_secret():
-    ok, detail = api_key_status("xai-this-must-not-appear")
+    marker = _marker(3)
+    ok, detail = api_key_status(marker)
     assert ok is True
-    assert "xai-this-must-not-appear" not in detail
+    assert marker not in detail
 
 
 def test_client_builds_responses_payload_without_network(tmp_path):
-    client = XAIClient(api_key="xai-test-key", model="grok-4.6", reasoning_effort="xhigh")
+    client = XAIClient(api_key=_marker(1), model="grok-4.6", reasoning_effort="xhigh")
     payload = client.build_payload(
         instructions="charter",
         text="solve this",
@@ -193,7 +202,19 @@ def test_live_run_uses_client_and_never_hits_network(tmp_path, monkeypatch):
     class FakeClient(XAIClient):
         def complete(self, **kwargs):
             calls.append(kwargs)
-            stage_tools = [tool.get("type") for tool in kwargs.get("tools") or ()]
+            if kwargs.get("schema_name") == "assessment":
+                text = kwargs.get("text") or ""
+                files = re.findall(r"[\w.-]+\.(?:json|py|png)", text)
+                frames = [name for name in files if name.startswith("frame_")]
+                evidence = [frames[0]] if frames else (files[:1] or ["01_intent.json"])
+                body = {
+                    "verdict": "pass",
+                    "evidence": evidence,
+                    "repair_stage": "composer",
+                    "feedback": "ok",
+                    "defects": [],
+                }
+                return StageCallResult(text=json.dumps(body), payload=body, raw={"id": "audit"})
             body = {
                 "offline": False,
                 "core_claim": "test",
@@ -234,11 +255,15 @@ def test_live_run_uses_client_and_never_hits_network(tmp_path, monkeypatch):
             }
             return StageCallResult(text=json.dumps(body), payload=body, raw={"id": "resp"})
 
-    monkeypatch.setenv("XAI_API_KEY", "xai-test-key")
-    harness = GrokHarness(runs_dir=tmp_path, client=FakeClient(api_key="xai-test-key"))
+    monkeypatch.setenv("XAI_API_KEY", _marker(1))
+    harness = GrokHarness(runs_dir=tmp_path, client=FakeClient(api_key=_marker(1)))
     manifest = harness.run(RunRequest(prompt="the heat equation", offline=False))
     assert manifest["status"] == "completed"
-    assert len(calls) == len(STAGES)
+    stage_calls = [item for item in calls if item.get("schema_name") != "assessment"]
+    audit_calls = [item for item in calls if item.get("schema_name") == "assessment"]
+    assert len(stage_calls) == len(STAGES)
+    assert len(audit_calls) == len(STAGES)
+    assert stage_calls[0]["prompt_cache_key"].endswith(":intent")
     math_call = next(item for item in calls if "code_interpreter" in {
         tool.get("type") for tool in item.get("tools") or ()
     })
@@ -295,16 +320,15 @@ def test_charters_ship_and_name_tools():
 
 
 def test_grok_silo_does_not_import_mythos_or_sol():
+    forbidden = ("mythos", "sol", "astra", "glm", "mimo")
     for path in GROK_DIR.rglob("*.py"):
         tree = ast.parse(path.read_text(encoding="utf-8"))
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    assert not alias.name.startswith("mythos")
-                    assert not alias.name.startswith("sol")
+                    assert not alias.name.startswith(forbidden)
             elif isinstance(node, ast.ImportFrom) and node.module:
-                assert not node.module.startswith("mythos")
-                assert not node.module.startswith("sol")
+                assert not node.module.startswith(forbidden)
 
 
 def test_offline_scene_obeys_camera_rule(tmp_path):
@@ -451,7 +475,7 @@ def test_client_function_loop_returns_final_json(monkeypatch):
         return responses[len(posted) - 1]
 
     monkeypatch.setattr(XAIClient, "post", fake_post)
-    client = XAIClient(api_key="xai-test-key")
+    client = XAIClient(api_key=_marker(1))
     result = client.complete(
         instructions="composer",
         text="write the scene",
@@ -485,7 +509,7 @@ def test_client_continues_incomplete_response(monkeypatch):
         return responses[len(posted) - 1]
 
     monkeypatch.setattr(XAIClient, "post", fake_post)
-    result = XAIClient(api_key="xai-test-key").complete(instructions="intent", text="go")
+    result = XAIClient(api_key=_marker(1)).complete(instructions="intent", text="go")
     assert result.payload == {"ok": True}
     assert posted == [None, "resp-1"]
 
@@ -507,7 +531,505 @@ def test_collect_function_calls_reads_nested_tool_call():
 
 
 def test_client_ping_payload_is_tiny():
-    payload = XAIClient(api_key="xai-test-key").ping_payload()
+    payload = XAIClient(api_key=_marker(1)).ping_payload()
     assert payload["input"] == "Reply with the single word pong."
     assert payload["max_output_tokens"] == 16
     assert payload["reasoning"]["effort"] == "low"
+
+
+def test_default_model_is_grok_4_7(monkeypatch):
+    monkeypatch.delenv("XAI_MODEL", raising=False)
+    assert XAIClient(api_key=_marker(1)).model == "grok-4.7"
+
+
+def test_payload_sends_prompt_cache_key_and_strict_schema():
+    client = XAIClient(api_key=_marker(1), model="grok-4.7")
+    schema = {"type": "object", "properties": {"core_claim": {"type": "string"}}, "required": ["core_claim"]}
+    payload = client.build_payload(
+        instructions="charter",
+        text="the heat equation",
+        schema=schema,
+        schema_name_value="intent",
+        prompt_cache_key="run-1:intent",
+    )
+    assert payload["prompt_cache_key"] == "run-1:intent"
+    assert payload["text"]["format"]["type"] == "json_schema"
+    assert payload["text"]["format"]["strict"] is True
+    assert payload["text"]["format"]["name"] == "intent"
+    assert payload["text"]["format"]["schema"] == schema
+    assert payload["reasoning"]["effort"] == "high"
+
+
+def test_structured_outputs_can_be_disabled(monkeypatch):
+    monkeypatch.setenv("GROK_STRUCTURED_OUTPUTS", "0")
+    client = XAIClient(api_key=_marker(1), model="grok-4.7")
+    payload = client.build_payload(
+        instructions="charter",
+        text="go",
+        schema={"type": "object"},
+        schema_name_value="intent",
+    )
+    assert "text" not in payload
+
+
+def test_code_model_omits_server_tools_until_configured():
+    client = XAIClient(api_key=_marker(1), model="grok-build-0.1", reasoning_effort="high")
+    payload = client.build_payload(
+        instructions="charter",
+        text="go",
+        tools=({"type": "web_search"}, {"type": "function", "name": "verify_scene"}),
+    )
+    kinds = [tool["type"] for tool in payload["tools"]]
+    assert kinds == ["function"]
+    assert any("web_search" in warning for warning in client.capability_warnings)
+
+
+def test_capability_fallback_strips_rejected_schema(monkeypatch):
+    calls = []
+
+    def fake_once(self, payload, previous_response_id=None):
+        calls.append(payload)
+        if len(calls) == 1:
+            raise XAIClientError(
+                'xAI Responses API failed (400): {"error":"unsupported parameter: text.format"}'
+            )
+        return {
+            "output": [
+                {"type": "message", "content": [{"type": "output_text", "text": '{"ok": true}'}]}
+            ]
+        }
+
+    monkeypatch.setattr(XAIClient, "_post_once", fake_once)
+    result = XAIClient(api_key=_marker(1), model="grok-4.7").complete(
+        instructions="intent",
+        text="go",
+        schema={"type": "object"},
+        schema_name="intent",
+        prompt_cache_key="run:intent",
+    )
+    assert result.payload == {"ok": True}
+    assert "text" not in calls[1]
+    assert calls[1]["prompt_cache_key"] == "run:intent"
+    assert any("text.format" in warning for warning in result.warnings)
+
+
+def test_clean_environment_strips_xai_key(monkeypatch):
+    from grok.rendering import clean_environment
+
+    xai_value = _marker(4)
+    monkeypatch.setenv("XAI_API_KEY", xai_value)
+    monkeypatch.setenv("GH_TOKEN", _marker(5))
+    monkeypatch.setenv("APP_SECRET", _marker(6))
+    monkeypatch.setenv("DB_PASSWORD", _marker(7))
+    env = clean_environment()
+    assert "XAI_API_KEY" not in env
+    assert "GH_TOKEN" not in env
+    assert "APP_SECRET" not in env
+    assert "DB_PASSWORD" not in env
+    assert "PATH" in env
+    assert xai_value not in env.values()
+
+
+def test_render_uses_timeout_and_clean_env(monkeypatch, tmp_path):
+    from grok.rendering import render
+
+    render_value = _marker(8)
+    monkeypatch.setenv("XAI_API_KEY", render_value)
+    seen = {}
+
+    def runner(args, **kwargs):
+        seen["env"] = kwargs["env"]
+        seen["timeout"] = kwargs["timeout"]
+        raise RuntimeError("stop-after-inspect")
+
+    with pytest.raises(RuntimeError, match="stop-after-inspect"):
+        render(tmp_path, _OFFLINE_SCENE, "l", 1, timeout=321, runner=runner)
+    assert seen["timeout"] == 321
+    assert "XAI_API_KEY" not in seen["env"]
+    assert render_value not in seen["env"].values()
+
+
+def test_render_duration_gate_and_twelve_frames(tmp_path):
+    from grok.rendering import render
+
+    calls = []
+
+    def runner(args, **kwargs):
+        calls.append(list(args))
+        if "render_worker.py" in args[1]:
+            media = Path(args[3])
+            video = media / "videos" / "GrokOfflineStory.mp4"
+            video.parent.mkdir(parents=True, exist_ok=True)
+            video.write_bytes(b"x" * 2048)
+            return subprocess.CompletedProcess(args, 0, "", "")
+        if args[0] == "ffprobe":
+            body = json.dumps({"format": {"duration": "36.0"}, "streams": []})
+            return subprocess.CompletedProcess(args, 0, body, "")
+        if args[0] == "ffmpeg":
+            Path(args[-1]).write_bytes(b"\x89PNG\r\n")
+            return subprocess.CompletedProcess(args, 0, "", "")
+        raise AssertionError(args)
+
+    def sheet(folder, frames, duration):
+        assert len(frames) == 12
+        assert duration == 36.0
+        target = folder / "contact_sheet.png"
+        target.write_bytes(b"\x89PNG\r\n")
+        return target
+
+    video, frames, contact = render(
+        tmp_path,
+        _OFFLINE_SCENE,
+        "l",
+        1,
+        timeout=50,
+        min_duration=20,
+        max_duration=240,
+        runner=runner,
+        contact_sheet=sheet,
+    )
+    assert video.name == "GrokOfflineStory.mp4"
+    assert len(frames) == 12
+    assert contact.name == "contact_sheet.png"
+    assert sum(1 for args in calls if args[0] == "ffmpeg") == 12
+    assert any(args[0] == "ffprobe" for args in calls)
+
+
+def test_short_film_fails_duration_check(tmp_path):
+    from grok.rendering import render
+
+    def runner(args, **kwargs):
+        if "render_worker.py" in args[1]:
+            video = Path(args[3]) / "videos" / "GrokOfflineStory.mp4"
+            video.parent.mkdir(parents=True, exist_ok=True)
+            video.write_bytes(b"x" * 2048)
+            return subprocess.CompletedProcess(args, 0, "", "")
+        if args[0] == "ffprobe":
+            body = json.dumps({"format": {"duration": "1.5"}})
+            return subprocess.CompletedProcess(args, 0, body, "")
+        raise AssertionError(args)
+
+    with pytest.raises(RuntimeError, match="duration"):
+        render(tmp_path, _OFFLINE_SCENE, "l", 1, runner=runner)
+
+
+def test_allowlist_rejects_os_eval_and_dunder():
+    from grok.validation import validate_scene_source
+
+    source = (
+        "import os\n"
+        "from manim import *\n\n"
+        "class SecretStory(ThreeDScene):\n"
+        "    def construct(self):\n"
+        "        eval('1')\n"
+        "        self.__dict__\n"
+    )
+    failures, scene_name = validate_scene_source(source)
+    assert scene_name is None
+    assert any("manim, numpy, or math" in item for item in failures)
+    assert any("eval" in item for item in failures)
+    assert any("dunder" in item for item in failures)
+
+
+def test_scene_name_must_end_in_journey_or_story():
+    from grok.validation import validate_scene_source
+
+    source = "from manim import *\n\nclass HeatFilm(ThreeDScene):\n    def construct(self):\n        self.wait()\n"
+    failures, scene_name = validate_scene_source(source)
+    assert scene_name is None
+    assert any("Journey or Story" in item for item in failures)
+
+
+def test_grok_build_argv_is_headless_and_does_not_embed_the_key(monkeypatch):
+    from grok.backends.grok_build import GrokBuildBackend, build_grok_argv
+
+    argv = build_grok_argv(
+        binary="grok",
+        prompt="explain curvature",
+        model="grok-4.7",
+        effort="high",
+        system_prompt="charter",
+        cwd="/tmp/run",
+    )
+    assert argv[:2] == ["grok", "-p"]
+    assert "--output-format" in argv and "json" in argv
+    assert "--sandbox" in argv and "read-only" in argv
+    assert "--no-auto-update" in argv
+    assert "--disable-web-search" in argv
+    key_value = _marker(9)
+    assert key_value not in argv
+
+    monkeypatch.setenv("XAI_API_KEY", key_value)
+    captured = {}
+
+    def runner(command, **kwargs):
+        captured["command"] = command
+        captured["env"] = kwargs.get("env")
+        return subprocess.CompletedProcess(command, 0, '{"core": "claim"}', "")
+
+    backend = GrokBuildBackend(model="grok-4.7", binary="grok", runner=runner, api_key=key_value)
+    monkeypatch.setattr("grok.backends.grok_build.cached_login_present", lambda path=None: True)
+    result = backend.complete(instructions="charter", text="go", cwd=Path("/tmp"))
+    assert key_value not in result.text
+    assert key_value not in captured["command"]
+    assert result.payload == {"core": "claim"}
+
+
+def test_login_wraps_grok_login(monkeypatch):
+    from grok.backends.grok_build import login_command
+
+    monkeypatch.setattr("grok.backends.grok_build.grok_binary", lambda: "/usr/bin/grok")
+    assert login_command(device_auth=False) == ["/usr/bin/grok", "login"]
+    assert login_command(device_auth=True) == ["/usr/bin/grok", "login", "--device-auth"]
+    calls = []
+    monkeypatch.setattr("grok.cli.login_command", lambda device_auth=False: calls.append(device_auth) or ["grok", "login"])
+    monkeypatch.setattr("grok.cli.subprocess.call", lambda command: 0)
+    assert main(["login", "--device-auth"]) == 0
+    assert calls == [True]
+
+
+def test_doctor_reports_grok_login_without_printing_the_token(monkeypatch, tmp_path, capsys):
+    token = _marker(10)
+    auth = tmp_path / "auth.json"
+    auth.write_text(json.dumps({"token": token}), encoding="utf-8")
+    monkeypatch.setenv("GROK_AUTH_FILE", str(auth))
+    monkeypatch.delenv("XAI_API_KEY", raising=False)
+    assert main(["doctor", "--backend", "grok-build"]) == 0
+    output = capsys.readouterr().out
+    assert token not in output
+    assert "auth_source=grok-login" in output
+    assert "ready" in output
+
+
+def test_resume_reuses_hashed_stages_with_zero_new_model_calls(tmp_path, monkeypatch):
+    calls = {"n": 0}
+
+    class FakeClient(XAIClient):
+        def complete(self, **kwargs):
+            calls["n"] += 1
+            if kwargs.get("schema_name") == "assessment":
+                text = kwargs.get("text") or ""
+                files = re.findall(r"[\w.-]+\.(?:json|py|png)", text)
+                body = {
+                    "verdict": "pass",
+                    "evidence": files[:1] or ["01_intent.json"],
+                    "repair_stage": "composer",
+                    "feedback": "ok",
+                    "defects": [],
+                }
+                return StageCallResult(text=json.dumps(body), payload=body, raw={})
+            body = _live_body()
+            return StageCallResult(text=json.dumps(body), payload=body, raw={})
+
+    monkeypatch.setenv("XAI_API_KEY", _marker(1))
+    harness = GrokHarness(runs_dir=tmp_path, client=FakeClient(api_key=_marker(1)))
+    first = harness.run(RunRequest(prompt="the heat equation", offline=False, review="advisory"))
+    spent = calls["n"]
+    assert spent > 0
+    second = harness.resume(first["run_id"])
+    assert second["status"] == "completed"
+    assert calls["n"] == spent
+
+
+def test_render_existing_makes_zero_model_calls(tmp_path):
+    harness = GrokHarness(runs_dir=tmp_path)
+    first = harness.run(RunRequest(prompt="the heat equation", offline=True))
+
+    def boom(**kwargs):
+        raise AssertionError("model call")
+
+    harness.client.complete = boom
+
+    def renderer(run_dir, source, quality, attempt, **kwargs):
+        folder = Path(run_dir) / f"renders/{attempt:03d}"
+        folder.mkdir(parents=True)
+        video = folder / "GrokOfflineStory.mp4"
+        video.write_bytes(b"x" * 2048)
+        frames = []
+        for index in range(12):
+            frame = folder / f"frame_{index:02d}.png"
+            frame.write_bytes(b"\x89PNG\r\n")
+            frames.append(frame)
+        sheet = folder / "contact_sheet.png"
+        sheet.write_bytes(b"\x89PNG\r\n")
+        return video, frames, sheet
+
+    harness.renderer = renderer
+    manifest = harness.render_existing(first["run_id"], quality="l")
+    assert manifest["review_status"] == "not_reviewed"
+    assert manifest["video_path"].endswith(".mp4")
+    review = json.loads((tmp_path / first["run_id"] / "review.json").read_text(encoding="utf-8"))
+    assert review["local_render"]["model_calls"] == 0
+
+
+def test_gated_review_routes_to_repair_stage(tmp_path, monkeypatch):
+    calls = []
+
+    class FakeClient(XAIClient):
+        def complete(self, **kwargs):
+            calls.append(kwargs.get("schema_name"))
+            if kwargs.get("schema_name") == "assessment":
+                text = kwargs.get("text") or ""
+                if text.startswith("STAGE: curriculum") and not any(
+                    item == "assessment" and calls.count("curriculum") > 1 for item in calls
+                ):
+                    # Fail the first curriculum audit only.
+                    if calls.count("assessment") == 3:
+                        body = {
+                            "verdict": "fail",
+                            "evidence": ["03_curriculum.json"],
+                            "repair_stage": "intent",
+                            "feedback": "audience is vague",
+                            "defects": ["audience"],
+                        }
+                        return StageCallResult(text=json.dumps(body), payload=body, raw={})
+                files = re.findall(r"[\w.-]+\.(?:json|py|png)", text)
+                body = {
+                    "verdict": "pass",
+                    "evidence": files[:1] or ["01_intent.json"],
+                    "repair_stage": "composer",
+                    "feedback": "ok",
+                    "defects": [],
+                }
+                return StageCallResult(text=json.dumps(body), payload=body, raw={})
+            return StageCallResult(text="{}", payload=_live_body(), raw={})
+
+    monkeypatch.setenv("XAI_API_KEY", _marker(1))
+    harness = GrokHarness(runs_dir=tmp_path, client=FakeClient(api_key=_marker(1)))
+    manifest = harness.run(
+        RunRequest(prompt="the heat equation", offline=False, review="gated", max_revisions=2)
+    )
+    assert manifest["status"] == "completed"
+    assert manifest["review_status"] == "approved"
+    assert calls.count("intent") >= 2
+
+
+def test_schema_failure_retries_once(tmp_path, monkeypatch):
+    attempts = {"intent": 0}
+
+    class FakeClient(XAIClient):
+        def complete(self, **kwargs):
+            if kwargs.get("schema_name") == "assessment":
+                text = kwargs.get("text") or ""
+                files = re.findall(r"[\w.-]+\.(?:json|py|png)", text)
+                body = {
+                    "verdict": "pass",
+                    "evidence": files[:1] or ["01_intent.json"],
+                    "repair_stage": "composer",
+                    "feedback": "ok",
+                    "defects": [],
+                }
+                return StageCallResult(text=json.dumps(body), payload=body, raw={})
+            if kwargs.get("schema_name") == "intent":
+                attempts["intent"] += 1
+                if attempts["intent"] == 1:
+                    return StageCallResult(text="{}", payload={"raw_text": "nope"}, raw={})
+            return StageCallResult(text="{}", payload=_live_body(), raw={})
+
+    monkeypatch.setenv("XAI_API_KEY", _marker(1))
+    harness = GrokHarness(runs_dir=tmp_path, client=FakeClient(api_key=_marker(1)))
+    manifest = harness.run(RunRequest(prompt="the heat equation", offline=False, review="off"))
+    assert manifest["status"] == "completed"
+    assert attempts["intent"] == 2
+
+
+def test_job_record_survives_a_new_service(tmp_path):
+    service = GrokService(runs_dir=tmp_path)
+    job = service.submit(RunRequest(prompt="the heat equation", offline=True))
+    for _ in range(100):
+        polled = service.get_job(job.id)
+        if polled and polled.status in {"completed", "failed"}:
+            break
+        time.sleep(0.05)
+    assert polled.status == "completed"
+    restarted = GrokService(runs_dir=tmp_path)
+    restored = restarted.get_job(job.id)
+    assert restored is not None
+    assert restored.status == "completed"
+    assert restored.run_id == polled.run_id
+
+
+def test_runs_dir_follows_cwd_or_env(monkeypatch, tmp_path):
+    from grok.harness import default_runs_dir
+
+    monkeypatch.delenv("M2M_RUNS_DIR", raising=False)
+    monkeypatch.chdir(tmp_path)
+    assert default_runs_dir() == tmp_path / "runs" / "grok"
+    monkeypatch.setenv("M2M_RUNS_DIR", str(tmp_path / "custom"))
+    assert default_runs_dir() == tmp_path / "custom" / "grok"
+
+
+def test_mcp_tool_count_includes_resume_and_render(monkeypatch):
+    pytest.importorskip("mcp")
+    import asyncio
+
+    from grok.mcp_server import mcp
+
+    tools = asyncio.run(mcp.list_tools())
+    names = {tool.name for tool in tools}
+    assert len(names) >= 9
+    assert "m2m_resume_run" in names
+    assert "m2m_render_existing" in names
+
+
+def test_cli_serve_mcp_accepts_http_transport():
+    args = build_parser().parse_args(["serve-mcp", "--transport", "http", "--port", "8643"])
+    assert args.transport == "http"
+    assert args.port == 8643
+
+
+def _live_body() -> dict:
+    tree = reverse_tree_for("the heat equation")
+    return {
+        "core_claim": "test",
+        "audience": "tester",
+        "emotional_arc": ["a"],
+        "scope": {"in": ["x"], "out": []},
+        "duration_seconds": 90,
+        "title_options": ["A", "B", "C"],
+        "the_big_zoom": "z",
+        "image_read": None,
+        "target": "claim",
+        "nodes": tree["nodes"],
+        "edges": tree["edges"],
+        "spine": tree["spine"],
+        "sources": [],
+        "acts": [
+            {
+                "act_number": 1,
+                "title": "t",
+                "opening_question": "q",
+                "teaches": "foundations",
+                "narrative": "n",
+                "headline": "h",
+                "payoff": "p",
+                "estimated_seconds": 10,
+            }
+        ],
+        "through_line": "forward",
+        "formulas": [
+            {
+                "id": "F1",
+                "act_number": 1,
+                "latex_parts": ["E"],
+                "term_glossary": [],
+                "derivation_or_motivation": "d",
+                "common_misreading": "m",
+            }
+        ],
+        "color_identity": {},
+        "numbers": [],
+        "checks": ["sandbox"],
+        "shots": [{"beat": 1, "verb": "HEADLINE"}],
+        "camera_score": "hold",
+        "stills": [],
+        "visual_seeds": [],
+        "scene_name": "GrokOfflineStory",
+        "scene_class": "ThreeDScene",
+        "palette": {},
+        "objects": [],
+        "timeline": [],
+        "constraints": [],
+        "acceptance": [],
+        "source": _OFFLINE_SCENE,
+    }
