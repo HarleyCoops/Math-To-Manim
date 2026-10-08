@@ -68,3 +68,26 @@ def test_asks_for_codegen_after_the_six_stages(tmp_path):
     rc, _ = op.operate(stages, runs_dir=tmp_path / "runs")
     assert rc == op.NEEDS_REPLY
     assert "write the film" in (stages / "NEXT_PROMPT.txt").read_text(encoding="utf-8")
+
+
+def test_operator_render_records_environment_failure(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+
+    from mythos import render
+
+    op = _load()
+    monkeypatch.setattr(render, "resolve_manim", lambda: ["mock-manim"])
+    monkeypatch.setattr("mythos.scene_checks._run_chktex", lambda text: [])
+    monkeypatch.setattr("mythos.scene_checks._run_lualatex", lambda text: [])
+    child = Mock(return_value=SimpleNamespace(
+        returncode=1, stdout="",
+        stderr="FileNotFoundError: [Errno 2] No such file or directory: 'latex'"))
+    monkeypatch.setattr(render.subprocess, "run", child)
+    rc, run_dir = op.operate(_stages(tmp_path), runs_dir=tmp_path / "runs", render=True)
+    assert rc != 0
+    assert child.call_count == 1
+    manifest = json.loads((run_dir / "manifest.json").read_text("utf-8"))
+    assert manifest["status"]["render"] == "failed"
+    assert manifest["render_error"]["missing_dependencies"] == ["latex"]
+    assert (run_dir / manifest["renders"][0]["log"]).exists()

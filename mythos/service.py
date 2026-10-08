@@ -130,7 +130,12 @@ class MythosService:
             with self._lock:
                 job.manifest = manifest
                 job.run_id = manifest.get("run_id")
-                job.status = "completed"
+                environment_error = manifest.get("render_error", {})
+                if environment_error.get("type") == "environment":
+                    job.error = environment_error["detail"]
+                    job.status = "failed"
+                else:
+                    job.status = "completed"
         except Exception as exc:  # noqa: BLE001 — job boundary
             with self._lock:
                 job.error = f"{type(exc).__name__}: {exc}"

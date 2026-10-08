@@ -33,15 +33,16 @@ def _cmd_run(args: argparse.Namespace) -> int:
                                             or DEFAULT_RENDER_TIMEOUT),
                             offline=args.offline,
                             model_fallbacks=fallbacks)
-    harness.run(args.prompt, render=args.render, quality=args.quality,
-                max_repairs=args.max_repairs)
-    return 0
+    manifest = harness.run(args.prompt, render=args.render, quality=args.quality,
+                           max_repairs=args.max_repairs)
+    return 1 if manifest.get("render_error", {}).get("type") == "environment" else 0
 
 
 def _cmd_doctor(args: argparse.Namespace) -> int:
     from mythos.doctor import run_doctor
 
-    return run_doctor(command=args.command, model=args.model, ping=args.ping)
+    return run_doctor(command=args.command, model=args.model, ping=args.ping,
+                      no_latex=args.no_latex)
 
 
 def _cmd_gif(args: argparse.Namespace) -> int:
@@ -115,6 +116,8 @@ def build_parser() -> argparse.ArgumentParser:
     doctor.add_argument("--model", default=DEFAULT_MODEL)
     doctor.add_argument("--ping", action="store_true",
                         help="make one tiny model call to verify login")
+    doctor.add_argument("--no-latex", action="store_true",
+                        help="allow missing TeX tools for scenes that do not use LaTeX")
     doctor.set_defaults(func=_cmd_doctor)
 
     gif = sub.add_parser(
