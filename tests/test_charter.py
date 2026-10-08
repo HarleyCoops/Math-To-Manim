@@ -30,6 +30,29 @@ def test_extract_json_object_nested_braces_in_strings():
     assert extract_json_object(text)["n"] == 2
 
 
+def test_extract_json_object_python_raw_strings():
+    text = r'''
+    intro prose
+    {"formulas": [{"latex_parts": [r"\text{piece 1}", "=", r"\text{piece 2}"]}]}
+    '''
+    art = extract_json_object(text)
+    assert art["formulas"][0]["latex_parts"] == [
+        r"\text{piece 1}", "=", r"\text{piece 2}",
+    ]
+
+
+def test_extract_json_object_raw_strings_preserve_latex():
+    # r"..." appears after [, comma-space, and colon; backslashes survive.
+    text = (
+        r'{"a": [r"\frac{", "1", r"}{", "2", r"}"], '
+        r'"b":r"\quad", "c": [r"\x"]}'
+    )
+    art = extract_json_object(text)
+    assert art["a"] == [r"\frac{", "1", r"}{", "2", r"}"]
+    assert art["b"] == r"\quad"
+    assert art["c"] == [r"\x"]
+
+
 def test_extract_json_object_no_json_raises():
     with pytest.raises(RuntimeError):
         extract_json_object("no json here")
