@@ -87,6 +87,31 @@ def resolve_command(command: str) -> str:
     return command
 
 
+_RAW_STRING_JSON = re.compile(r'(?<=[\[\,(:\s])r"((?:[^"\\]|\\.)*)"')
+
+
+def _coerce_pythonish_json(obj: str) -> str:
+    """Rewrite Python raw strings ``r"..."`` into valid JSON strings.
+
+    Models sometimes emit LaTeX fragments as ``r"\\frac{...}"`` -- valid
+    Python but invalid JSON. Double the interior backslashes and re-quote.
+    """
+
+    def _esc(match: re.Match[str]) -> str:
+        body = match.group(1).replace("\\", "\\\\").replace('"', '\\"')
+        return '"' + body + '"'
+
+    return _RAW_STRING_JSON.sub(_esc, obj)
+
+
+def _loads_json_lenient(obj: str) -> dict[str, Any]:
+    """json.loads with one fallback for Python-style raw-string fragments."""
+    try:
+        return json.loads(obj)
+    except json.JSONDecodeError:
+        return json.loads(_coerce_pythonish_json(obj))
+
+
 def extract_json_object(text: str) -> dict[str, Any]:
     """Pull the first top-level JSON object out of model output."""
     text = text.strip()
@@ -118,7 +143,7 @@ def extract_json_object(text: str) -> dict[str, Any]:
         elif ch == "}":
             depth -= 1
             if depth == 0:
-                return json.loads(text[start : i + 1])
+                return _loads_json_lenient(text[start : i + 1])
     raise RuntimeError("Model output contained an unterminated JSON object")
 
 
