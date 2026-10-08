@@ -60,6 +60,7 @@ from mythos.manifest_schema import (  # noqa: E402
 from mythos.prereq_cache import PrerequisiteCache  # noqa: E402
 from mythos.render import (  # noqa: E402
     DEFAULT_RENDER_TIMEOUT,
+    RenderEnvironmentError,
     render_scene_file,
     resolve_manim,
 )
@@ -315,9 +316,18 @@ class MythosHarness:
             attempt = 0
             while True:
                 if ok:
-                    rc, out = self._render(code_path, scene_name, quality)
-                    manifest.setdefault("renders", []).append(
-                        {"attempt": attempt, "exit_code": rc})
+                    environment_error = None
+                    try:
+                        rc, out = self._render(code_path, scene_name, quality)
+                    except RenderEnvironmentError as exc:
+                        environment_error = exc.to_dict()
+                        rc, out = exc.exit_code, exc.output + "\n" + str(exc)
+                    log_name = f"render_{attempt}.log"
+                    (run_dir / log_name).write_text(out, encoding="utf-8")
+                    render_record = {"attempt": attempt, "exit_code": rc, "log": log_name}
+                    if environment_error:
+                        render_record["error"] = environment_error
+                    manifest.setdefault("renders", []).append(render_record)
                     if rc == 0:
                         manifest.setdefault("status", {})
                         manifest["status"]["render"] = "complete"
@@ -325,6 +335,10 @@ class MythosHarness:
                     manifest.setdefault("status", {})
                     manifest["status"]["render"] = "failed"
                     failure = out
+                    if environment_error:
+                        manifest["render_error"] = environment_error
+                        print(f"  [mythos] {environment_error['detail']}")
+                        break
                     if rc == 124:
                         # A timeout is a budget problem, not a code problem —
                         # don't burn model-repair attempts on it.
@@ -347,7 +361,8 @@ class MythosHarness:
             manifest["model_fallbacks"] = list(self.fallbacks_used)
         manifest["completed_utc"] = datetime.now(timezone.utc).isoformat()
         self._write_manifest(run_dir, manifest)
-        print(f"  [mythos] run complete -> {run_dir}")
+        outcome = "render blocked" if manifest.get("render_error") else "run complete"
+        print(f"  [mythos] {outcome} -> {run_dir}")
         return manifest
 
     def render_workspace(
@@ -361,8 +376,18 @@ class MythosHarness:
         manifest_path = run_dir / "manifest.json"
         manifest = migrate_manifest(json.loads(manifest_path.read_text(encoding="utf-8")))
         scene_file = run_dir / "mythos_scene.py"
-        code, output = self._render(scene_file, scene_name, quality)
-        manifest.setdefault("renders", []).append({"exit_code": code})
+        manifest.pop("render_error", None)
+        try:
+            code, output = self._render(scene_file, scene_name, quality)
+        except RenderEnvironmentError as exc:
+            code, output = exc.exit_code, exc.output + "\n" + str(exc)
+            manifest["render_error"] = exc.to_dict()
+        log_name = f"render_workspace_{len(manifest.get('renders', []))}.log"
+        (run_dir / log_name).write_text(output, encoding="utf-8")
+        render_record = {"exit_code": code, "log": log_name}
+        if manifest.get("render_error"):
+            render_record["error"] = manifest["render_error"]
+        manifest.setdefault("renders", []).append(render_record)
         manifest.setdefault("status", {})
         manifest["status"]["render"] = "complete" if code == 0 else "failed"
         self._write_manifest(run_dir, manifest)
@@ -622,9 +647,9 @@ def main(argv: list[str] | None = None) -> int:
 
     harness = MythosHarness(command=args.command, model=args.model,
                             timeout=args.timeout, offline=args.offline)
-    harness.run(args.prompt, render=args.render, quality=args.quality,
-                max_repairs=args.max_repairs)
-    return 0
+    manifest = harness.run(args.prompt, render=args.render, quality=args.quality,
+                           max_repairs=args.max_repairs)
+    return 1 if manifest.get("render_error", {}).get("type") == "environment" else 0
 
 
 if __name__ == "__main__":

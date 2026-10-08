@@ -133,10 +133,10 @@ def operate(stages: Path, *, runs_dir: Path | None = None, model: str = "operato
         return 1, run_dir
     if render:
         started = time.time()
-        rc, out = harness._render(code_path, scene_name, quality)
-        manifest.setdefault("renders", []).append(
-            {"quality": quality, "exit_code": rc, "seconds": round(time.time() - started, 1)})
-        manifest.setdefault("status", {})["render"] = "complete" if rc == 0 else "failed"
+        result = harness.render_workspace(run_dir, scene_name, quality)
+        rc, out, manifest = result["exit_code"], result["output"], result["manifest"]
+        manifest["renders"][-1].update(
+            {"quality": quality, "seconds": round(time.time() - started, 1)})
         harness._write_manifest(run_dir, manifest)
         print(out[-2000:])
         if rc != 0:
