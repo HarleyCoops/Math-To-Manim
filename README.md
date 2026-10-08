@@ -357,6 +357,95 @@ and LaTeX. `setup` installs the locked SDK in a user-writable cache; runs go
 under `runs/astra/` in the current working directory. Jev-off mode needs no
 TypeSafe credential.
 
+### Render system setup
+
+The Python `render` extra installs Manim; it does not install system TeX tools
+or FFmpeg. Manim's default `MathTex`/`Tex` path needs **both `latex` and
+`dvisvgm` on PATH**, plus the packages used by its TeX template. Start with
+the [official Manim installation guide](https://docs.manim.community/en/stable/installation/uv.html).
+Installing the two binaries alone does not prove every formula or template can compile.
+
+**macOS:** a compact system installation is
+[Homebrew BasicTeX](https://formulae.brew.sh/cask/basictex). With Homebrew
+already installed:
+
+```bash
+brew install cairo pkg-config ffmpeg
+brew install --cask basictex
+# Open a new terminal, or add the MacTeX binary link for this shell:
+export PATH="/Library/TeX/texbin:$PATH"
+sudo tlmgr update --self
+sudo tlmgr install dvisvgm standalone preview varwidth
+```
+
+BasicTeX uses TeX Live's package manager. The [TUG tlmgr guide](https://www.tug.org/texlive/tlmgr.html)
+explains updates and why system MacTeX installations use `sudo`.
+`standalone`, `preview`, and `varwidth` provide the small standalone-document
+support; these four additions are a starting point, not Manim's complete
+default template package set. Install the additional packages listed in the
+Manim guide if its default preamble reports missing files, or use full MacTeX.
+
+For a user-owned installation without `sudo`, follow
+[TinyTeX's official instructions](https://yihui.org/tinytex/#installation).
+On macOS, `--no-path` avoids the installer's request to modify system PATH:
+
+```bash
+curl -sL "https://tinytex.yihui.org/install-bin-unix.sh" | sh -s -- --no-path
+export PATH="$HOME/Library/TinyTeX/bin/universal-darwin:$PATH"
+tlmgr install dvisvgm standalone preview varwidth
+```
+
+Use the actual binary directory beneath `~/Library/TinyTeX/bin` if your
+architecture differs. Add it to your shell startup configuration for future
+sessions. TinyTeX also needs the Manim template packages described above;
+Manim does not automatically install missing TeX packages.
+
+**Windows:** Manim recommends [MiKTeX](https://miktex.org/howto/install-miktex).
+Choose its per-user installation, then use MiKTeX Console to install missing
+template packages and `dvisvgm`. Install FFmpeg separately using the
+[downloads linked by FFmpeg](https://ffmpeg.org/download.html).
+Ensure the selected TeX binary directory and FFmpeg binary directory are on
+your user PATH and restart PowerShell. Find the actual locations with
+`Get-Command latex,dvisvgm,ffmpeg`; a common system MiKTeX location is
+`C:\Program Files\MiKTeX\miktex\bin\x64`, but per-user locations differ.
+TeX Live and TinyTeX are alternatives; TinyTeX normally installs beneath
+`%APPDATA%\TinyTeX` (see its official installation page).
+
+**Linux:** install TeX Live through your distribution package manager.
+The [Manim guide](https://docs.manim.community/en/stable/installation/uv.html)
+documents full TeX Live packages for Debian/Ubuntu and Fedora. For this
+repository's smaller Debian/Ubuntu setup, the existing
+[`requirements-system.txt`](requirements-system.txt) lists Cairo/Pango build
+dependencies, FFmpeg, `dvisvgm`, and the LaTeX/font packages;
+[`scripts/bootstrap-render.sh`](scripts/bootstrap-render.sh) installs that list
+and creates a render venv. Review it before running it. Other distributions
+need equivalent packages. TinyTeX's Linux installer supports a user-owned
+`~/.TinyTeX`; put its binaries or the user-local symlinks on PATH.
+
+Verify from the same terminal and active Python environment used for a run:
+
+```bash
+python -m manim --version
+ffmpeg -version
+latex --version
+dvisvgm --version
+math-to-manim-mythos doctor
+```
+
+Mythos doctor exits nonzero when either TeX binary is missing and explicitly
+reports that MathTex/Tex cannot render. For a scene using only plain `Text`
+and geometry, `math-to-manim-mythos doctor --no-latex` checks the remaining
+requirements while still reporting unavailable TeX rendering. It does not
+disable LaTeX inside scenes. Scene generation without `--render` needs no
+render toolchain.
+
+If a render reports a named missing executable (such as
+`FileNotFoundError: ... 'latex'`), the Mythos harness records an environment
+error and stops with **zero model repair calls**. The CLI exits nonzero; API
+jobs are marked failed. Inspect `manifest.json` (`render_error`) and the
+recorded render log, install/fix PATH, then rerender the saved scene.
+Ordinary scene syntax/API errors retain the existing repair loop.
+
 ### Install from source
 
 Install Python 3.10+, Node.js 18+, Manim's system dependencies, FFmpeg and LaTeX.

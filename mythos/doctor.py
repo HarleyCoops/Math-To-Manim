@@ -9,6 +9,7 @@ Verifies, without touching any model unless asked:
 - (with ``--ping``) one tiny model call to prove the backend is logged in
 
 Exit code 0 when every required check passes.
+TeX tools are required by default; ``--no-latex`` scopes doctor to non-LaTeX scenes.
 """
 
 from __future__ import annotations
@@ -16,7 +17,6 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 from mythos.backends import (
@@ -32,6 +32,7 @@ from mythos.backends import (
 )
 from mythos.charter import load_env_file, resolve_command
 from mythos.harness import DEFAULT_RENDER_TIMEOUT, default_runs_dir, resolve_manim
+from mythos.render import render_dependency_guidance
 
 _OK = "  [ok]  "
 _BAD = "  [FAIL]"
@@ -43,7 +44,7 @@ def _which(name: str) -> str | None:
 
 
 def run_doctor(command: str = DEFAULT_COMMAND, model: str = DEFAULT_MODEL,
-               ping: bool = False) -> int:
+               ping: bool = False, no_latex: bool = False) -> int:
     load_env_file()
     failures = 0
 
@@ -123,16 +124,26 @@ def run_doctor(command: str = DEFAULT_COMMAND, model: str = DEFAULT_MODEL,
     except (OSError, subprocess.TimeoutExpired) as exc:
         failures += 1
         print(f"{_BAD}manim not runnable via {label}: {exc}")
-    for tool, required in (("ffmpeg", True), ("latex", False),
-                           ("dvisvgm", False)):
+    missing_tex = []
+    for tool, required in (("ffmpeg", True), ("latex", not no_latex),
+                           ("dvisvgm", not no_latex)):
         found = _which(tool)
         if found:
             print(f"{_OK}{tool}: {found}")
-        elif required:
-            failures += 1
-            print(f"{_BAD}{tool} not found (required for rendering)")
         else:
-            print(f"{_INFO}{tool} not found (needed for MathTex/LaTeX scenes)")
+            if tool != "ffmpeg":
+                missing_tex.append(tool)
+            if required:
+                failures += 1
+            scope = "rendering" if tool == "ffmpeg" else "MathTex/Tex rendering"
+            print(f"{_BAD if required else _INFO}{tool} not found on PATH "
+                  f"(required for {scope})")
+            if tool == "ffmpeg":
+                print(render_dependency_guidance((tool,)))
+    if missing_tex:
+        print(f"{_BAD if not no_latex else _INFO}MathTex/Tex cannot render: "
+              f"missing {', '.join(missing_tex)}")
+        print(render_dependency_guidance(tuple(missing_tex)))
 
     print("runs ledger:")
     runs = default_runs_dir()
@@ -146,8 +157,12 @@ def run_doctor(command: str = DEFAULT_COMMAND, model: str = DEFAULT_MODEL,
         failures += 1
         print(f"{_BAD}runs dir not writable ({runs}): {exc}")
 
-    print("summary:", "all checks passed" if failures == 0
-          else f"{failures} check(s) failed")
+    summary = "all checks passed" if failures == 0 else f"{failures} check(s) failed"
+    if no_latex and failures == 0:
+        summary = "non-LaTeX checks passed (LaTeX checks excluded)"
+    if missing_tex:
+        summary += "; MathTex/Tex cannot render"
+    print("summary:", summary)
     return 0 if failures == 0 else 1
 
 
@@ -159,8 +174,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--ping", action="store_true",
                         help="make one tiny model call to verify login")
+    parser.add_argument("--no-latex", action="store_true",
+                        help="allow missing TeX tools for scenes that do not use LaTeX")
     args = parser.parse_args(argv)
-    return run_doctor(command=args.command, model=args.model, ping=args.ping)
+    return run_doctor(command=args.command, model=args.model, ping=args.ping,
+                      no_latex=args.no_latex)
 
 
 if __name__ == "__main__":
