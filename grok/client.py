@@ -1,7 +1,8 @@
-"""xAI Responses API client for grok-4.6.
+"""xAI Responses API client.
 
-Talks only to ``https://api.x.ai/v1``. Authentication is ``XAI_API_KEY``.
-This module never imports Mythos or Sol.
+Talks only to the xAI Responses API. Authentication is ``XAI_API_KEY``.
+The default model is ``grok-4.7`` and can be changed with ``XAI_MODEL``.
+This module never imports Astra, Mythos, Sol, GLM, or MiMo.
 """
 
 from __future__ import annotations
@@ -15,13 +16,15 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from grok.capabilities import capabilities_for
+from grok.envfile import load_local_env
 from grok.jsonutil import extract_json_object
 from grok.models import REASONING_EFFORTS, StageCallResult
 
-DEFAULT_BASE_URL = os.getenv("XAI_BASE_URL", "https://api.x.ai/v1")
-DEFAULT_MODEL = os.getenv("XAI_MODEL", "grok-4.6")
-DEFAULT_REASONING_EFFORT = os.getenv("XAI_REASONING_EFFORT", "high")
-DEFAULT_TIMEOUT = float(os.getenv("XAI_TIMEOUT", "900"))
+DEFAULT_BASE_URL = "https://api.x.ai/v1"
+DEFAULT_MODEL = "grok-4.7"
+DEFAULT_REASONING_EFFORT = "high"
+DEFAULT_TIMEOUT = 900.0
 PING_TIMEOUT = 30.0
 PING_PROMPT = "Reply with the single word pong."
 
@@ -43,6 +46,44 @@ def redact_secret(text: str, secret: str | None) -> str:
     if not text or not secret or not secret.strip():
         return text
     return text.replace(secret.strip(), "[redacted]")
+
+
+def resolve_model(explicit: str | None = None) -> str:
+    if explicit and explicit.strip():
+        return explicit.strip()
+    env = os.getenv("XAI_MODEL", "").strip()
+    return env or DEFAULT_MODEL
+
+
+def resolve_base_url(explicit: str | None = None) -> str:
+    if explicit and explicit.strip():
+        return explicit.strip().rstrip("/")
+    return os.getenv("XAI_BASE_URL", DEFAULT_BASE_URL).strip().rstrip("/") or DEFAULT_BASE_URL
+
+
+def resolve_reasoning_effort(explicit: str | None = None) -> str:
+    if explicit and explicit.strip():
+        return explicit.strip()
+    return os.getenv("XAI_REASONING_EFFORT", DEFAULT_REASONING_EFFORT).strip() or DEFAULT_REASONING_EFFORT
+
+
+def resolve_timeout(explicit: float | None = None) -> float:
+    if explicit is not None:
+        return float(explicit)
+    raw = os.getenv("XAI_TIMEOUT", "").strip()
+    if not raw:
+        return DEFAULT_TIMEOUT
+    return float(raw)
+
+
+def structured_outputs_enabled() -> bool:
+    value = os.getenv("GROK_STRUCTURED_OUTPUTS", "1").strip().lower()
+    return value not in {"0", "false", "off", "no"}
+
+
+def schema_name(name: str | None) -> str:
+    cleaned = re.sub(r"[^A-Za-z0-9_-]", "_", name or "stage_output")
+    return (cleaned[:64] or "stage_output")
 
 
 def api_key_status(key: str | None = None) -> tuple[bool, str]:
@@ -69,13 +110,21 @@ def encode_image(path: Path) -> dict:
     }
 
 
-def user_content(text: str, image_path: Path | None = None) -> list[dict] | str:
-    if image_path is None:
+def user_content(
+    text: str,
+    image_path: Path | None = None,
+    image_paths: list[Path] | tuple[Path, ...] | None = None,
+) -> list[dict] | str:
+    paths: list[Path] = []
+    if image_path is not None:
+        paths.append(image_path)
+    paths.extend(image_paths or [])
+    if not paths:
         return text
-    return [
-        {"type": "input_text", "text": text},
-        encode_image(image_path),
-    ]
+    content: list[dict] = [{"type": "input_text", "text": text}]
+    for path in paths:
+        content.append(encode_image(path))
+    return content
 
 
 def collect_text(payload: dict) -> str:
@@ -201,6 +250,82 @@ def _ping_failure_reason(message: str) -> str:
     return "request failed"
 
 
+_UNSUPPORTED_TOKENS = (
+    "unsupported",
+    "not supported",
+    "unknown parameter",
+    "invalid parameter",
+    "unknown tool",
+    "unrecognized",
+)
+_FEATURE_TOKENS = (
+    "reasoning",
+    "effort",
+    "json_schema",
+    "text.format",
+    "structured",
+    "response_format",
+    "tool",
+    "web_search",
+    "x_search",
+    "code_interpreter",
+    "image_generation",
+)
+
+
+def _is_unsupported_error(message: str) -> bool:
+    if "(400)" not in message:
+        return False
+    lowered = message.lower()
+    return any(token in lowered for token in _UNSUPPORTED_TOKENS)
+
+
+def _fallback_payload(payload: dict, message: str) -> tuple[dict, list[str]]:
+    """Drop the parameter or tool named by a 400, once."""
+    lowered = message.lower()
+    updated = json.loads(json.dumps(payload))
+    removed: list[str] = []
+    specific = any(token in lowered for token in _FEATURE_TOKENS)
+
+    def mentioned(*tokens: str) -> bool:
+        if not specific:
+            return True
+        return any(token in lowered for token in tokens)
+
+    if "reasoning" in updated and mentioned("reasoning", "effort"):
+        updated.pop("reasoning", None)
+        removed.append("reasoning.effort")
+    text = updated.get("text")
+    if isinstance(text, dict) and "format" in text and mentioned(
+        "json_schema", "text.format", "structured", "response_format", "format"
+    ):
+        updated.pop("text", None)
+        removed.append("text.format")
+    tools = list(updated.get("tools") or [])
+    tool_names = ("web_search", "x_search", "code_interpreter", "image_generation")
+    named_tools = [kind for kind in tool_names if kind in lowered]
+    if tools and mentioned("tool", *tool_names):
+        kept = []
+        for tool in tools:
+            kind = str(tool.get("type") or tool.get("name") or "")
+            if kind == "function":
+                kept.append(tool)
+                continue
+            drop = (not specific) or (not named_tools) or (kind in named_tools)
+            if drop:
+                removed.append(kind or "tool")
+                continue
+            kept.append(tool)
+        if kept:
+            updated["tools"] = kept
+        else:
+            updated.pop("tools", None)
+            updated.pop("tool_choice", None)
+    if "tools" not in updated:
+        updated.pop("tool_choice", None)
+    return updated, removed
+
+
 class XAIClient:
     def __init__(
         self,
@@ -211,16 +336,19 @@ class XAIClient:
         base_url: str | None = None,
         timeout: float | None = None,
     ):
+        load_local_env()
         self.api_key = api_key if api_key is not None else os.getenv("XAI_API_KEY", "")
-        self.model = model or DEFAULT_MODEL
-        effort = reasoning_effort or DEFAULT_REASONING_EFFORT
+        self.model = resolve_model(model)
+        effort = resolve_reasoning_effort(reasoning_effort)
         if effort not in REASONING_EFFORTS:
             raise XAIClientError(
                 f"XAI_REASONING_EFFORT must be one of {', '.join(REASONING_EFFORTS)}"
             )
         self.reasoning_effort = effort
-        self.base_url = (base_url or DEFAULT_BASE_URL).rstrip("/")
-        self.timeout = DEFAULT_TIMEOUT if timeout is None else timeout
+        self.base_url = resolve_base_url(base_url)
+        self.timeout = resolve_timeout(timeout)
+        self.capability_warnings: list[str] = []
+        self._last_payload: dict = {}
 
     def require_key(self) -> str:
         ok, detail = api_key_status(self.api_key)
@@ -235,31 +363,75 @@ class XAIClient:
         text: str,
         tools: list[dict] | tuple[dict, ...] = (),
         image_path: Path | None = None,
+        image_paths: list[Path] | tuple[Path, ...] | None = None,
         tool_choice: str | dict | None = None,
+        schema: dict | None = None,
+        schema_name_value: str | None = None,
+        prompt_cache_key: str | None = None,
     ) -> dict:
-        # Responses API takes the charter in `instructions`. A system-role
-        # input item is not the documented delivery path for grok-4.6.
+        # Responses API takes the charter in `instructions`.
+        caps = capabilities_for(self.model)
+        send_images = caps.vision
+        if not send_images and (image_path is not None or image_paths):
+            self.capability_warnings.append(
+                f"omitted images; model {self.model} has no vision capability"
+            )
         payload = {
             "model": self.model,
             "instructions": instructions,
-            "reasoning": {"effort": self.reasoning_effort},
             "input": [
-                {"role": "user", "content": user_content(text, image_path)},
+                {
+                    "role": "user",
+                    "content": user_content(
+                        text,
+                        image_path if send_images else None,
+                        image_paths if send_images else None,
+                    ),
+                },
             ],
         }
-        if tools:
-            payload["tools"] = list(tools)
-        if tool_choice is not None:
-            payload["tool_choice"] = tool_choice
+        if caps.reasoning and self.reasoning_effort in caps.efforts:
+            payload["reasoning"] = {"effort": self.reasoning_effort}
+        elif self.reasoning_effort not in caps.efforts or not caps.reasoning:
+            self.capability_warnings.append(
+                f"omitted reasoning.effort for model {self.model}"
+            )
+        kept_tools: list[dict] = []
+        for tool in tools:
+            kind = str(tool.get("type") or "function")
+            if kind == "function" or kind in caps.server_tools:
+                kept_tools.append(dict(tool))
+            else:
+                self.capability_warnings.append(
+                    f"omitted unsupported tool {kind} for model {self.model}"
+                )
+        if kept_tools:
+            payload["tools"] = kept_tools
+            if tool_choice is not None:
+                payload["tool_choice"] = tool_choice
+        if prompt_cache_key:
+            payload["prompt_cache_key"] = prompt_cache_key
+        if schema and structured_outputs_enabled() and caps.structured_outputs:
+            payload["text"] = {
+                "format": {
+                    "type": "json_schema",
+                    "name": schema_name(schema_name_value),
+                    "schema": schema,
+                    "strict": True,
+                }
+            }
         return payload
 
     def ping_payload(self) -> dict:
-        return {
+        payload = {
             "model": self.model,
             "input": PING_PROMPT,
-            "reasoning": {"effort": "low"},
             "max_output_tokens": 16,
         }
+        caps = capabilities_for(self.model)
+        if caps.reasoning and "low" in caps.efforts:
+            payload["reasoning"] = {"effort": "low"}
+        return payload
 
     def ping(self) -> tuple[bool, str]:
         """Tiny live Responses call. Never include the key in the returned detail."""
@@ -283,7 +455,25 @@ class XAIClient:
             return False, "XAI_API_KEY is set but the live ping failed (api error)"
         return True, "XAI_API_KEY is set; live ping succeeded"
 
-    def post(self, payload: dict, *, previous_response_id: str | None = None) -> dict:
+    def post(self, payload: dict, *, previous_response_id: str | None = None, _retry: bool = True) -> dict:
+        try:
+            response = self._post_once(payload, previous_response_id)
+        except XAIClientError as exc:
+            message = str(exc)
+            if _retry and _is_unsupported_error(message):
+                stripped, removed = _fallback_payload(payload, message)
+                if removed and stripped != payload:
+                    self.capability_warnings.append(
+                        "capability fallback removed " + ", ".join(removed)
+                    )
+                    return self.post(stripped, previous_response_id=previous_response_id, _retry=False)
+            raise
+        self._last_payload = dict(payload)
+        if previous_response_id:
+            self._last_payload["previous_response_id"] = previous_response_id
+        return response
+
+    def _post_once(self, payload: dict, previous_response_id: str | None = None) -> dict:
         body = dict(payload)
         if previous_response_id:
             body["previous_response_id"] = previous_response_id
@@ -306,6 +496,21 @@ class XAIClient:
             reason = redact_secret(str(exc.reason), self.api_key)
             raise XAIClientError(f"xAI Responses API was unreachable: {reason}") from exc
 
+    def _continuation(self, inputs, tools) -> dict:
+        last = self._last_payload or {}
+        payload = {"model": self.model, "input": inputs}
+        if "reasoning" in last:
+            payload["reasoning"] = last["reasoning"]
+        if "prompt_cache_key" in last:
+            payload["prompt_cache_key"] = last["prompt_cache_key"]
+        if "text" in last:
+            payload["text"] = last["text"]
+        if "tools" in last:
+            payload["tools"] = last["tools"]
+        elif tools:
+            payload["tools"] = list(tools)
+        return payload
+
     def complete(
         self,
         *,
@@ -313,16 +518,27 @@ class XAIClient:
         text: str,
         tools: list[dict] | tuple[dict, ...] = (),
         image_path: Path | None = None,
+        image_paths: list[Path] | tuple[Path, ...] | None = None,
         tool_choice: str | dict | None = None,
         function_handlers: dict | None = None,
         max_function_rounds: int = 4,
+        schema: dict | None = None,
+        schema_name: str | None = None,
+        prompt_cache_key: str | None = None,
+        cwd: Path | None = None,
     ) -> StageCallResult:
+        del cwd
+        self.capability_warnings = []
         payload = self.build_payload(
             instructions=instructions,
             text=text,
             tools=tools,
             image_path=image_path,
+            image_paths=image_paths,
             tool_choice=tool_choice,
+            schema=schema,
+            schema_name_value=schema_name,
+            prompt_cache_key=prompt_cache_key,
         )
         response = self.post(payload)
         tool_calls: list[dict] = []
@@ -347,12 +563,7 @@ class XAIClient:
                 if not outputs:
                     break
                 response = self.post(
-                    {
-                        "model": self.model,
-                        "reasoning": {"effort": self.reasoning_effort},
-                        "input": outputs,
-                        "tools": list(tools),
-                    },
+                    self._continuation(outputs, tools),
                     previous_response_id=response.get("id"),
                 )
                 continue
@@ -360,18 +571,15 @@ class XAIClient:
             status = response.get("status")
             if status in {"incomplete", "in_progress"} and rounds < max_function_rounds:
                 rounds += 1
-                follow = {
-                    "model": self.model,
-                    "reasoning": {"effort": self.reasoning_effort},
-                    "input": [
+                follow = self._continuation(
+                    [
                         {
                             "role": "user",
                             "content": "Continue. Return one JSON object with the charter keys.",
                         }
                     ],
-                }
-                if tools:
-                    follow["tools"] = list(tools)
+                    tools,
+                )
                 response = self.post(follow, previous_response_id=response.get("id"))
                 continue
 
@@ -379,10 +587,8 @@ class XAIClient:
                 nudges += 1
                 rounds += 1
                 response = self.post(
-                    {
-                        "model": self.model,
-                        "reasoning": {"effort": self.reasoning_effort},
-                        "input": [
+                    self._continuation(
+                        [
                             {
                                 "role": "user",
                                 "content": (
@@ -391,8 +597,8 @@ class XAIClient:
                                 ),
                             }
                         ],
-                        "tools": list(tools),
-                    },
+                        tools,
+                    ),
                     previous_response_id=response.get("id"),
                 )
                 continue
@@ -406,6 +612,7 @@ class XAIClient:
             thinking=thinking,
             images=images,
             raw=response,
+            warnings=list(self.capability_warnings),
         )
 
     @staticmethod

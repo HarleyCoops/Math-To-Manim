@@ -4,14 +4,30 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 import py_compile
 import re
 from pathlib import Path
 
 from grok.models import ARTIFACT_NAMES
 
-_BLOCKED_IMPORTS = {"os", "subprocess", "socket", "requests", "urllib", "httpx", "shutil"}
-_BLOCKED_CALLS = {"eval", "exec", "compile", "open", "__import__"}
+_ALLOWED_IMPORTS = {"manim", "numpy", "math"}
+_BLOCKED_CALLS = {
+    "eval",
+    "exec",
+    "compile",
+    "open",
+    "__import__",
+    "getattr",
+    "setattr",
+    "load",
+    "save",
+    "loadtxt",
+    "savetxt",
+    "fromfile",
+    "tofile",
+    "memmap",
+}
 
 
 def _as_bool(value):
@@ -177,7 +193,20 @@ def discover_scene_classes(tree: ast.AST) -> list[str]:
     return found
 
 
+def _import_root(name: str) -> str:
+    return (name or "").split(".")[0]
+
+
+def _call_name(node: ast.Call) -> str:
+    if isinstance(node.func, ast.Name):
+        return node.func.id
+    if isinstance(node.func, ast.Attribute):
+        return node.func.attr
+    return ""
+
+
 def validate_scene_source(source: str) -> tuple[list[str], str | None]:
+    """Allowlist screen: manim, numpy, and math only; one ThreeDScene."""
     failures: list[str] = []
     try:
         tree = ast.parse(source)
@@ -187,14 +216,25 @@ def validate_scene_source(source: str) -> tuple[list[str], str | None]:
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name.split(".")[0] in _BLOCKED_IMPORTS:
-                    failures.append(f"grok_scene.py: blocked import {alias.name!r}")
+                root = _import_root(alias.name)
+                if root not in _ALLOWED_IMPORTS:
+                    failures.append(
+                        f"grok_scene.py: imports must be manim, numpy, or math (found {alias.name!r})"
+                    )
         elif isinstance(node, ast.ImportFrom):
-            if (node.module or "").split(".")[0] in _BLOCKED_IMPORTS:
-                failures.append(f"grok_scene.py: blocked import {node.module!r}")
-        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-            if node.func.id in _BLOCKED_CALLS:
-                failures.append(f"grok_scene.py: blocked call {node.func.id}()")
+            if node.level:
+                failures.append("grok_scene.py: relative imports are not allowed")
+            root = _import_root(node.module or "")
+            if root not in _ALLOWED_IMPORTS:
+                failures.append(
+                    f"grok_scene.py: imports must be manim, numpy, or math (found {node.module!r})"
+                )
+        elif isinstance(node, ast.Attribute) and node.attr.startswith("__"):
+            failures.append(f"grok_scene.py: dunder access {node.attr!r} is not allowed")
+        elif isinstance(node, ast.Call):
+            name = _call_name(node)
+            if name in _BLOCKED_CALLS:
+                failures.append(f"grok_scene.py: blocked call {name}()")
 
     if re_search_camera_animate(source):
         failures.append(
@@ -202,12 +242,44 @@ def validate_scene_source(source: str) -> tuple[list[str], str | None]:
             "use move_camera or set_camera_orientation"
         )
 
-    scene_classes = discover_scene_classes(tree)
+    scene_classes = [
+        name
+        for name in discover_scene_classes(tree)
+        if _class_is_three_d(tree, name)
+    ]
     if len(scene_classes) != 1:
         failures.append(
-            f"grok_scene.py: expected exactly one Scene subclass, found {len(scene_classes)}"
+            f"grok_scene.py: expected exactly one ThreeDScene, found {len(scene_classes)}"
         )
-    return failures, scene_classes[0] if len(scene_classes) == 1 else None
+        return failures, None
+    scene_name = scene_classes[0]
+    if not _scene_name_allowed(scene_name):
+        failures.append(
+            "grok_scene.py: scene class must end in Journey or Story"
+            if not os.getenv("GROK_SCENE_CLASS", "").strip()
+            else f"grok_scene.py: scene class must be {os.getenv('GROK_SCENE_CLASS').strip()}"
+        )
+        return failures, None
+    if failures:
+        return failures, None
+    return [], scene_name
+
+
+def _class_is_three_d(tree: ast.AST, class_name: str) -> bool:
+    for node in tree.body if isinstance(tree, ast.Module) else []:
+        if isinstance(node, ast.ClassDef) and node.name == class_name:
+            for base in node.bases:
+                base_name = base.id if isinstance(base, ast.Name) else ""
+                if base_name == "ThreeDScene":
+                    return True
+    return False
+
+
+def _scene_name_allowed(name: str) -> bool:
+    expected = os.getenv("GROK_SCENE_CLASS", "").strip()
+    if expected:
+        return name == expected
+    return name.endswith("Journey") or name.endswith("Story")
 
 
 def re_search_camera_animate(source: str) -> bool:

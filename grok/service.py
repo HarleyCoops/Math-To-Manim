@@ -57,6 +57,43 @@ class GrokService:
     def run(self, request: RunRequest) -> dict:
         return self.harness.run(request)
 
+    def resume(self, run_id: str, **overrides) -> dict:
+        return self.harness.resume(run_id, **overrides)
+
+    def render_existing(self, run_id: str, **kwargs) -> dict:
+        return self.harness.render_existing(run_id, **kwargs)
+
+    def _job_path(self, job_id: str) -> Path:
+        return self.runs_dir / "jobs" / f"{job_id}.json"
+
+    def _write_job(self, job: Job) -> None:
+        path = self._job_path(job.id)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_suffix(".tmp")
+        temporary.write_text(json.dumps(job.to_dict(), indent=2), encoding="utf-8")
+        temporary.replace(path)
+
+    def _read_job(self, job_id: str) -> Job | None:
+        if not job_id or Path(job_id).name != job_id:
+            return None
+        path = self._job_path(job_id)
+        if not path.is_file():
+            return None
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return None
+        return Job(
+            id=data.get("id", job_id),
+            prompt=data.get("prompt", ""),
+            status=data.get("status", "queued"),
+            created_utc=data.get("created_utc", ""),
+            options=data.get("options") or {},
+            run_id=data.get("run_id"),
+            manifest=data.get("manifest"),
+            error=data.get("error"),
+        )
+
     def _new_job(self, request: RunRequest) -> Job:
         if not request.prompt or not request.prompt.strip():
             raise ValueError("prompt must be a non-empty string")
@@ -68,6 +105,7 @@ class GrokService:
         )
         with self._lock:
             self._jobs[job.id] = job
+        self._write_job(job)
         return job
 
     def _execute(self, job: Job, request: RunRequest) -> None:
@@ -81,16 +119,32 @@ class GrokService:
             with self._lock:
                 job.error = f"{type(exc).__name__}: {exc}"
                 job.status = "failed"
+        self._write_job(job)
+
+    def _execute_saved(self, job: Job, action) -> None:
+        try:
+            manifest = action()
+            with self._lock:
+                job.manifest = manifest
+                job.run_id = manifest.get("run_id") or job.run_id
+                job.status = "completed"
+        except Exception as exc:  # noqa: BLE001 — job boundary
+            with self._lock:
+                job.error = f"{type(exc).__name__}: {exc}"
+                job.status = "failed"
+        self._write_job(job)
 
     def run_sync(self, request: RunRequest) -> Job:
         job = self._new_job(request)
         job.status = "running"
+        self._write_job(job)
         self._execute(job, request)
         return job
 
     def submit(self, request: RunRequest) -> Job:
         job = self._new_job(request)
         job.status = "running"
+        self._write_job(job)
         thread = threading.Thread(
             target=self._execute,
             args=(job, request),
@@ -100,11 +154,47 @@ class GrokService:
         thread.start()
         return job
 
+    def submit_resume(self, run_id: str, **overrides) -> Job:
+        request = RunRequest(prompt=f"resume {run_id}", offline=True)
+        job = self._new_job(request)
+        job.prompt = f"resume {run_id}"
+        job.options = {"run_id": run_id, "command": "resume", **overrides}
+        job.status = "running"
+        job.run_id = run_id
+        self._write_job(job)
+        thread = threading.Thread(
+            target=self._execute_saved,
+            args=(job, lambda: self.harness.resume(run_id, **overrides)),
+            name=f"grok-resume-{job.id}",
+            daemon=True,
+        )
+        thread.start()
+        return job
+
+    def submit_render_existing(self, run_id: str, **kwargs) -> Job:
+        request = RunRequest(prompt=f"render {run_id}", offline=True)
+        job = self._new_job(request)
+        job.prompt = f"render {run_id}"
+        job.options = {"run_id": run_id, "command": "render-existing", **kwargs}
+        job.status = "running"
+        job.run_id = run_id
+        self._write_job(job)
+        thread = threading.Thread(
+            target=self._execute_saved,
+            args=(job, lambda: self.harness.render_existing(run_id, **kwargs)),
+            name=f"grok-render-{job.id}",
+            daemon=True,
+        )
+        thread.start()
+        return job
+
     def get_job(self, job_id: str) -> Job | None:
+        stored = self._read_job(job_id)
         with self._lock:
-            job = self._jobs.get(job_id)
+            job = stored or self._jobs.get(job_id)
             if job is None:
                 return None
+            self._jobs[job.id] = job
             if job.status == "running" and job.run_id:
                 manifest_path = self.runs_dir / job.run_id / "manifest.json"
                 try:

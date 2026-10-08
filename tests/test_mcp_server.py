@@ -158,9 +158,9 @@ def test_create_and_inspect_animation_offline(isolated_service):
 
 def test_create_animation_default_model_is_grok():
     fields = mcp_server.CreateAnimationInput.model_fields
-    assert fields["model"].default == DEFAULT_MCP_MODEL == "grok-4.6"
+    assert fields["model"].default == DEFAULT_MCP_MODEL == "grok-4.7"
     parsed = mcp_server.CreateAnimationInput(prompt="the heat equation")
-    assert parsed.model == "grok-4.6"
+    assert parsed.model == "grok-4.7"
     assert parsed.command is None
     assert parsed.image is None
 

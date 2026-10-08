@@ -5,8 +5,8 @@ This is the reference client for headless / scripted use: it spawns
 m2m_get_job (which reports live per-stage progress), and logs everything as
 JSONL so another process can tail the run.
 
-The server is the Grok 4.6 chain. ``m2m_create_animation`` defaults to
-model grok-4.6. Claude/Codex ``--command`` values are ignored.
+The server is the Grok chain. ``m2m_create_animation`` defaults to
+model grok-4.7. Claude/Codex ``--command`` values are ignored.
 
 Usage:
     python scripts/drive_mcp_pipeline.py "why does a spinning T-handle flip?" \
@@ -38,8 +38,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--render", action="store_true")
     parser.add_argument("-q", "--quality", default="l",
                         choices=list("lmhpk"))
-    parser.add_argument("--model", default="grok-4.6",
-                        help="Grok Responses model (default grok-4.6)")
+    parser.add_argument("--model", default="grok-4.7",
+                        help="Grok Responses model (default grok-4.7)")
     parser.add_argument("--image", default=None,
                         help="photographed homework page or diagram")
     parser.add_argument("--offline", action="store_true",
