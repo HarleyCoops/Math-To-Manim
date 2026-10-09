@@ -50,7 +50,7 @@ jobs:
             --quality "${QUALITY}"
       - name: Save video, frames, source and render logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: paper-film-${{ inputs.quality }}-${{ github.run_id }}
           path: runs/astra/cloud-${{ github.run_id }}-${{ inputs.quality }}/
