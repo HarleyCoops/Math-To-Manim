@@ -1,0 +1,21 @@
+{
+  "kind": "operator_delivery_revision",
+  "reason": "The user requested an explainer without a duration limit. The initial operator-chosen 220–235-second budget rushed captions; replace that budget to satisfy the actual educational goal.",
+  "duration_seconds": {
+    "minimum": 280,
+    "maximum": 420
+  },
+  "quality": "m",
+  "reading_rule": "Each fully visible card needs (title and prose word count)/2.5 + 1 seconds, plus at least 5 seconds for a short formula and 10 seconds for a multiline formula. Explanatory diagram labels also need reading time. Allow transitions and camera setup separately.",
+  "source_before_sha256": "af92fdfa826ce76c5aea858cfe373089ee8acd4b0747b99bef833540a455e821",
+  "required_repairs": [
+    "Clear outgoing fixed text before revealing incoming fixed text; no simultaneous fade overlap in the same bands.",
+    "Replace 0=pi by E=0 or zero error: x=pi.",
+    "Identify log-denominator U and exponent nu coordinates when depth becomes the exponent axis; attach each section label to its section.",
+    "Explain fractional part as discarding the integer part of q*pi and wrapping the remainder around one circle turn.",
+    "State the distance bound applies to every positive integer q.",
+    "Explain the doubled-block geometric bounds have a finite sum.",
+    "Explain every nearest-multiple n group is bounded by a constant times the corresponding q-term, rather than saying merely sine comparison transfers convergence.",
+    "Keep the mathematical source scope and exact computed geometry; use short headings and connected sentences. One principal formula and at most two prose lines at a time."
+  ]
+}

@@ -44,10 +44,17 @@ jobs:
           PAPER: ${{ inputs.paper }}
           QUALITY: ${{ inputs.quality }}
         run: |
-          python scripts/render_paper_cloud.py \
-            --candidate "papers/${PAPER}/candidate.json" \
-            --output "runs/astra/cloud-${GITHUB_RUN_ID}-${QUALITY}" \
-            --quality "${QUALITY}"
+          if [ "${PAPER}" = "pi-approximations" ]; then
+            python scripts/render_pi_episode.py \
+              --candidate "papers/${PAPER}/candidate.json" \
+              --output "runs/astra/cloud-${GITHUB_RUN_ID}-${QUALITY}" \
+              --quality "${QUALITY}"
+          else
+            python scripts/render_paper_cloud.py \
+              --candidate "papers/${PAPER}/candidate.json" \
+              --output "runs/astra/cloud-${GITHUB_RUN_ID}-${QUALITY}" \
+              --quality "${QUALITY}"
+          fi
       - name: Save video, frames, source and render logs
         if: always()
         uses: actions/upload-artifact@v4

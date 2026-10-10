@@ -1,0 +1,25 @@
+{
+  "status": "completed",
+  "model": "gpt-6-astra",
+  "evaluator": "disabled",
+  "execution": "math_to_manim_render_worker",
+  "review_status": "not_reviewed",
+  "authoring_run_id": "20261010-001110-9925f8",
+  "run_id": "cloud-38010221716-m",
+  "candidate": "papers/pi-approximations/candidate.json",
+  "candidate_sha256": "75f805a46cb40e8301a9dc59d3e308d093428bc5553b551a1dddfdc040638423",
+  "rendered_source": "renders/001/scene.py",
+  "source_sha256": "57d2945c18dffa0b83253e075ce7d99f7f05f79d532bef33edd12f0ab5247d0b",
+  "render_quality": "m",
+  "planned_duration_range_seconds": [
+    280,
+    420
+  ],
+  "frame_quantization_tolerance_seconds": 2,
+  "events": [],
+  "video": "renders/001/media/videos/720p30/AstraFilm.mp4",
+  "video_sha256": "a02045fd73076d43cab8eba39096b3ea8759d41e13b53960383a798dbe87c564",
+  "contact_sheet": "renders/001/contact_sheet.png",
+  "duration_seconds": 419.7,
+  "completed_utc": "2026-10-10T00:47:35.390410+00:00"
+}

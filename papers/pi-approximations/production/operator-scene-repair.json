@@ -1,0 +1,8 @@
+{
+  "kind": "operator_scene_cleanup_repair",
+  "reason": "The first completed cloud movie retained promoted exponent sections in later diagrams. Scene.remove(group) does not retire every separately promoted child.",
+  "before_candidate_sha256": "75f805a46cb40e8301a9dc59d3e308d093428bc5553b551a1dddfdc040638423",
+  "after_candidate_sha256": "2e6923a3e14a8d3e17ba0f10a7060a56220d3b69fccba5ccfac9e3edbe867f76",
+  "patch_scope": "Only outgoing diagram cleanup; mathematics, timing, geometry and captions unchanged.",
+  "first_render_run_id": "cloud-38010221716-m"
+}

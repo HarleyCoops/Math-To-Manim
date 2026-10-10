@@ -1,0 +1,37 @@
+name: Render the pi approximation film
+run-name: How close can fractions get to pi - 720p film
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    container:
+      image: manimcommunity/manim:v0.19.0
+      options: --user root
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install FFmpeg and Math-To-Manim
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends ffmpeg
+          python -m pip install -e .
+      - name: Render the retained source without model credentials
+        run: |
+          python scripts/render_pi_episode.py \
+            --candidate papers/pi-approximations/candidate.json \
+            --output runs/astra/pi-cloud-${GITHUB_RUN_ID} \
+            --quality m
+      - name: Preserve the movie, source, frames, metadata and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pi-film-720p-${{ github.run_id }}
+          path: runs/astra/pi-cloud-${{ github.run_id }}/
+          retention-days: 30
+          if-no-files-found: error

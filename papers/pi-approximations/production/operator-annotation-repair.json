@@ -1,0 +1,7 @@
+{
+  "kind": "operator_annotation_repair",
+  "reason": "Initial actual frame 05 showed the simplex annotation crossing its faces. Move it down along z to project below the sculpture and above the caption band.",
+  "before_candidate_sha256": "2e6923a3e14a8d3e17ba0f10a7060a56220d3b69fccba5ccfac9e3edbe867f76",
+  "after_candidate_sha256": "4acce52063b1c2d1cf5d4dc95eb6c78df7afd69f33fe1c5afc957f6c1c0becbf",
+  "patch_scope": "Only simplex annotation z position; mathematics, reading holds and total duration unchanged."
+}
