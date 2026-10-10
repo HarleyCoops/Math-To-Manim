@@ -1,0 +1,229 @@
+{
+  "run_id": "20261010-001110-9925f8",
+  "model": "gpt-6-astra",
+  "authoring_status": "completed",
+  "review_mode": "off",
+  "review_status": "astra_only",
+  "film_status": "pending_cloud_render",
+  "completed_utc": "2026-10-10T00:37:47.585173+00:00",
+  "candidate_sha256": "75f805a46cb40e8301a9dc59d3e308d093428bc5553b551a1dddfdc040638423",
+  "stage_bindings": {
+    "brief": {
+      "hashes": {
+        "request.json": "025276e6f686044f08593438b8152260c05c0989c8d2107bef0f9f894b793882",
+        "brief.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4"
+      }
+    },
+    "mathematics": {
+      "hashes": {
+        "request.json": "025276e6f686044f08593438b8152260c05c0989c8d2107bef0f9f894b793882",
+        "brief.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4",
+        "mathematics.json": "f1cc5d2efbbfd8cb11259b2ade74d2adf97a8d1ad38bea7b75ffe9b2fb61aca9"
+      }
+    },
+    "storyboard": {
+      "hashes": {
+        "request.json": "025276e6f686044f08593438b8152260c05c0989c8d2107bef0f9f894b793882",
+        "brief.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4",
+        "mathematics.json": "f1cc5d2efbbfd8cb11259b2ade74d2adf97a8d1ad38bea7b75ffe9b2fb61aca9",
+        "storyboard.json": "5de50e1eaa281d60c21f0d51f4234af124831e65d9b44ffc53703e7e8ec7a0a7"
+      }
+    },
+    "scene": {
+      "hashes": {
+        "request.json": "025276e6f686044f08593438b8152260c05c0989c8d2107bef0f9f894b793882",
+        "brief.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4",
+        "mathematics.json": "f1cc5d2efbbfd8cb11259b2ade74d2adf97a8d1ad38bea7b75ffe9b2fb61aca9",
+        "storyboard.json": "5de50e1eaa281d60c21f0d51f4234af124831e65d9b44ffc53703e7e8ec7a0a7",
+        "scene.json": "75f805a46cb40e8301a9dc59d3e308d093428bc5553b551a1dddfdc040638423"
+      }
+    }
+  },
+  "astra_audits": [
+    {
+      "file": "attempts/001-brief-astra-audit.json",
+      "sha256": "db42456108ecd6da5563084b2afda063bc1114a31fb9f724f24e2030b8d3a2f3",
+      "binding": {
+        "model": "gpt-6-astra",
+        "input_hashes": {
+          "attempts/001-brief-candidate.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4"
+        },
+        "role": "astra-evidence-auditor",
+        "score_kind": "uncalibrated_model_judgment"
+      },
+      "assessment": {
+        "mathematics": 1.0,
+        "pedagogy": 0.9,
+        "visual_design": 0.95,
+        "implementation": 0.95,
+        "verified": true,
+        "defects": [],
+        "feedback": "Accept at brief checkpoint. Eight shots total 232 seconds. The theorem quantifiers, ineffective threshold, determinant schematic, spacing estimate and Lean scope match the supplied upstream sources. Independent high-precision recomputation confirms the displayed approximation errors and n=355 summand; the logarithmic reference and block exponent are correct. For downstream development, shot 5 should explain Taylor packets and row independence before introducing their notation. Shot 7 should explicitly explain why individual spike bounds are insufficient, state c>0 applies to every positive integer q, and label geometric block heights as bounds with unspecified constants. Preserve these explanations when allocating reading holds.",
+        "evidence": [
+          "attempts/001-brief-candidate.json"
+        ],
+        "limitations": [
+          "Verification covers the brief and sampled mathematical checks, not an independent verification of the complete research proof or a Lean execution.",
+          "Shots 5 and 7 are conceptually dense; exact overlay wording and formula-reading holds require storyboard verification.",
+          "Scene compliance, numerical geometry, contrast, occlusion, camera motion and actual duration require downstream source and render evidence."
+        ],
+        "repair_stage": "storyboard"
+      }
+    },
+    {
+      "file": "attempts/002-mathematics-astra-audit.json",
+      "sha256": "ca05997c3a4fce1fe14710155ff5417233e46ef7e99cbe5aefba1d1a09a24b2d",
+      "binding": {
+        "model": "gpt-6-astra",
+        "input_hashes": {
+          "brief.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4",
+          "attempts/002-mathematics-candidate.json": "f1cc5d2efbbfd8cb11259b2ade74d2adf97a8d1ad38bea7b75ffe9b2fb61aca9"
+        },
+        "role": "astra-evidence-auditor",
+        "score_kind": "uncalibrated_model_judgment"
+      },
+      "assessment": {
+        "mathematics": 1.0,
+        "pedagogy": 0.9,
+        "visual_design": 0.95,
+        "implementation": 1.0,
+        "verified": true,
+        "defects": [],
+        "feedback": "Accept at the mathematics checkpoint. Sections 1–3 correctly specify signed-error rescaling, logarithmic coordinates, the classical quadratic benchmark and infinite-denominator quantifiers. Independent 85-digit Decimal calculations confirmed the convergent data, five sine summands, partial sum through 1000 and circle coordinates. Sections 4–5 agree with the pinned manuscript: the threshold is epsilon-dependent and ineffective; the Gaussian-integer floor applies after scaling and denominator clearing; repeated Taylor degrees cancel within the same group. Section 7 correctly derives pairwise separation, the block exponent 2nu−5, geometric decay at nu=9/4 and the 8/pi grouping bound transferring convergence to the sine series. No blocking mathematical discrepancy was found. During storyboarding, condense Sections 5 and 7 into paced explanatory overlays, retaining technical details in the dossier. Explicitly identify the envelope surface’s exponent axis and preserve the distinction between computed circle positions and schematic bounds.",
+        "evidence": [
+          "brief.json",
+          "attempts/002-mathematics-candidate.json"
+        ],
+        "limitations": [
+          "Verification covers this mathematical dossier and its agreement with inspected source passages; it does not certify the complete research proof or a Lean execution.",
+          "No scene or render is required at this checkpoint. Scores for visual design and implementation concern the supplied mathematical specifications, not demonstrated rendering.",
+          "The 232-second allocation is valid, but actual reading holds, formula legibility, camera motion and closely spaced circle-point visibility require downstream verification.",
+          "The retained Lean scope covers the exponent statement and excludes Flint–Hills convergence."
+        ],
+        "repair_stage": "storyboard"
+      }
+    },
+    {
+      "file": "attempts/003-storyboard-astra-audit.json",
+      "sha256": "af1cc5b991b3aeaaeab36ccc4d3265791e57e7453321dbbf22d7978447c5ed46",
+      "binding": {
+        "model": "gpt-6-astra",
+        "input_hashes": {
+          "brief.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4",
+          "mathematics.json": "f1cc5d2efbbfd8cb11259b2ade74d2adf97a8d1ad38bea7b75ffe9b2fb61aca9",
+          "attempts/003-storyboard-candidate.json": "5de50e1eaa281d60c21f0d51f4234af124831e65d9b44ffc53703e7e8ec7a0a7"
+        },
+        "role": "astra-evidence-auditor",
+        "score_kind": "uncalibrated_model_judgment"
+      },
+      "assessment": {
+        "mathematics": 0.97,
+        "pedagogy": 0.74,
+        "visual_design": 0.88,
+        "implementation": 0.9,
+        "verified": true,
+        "defects": [
+          "Shot 7’s final caption exceeds its allocated reading time.",
+          "Shot 7 leaves essential steps of the convergence explanation implicit for the stated audience."
+        ],
+        "feedback": "The eight shots total 234 seconds. Independent high-precision calculations confirm all eight supplied convergent errors and logarithmic heights, the four planned sine summands, and the circle’s minimum pair distance. The eventual theorem, Gaussian-integer floor, grouped Taylor cancellation and block exponent agree with the pinned source. Attribution and schematic labeling are appropriately scoped.\n\nIn attempts/003-storyboard-candidate.json, shot 7 at 211–220 seconds contains 23 prose words, requiring at least 10.2 seconds under the specified rule, before transitions or inspecting the grouping diagram. Shorten this caption or redistribute time while retaining the 220–235-second total. Also explicitly budget formula-reading time for the definition at 53–65 seconds and the long block inequality at 193–204 seconds; the global reading-rate promise alone does not establish those holds.\n\nShot 7 at 174–211 seconds needs screen text explaining the circle and the convergence deduction. Define fractional parts as wrapping qπ around a unit circle, and state that the distance bound applies to every positive integer q. Explain that bounding individual spikes alone does not control their total, whereas spacing limits how many occur together. After the K=1,2,4,… blocks shrink by 1/√2, explicitly say that these geometric bounds have a finite sum. The final phrase 'Sine comparison transfers convergence' should explain that each nearest-multiple group is bounded by a constant times the corresponding q-term. Replace or simplify existing captions to accommodate these explanations rather than adding simultaneous text.\n\nThe visual plan otherwise provides purposeful camera changes, accurate rescaled axes, consistent colors, separated overlay bands and suitably qualified research illustrations.",
+        "evidence": [
+          "brief.json",
+          "mathematics.json",
+          "attempts/003-storyboard-candidate.json"
+        ],
+        "limitations": [
+          "Verification is limited to storyboard content and independent mathematical spot checks; it is not certification of the manuscript proof or Lean execution.",
+          "Scene source, rendered frames and motion are not required at this checkpoint. Compilation, projection, actual text size, timing and camera behavior remain downstream checks.",
+          "The circle includes points only 0.008851424871447 turns apart; later rendering must keep those markers visibly distinct without altering their positions.",
+          "The three-line exponent definition and long block inequality need particular attention to readable sizing within the reserved formula band."
+        ],
+        "repair_stage": "storyboard"
+      }
+    },
+    {
+      "file": "attempts/004-scene-astra-audit.json",
+      "sha256": "f6a8dbb53b35240a37bacf9a6b5656cae4912d59431f0bfe2d84d621072c5921",
+      "binding": {
+        "model": "gpt-6-astra",
+        "input_hashes": {
+          "brief.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4",
+          "mathematics.json": "f1cc5d2efbbfd8cb11259b2ade74d2adf97a8d1ad38bea7b75ffe9b2fb61aca9",
+          "storyboard.json": "5de50e1eaa281d60c21f0d51f4234af124831e65d9b44ffc53703e7e8ec7a0a7",
+          "attempts/004-scene-candidate.json": "af92fdfa826ce76c5aea858cfe373089ee8acd4b0747b99bef833540a455e821"
+        },
+        "role": "astra-evidence-auditor",
+        "score_kind": "uncalibrated_model_judgment"
+      },
+      "assessment": {
+        "mathematics": 0.96,
+        "pedagogy": 0.72,
+        "visual_design": 0.77,
+        "implementation": 0.86,
+        "verified": true,
+        "defects": [
+          "Several cards lack sufficient reading time for their titles, explanatory sentences and formulas.",
+          "Card transitions superimpose outgoing and incoming text in the same overlay bands.",
+          "The exponent surface and fractional-parts circle omit essential coordinate explanations."
+        ],
+        "feedback": "Source-level verification completed. Independently recomputed all seven plotted convergent coordinates, four displayed sine summands and eight fractional parts; they match. The theorem qualifications, Gaussian-integer floor and dyadic block estimate agree with the pinned source. Python syntax compiles in memory; 28 timed cards total 234 seconds, with permitted imports and camera methods.\n\nRepair pacing in storyboard.json and the candidate's beat calls. In attempts/004-scene-candidate.json content, lines 234–237 provide only 4.4 fully visible seconds for the envelope explanation plus three formulas. Lines 332–336 provide 8.4 seconds for approximately 26 title/prose words, requiring roughly 11.4 seconds before formula reading. Lines 445–449 provide 8.4 seconds for approximately 28 title/prose words, requiring roughly 12.2 seconds before the sine inequality. Shorten headings and prose, remove repetition, and redistribute holds while retaining 220–235 seconds. Count formulas and diagram labels in the reading budget.\n\nAt candidate lines 73–90, FadeIn(new_card) and FadeOut(old_card) run simultaneously at identical text positions. This produces overlapping text during every replacement. Clear the outgoing card before revealing the incoming card, and include both transition intervals in the timing budget.\n\nAt lines 212–237, the surface changes depth from decorative to the exponent coordinate without an axis label or explanation; the three colored sections also lack corresponding labels. Identify U and ν and attach each exponent to its section. At lines 374–407, explain that a point's position is the fractional part of qπ—discard the integer part, then wrap the remainder around one turn. The title alone does not teach this mapping to the specified audience.\n\nMinor notation correction: replace the literal '0=π' at line 124 with 'E=0' or 'zero error: x=π'.",
+        "evidence": [
+          "brief.json",
+          "mathematics.json",
+          "storyboard.json",
+          "attempts/004-scene-candidate.json"
+        ],
+        "limitations": [
+          "Verification covers scene source and independent numerical checks, not rendered appearance or successful Manim execution.",
+          "No render frames were supplied or required at this checkpoint. Host rendering must check formula size, projected labels, band occlusion, camera transitions and actual duration.",
+          "The complete research proof and Lean comparator were not independently verified or executed."
+        ],
+        "repair_stage": "storyboard"
+      }
+    },
+    {
+      "file": "attempts/005-scene-astra-audit.json",
+      "sha256": "e347857366ee2db83574387c61c264642040c70b9be3059a435f740acaf4b35f",
+      "binding": {
+        "model": "gpt-6-astra",
+        "input_hashes": {
+          "brief.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4",
+          "mathematics.json": "f1cc5d2efbbfd8cb11259b2ade74d2adf97a8d1ad38bea7b75ffe9b2fb61aca9",
+          "storyboard.json": "5de50e1eaa281d60c21f0d51f4234af124831e65d9b44ffc53703e7e8ec7a0a7",
+          "attempts/005-scene-candidate.json": "75f805a46cb40e8301a9dc59d3e308d093428bc5553b551a1dddfdc040638423",
+          "operator-delivery-brief.json": "0c598cf6fe212791fd56e9b5c80e80521f7fcf4cb2c372966acbbbffedfd6c5d"
+        },
+        "role": "astra-evidence-auditor",
+        "score_kind": "uncalibrated_model_judgment"
+      },
+      "assessment": {
+        "mathematics": 0.97,
+        "pedagogy": 0.88,
+        "visual_design": 0.88,
+        "implementation": 0.93,
+        "verified": true,
+        "defects": [],
+        "feedback": "Acceptable at the scene-source checkpoint. Independently recomputed the seven logarithmic samples, four sine summands, opening errors and eight fractional parts using 85-digit arithmetic; displayed coordinates agree to floating-point precision. The determinant schematic preserves the distinction between the rational minor and its cleared Gaussian-integer floor. The spacing exponent, geometric summability and 8/pi group bound agree with the supplied source.\n\nIn attempts/005-scene-candidate.json, source lines 88–150 clear outgoing cards before revealing replacements and separately budget setup, animation and reading. The 27 planned holds total 384.4 seconds; transitions and motion bring the planned duration to 419.7 seconds, within the revised budget. Lines 152–165 correct the error-axis origin; 251–275 identify exponent coordinates and attach section labels; 438–490 supply the requested fractional-part, universal-distance, summability and group-transfer explanations.\n\nThe source compiles in memory, defines one AstraFilm ThreeDScene, uses only permitted imports and contains no external I/O. Modest meshes, fixed overlay bands and prescribed camera methods support implementation acceptance. No blocking source defect observed.",
+        "evidence": [
+          "brief.json",
+          "mathematics.json",
+          "storyboard.json",
+          "attempts/005-scene-candidate.json",
+          "operator-delivery-brief.json"
+        ],
+        "limitations": [
+          "Verification covers source-level evidence, not rendered output. No frames were supplied or render performed; the host must check actual duration, scene execution, projected label separation, formula readability, band occlusion and continuous motion.",
+          "Continued fractions and polynomial coefficient budgets remain terse for the stated audience; brief plain-language definitions would strengthen the teaching.",
+          "The planned duration leaves only 0.3 seconds below the maximum.",
+          "This audit does not independently verify the complete research proof, execute Lean or constitute TypeSafe Jev approval."
+        ],
+        "repair_stage": "scene"
+      }
+    }
+  ],
+  "limitations": [
+    "Completed authoring is not evidence of a completed film.",
+    "Cloud render-existing output is not_reviewed until actual evidence is inspected.",
+    "Astra scores are uncalibrated model judgments, not independent proof certificates."
+  ]
+}
