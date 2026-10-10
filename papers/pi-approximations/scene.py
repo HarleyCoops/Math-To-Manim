@@ -114,6 +114,11 @@ class AstraFilm(ThreeDScene):
                 self.remove_fixed_in_frame_mobjects(self.card)
                 self.remove(self.card)
             if world is not None:
+                # Child animations can promote geometry to top-level scene objects.
+                # Retire the entire old family, including those promoted children.
+                retired_family = self.world.get_family()
+                self.remove(*retired_family)
+                assert not set(retired_family).intersection(self.get_mobject_family_members())
                 if self.billboards:
                     self.remove_fixed_orientation_mobjects(*self.billboards)
                     self.remove(*self.billboards)
@@ -312,7 +317,7 @@ class AstraFilm(ThreeDScene):
                     if x+2*y+3*z <= 6:
                         simplex.add(dot(sp(x,y,z), TEAL, .037))
         simplex.add(label("Illustrative weights; low-dimensional slice",
-                          [0, 0, -1.45], 24))
+                          [0, 0, -2.55], 24))
         beat("PROOF SCHEMATIC",
              r"x+2y+3z\le6,\qquad x,y,z\ge0",
              ("Jets are finite Taylor-coefficient packets at separated centers.",

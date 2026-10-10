@@ -5,8 +5,8 @@
   "review_mode": "off",
   "review_status": "astra_only",
   "film_status": "pending_cloud_render",
-  "completed_utc": "2026-10-10T00:37:47.585173+00:00",
-  "candidate_sha256": "75f805a46cb40e8301a9dc59d3e308d093428bc5553b551a1dddfdc040638423",
+  "completed_utc": "2026-10-10T00:55:39.647030+00:00",
+  "candidate_sha256": "4acce52063b1c2d1cf5d4dc95eb6c78df7afd69f33fe1c5afc957f6c1c0becbf",
   "stage_bindings": {
     "brief": {
       "hashes": {
@@ -35,7 +35,9 @@
         "brief.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4",
         "mathematics.json": "f1cc5d2efbbfd8cb11259b2ade74d2adf97a8d1ad38bea7b75ffe9b2fb61aca9",
         "storyboard.json": "5de50e1eaa281d60c21f0d51f4234af124831e65d9b44ffc53703e7e8ec7a0a7",
-        "scene.json": "75f805a46cb40e8301a9dc59d3e308d093428bc5553b551a1dddfdc040638423"
+        "scene.json": "4acce52063b1c2d1cf5d4dc95eb6c78df7afd69f33fe1c5afc957f6c1c0becbf",
+        "operator-scene-repair.json": "b6ec01656754aa6e779cb16091e906c911fd7fa2791858ef9eb1a5fe95150efc",
+        "operator-annotation-repair.json": "5fa36c251570b2ea8b00ec13ca131f39b232196b25e94a68a951ae25f4507706"
       }
     }
   },
@@ -216,6 +218,97 @@
           "Continued fractions and polynomial coefficient budgets remain terse for the stated audience; brief plain-language definitions would strengthen the teaching.",
           "The planned duration leaves only 0.3 seconds below the maximum.",
           "This audit does not independently verify the complete research proof, execute Lean or constitute TypeSafe Jev approval."
+        ],
+        "repair_stage": "scene"
+      }
+    },
+    {
+      "file": "attempts/006-scene-astra-audit.json",
+      "sha256": "3bbe715408767b73fbca6e42a9aae5f9ab2fe6decf69df49306cc974d2b09ed7",
+      "binding": {
+        "model": "gpt-6-astra",
+        "input_hashes": {
+          "request.json": "025276e6f686044f08593438b8152260c05c0989c8d2107bef0f9f894b793882",
+          "brief.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4",
+          "mathematics.json": "f1cc5d2efbbfd8cb11259b2ade74d2adf97a8d1ad38bea7b75ffe9b2fb61aca9",
+          "storyboard.json": "5de50e1eaa281d60c21f0d51f4234af124831e65d9b44ffc53703e7e8ec7a0a7",
+          "attempts/006-scene-candidate.json": "2e6923a3e14a8d3e17ba0f10a7060a56220d3b69fccba5ccfac9e3edbe867f76",
+          "operator-delivery-brief.json": "0c598cf6fe212791fd56e9b5c80e80521f7fcf4cb2c372966acbbbffedfd6c5d",
+          "operator-scene-repair.json": "b6ec01656754aa6e779cb16091e906c911fd7fa2791858ef9eb1a5fe95150efc"
+        },
+        "role": "astra-evidence-auditor",
+        "score_kind": "uncalibrated_model_judgment"
+      },
+      "assessment": {
+        "mathematics": 1.0,
+        "pedagogy": 0.95,
+        "visual_design": 0.9,
+        "implementation": 0.97,
+        "verified": true,
+        "defects": [],
+        "feedback": "The repair passes source-level review at the scene checkpoint. In attempts/006-scene-candidate.json, embedded source lines 117–121 collect self.world.get_family(), explicitly remove every member, and assert that none remains anywhere in the active scene family. This covers separately promoted descendants, including the exponent sections attached to self.world at line 281. Cleanup occurs before the replacement world is installed or revealed; old fixed-orientation labels are also deregistered. No blocking revision is indicated. The candidate SHA-256 matches operator-scene-repair.json. Independent arithmetic checks reproduce the opening errors, seven logarithmic error heights, four sine summands and eight fractional parts to displayed precision. The spacing estimate and nearest-multiple group bound agree with the supplied manuscript. Static timing arithmetic gives 384.4 seconds of holds plus 35.3 seconds of transitions, camera setup and animation, totaling 419.7 seconds within the revised delivery budget.",
+        "evidence": [
+          "request.json",
+          "brief.json",
+          "mathematics.json",
+          "storyboard.json",
+          "attempts/006-scene-candidate.json",
+          "operator-delivery-brief.json",
+          "operator-scene-repair.json"
+        ],
+        "limitations": [
+          "Verification is scoped to scene source and independent numerical checks. The repaired scene was not rendered or executed in Manim; its runtime assertion has not been observed passing.",
+          "No repaired frames were supplied. The host must verify that exponent sections disappear before the proof diagrams and remain absent throughout later shots, and inspect projected labels, formula readability, occlusions and continuous transitions.",
+          "The predecessor candidate was not among the supplied evidence, so an exact before/after diff was not independently established.",
+          "This assessment is neither TypeSafe Jev approval nor a complete research-proof verification or Lean certificate."
+        ],
+        "repair_stage": "scene"
+      }
+    },
+    {
+      "file": "attempts/007-scene-astra-audit.json",
+      "sha256": "2a57cd243dffba3d631d349bd61ccda6164b52f6a28df69ce3259bb977f1e46c",
+      "binding": {
+        "model": "gpt-6-astra",
+        "input_hashes": {
+          "request.json": "025276e6f686044f08593438b8152260c05c0989c8d2107bef0f9f894b793882",
+          "brief.json": "ecf2db351d15a77c9fb8e0d74d9d50a47adb9f85f839ec6c26e5b8df45fc68c4",
+          "mathematics.json": "f1cc5d2efbbfd8cb11259b2ade74d2adf97a8d1ad38bea7b75ffe9b2fb61aca9",
+          "storyboard.json": "5de50e1eaa281d60c21f0d51f4234af124831e65d9b44ffc53703e7e8ec7a0a7",
+          "attempts/007-scene-candidate.json": "4acce52063b1c2d1cf5d4dc95eb6c78df7afd69f33fe1c5afc957f6c1c0becbf",
+          "attempts/006-scene-candidate.json": "2e6923a3e14a8d3e17ba0f10a7060a56220d3b69fccba5ccfac9e3edbe867f76",
+          "operator-delivery-brief.json": "0c598cf6fe212791fd56e9b5c80e80521f7fcf4cb2c372966acbbbffedfd6c5d",
+          "operator-scene-repair.json": "b6ec01656754aa6e779cb16091e906c911fd7fa2791858ef9eb1a5fe95150efc",
+          "operator-annotation-repair.json": "5fa36c251570b2ea8b00ec13ca131f39b232196b25e94a68a951ae25f4507706",
+          "first-render-audit.json": "e4c97628011f0a2d27d2d54fd75901ec690abbcd5587c520c7251758fa2cc9a7"
+        },
+        "role": "astra-evidence-auditor",
+        "score_kind": "uncalibrated_model_judgment"
+      },
+      "assessment": {
+        "mathematics": 0.98,
+        "pedagogy": 0.93,
+        "visual_design": 0.9,
+        "implementation": 0.96,
+        "verified": true,
+        "defects": [],
+        "feedback": "Accept at the scene-source checkpoint. The 006→007 source diff changes only the simplex annotation at line 320 from [0, 0, -1.45] to [0, 0, -2.55]. Both candidate hashes match operator-annotation-repair.json. Whole-family removal and its absence assertion remain intact at lines 119–124; sequential outgoing/incoming overlay transitions also remain unchanged. Static timing independently totals 419.7 seconds: 384.4 seconds of holds, 16.2 of transitions, 12.6 of camera setup and 6.5 of diagram animation. In-memory compilation succeeds. Independent high-precision calculations confirm the opening errors, seven logarithmic samples, four summands and eight fractional parts. The theorem qualifications, determinant schematic and spacing deduction agree with the supplied manuscript passages. No further source revision is indicated. At the next render checkpoint, confirm the annotation clears both the simplex and caption band throughout its holds, and confirm exponent curves and leaders disappear from subsequent shots. first-render-audit.json reports those earlier defects in renders/001/frame_05.png and frame_04.png through frame_11.png respectively; these are prior-auditor observations, not images independently inspected in this review.",
+        "evidence": [
+          "request.json",
+          "brief.json",
+          "mathematics.json",
+          "storyboard.json",
+          "attempts/006-scene-candidate.json",
+          "attempts/007-scene-candidate.json",
+          "operator-delivery-brief.json",
+          "operator-scene-repair.json",
+          "operator-annotation-repair.json",
+          "first-render-audit.json"
+        ],
+        "limitations": [
+          "Verified applies to the source checkpoint only. The repaired movie's projected placement, cleanup behavior, readability and motion remain unverified.",
+          "No rendering, scene execution, file edits or delegation occurred. Static duration accounting does not certify the next MP4.",
+          "The complete research proof and Lean comparator were not independently verified or executed. This assessment is not TypeSafe Jev approval."
         ],
         "repair_stage": "scene"
       }
