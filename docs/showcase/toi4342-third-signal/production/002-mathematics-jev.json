@@ -1,0 +1,72 @@
+{
+  "approved": false,
+  "repair_stage": "mathematics",
+  "feedback": "criterion_1: score=3.360/4, confidence=0.540; Are domains and hypotheses explicitly attached to the main mathematical claims? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\nInsufficient evidence: probability=0.720; gather concrete checks\nRepair routing uncertain; gather evidence at the current stage\nAstra evidence audit (not Jev-generated prose):\nNo blocking mathematics-stage defects observed. Independently recomputed the candidate's Orbital calculation, Transit closeup, Duration consistency and Optional directional belt sections: distances 0.05251722/0.08140862/0.11907490 AU, stated radius and speed ratios, depth 1141.72379867 ppm, chord half-length 0.66494248, illustrative inclination 88.9971598°, duration 2.41980796 h and belt half-angle 1.38811297° all agree. The fitted 2.45559074 h duration is appropriately distinguished from the rounded stellar model. Orbit parameterization, normal, projection and foreground condition are consistent. Masking excludes samples; recovery is explicitly distinguished from independent telescope observations. Reverse prerequisites support the forward teaching sequence, and topology is not used as candidate evidence. Original host parameters and b/c radii agree with [Tey et al.](https://arxiv.org/html/2301.01370v1); the distinct 47.5-day signal agrees with [Parc et al.](https://arxiv.org/abs/2601.22115). The stated validation thresholds agree with [Giacalone et al.](https://arxiv.org/abs/2002.00691), and 0.1113498 clearly fails the FPP threshold. Proceed to storyboard with the mathematical distinctions preserved.",
+  "defects": [
+    "criterion_1: score=3.360/4, confidence=0.540; Are domains and hypotheses explicitly attached to the main mathematical claims? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.",
+    "Insufficient evidence: probability=0.720; gather concrete checks",
+    "Repair routing uncertain; gather evidence at the current stage"
+  ],
+  "evaluator": "typesafe-jev",
+  "model": "jev-1.13.0",
+  "answers": {
+    "criterion_1": {
+      "type": "score",
+      "score": 3.36,
+      "confidence": 0.54,
+      "legend": {
+        "0": "Absent or contradicted",
+        "1": "Major omissions",
+        "2": "Partly supported, needs repair",
+        "3": "Supported with minor limitations",
+        "4": "Clearly supported by specific evidence"
+      },
+      "probabilities": {
+        "0": 0.0,
+        "1": 0.02,
+        "2": 0.06,
+        "3": 0.47,
+        "4": 0.45
+      }
+    },
+    "criterion_2": {
+      "type": "score",
+      "score": 3.91,
+      "confidence": 0.95,
+      "legend": {
+        "0": "Absent or contradicted",
+        "1": "Major omissions",
+        "2": "Partly supported, needs repair",
+        "3": "Supported with minor limitations",
+        "4": "Clearly supported by specific evidence"
+      },
+      "probabilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.06,
+        "4": 0.9400000000000001
+      }
+    },
+    "evidence_sufficient": {
+      "type": "noul",
+      "noul": 0.72
+    },
+    "blocking_defect": {
+      "type": "noul",
+      "noul": 0.06
+    },
+    "repair_target": {
+      "type": "choice",
+      "choice": "storyboard",
+      "confidence": 0.55,
+      "probabilities": {
+        "brief": 0.04,
+        "mathematics": 0.06,
+        "storyboard": 0.66,
+        "scene": 0.24
+      }
+    }
+  },
+  "policy_version": "typesafe-jev-v1"
+}

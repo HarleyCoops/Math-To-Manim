@@ -31,6 +31,23 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 
 ---
 
+## The Third Rhythm · TOI-4342 in 3D
+
+[![Transit geometry, three orbital rhythms and the unresolved candidate](assets/toi4342-third-rhythm.gif)](assets/toi4342-third-rhythm.mp4)
+
+One star, two confirmed planets, and an unresolved 18.908-day transit signal.
+An explorable Three.js stage follows the reverse prerequisite tree through
+orbit curves, stellar surfaces, sightlines, a viewing-direction annulus,
+phase folding, and actual sector-depth measurements. Synthetic light curves
+and model geometry are labeled separately from the saved evidence.
+
+[Explore the story and local 3D lesson](toi4342-third-signal/README.md) ·
+[Watch the 94-second draft](assets/toi4342-third-rhythm.mp4) ·
+[Reverse prerequisite tree](toi4342-third-signal/STORY.md)
+
+Completed at 720p/30 fps with a full-file decode. The final editorial revision
+is `not_reviewed`, and historical advisory feedback is retained.
+
 ## The Shape and Its Shadow · an Astra paper film
 
 [![The polar octahedron opens into exact tetrahedra and one gold base-height calculation](assets/mahler-film.gif)](assets/mahler-film.mp4)

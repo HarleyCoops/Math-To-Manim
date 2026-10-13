@@ -1,0 +1,71 @@
+{
+  "approved": false,
+  "repair_stage": "storyboard",
+  "feedback": "criterion_1: score=3.210/4, confidence=0.570; Does the shot sequence introduce definitions before using them? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\nInsufficient evidence: probability=0.790; gather concrete checks\nAstra evidence audit (not Jev-generated prose):\nAcceptable at storyboard checkpoint. Independent calculations reproduce the three Kepler distances, orbital radius and angular-speed ratios, 1141.72379867 ppm area approximation, and 94-second duration. Shots 5–7 correctly distinguish masking from subtraction, another search from independent telescope data, sectors from transits, and FPP from detection confidence. In shot 3, clarify that the fixed observer’s projection remains unchanged while the explanatory camera moves; replace the final caption with “A circular orbit can project as an ellipse,” or explicitly introduce another sightline. In shots 1 and 4, assign caption-level reading holds before implementation: successive terminology and numeric labels make these the tightest passages.",
+  "defects": [
+    "criterion_1: score=3.210/4, confidence=0.570; Does the shot sequence introduce definitions before using them? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.",
+    "Insufficient evidence: probability=0.790; gather concrete checks"
+  ],
+  "evaluator": "typesafe-jev",
+  "model": "jev-1.13.0",
+  "answers": {
+    "criterion_1": {
+      "type": "score",
+      "score": 3.21,
+      "confidence": 0.57,
+      "legend": {
+        "0": "Absent or contradicted",
+        "1": "Major omissions",
+        "2": "Partly supported, needs repair",
+        "3": "Supported with minor limitations",
+        "4": "Clearly supported by specific evidence"
+      },
+      "probabilities": {
+        "0": 0.0,
+        "1": 0.01,
+        "2": 0.13,
+        "3": 0.49,
+        "4": 0.37
+      }
+    },
+    "criterion_2": {
+      "type": "score",
+      "score": 3.73,
+      "confidence": 0.81,
+      "legend": {
+        "0": "Absent or contradicted",
+        "1": "Major omissions",
+        "2": "Partly supported, needs repair",
+        "3": "Supported with minor limitations",
+        "4": "Clearly supported by specific evidence"
+      },
+      "probabilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.04,
+        "3": 0.15,
+        "4": 0.81
+      }
+    },
+    "evidence_sufficient": {
+      "type": "noul",
+      "noul": 0.79
+    },
+    "blocking_defect": {
+      "type": "noul",
+      "noul": 0.18
+    },
+    "repair_target": {
+      "type": "choice",
+      "choice": "storyboard",
+      "confidence": 0.89,
+      "probabilities": {
+        "brief": 0.01,
+        "mathematics": 0.03,
+        "storyboard": 0.92,
+        "scene": 0.04
+      }
+    }
+  },
+  "policy_version": "typesafe-jev-v1"
+}

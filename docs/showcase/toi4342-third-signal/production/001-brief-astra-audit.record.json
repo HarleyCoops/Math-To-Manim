@@ -1,0 +1,8 @@
+{
+  "model": "gpt-6-astra",
+  "input_hashes": {
+    "attempts/001-brief-candidate.json": "6737fc02c80686377ea2d3f92bca4220a393dd775f547555128b6d93d250a6f3"
+  },
+  "role": "astra-evidence-auditor",
+  "score_kind": "uncalibrated_model_judgment"
+}

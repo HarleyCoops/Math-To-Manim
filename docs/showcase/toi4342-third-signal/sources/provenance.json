@@ -1,0 +1,18 @@
+{
+  "repository": "https://github.com/eumemic/exoplanets",
+  "commit": "ec8311b19a61092ad5eae3d34e947b14485d363e",
+  "retrieved_date": "2026-10-12",
+  "candidate": "TIC354944123_P18.908",
+  "primary_papers": [
+    "https://arxiv.org/html/2301.01370v1",
+    "https://arxiv.org/abs/2601.22115"
+  ],
+  "model_assumptions": [
+    "circular illustrative orbits",
+    "arbitrary orbital phases",
+    "no measured mutual inclinations or surface appearance",
+    "stellar mass/radius rounded from Tey et al 2023",
+    "synthetic light curves, actual repository per-sector summary evidence"
+  ],
+  "review_status": "not_reviewed"
+}

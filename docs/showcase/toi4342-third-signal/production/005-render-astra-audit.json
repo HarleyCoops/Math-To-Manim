@@ -1,0 +1,42 @@
+{
+  "mathematics": 0.95,
+  "pedagogy": 0.66,
+  "visual_design": 0.64,
+  "implementation": 0.75,
+  "verified": false,
+  "defects": [
+    "Caption encoding is corrupted in the rendered scene.",
+    "The prerequisite constellation lacks clear associations between captions and nodes; its reused nodes resemble additional planets in the closing tableau.",
+    "The observer-dependent occultation demonstration is not visually legible in the supplied frames.",
+    "The masking and phase-folding teaching objects are too small and visually subordinate to the orbital system."
+  ],
+  "feedback": "Numerical checks pass: Kepler distances are 0.05251722, 0.08140862 and 0.11907490 AU; radius ratios are 1:1.55013194:2.26734965 and angular-speed ratios 1:0.51813986:0.29290194. The supplied k gives 1141.72379867 ppm. Frame_02.png clearly shows a small foreground silhouette, a readable area formula and the uniform-disk qualification. Frame_05.png cleanly distinguishes solid cyan/violet orbits from the dashed amber hypothesis. Frame_06.png displays the correct candidate period. Frame_09.png correctly distinguishes eight sectors from nine transits. Frame_10.png presents the correct rounded FPP comparison with model-dependent wording, and frame_11.png explicitly retains candidate status. Metadata reports 94 seconds, 1280×720 and 30 fps; source uses one ThreeDScene, reusable meshes and a shared orbital clock.\n\nRepair scene.py's text serialization: eight caption literals differ from scene.json through an extra U+00C2. Visible examples are the malformed separator in frame_06.png and two malformed separators in frame_11.png; the source also corrupts the degree sign. Preserve Unicode correctly and inspect every affected caption.\n\nIn frame_00.png the newly appearing nodes are barely visible. Frame_01.png shows an unlabeled network around the star, without leaders identifying which node means which prerequisite. Implement the storyboard's active-node associations using a clear highlight and caption leader. In frames_09.png–11.png, restored root/impostor nodes share planetary colors and sphere shapes; an amber node appears near the violet orbit and a violet node is connected to it. Distinguish concept nodes from physical bodies and place them outside the orbital silhouettes.\n\nFrame_03.png has an almost invisible orbit/projection and a white observer partly hidden by the stellar limb. Frame_04.png exposes the observer line and cyan normal, but the planet that supposedly remains behind the star is not readily identifiable. Raise curve contrast, establish the observer before the explanatory caption, and choose a held camera angle that clearly reveals the same rear-side planet. Use a leader or halo without altering the accurately scaled transit closeup.\n\nFrame_07.png compresses sample beads and masking brackets into a small strip beside much larger orbits. Frame_08.png shows three phase rings, but the dim retained/excluded samples are difficult to follow. Move closer to these teaching objects, reduce orbital visual dominance, and hold the exclusion and aligned-phase results long enough to inspect while retaining the single 3D world.",
+  "evidence": [
+    "brief.json",
+    "mathematics.json",
+    "storyboard.json",
+    "scene.json",
+    "scene.py",
+    "renders/005/frame_00.png",
+    "renders/005/frame_01.png",
+    "renders/005/frame_02.png",
+    "renders/005/frame_03.png",
+    "renders/005/frame_04.png",
+    "renders/005/frame_05.png",
+    "renders/005/frame_06.png",
+    "renders/005/frame_07.png",
+    "renders/005/frame_08.png",
+    "renders/005/frame_09.png",
+    "renders/005/frame_10.png",
+    "renders/005/frame_11.png",
+    "renders/005/contact_sheet.png",
+    "renders/005/metadata.json"
+  ],
+  "limitations": [
+    "Sampled stills do not establish smooth motion, continuous occlusion correctness, complete caption readability over time, or the final motionless hold.",
+    "Several dense captions have only 2–2.5 seconds in the source; reading comfort requires continuous playback review.",
+    "Numerical consistency was independently checked against the supplied request and artifacts; repository snapshots and external primary papers were not independently reopened.",
+    "No code was edited or rendered. This is an Astra evidence assessment, not TypeSafe Jev approval or a formal proof certificate."
+  ],
+  "repair_stage": "scene"
+}

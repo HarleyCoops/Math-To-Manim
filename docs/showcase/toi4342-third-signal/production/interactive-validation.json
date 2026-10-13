@@ -1,0 +1,20 @@
+{
+  "javascript_syntax": "passed",
+  "fit_and_sector_data_fidelity": "passed",
+  "semimajor_axes_au": [
+    0.052517219810457226,
+    0.08140861985351837,
+    0.11907490008106968
+  ],
+  "uniform_disk_depth_ppm": 1141.7237986700663,
+  "circular_transit_belt_half_angle_deg": 1.3881137831461605,
+  "offline_tests": "330 passed, 2 existing warnings on origin/main 089ffd51ece10898cc3cdb00a9bb1588268f19e0",
+  "browser_checks": [
+    "all seven scenes",
+    "orthographic transit view",
+    "narrow belt toggle",
+    "phase fold and masking controls",
+    "360px prerequisite and orbit labels"
+  ],
+  "review_status": "not_reviewed"
+}

@@ -1,0 +1,21 @@
+{
+  "kind": "source-defined caption layer and locally rendered ending over completed 3D film",
+  "prefix_seconds": 86,
+  "ending_seconds": 8,
+  "editorial_dissolve_seconds": 0.3,
+  "frames": 2820,
+  "full_decode": "passed",
+  "caption_band_colored_geometry_pixels": 22,
+  "caption_band_geometry_pixels_preserved": 22,
+  "caption_replacement": "glyph masks, not a rectangular wipe",
+  "original_video_sha256": "4f9ba4e5483822db64c72984202e77727666e5216bea041199c87ff76a049462",
+  "ending_sha256": "72fd0d789a6bc527288c336faed45844291a6bf71097f50ec7f90eae270ec7f4",
+  "source_sha256": "0cfc752e160960b07188118e920a0f2620bf96cfd0062d742391445854331f8e",
+  "review_status": "not_reviewed",
+  "limitations": [
+    "Final editorial revision has no further Astra/Jev frame review.",
+    "Original frame audit noted small masking/phase objects and weak observer visibility; the interactive 3D scenes provide larger explorations."
+  ],
+  "source_text_sha256": "4e318ea5f713444fcb54ee7899557111899eb2b8df333c28ac6bb7b2a25715ce",
+  "newline_policy": "Published scene bytes retained through .gitattributes"
+}

@@ -1,0 +1,26 @@
+{
+  "model": "gpt-6-astra",
+  "input_hashes": {
+    "brief.json": "6737fc02c80686377ea2d3f92bca4220a393dd775f547555128b6d93d250a6f3",
+    "mathematics.json": "7c7a9d2532b6118f25d582834f5f7fe3bf8da13e544630ba4195cb5e98693d5b",
+    "storyboard.json": "46396d43857c2472bf9eadf073706042406f33410393846ce93eab68b4bde0aa",
+    "scene.json": "a65ff0747e3ae13c74997b987369d6be5b269f1adeb228d7a235fb5b0eb7c2a5",
+    "scene.py": "1a8c10e68e59ad0699cf6202bb415e1b8e09240e99fd9ca1ad9285c46e3456f6",
+    "renders/005/frame_00.png": "a795a72d133e5c0a18bdb8da454d288c413de1c531f3e4508a1f7ecc57d27675",
+    "renders/005/frame_01.png": "749510d28f2b9c797f5e3abbcf2e7ec33b8c0b488e68aff360fd6337caf18cd1",
+    "renders/005/frame_02.png": "3c5fb256f95e0b5d0f29a3409f9d0eb7ad0e5057ed4ea52d9c42f1cafc4a5e5e",
+    "renders/005/frame_03.png": "bca3e9342a104b957c9e00538a71eb4c1c9f8144e0ea32cb2681ac2c397b6f72",
+    "renders/005/frame_04.png": "eddda131728c61792b13165b06f0fae1da9d934dbd1b9ae937ce84bf522f6c09",
+    "renders/005/frame_05.png": "7ddc357236d4c3a81872ee766adfc9214e876be9551bc47c56aed424b2d4925c",
+    "renders/005/frame_06.png": "2695fc99a984e2db6034d059088a9924e444924a00bcd8afbfe724a28b4b7acb",
+    "renders/005/frame_07.png": "181f7fb1340b38b40a3a1f96439d82e20ab844b5eaebbe68a9de3df77298d22f",
+    "renders/005/frame_08.png": "7c81323e2d72ecc2f144bf11964e0c764bc6ce66cd7f3c770361dc238879ac34",
+    "renders/005/frame_09.png": "a9d8eef06108b13b0956c3c15ac42ec3388d00dd9d5a810f6ecdcb0821117d02",
+    "renders/005/frame_10.png": "e029cfb5a780ee20fd2fc66b9d6f989034a830fd66f41913f88c79f50150bb4d",
+    "renders/005/frame_11.png": "dc3875551aa9168a7a7e3c4da2883d1085e288e5a833e9b12785700fac77ad94",
+    "renders/005/contact_sheet.png": "e536f7aea9e3a94864feac0a93b3e137dc799ea11808664de0df4f0ad5164f7e",
+    "renders/005/metadata.json": "458368f9c18430b9681cbbc19dc003adfde517c5cc1ab63540e27d657b75e27d"
+  },
+  "role": "astra-evidence-auditor",
+  "score_kind": "uncalibrated_model_judgment"
+}

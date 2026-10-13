@@ -1,0 +1,259 @@
+<div id="toi4342-rhythm">
+  <h3>The third rhythm · TOI-4342</h3>
+  <div class="viz-controls">
+    <label class="form-label">Scene
+      <select class="form-select" id="rhythm-scene" aria-label="Story scene">
+        <option value="0">Reason backward</option><option value="1" selected>Three orbital rhythms</option>
+        <option value="2">Blocked light</option><option value="3">Who sees a transit?</option>
+        <option value="4">Fold time into phase</option><option value="5">Eight sectors of evidence</option>
+        <option value="6">A candidate, still</option>
+      </select>
+    </label>
+    <button class="btn" id="rhythm-play" type="button">Play motion</button>
+    <button class="btn" id="rhythm-view" type="button">Observer view</button>
+    <button class="btn" id="rhythm-action" type="button" hidden>Show narrow belt</button>
+  </div>
+  <div id="rhythm-stage" role="img" aria-label="Rotatable 3D story of TOI-4342, two confirmed planets, and a third transit candidate. Drag to rotate and scroll to zoom."></div>
+  <div id="rhythm-detail" class="text-small" aria-live="polite">Orbital distances and periods to scale; body sizes enlarged; circular paths and phases illustrative.</div>
+  <div id="rhythm-error" role="alert" hidden></div>
+</div>
+<style>
+  #toi4342-rhythm { color:var(--foreground); }
+  #toi4342-rhythm #rhythm-stage { width:100%; height:470px; position:relative; touch-action:none; }
+  #toi4342-rhythm canvas { display:block; width:100%; height:100%; }
+  #toi4342-rhythm [hidden] { display:none !important; }
+  #toi4342-rhythm #rhythm-detail { padding-top:8px; }
+  @media(max-width:480px) { #toi4342-rhythm #rhythm-stage { height:360px; } }
+</style>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"}}
+</script>
+<script type="module">
+const root = document.getElementById('toi4342-rhythm');
+try {
+const THREE = await import('three');
+const {OrbitControls} = await import('https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js');
+const stage = root.querySelector('#rhythm-stage');
+const select = root.querySelector('#rhythm-scene');
+const play = root.querySelector('#rhythm-play');
+const view = root.querySelector('#rhythm-view');
+const action = root.querySelector('#rhythm-action');
+const detail = root.querySelector('#rhythm-detail');
+const swatch = document.createElement('span'); swatch.hidden=true; root.appendChild(swatch);
+function cssColor(token) {
+  swatch.style.color=''; swatch.style.color=`var(${token})`;
+  const value=getComputedStyle(swatch).color, channels=value.match(/[\d.]+/g);
+  return channels&&channels.length>=3?new THREE.Color().setRGB(Number(channels[0])/255,Number(channels[1])/255,Number(channels[2])/255,THREE.SRGBColorSpace):new THREE.Color(value);
+}
+let palette={text:cssColor('--foreground'),muted:cssColor('--muted-foreground'),grid:cssColor('--border'),star:cssColor('--orange'),b:cssColor('--viz-series-2'),c:cssColor('--viz-series-3'),candidate:cssColor('--viz-series-1')};
+const renderer = new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2)); renderer.setClearColor(0,0);
+renderer.outputColorSpace=THREE.SRGBColorSpace; stage.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const spatialCamera = new THREE.PerspectiveCamera(38,1,.05,140); spatialCamera.position.set(7,5,9);
+const observerCamera = new THREE.OrthographicCamera(-5,5,3.2,-3.2,.05,140); observerCamera.position.set(0,.12,12);
+let camera=spatialCamera;
+const controls = new OrbitControls(camera,renderer.domElement); controls.enableDamping=true;
+controls.dampingFactor=.08; controls.minDistance=3; controls.maxDistance=24; controls.target.set(0,0,0);
+scene.add(new THREE.AmbientLight(palette.text,.9));
+const lamp = new THREE.PointLight(palette.star,35,30,2); lamp.position.set(0,0,0); scene.add(lamp);
+const groups = Array.from({length:7},()=>new THREE.Group()); groups.forEach(g=>scene.add(g));
+const themed=[]; const labelTextures=[]; let compact=false;
+function mat(key,opacity=1,lit=false) {
+  const m=lit?new THREE.MeshStandardMaterial({color:palette[key],roughness:.75,metalness:.08}):new THREE.MeshBasicMaterial({color:palette[key]});
+  m.transparent=opacity<1; m.opacity=opacity; themed.push({object:m,key}); return m;
+}
+function ball(group,r,xyz,key,opacity=1,lit=false) {
+  const m=new THREE.Mesh(new THREE.SphereGeometry(r,48,32),mat(key,opacity,lit)); m.position.set(...xyz); group.add(m); return m;
+}
+function line(group,points,key='grid',opacity=.5,dashed=false) {
+  const geo=new THREE.BufferGeometry().setFromPoints(points.map(p=>new THREE.Vector3(...p)));
+  const material=dashed?new THREE.LineDashedMaterial({color:palette[key],dashSize:.14,gapSize:.10,transparent:true,opacity}):new THREE.LineBasicMaterial({color:palette[key],transparent:true,opacity});
+  themed.push({object:material,key}); const l=new THREE.Line(geo,material); if(dashed)l.computeLineDistances(); group.add(l); return l;
+}
+function ring(group,r,key='grid',opacity=.5,dashed=false,y=0) {
+  return line(group,Array.from({length:241},(_,i)=>[r*Math.cos(i/240*Math.PI*2),y,r*Math.sin(i/240*Math.PI*2)]),key,opacity,dashed);
+}
+function label(group,text,xyz,width=2.3,key='text') {
+  const canvas=document.createElement('canvas'); const sizing=canvas.getContext('2d'); sizing.font='500 96px system-ui'; canvas.width=Math.ceil(sizing.measureText(text).width)+64; canvas.height=128;
+  const tex=new THREE.CanvasTexture(canvas); tex.colorSpace=THREE.SRGBColorSpace;
+  const material=new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false});
+  const sprite=new THREE.Sprite(material); sprite.position.set(...xyz); sprite.scale.set(.38*canvas.width/128,.38,1); sprite.renderOrder=20; group.add(sprite);
+  const entry={canvas,tex,text,key,sprite}; labelTextures.push(entry); paintLabel(entry); return sprite;
+}
+function paintLabel(entry) {
+  const shortcuts={'Repeated dimming':'Dimming','Orbit + sightline':'Geometry','Rule out impostors':'Impostors','Light + blocked area':'Blocked light','Period + phase':'Time + phase','Projection + direction':'Sightline','Independent evidence':'Evidence','Known ground → teach forward':'Teach forward','Ground photometry · imaging · radial velocities':'Photometry · imaging · RV','TESS sectors · transit depth ± uncertainty':'Sector depth ± error','Repeated dips → same orbital phase':'Repeated dips → same phase','Synthetic light · transit widths expanded':'Synthetic light · wider dips','Observer-direction sphere':'Viewing-direction sphere'};
+  const text=compact?(shortcuts[entry.text]||entry.text):entry.text;
+  const ctx=entry.canvas.getContext('2d'); ctx.font='500 96px system-ui'; entry.canvas.width=Math.ceil(ctx.measureText(text).width)+64;
+  const height=compact?.49:.38;entry.sprite.scale.set(height*entry.canvas.width/128,height,1);
+  ctx.fillStyle=`#${palette[entry.key].getHexString()}`; ctx.font='500 96px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(text,entry.canvas.width/2,64); entry.tex.needsUpdate=true;
+}
+const stellarMaterials=[];
+function star(group,r=0.35,xyz=[0,0,0]) {
+  const material=new THREE.ShaderMaterial({uniforms:{uTime:{value:0},uColor:{value:palette.star.clone()}},vertexShader:`
+    varying vec3 vLocal; varying vec3 vNormal; varying vec3 vView;
+    void main(){vLocal=position; vec4 mv=modelViewMatrix*vec4(position,1.0); vNormal=normalize(normalMatrix*normal); vView=-mv.xyz; gl_Position=projectionMatrix*mv;}
+  `,fragmentShader:`
+    uniform float uTime; uniform vec3 uColor; varying vec3 vLocal; varying vec3 vNormal; varying vec3 vView;
+    void main(){float grain=sin(vLocal.x*39.0+sin(vLocal.z*31.0)+uTime*.11)*sin(vLocal.y*43.0+vLocal.z*18.0); float mu=max(dot(normalize(vNormal),normalize(vView)),0.0); float limb=.35+.65*pow(mu,.6); vec3 col=uColor*(.75+.2*grain)*limb; gl_FragColor=vec4(col,1.0);}
+  `});
+  const mesh=new THREE.Mesh(new THREE.SphereGeometry(r,96,64),material);mesh.position.set(...xyz);group.add(mesh); stellarMaterials.push(material);
+  const wires=new THREE.Mesh(new THREE.SphereGeometry(r*1.003,24,12),new THREE.MeshBasicMaterial({color:palette.star,wireframe:true,transparent:true,opacity:.10}));wires.position.copy(mesh.position);group.add(wires);themed.push({object:wires.material,key:'star'});return mesh;
+}
+// Backward dependency constellation: the geometry itself has depth.
+const nodeData=[
+ ['A third planet?', [0,2.55,0], 'candidate',.17,2.5],
+ ['Repeated dimming',[-2.6,.85,.45],'candidate',.11,2.4],
+ ['Orbit + sightline',[0,.85,-1.1],'text',.11,2.4],
+ ['Rule out impostors',[2.6,.85,.45],'text',.11,2.7],
+ ['Light + blocked area',[-3.0,-1.35,1.1],'text',.075,2.9],
+ ['Period + phase',[-.65,-1.35,-.7],'text',.075,2.3],
+ ['Projection + direction',[1.6,-1.35,.2],'text',.075,3.1],
+ ['Independent evidence',[3.5,-1.35,-1.2],'text',.075,3.0]
+];
+const nodes=nodeData.map(([txt,pos,key,r,w])=>{ball(groups[0],r,pos,key);label(groups[0],txt,[pos[0],pos[1]-.38,pos[2]],w);return pos;});
+const edges=[[0,1],[0,2],[0,3],[1,4],[1,5],[2,5],[2,6],[3,7]];
+edges.forEach(([a,b])=>line(groups[0],[nodes[a],nodes[b]],'grid',.8));
+const pulse=ball(groups[0],.055,nodes[0],'candidate');
+label(groups[0],'Known ground → teach forward',[0,-2.4,.8],4.8);
+// The same central system returns in the final candidate shot.
+const P=[5.5382498,10.688716,18.9082044035];
+const A=P.map(p=>Math.cbrt(.63*(p/365.25)**2));
+const radii=A.map(a=>a/A[2]*3.45);
+const colors=['b','c','candidate'];const bodies=[];
+function system(group,final=false) {
+  star(group,.35); const moons=[];
+  radii.forEach((r,i)=>{ring(group,r,colors[i],final?(i===2?.95:.23):.7,i===2);const body=ball(group,[.095,.101,.092][i],[r,0,0],colors[i],1,true);moons.push(body);
+    const anchor=[[-2.5,.48,1.9],[2.75,.48,.7],[0,.48,-3.9]][i];
+    label(group,`${i===0?'b':i===1?'c':'candidate'} · ${P[i].toFixed(i===2?3:2)} d`,anchor,i===2?3.2:2.3,i===2?'candidate':'text');
+  });
+  label(group,'TOI-4342',[0,.65,0],1.8);
+  if(!final){label(group,'0.0525 · 0.0814 · 0.1191 AU',[0,-1.65,0],4.0);}
+  return moons;
+}
+bodies.push(system(groups[1]),system(groups[6],true));
+label(groups[6],'FPP ≈ 11.1% · candidate',[0,2.7,0],4.3);
+label(groups[6],'Ground photometry · imaging · radial velocities',[0,-1.5,0],6.9);
+// Actual fitted radius ratio and impact parameter in a transit closeup.
+const R=1.55, k=.033789403644782876, impact=.7468945703333496;
+star(groups[2],R); const occulter=ball(groups[2],R*k,[-.55,R*impact,1.6],'muted',1,true);
+const chord=line(groups[2],[[-2.0,R*impact,1.61],[2.0,R*impact,1.61]],'candidate',.45,true);
+line(groups[2],[[0,0,0],[0,0,6]],'grid',.5,true);
+const aperture=ring(groups[2],.3,'text',.8);aperture.rotation.x=Math.PI/2;aperture.position.set(0,0,5.6);
+const photons=Array.from({length:11},(_,i)=>ball(groups[2],.027,[.75*Math.sin(i*2.4),.6*Math.cos(i*1.7),2+i*.25],'star',.6));
+const observerText=label(groups[2],'observer',[0,-.55,5.6],1.6);
+label(groups[2],'Radius ratio 0.03379',[-1.9,2.0,0],3.3);
+label(groups[2],'Impact parameter 0.747',[1.0,-2.0,0],3.8);
+// The annular belt is a set of observer directions on S², not a physical disk.
+star(groups[3],.32);ring(groups[3],1.7,'candidate',.8,true);
+const skyShell=new THREE.Mesh(new THREE.SphereGeometry(3,40,24),new THREE.MeshBasicMaterial({color:palette.grid,wireframe:true,transparent:true,opacity:.12}));groups[3].add(skyShell);themed.push({object:skyShell.material,key:'grid'});
+const halfAngle=Math.asin((.60*.00465047*(1+k))/A[2]);
+const beltMat=mat('candidate',.23);beltMat.side=THREE.DoubleSide;beltMat.depthWrite=false;
+const belt=new THREE.Mesh(new THREE.SphereGeometry(3.01,96,8,0,Math.PI*2,Math.PI/2-.17,.34),beltMat);groups[3].add(belt);
+const beltObserver=ball(groups[3],.08,[0,0,3.03],'text');
+label(groups[3],'Observer-direction sphere',[-.2,3.5,0],4.7);
+label(groups[3],'Orbit: closed loop S¹',[0,-.55,0],3.6);
+label(groups[3],'Belt: annulus on S²',[0,-3.5,0],4);
+// Synthetic signals are explicitly separated from actual sector measurements.
+const foldGroup=groups[4]; const curves=[]; const phasePoints=[];
+const phasePeriod=P[2]; const cycles=4; const count=1200;
+const phases=[.18,.39,.5];
+for(let j=0;j<3;j++) {
+ const vertices=[];
+ for(let n=0;n<count;n++) {
+  const t=n/(count-1)*phasePeriod*cycles; const theta=2*Math.PI*t/phasePeriod;
+  const ph=((t/P[j]-phases[j]+.5)%1+1)%1-.5;
+  let dip=Math.exp(-.5*(ph/.017)**2);
+  if(j===2) for(let other=0;other<2;other++) {const op=((t/P[other]-phases[other]+.5)%1+1)%1-.5;dip+=.8*Math.exp(-.5*(op/.017)**2);}
+  const radius=2.1-.36*dip;
+  vertices.push([radius*Math.cos(theta),radius*Math.sin(theta),((t/phasePeriod)-2)*.75+j*.05]);
+ }
+ const curve=line(foldGroup,vertices,colors[j],j===2?.9:.45,j===2);curves.push(curve);phasePoints.push(vertices);
+}
+const cylinder=new THREE.Mesh(new THREE.CylinderGeometry(2.11,2.11,3.0,64,8,true),new THREE.MeshBasicMaterial({color:palette.grid,wireframe:true,transparent:true,opacity:.16}));cylinder.rotation.x=Math.PI/2;foldGroup.add(cylinder);themed.push({object:cylinder.material,key:'grid'});
+label(foldGroup,'Repeated dips → same orbital phase',[0,3.1,0],5.8);
+label(foldGroup,'Synthetic light · transit widths expanded',[0,-3.1,0],6.2);
+label(foldGroup,'Lower brightness → inward',[0,-2.55,0],4.2);
+// Public per-sector estimates, with error bars and separate old/new z lanes.
+const sectorData=[[13,972.1545,255.5794],[27,1096.9646,278.1012],[66,1579.2330,258.7761],[67,900.6989,184.4768],[93,1859.9398,251.2922],[101,1459.5447,237.1405],[102,1122.6962,252.4023],[103,449.13,447.6792]];
+const low=-1.45, scale=.00155;
+line(groups[5],[[-3.4,low,0],[3.4,low,0]],'grid',.8);
+sectorData.forEach(([s,d,e],i)=>{
+ const x=-2.8+i*.8,z=i<5?-.5:.65,y=low+d*scale,key='candidate';
+ line(groups[5],[[x,low,z],[x,y,z]],key,.23);
+ line(groups[5],[[x,y-e*scale,z],[x,y+e*scale,z]],key,.9);
+ line(groups[5],[[x-.075,y-e*scale,z],[x+.075,y-e*scale,z]],key,.8);
+ line(groups[5],[[x-.075,y+e*scale,z],[x+.075,y+e*scale,z]],key,.8);
+ ball(groups[5],.065,[x,y,z],key);label(groups[5],`${s}`,[x,low-.34,z],.8);
+});
+label(groups[5],'TESS sectors · transit depth ± uncertainty',[0,2.7,0],6.3);
+label(groups[5],'8 sectors · 9 fitted transit events',[0,-2.8,0],5.0);
+label(groups[5],'0 ppm',[-3.5,low,0],1.1);label(groups[5],'2000 ppm',[-3.5,low+2000*scale,0],1.6);
+const descriptions=[
+ 'Backward to light, time, and projection; play walks the prerequisite branches forward.',
+ 'Orbital distances and periods to scale; body sizes enlarged; circular paths and phases illustrative.',
+ 'Fitted size ratio and offset; 2.46 h transit; blocked area ≈ 1142 ppm; surfaces illustrative.',
+ 'Widened schematic belt; circular-model transit half-angle ≈ 1.39°; stellar surface S², orbit S¹.',
+ 'Synthetic time series; masking removes b/c windows; phase wraps time every 18.908 days.',
+ 'Candidate depth ± reported error; 5 earlier and 3 recent sectors; spacing is categorical.',
+ 'Gaia-constrained model FPP 11.1% exceeds 1.5% validation threshold; confirmation still needed.'
+];
+const cameras=[[.3,1.8,12],[5.8,4.6,7],[7,3.8,11],[6.7,3.7,7],[4.1,2.5,8.9],[5.6,3.5,9],[5.8,4.6,7]];
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let state={chapter:1,playing:false,observer:false,narrow:false,masked:false,folded:false,time:0};
+let transition=null,foldAmount=0,prior=performance.now(),elapsed=0;
+function saveState(){window.openai?.setWidgetState?.({modelContent:{star:'TOI-4342',chapter:select.options[state.chapter].text,masked:state.masked,phaseFolded:state.folded,narrowTransitBelt:state.narrow},privateContent:{chapter:state.chapter,observer:state.observer,narrow:state.narrow,masked:state.masked,folded:state.folded}})?.catch(()=>{});}
+const saved=window.openai?.widgetState?.privateContent;
+if(saved&&Number.isInteger(saved.chapter)&&saved.chapter>=0&&saved.chapter<7) state={...state,...saved,playing:false,time:0};
+function cameraTo(position){transition={start:camera.position.clone(),end:new THREE.Vector3(...position),startTarget:controls.target.clone(),endTarget:new THREE.Vector3(0,state.chapter===2?.1:0,state.chapter===2?1.5:0),at:performance.now()};if(reduced){camera.position.copy(transition.end);controls.target.copy(transition.endTarget);transition=null;}}
+function updateBelt(){belt.geometry.dispose();const a=state.narrow?halfAngle:.17;belt.geometry=new THREE.SphereGeometry(3.01,96,8,0,Math.PI*2,Math.PI/2-a,2*a);}
+const maskedCurve=new THREE.LineSegments(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:palette.candidate,transparent:true,opacity:.9}));foldGroup.add(maskedCurve);themed.push({object:maskedCurve.material,key:'candidate'});
+const maskIndices=[];
+for(let n=1;n<count;n++) {const masked=[n-1,n].some(index=>{const t=index/(count-1)*phasePeriod*cycles;return P.slice(0,2).some((p,j)=>{const ph=((t/p-phases[j]+.5)%1+1)%1-.5;return Math.abs(ph)<.047;});});if(!masked)maskIndices.push(n-1,n);}
+maskedCurve.geometry.setAttribute('position',new THREE.Float32BufferAttribute(new Float32Array(maskIndices.length*3),3));
+function phaseGeometry(){
+ curves[0].visible=!state.masked;curves[1].visible=!state.masked;curves[2].visible=!state.masked;maskedCurve.visible=state.masked;
+ for(let j=0;j<3;j++) {const pos=curves[j].geometry.attributes.position;phasePoints[j].forEach((v,n)=>pos.setXYZ(n,v[0],v[1],v[2]*(1-foldAmount)));pos.needsUpdate=true;curves[j].computeLineDistances();}
+ if(state.masked){const pos=maskedCurve.geometry.attributes.position;maskIndices.forEach((index,n)=>{const v=phasePoints[2][index];pos.setXYZ(n,v[0],v[1],v[2]*(1-foldAmount));});pos.needsUpdate=true;}
+ cylinder.scale.y=1-foldAmount*.98;
+}
+function renderState(reposition=true){
+ camera=state.observer&&state.chapter!==4?observerCamera:spatialCamera;controls.object=camera;resize();
+ observerText.visible=!state.observer;aperture.visible=!state.observer;photons.forEach(p=>p.visible=!state.observer);
+ select.value=String(state.chapter); groups.forEach((g,i)=>g.visible=i===state.chapter);
+ play.textContent=state.playing?'Pause motion':'Play motion';play.setAttribute('aria-pressed',String(state.playing));
+ view.hidden=state.chapter===5;view.textContent=state.chapter===4?(state.folded?'Unfold time':'Fold phase'):(state.observer?'Spatial view':'Observer view');
+ action.hidden=![3,4].includes(state.chapter); action.textContent=state.chapter===3?(state.narrow?'Widen belt':'Show narrow belt'):(state.masked?'Restore all windows':'Mask known windows');
+ detail.textContent=descriptions[state.chapter];
+ if(state.chapter===3&&state.narrow)detail.textContent='True circular-model belt: half-angle '+(halfAngle*180/Math.PI).toFixed(2)+'°; directions outside it miss the stellar disk.';
+ if(state.chapter===4)detail.textContent=`Synthetic light; ${state.masked?'known transit windows removed':'all three rhythms'}; ${state.folded?'same phases superposed':'time along cylinder axis'}.`;
+ updateBelt();phaseGeometry();if(reposition)cameraTo(state.observer&&state.chapter!==4?[0,.12,12]:cameras[state.chapter]);
+}
+select.addEventListener('change',()=>{state.chapter=Number(select.value);state.observer=false;state.playing=false;state.time=0;elapsed=0;renderState();saveState();});
+play.addEventListener('click',()=>{state.playing=!state.playing;if(state.playing)elapsed=0;renderState(false);saveState();});
+view.addEventListener('click',()=>{if(state.chapter===4)state.folded=!state.folded;else state.observer=!state.observer;renderState();saveState();});
+action.addEventListener('click',()=>{if(state.chapter===3)state.narrow=!state.narrow;else state.masked=!state.masked;renderState(false);saveState();});
+controls.addEventListener('start',()=>{transition=null;});
+function resize(){const box=stage.getBoundingClientRect();if(!box.width||!box.height)return;renderer.setSize(box.width,box.height);const aspect=box.width/box.height;const mobile=box.width<500;if(mobile!==compact){compact=mobile;labelTextures.forEach(paintLabel);}spatialCamera.aspect=aspect;spatialCamera.zoom=compact?.75:1;spatialCamera.updateProjectionMatrix();observerCamera.left=-3.2*aspect;observerCamera.right=3.2*aspect;observerCamera.zoom=compact?.8:1;observerCamera.updateProjectionMatrix();}
+new ResizeObserver(resize).observe(stage);resize();
+function retheme(){palette={text:cssColor('--foreground'),muted:cssColor('--muted-foreground'),grid:cssColor('--border'),star:cssColor('--orange'),b:cssColor('--viz-series-2'),c:cssColor('--viz-series-3'),candidate:cssColor('--viz-series-1')};themed.forEach(({object,key})=>object.color.copy(palette[key]));labelTextures.forEach(paintLabel);stellarMaterials.forEach(m=>m.uniforms.uColor.value.copy(palette.star));lamp.color.copy(palette.star);}
+new MutationObserver(retheme).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',retheme);
+window.addEventListener('openai:set_globals',event=>{const next=event.detail?.globals?.widgetState?.privateContent;if(next&&Number.isInteger(next.chapter)&&next.chapter>=0&&next.chapter<7){state={...state,...next,playing:false};renderState();}retheme();});
+renderState();
+renderer.setAnimationLoop(now=>{
+ const dt=Math.min(.06,(now-prior)/1000);prior=now;
+ if(state.playing){state.time+=dt;elapsed+=dt;if(elapsed>45){state.playing=false;renderState(false);}}
+ if(transition){const t=Math.min(1,(now-transition.at)/1100);const s=t*t*(3-2*t);camera.position.lerpVectors(transition.start,transition.end,s);controls.target.lerpVectors(transition.startTarget,transition.endTarget,s);if(t===1)transition=null;}
+ const nextFold=state.folded?1:0;if(Math.abs(foldAmount-nextFold)>.002){foldAmount=reduced?nextFold:foldAmount+(nextFold-foldAmount)*Math.min(1,dt*5);phaseGeometry();}
+ bodies.forEach((systemBodies,si)=>systemBodies.forEach((body,i)=>{const angle=.35+i*.9+state.time*2*Math.PI/P[i];body.position.set(radii[i]*Math.cos(angle),0,radii[i]*Math.sin(angle));}));
+ stellarMaterials.forEach(m=>m.uniforms.uTime.value=state.time);
+ const traverse=Math.sin(state.time*.42-.27)*2.0;occulter.position.x=traverse;
+ photons.forEach((p,i)=>{p.position.z=2+((state.time*.65+i*.26)%3.3);});
+ const observerLatitude=.28*Math.sin(state.time*.13);
+ beltObserver.position.set(3.03*Math.cos(observerLatitude)*Math.sin(state.time*.3),3.03*Math.sin(observerLatitude),3.03*Math.cos(observerLatitude)*Math.cos(state.time*.3));
+ const edgeIndex=Math.floor(state.time/1.7)%edges.length;const [a,b]=edges[edges.length-1-edgeIndex];const progress=(state.time/1.7)%1;pulse.position.lerpVectors(new THREE.Vector3(...nodes[b]),new THREE.Vector3(...nodes[a]),progress);
+ controls.update();renderer.render(scene,camera);
+});
+} catch(error) {const el=root.querySelector('#rhythm-error');el.hidden=false;el.textContent='The 3D view could not load: '+error.message;}
+</script>

@@ -1,0 +1,15 @@
+{
+  "summary": "Fade out the evidence points and restored prerequisite nodes during the existing 86–88-second beat.",
+  "content": "{\"replacements\":[{\"before\":\"        beat(2, \\\"A candidate. Confirmation still needed.\\\",\\n             animations=[evidence.animate.set_opacity(0.45)],\",\"after\":\"        beat(2, \\\"A candidate. Confirmation still needed.\\\",\\n             animations=[FadeOut(evidence),\\n                         FadeOut(VGroup(nodes[0], nodes[3], edges[2]))],\"}]}",
+  "checks": [
+    "Read the candidate source and inspected the supplied final-frame probe.",
+    "Verified the original excerpt occurs exactly once; parsed the replacement source with Python AST in memory.",
+    "Summed scheduled beats and final wait: 94 seconds.",
+    "Verified only the final beat animation list changes, preserving math, earlier geometry, camera APIs, and unresolved candidate captions.",
+    "No files edited, rendering, delegation, or new review performed; completed-film behavior remains unverified."
+  ],
+  "sources": [
+    "attempts/004-scene-candidate.json",
+    "probes/004/media/images/AstraFilm.png"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "title": "The third rhythm",
+  "star": "TOI-4342",
+  "tic": 354944123,
+  "status": "completed",
+  "review_status": "not_reviewed",
+  "author_model": "gpt-6-astra",
+  "duration_seconds": 94,
+  "resolution": [
+    1280,
+    720
+  ],
+  "fps": 30,
+  "frames": 2820,
+  "full_decode": "passed",
+  "video": "docs/showcase/assets/toi4342-third-rhythm.mp4",
+  "source": "examples/astra/toi4342_third_rhythm.py",
+  "video_sha256": "9e3a44d9677a769df548f2f4171fd601b9ccf80fa361abd9222a0484df7376fa",
+  "source_sha256": "0cfc752e160960b07188118e920a0f2620bf96cfd0062d742391445854331f8e",
+  "repository_snapshot": "ec8311b19a61092ad5eae3d34e947b14485d363e",
+  "production_runs": [
+    "runs/astra/20261012-toi4342-third-signal",
+    "runs/astra/20261012-toi4342-delivery"
+  ],
+  "limitations": [
+    "Film is a working draft; original advisory assessments are retained.",
+    "Final editorial revision received no further model review.",
+    "The interactive scene provides larger explorations of observer geometry and phase folding.",
+    "Circularity, phases, surface appearance and mutual orientations are illustrative; the third signal is unconfirmed."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "mathematics": 0.97,
+  "pedagogy": 0.84,
+  "visual_design": 0.84,
+  "implementation": 0.93,
+  "verified": true,
+  "defects": [],
+  "feedback": "Acceptable at the scene checkpoint. Independently recomputed distances 0.05251722, 0.08140862 and 0.11907490 AU, radius ratios 1:1.55013194:2.26734965, angular-speed ratios 1:0.51813986:0.29290194, and k² = 1141.72379867 ppm. Source correctly distinguishes schematic geometry, fitted duration, masking, separate-search recovery, sectors versus transits, and model-dependent FPP above the validation threshold. Static durations total 94 seconds. The candidate source hash matches execution.json; the probe reports exit code 0 at 1280×720. Source uses one ThreeDScene, reusable meshes, supported camera methods and position updaters without rebuilding surfaces each frame. In probes/004/media/images/AstraFilm.png, a small ivory mesh star sits inside nested cyan and violet solid orbit projections and an amber dashed outer orbit. Planet markers and eight subdued evidence points are visible. Two large white closing captions are readable, unclipped and clear of the orbital geometry; no formula is present in this frame. The restored amber root and violet impostor node are connected by a faint diagonal edge but resemble additional bodies, with the root visually touching the violet orbit. Suggested refinement: distinguish these prerequisite nodes from planets or reposition them in the closing tableau. In candidate source lines 173–182, paired captions accompany simultaneous node reveals without the storyboard's leaders; sequential highlighting or leaders would clarify which prerequisite belongs to each node. Verification is scoped to scene construction and the supplied final-frame probe, not a completed film.",
+  "evidence": [
+    "brief.json",
+    "mathematics.json",
+    "storyboard.json",
+    "attempts/004-scene-candidate.json",
+    "probes/004/execution.json",
+    "probes/004/media/images/AstraFilm.png"
+  ],
+  "limitations": [
+    "Only the final still is supplied. Continuous motion, intermediate formula readability, ingress/egress occlusion, camera framing and caption reading time remain render-stage checks.",
+    "Several dense captions last only 2–3 seconds; assess silent comprehension during full playback.",
+    "Source facts were checked against the supplied request and upstream artifacts; primary papers and immutable source snapshots were not independently reopened in this audit.",
+    "No completed MP4 or manifest is supplied. This assessment does not establish delivery completion or Jev approval."
+  ],
+  "repair_stage": "scene"
+}

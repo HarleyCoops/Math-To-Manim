@@ -73,6 +73,29 @@ the animation segments, then extracts review frames. Output is marked
 [Run the chain](#installation) · [How jev works](#astra-and-jev) ·
 [Creation story](#the-morning-of-january-20-2025) · [Older films](docs/showcase/README.md)
 
+## TOI-4342: The Third Rhythm
+
+[![A small foreground planet crosses a spherical star; its blocked area reveals the radius ratio](docs/showcase/assets/toi4342-third-rhythm.gif)](docs/showcase/assets/toi4342-third-rhythm.mp4)
+
+How can a third planet hide around a star with two planets already known?
+The reverse reasoning tree starts at that question, descends to light, time,
+and projection, then teaches forward through one three-dimensional world.
+
+The companion Three.js scene lets you rotate the orbital system, inspect the
+fitted transit silhouette, explore the narrow belt of observing directions,
+mask known transit windows, and fold repeated dimming into orbital phase.
+Actual TESS sector-depth estimates come from the pinned
+[eumemic/exoplanets source snapshot](docs/showcase/toi4342-third-signal/sources/provenance.json).
+The 18.908-day signal remains a **candidate**; its Gaia-constrained model FPP is
+about 11.1%, above the 1.5% statistical-validation threshold.
+
+[Explore the story and local 3D lesson](docs/showcase/toi4342-third-signal/README.md) ·
+[Watch the 94-second Manim draft](docs/showcase/assets/toi4342-third-rhythm.mp4) ·
+[Read the reverse prerequisite tree](docs/showcase/toi4342-third-signal/STORY.md)
+
+The completed 720p/30 fps draft decoded successfully. The final local revision
+is `not_reviewed`; the production record retains the original advisory audits.
+
 ## OpenAI Mathematics in 3D: A Frontier for the Zeros
 
 Primes become sculptural zeta landscapes. A loop around a sampled zero winds

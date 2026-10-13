@@ -1,0 +1,4 @@
+Per-pixel 2-min TPF difference image (tpf_pixels.py), flux-weighted centroid offset from the TIC position
+S66: 7.1" (max pixel SNR 3.6)
+S67: 15.5" (max pixel SNR 3.0)
+S93: 9.5" (max pixel SNR 5.0)

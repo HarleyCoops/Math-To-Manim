@@ -1,0 +1,5 @@
+{
+  "comparison": "first frame at the 86-second splice",
+  "mean_absolute_rgb_error": 0.06310510706018518,
+  "pixels_changed_more_than_20": 0.00047417534722222224
+}

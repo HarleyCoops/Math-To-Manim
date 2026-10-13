@@ -1,0 +1,70 @@
+{
+  "approved": false,
+  "repair_stage": "scene",
+  "feedback": "criterion_2: score=2.690/4, confidence=0.530; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks.\nAstra evidence audit (not Jev-generated prose):\nAcceptable at the scene checkpoint. Independently recomputed distances 0.05251722, 0.08140862 and 0.11907490 AU, radius ratios 1:1.55013194:2.26734965, angular-speed ratios 1:0.51813986:0.29290194, and k² = 1141.72379867 ppm. Source correctly distinguishes schematic geometry, fitted duration, masking, separate-search recovery, sectors versus transits, and model-dependent FPP above the validation threshold. Static durations total 94 seconds. The candidate source hash matches execution.json; the probe reports exit code 0 at 1280×720. Source uses one ThreeDScene, reusable meshes, supported camera methods and position updaters without rebuilding surfaces each frame. In probes/004/media/images/AstraFilm.png, a small ivory mesh star sits inside nested cyan and violet solid orbit projections and an amber dashed outer orbit. Planet markers and eight subdued evidence points are visible. Two large white closing captions are readable, unclipped and clear of the orbital geometry; no formula is present in this frame. The restored amber root and violet impostor node are connected by a faint diagonal edge but resemble additional bodies, with the root visually touching the violet orbit. Suggested refinement: distinguish these prerequisite nodes from planets or reposition them in the closing tableau. In candidate source lines 173–182, paired captions accompany simultaneous node reveals without the storyboard's leaders; sequential highlighting or leaders would clarify which prerequisite belongs to each node. Verification is scoped to scene construction and the supplied final-frame probe, not a completed film.",
+  "defects": [
+    "criterion_2: score=2.690/4, confidence=0.530; Does the audit support that the source implements the planned geometric transitions? Evaluate only the supplied text state; do not infer unseen images or unperformed checks."
+  ],
+  "evaluator": "typesafe-jev",
+  "model": "jev-1.13.0",
+  "answers": {
+    "criterion_1": {
+      "type": "score",
+      "score": 3.56,
+      "confidence": 0.65,
+      "legend": {
+        "0": "Absent or contradicted",
+        "1": "Major omissions",
+        "2": "Partly supported, needs repair",
+        "3": "Supported with minor limitations",
+        "4": "Clearly supported by specific evidence"
+      },
+      "probabilities": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.03,
+        "3": 0.36,
+        "4": 0.61
+      }
+    },
+    "criterion_2": {
+      "type": "score",
+      "score": 2.69,
+      "confidence": 0.53,
+      "legend": {
+        "0": "Absent or contradicted",
+        "1": "Major omissions",
+        "2": "Partly supported, needs repair",
+        "3": "Supported with minor limitations",
+        "4": "Clearly supported by specific evidence"
+      },
+      "probabilities": {
+        "0": 0.03,
+        "1": 0.02,
+        "2": 0.3,
+        "3": 0.52,
+        "4": 0.13
+      }
+    },
+    "evidence_sufficient": {
+      "type": "noul",
+      "noul": 0.8
+    },
+    "blocking_defect": {
+      "type": "noul",
+      "noul": 0.18
+    },
+    "repair_target": {
+      "type": "choice",
+      "choice": "scene",
+      "confidence": 0.87,
+      "probabilities": {
+        "brief": 0.0,
+        "mathematics": 0.0,
+        "storyboard": 0.1,
+        "scene": 0.9
+      }
+    }
+  },
+  "policy_version": "typesafe-jev-v1"
+}

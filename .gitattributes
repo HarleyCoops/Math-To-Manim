@@ -1,3 +1,7 @@
 # Preserve retained authoring evidence bytes and their recorded SHA-256 hashes.
 papers/quasi-riemann/candidate.json -text
 papers/quasi-riemann/production/** -text
+# Preserve the TOI-4342 scene and retained evidence hashes.
+examples/astra/toi4342_third_rhythm.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/showcase/toi4342-third-signal/production/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/showcase/toi4342-third-signal/production.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

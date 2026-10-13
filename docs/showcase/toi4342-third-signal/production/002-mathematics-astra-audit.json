@@ -1,0 +1,21 @@
+{
+  "mathematics": 0.99,
+  "pedagogy": 0.95,
+  "visual_design": 0.94,
+  "implementation": 0.95,
+  "verified": true,
+  "defects": [],
+  "feedback": "No blocking mathematics-stage defects observed. Independently recomputed the candidate's Orbital calculation, Transit closeup, Duration consistency and Optional directional belt sections: distances 0.05251722/0.08140862/0.11907490 AU, stated radius and speed ratios, depth 1141.72379867 ppm, chord half-length 0.66494248, illustrative inclination 88.9971598°, duration 2.41980796 h and belt half-angle 1.38811297° all agree. The fitted 2.45559074 h duration is appropriately distinguished from the rounded stellar model. Orbit parameterization, normal, projection and foreground condition are consistent. Masking excludes samples; recovery is explicitly distinguished from independent telescope observations. Reverse prerequisites support the forward teaching sequence, and topology is not used as candidate evidence. Original host parameters and b/c radii agree with [Tey et al.](https://arxiv.org/html/2301.01370v1); the distinct 47.5-day signal agrees with [Parc et al.](https://arxiv.org/abs/2601.22115). The stated validation thresholds agree with [Giacalone et al.](https://arxiv.org/abs/2002.00691), and 0.1113498 clearly fails the FPP threshold. Proceed to storyboard with the mathematical distinctions preserved.",
+  "evidence": [
+    "brief.json",
+    "attempts/002-mathematics-candidate.json"
+  ],
+  "limitations": [
+    "Verification covers mathematics and stage-appropriate design specifications, not a rendered film or formal proof certificate.",
+    "Repository-specific values were checked against the supplied request; the underlying snapshot files and individual ten-run FPP values were outside the supplied evidence paths, so their extraction and aggregation were not independently audited.",
+    "Storyboard should budget readable holds for the dense 70–85 second evidence segment and preserve the one-formula/two-caption-line limit.",
+    "Scene and render stages must verify exact closeup scaling, observer-versus-camera distinction, occultation, dashed-orbit readability, mesh reuse and continuous motion.",
+    "Minor terminology refinement: define received flux as power per collecting area, or explicitly call F the detector's received light rate; the normalized depth derivation is unaffected."
+  ],
+  "repair_stage": "storyboard"
+}
