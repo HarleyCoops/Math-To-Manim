@@ -53,3 +53,11 @@ python -m pytest
 math-to-manim doctor
 math-to-manim run "Explain a new mathematical idea" -q h
 ```
+
+## Agent skills
+
+The engineering skills read their configuration from `docs/agents/`:
+
+- `docs/agents/issue-tracker.md`: issues live in Linear, team `WAR` (Warreandvavasour), project `Math-To-Manim Upgrade`.
+- `docs/agents/triage-labels.md`: the five triage labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`).
+- `docs/agents/domain.md`: single-context layout. Read `CONTEXT.md` and `docs/adr/` at the repo root when they exist.
