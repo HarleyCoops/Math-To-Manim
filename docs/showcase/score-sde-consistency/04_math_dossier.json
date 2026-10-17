@@ -1,0 +1,281 @@
+{
+  "formulas": [
+    {
+      "id": "forward_sde",
+      "act_number": 1,
+      "latex_parts": [
+        "\\mathrm{d}x",
+        "=",
+        "f(x,t)\\,\\mathrm{d}t",
+        "+",
+        "g(t)\\,\\mathrm{d}w_t",
+        ",\\qquad",
+        "p_t(x)",
+        "=",
+        "\\tfrac{1}{2}\\mathcal{N}(-\\mu_0,\\sigma_0^2+t^2)+\\tfrac{1}{2}\\mathcal{N}(+\\mu_0,\\sigma_0^2+t^2)"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "Infinitesimal change in the sample x_t along a forward trajectory.",
+          "identity": "matter",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 4,
+          "plain_words": "Diffusion coefficient g(t) = sqrt(2t) injecting Brownian noise dw_t.",
+          "identity": "matter",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 6,
+          "plain_words": "Exact marginal probability density surface over (x, t).",
+          "identity": "structure",
+          "zoom_worthy": true
+        }
+      ],
+      "derivation_or_motivation": "Under the Karras/VE schedule sigma(t) = t with zero drift f(x,t) = 0 and g(t) = sqrt(2t), the Itô integral from 0 to t adds Gaussian variance int_0^t 2s ds = t^2. Convolving the bimodal prior p_0(x) (modes at +/- mu_0 = +/- 2.0, width sigma_0 = 0.35) with N(0, t^2) yields the exact closed-form marginal density p_t(x) with variance v(t) = sigma_0^2 + t^2.",
+      "common_misreading": "Thinking the marginal p_t(x) requires simulating thousands of paths; for Gaussian perturbations, p_t(x) is known analytically at every time t."
+    },
+    {
+      "id": "exact_score_field",
+      "act_number": 2,
+      "latex_parts": [
+        "\\nabla_x \\log p_t(x)",
+        "=",
+        "\\frac{\\mu_0 \\tanh\\!\\left(\\frac{\\mu_0 x}{\\sigma_0^2 + t^2}\\right) - x}{\\sigma_0^2 + t^2}",
+        ",\\qquad",
+        "D(x,t)",
+        "=",
+        "x + t^2\\nabla_x \\log p_t(x)"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "The score vector field: spatial gradient of log probability density.",
+          "identity": "light",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 2,
+          "plain_words": "Exact bimodal score: tanh selects the nearer mode +/- mu_0 and pulls x toward it.",
+          "identity": "light",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 4,
+          "plain_words": "Tweedie's MMSE denoiser E[x_0 | x_t] recovered directly from the score.",
+          "identity": "interaction",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "Writing p_t(x) = (2 pi v(t))^(-1/2) exp(-(x^2 + mu_0^2)/(2 v(t))) cosh(mu_0 x / v(t)) with v(t) = sigma_0^2 + t^2 and differentiating log p_t(x) with respect to x gives (mu_0 tanh(mu_0 x / v(t)) - x) / v(t). At x = 0, tanh(0) = 0 so the score vanishes along the watershed.",
+      "common_misreading": "Assuming the score points straight to the origin x = 0; for t < sqrt(mu_0^2 - sigma_0^2) = 1.969, x = 0 is a local minimum valley and the score points outward toward +/- mu_0."
+    },
+    {
+      "id": "prob_flow_ode",
+      "act_number": 3,
+      "latex_parts": [
+        "\\frac{\\mathrm{d}x}{\\mathrm{d}t}",
+        "=",
+        "f(x,t)",
+        "-",
+        "\\frac{1}{2}g(t)^2",
+        "\\nabla_x \\log p_t(x)",
+        "=",
+        "-t\\,\\nabla_x \\log p_t(x)"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "Deterministic velocity of a trajectory moving through space-time.",
+          "identity": "light",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 4,
+          "plain_words": "Half the squared diffusion coefficient (1/2 * 2t = t) replaces stochastic noise.",
+          "identity": "structure",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 7,
+          "plain_words": "Clean deterministic Probability Flow ODE velocity under the Karras schedule.",
+          "identity": "light",
+          "zoom_worthy": true
+        }
+      ],
+      "derivation_or_motivation": "In the Fokker-Planck equation d_t p_t = -div(f p_t) + 0.5 g(t)^2 Lap(p_t), rewriting Lap(p_t) = div(p_t grad_x log p_t) turns the PDE into a pure continuity equation d_t p_t = -div([f - 0.5 g(t)^2 grad_x log p_t] p_t). Thus the deterministic ODE dx/dt = f(x,t) - 0.5 g(t)^2 grad_x log p_t(x) has the exact same marginal density p_t(x) at every t as the stochastic SDE.",
+      "common_misreading": "Believing removing noise changes the marginal distribution p_t(x); the factor 1/2 in the score coefficient exactly compensates for the removed Brownian diffusion."
+    },
+    {
+      "id": "consistency_identity",
+      "act_number": 4,
+      "latex_parts": [
+        "f_\\theta(x_t, t)",
+        "=",
+        "f_\\theta(x_{t'}, t')",
+        "=",
+        "x_\\epsilon",
+        ",\\qquad",
+        "f_\\theta(x,\\epsilon)",
+        "=",
+        "x"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "Consistency map evaluated at a high-noise point (x_t, t) on an ODE trajectory.",
+          "identity": "interaction",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 2,
+          "plain_words": "Consistency map at any other time t' along the same Probability Flow ODE trajectory.",
+          "identity": "interaction",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 4,
+          "plain_words": "The unique clean endpoint on the data manifold t = epsilon.",
+          "identity": "matter",
+          "zoom_worthy": true
+        }
+      ],
+      "derivation_or_motivation": "Song, Dhariwal, Chen, & Sutskever (OpenAI, 2023) define the consistency function f: (x_t, t) -> x_epsilon as the backward flow map of the Probability Flow ODE. Any two points (x_t, t) and (x_{t'}, t') lying on the same ODE solution curve must map to the identical endpoint x_epsilon.",
+      "common_misreading": "Confusing a consistency model with a single-step Euler approximation x - t dx/dt; a true consistency model integrates the curved ODE streamline all the way to t = epsilon in one evaluation."
+    },
+    {
+      "id": "skip_parametrization",
+      "act_number": 4,
+      "latex_parts": [
+        "f_\\theta(x,t)",
+        "=",
+        "c_{\\text{skip}}(t)\\,x",
+        "+",
+        "c_{\\text{out}}(t)\\,F_\\theta(x,t)",
+        ",\\quad",
+        "c_{\\text{skip}}(t)=\\frac{\\sigma_{\\text{data}}^2}{(t-\\epsilon)^2+\\sigma_{\\text{data}}^2}",
+        ",\\quad",
+        "c_{\\text{out}}(t)=\\frac{\\sigma_{\\text{data}}(t-\\epsilon)}{\\sqrt{\\sigma_{\\text{data}}^2+t^2}}"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 2,
+          "plain_words": "Skip connection weight c_skip(t) that approaches 1 as t -> epsilon.",
+          "identity": "structure",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 4,
+          "plain_words": "Network output weight c_out(t) that vanishes at t = epsilon so f_theta(x, epsilon) = x holds identically.",
+          "identity": "interaction",
+          "zoom_worthy": true
+        }
+      ],
+      "derivation_or_motivation": "Following Karras et al. (2022) and Song et al. (2023), parametrizing f_theta(x, t) with differentiable coefficients c_skip(t) and c_out(t) guarantees the boundary condition f_theta(x, epsilon) = x without penalty terms because c_skip(epsilon) = 1 and c_out(epsilon) = 0 exactly.",
+      "common_misreading": "Treating f_theta(x, epsilon) = x as a soft loss term; in Consistency Models it is enforced architecturally via c_skip and c_out."
+    }
+  ],
+  "color_identity": {
+    "x_t, data modes, SDE sample paths": "matter (#d97757)",
+    "score field grad_x log p_t(x), ODE velocity": "light (#6a9bcc)",
+    "density surface p_t(x), time schedule, c_skip": "structure (#788c5d)",
+    "consistency map f_theta, one-step arcs, c_out": "interaction (#d4a27f)"
+  },
+  "numbers": [
+    {
+      "name": "mu_0",
+      "value": 2.0,
+      "units": "data units",
+      "source": "execute_math_check",
+      "expression": "2.0"
+    },
+    {
+      "name": "sigma_0",
+      "value": 0.35,
+      "units": "data units",
+      "source": "execute_math_check",
+      "expression": "0.35"
+    },
+    {
+      "name": "epsilon",
+      "value": 0.002,
+      "units": "time",
+      "source": "execute_math_check",
+      "expression": "0.002"
+    },
+    {
+      "name": "T_max",
+      "value": 2.5,
+      "units": "time",
+      "source": "execute_math_check",
+      "expression": "2.5"
+    },
+    {
+      "name": "sigma_data",
+      "value": 0.5,
+      "units": "data units",
+      "source": "execute_math_check",
+      "expression": "0.5"
+    },
+    {
+      "name": "bifurcation_time_t_star",
+      "value": 1.9691,
+      "units": "time",
+      "source": "execute_math_check",
+      "expression": "round(sqrt(2.0**2 - 0.35**2), 4)"
+    },
+    {
+      "name": "c_skip_at_epsilon",
+      "value": 1.0,
+      "units": "dimensionless",
+      "source": "execute_math_check",
+      "expression": "0.5**2 / ((0.002 - 0.002)**2 + 0.5**2)"
+    },
+    {
+      "name": "c_out_at_epsilon",
+      "value": 0.0,
+      "units": "dimensionless",
+      "source": "execute_math_check",
+      "expression": "0.5 * (0.002 - 0.002) / sqrt(0.5**2 + 0.002**2)"
+    },
+    {
+      "name": "c_skip_at_t1",
+      "value": 0.2006,
+      "units": "dimensionless",
+      "source": "execute_math_check",
+      "expression": "round(0.5**2 / ((1.0 - 0.002)**2 + 0.5**2), 4)"
+    },
+    {
+      "name": "c_out_at_t1",
+      "value": 0.4463,
+      "units": "dimensionless",
+      "source": "execute_math_check",
+      "expression": "round(0.5 * (1.0 - 0.002) / sqrt(0.5**2 + 1.0**2), 4)"
+    }
+  ],
+  "checks": [
+    {
+      "description": "Verify score at watershed x=0 is identically zero for all t",
+      "expression": "(2.0 * np.tanh(2.0 * 0.0 / (0.35**2 + 1.0**2)) - 0.0) / (0.35**2 + 1.0**2)"
+    },
+    {
+      "description": "Verify bifurcation time t* = sqrt(mu_0^2 - sigma_0^2) where x=0 transitions from valley to peak",
+      "expression": "sqrt(2.0**2 - 0.35**2)"
+    },
+    {
+      "description": "Verify boundary condition c_skip(epsilon) == 1.0 and c_out(epsilon) == 0.0",
+      "expression": "[0.5**2 / ((0.002 - 0.002)**2 + 0.5**2), 0.5 * (0.002 - 0.002) / sqrt(0.5**2 + 0.002**2)]"
+    },
+    {
+      "description": "Verify Gaussian marginal integral equals 1.0",
+      "expression": "round(float(np.trapezoid(0.5 * (np.exp(-0.5*(-2.0 - np.linspace(-8,8,2001))**2/(0.35**2+1.0)) + np.exp(-0.5*(2.0 - np.linspace(-8,8,2001))**2/(0.35**2+1.0))) / sqrt(2*pi*(0.35**2+1.0)), np.linspace(-8,8,2001))), 6)"
+    }
+  ],
+  "sources": [
+    "Song et al. (2021), Score-Based Generative Modeling through Stochastic Differential Equations, ICLR 2021.",
+    "Song, Dhariwal, Chen, & Sutskever (2023), Consistency Models, ICML 2023 (OpenAI).",
+    "Karras, Aittala, Aila, & Laine (2022), Elucidating the Design Space of Diffusion-Based Generative Models, NeurIPS 2022."
+  ]
+}

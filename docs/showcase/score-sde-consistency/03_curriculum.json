@@ -1,0 +1,55 @@
+{
+  "acts": [
+    {
+      "act_number": 1,
+      "title": "Dissolving Structure into Noise: The Forward SDE",
+      "opening_question": "When a clean two-peaked distribution dissolves into pure Gaussian noise, what geometric surface does its probability density carve through time?",
+      "teaches": "forward_sde_marginals",
+      "narrative": "We open in 3D space over the (x, t) plane with vertical axis z = p_t(x). At t = epsilon = 0.002, the data density p_0(x) stands as two sharp coral peaks at x = -2.0 and x = +2.0 (sigma_0 = 0.35). As time advances to T = 2.5 under the Karras/VE forward SDE dx = sqrt(2t) dw_t, a translucent olive 3D surface p_t(x) extrudes forward: the two peaks merge across the saddle point at (x=0, t=1.97) into a broad Gaussian bell. Eight stochastic Brownian trajectories jitter across the floor from the two modes into the noisy horizon.",
+      "headline": "Forward diffusion melts sharp structure\ninto a smooth Gaussian horizon.",
+      "payoff": "Every slice of the 3D surface is an exact Gaussian convolution p_t(x) with variance sigma_0^2 + t^2.",
+      "estimated_seconds": 28
+    },
+    {
+      "act_number": 2,
+      "title": "The Compass in the Fog: The Score Field",
+      "opening_question": "Once a sample is lost in the fog at time t, how does it know which direction leads back to high probability density?",
+      "teaches": "score_vector_field",
+      "narrative": "The stochastic trajectories dim and a glowing sky-blue vector field grad_x log p_t(x) lights up across the (x, t) domain. At every point, each arrow points in the direction of steepest ascent of log p_t(x). Along the watershed line x = 0, the score is identically zero; to the left and right, arrows curve decisively back toward x = -2.0 and x = +2.0. The closed-form formula grad_x log p_t(x) = (mu_0 tanh(mu_0 x / (sigma_0^2 + t^2)) - x) / (sigma_0^2 + t^2) appears with Tweedie's optimal denoiser D(x, t) = x + t^2 grad_x log p_t(x).",
+      "headline": "The score vector field points uphill\ntoward the clean data modes.",
+      "payoff": "Without knowing the normalizing constant, grad_x log p_t(x) gives the exact compass bearing back to the data manifold.",
+      "estimated_seconds": 28
+    },
+    {
+      "act_number": 3,
+      "title": "From Tangled SDEs to the Probability Flow ODE",
+      "opening_question": "Can we travel backward from noise to data through the exact same density surface p_t(x) without any random jitter at all?",
+      "teaches": "probability_flow_ode",
+      "narrative": "First, reverse-time SDE paths (Anderson 1982) march backward from t = T to t = epsilon, guided by -2t grad_x log p_t(x) dt + sqrt(2t) dw_bar_t: they arrive at the two modes, but writhe with stochastic noise. Then the factor of 2 is halved and the Brownian term is stripped away: dx/dt = -t grad_x log p_t(x). The jittering coral paths morph continuously into seven sleek golden-blue deterministic streamlines—the Probability Flow ODE (Song et al. 2021)—gliding smoothly over the 3D density surface p_t(x) while preserving the exact same marginal distribution at every time slice t.",
+      "headline": "Strip out the randomness, keep the marginals:\nthe Probability Flow ODE.",
+      "payoff": "Every stochastic diffusion SDE has a deterministic ODE twin that connects noise x_T to data x_epsilon along smooth, non-crossing trajectories.",
+      "estimated_seconds": 30
+    },
+    {
+      "act_number": 4,
+      "title": "The Big Zoom: OpenAI's Consistency Map",
+      "opening_question": "If a deterministic ODE trajectory already links every noisy point (x_t, t) to a unique clean endpoint x_epsilon, why integrate step by step at all?",
+      "teaches": "boundary_skip_parametrization",
+      "narrative": "The camera executes the Big Zoom: diving into a single highlighted Probability Flow ODE trajectory x(t) ending at x_epsilon = +2.04. Three glowing markers sit along this trajectory at t_1 = 2.20, t_2 = 1.25, and t_3 = 0.50. Gold projection arcs leap from all three markers simultaneously and land on the exact same clean endpoint x_epsilon at t = epsilon = 0.002. This is OpenAI's Consistency Model (Song, Dhariwal, Chen, & Sutskever 2023): f_theta(x_t, t) = f_theta(x_t', t') = x_epsilon. Next, the boundary parametrization f_theta(x, t) = c_skip(t) x + c_out(t) F_theta(x, t) is shown with its two analytical weight curves c_skip(t) and c_out(t), proving c_skip(epsilon) = 1 and c_out(epsilon) = 0.",
+      "headline": "Every point on an ODE streamline\nmaps to the same clean origin in one step.",
+      "payoff": "Enforcing f_theta(x_{t_{n+1}}, t_{n+1}) = f_{theta^-}(x_{t_n}, t_n) along ODE pairs collapses a 50-step trajectory into a single function evaluation.",
+      "estimated_seconds": 32
+    },
+    {
+      "act_number": 5,
+      "title": "One Leap to the Manifold: 50 Steps vs. 1 Step",
+      "opening_question": "How does one-step consistency generation compare side-by-side against multi-step ODE integration?",
+      "teaches": "consistency_map_collapse",
+      "narrative": "The camera pulls back to a panoramic 3D finale. On the left half of the stage, a 50-step Euler/Heun solver marches incrementally down the ODE vector field (NFE = 50). On the right half, the Consistency Model fires golden one-step arcs from seven prior samples at t = T = 2.5 directly onto the bimodal peaks at t = epsilon = 0.002 in a single evaluation (NFE = 1), followed by an optional second consistency step that sharpens the modes to machine precision. The film closes on a slow 3D orbit around the unified sculpture of density surface, score field, ODE streamlines, and golden consistency arcs.",
+      "headline": "Fifty solver steps become one consistency leap.",
+      "payoff": "Continuous-time score SDEs build the bridge between data and noise; the Probability Flow ODE straightens it; Consistency Models cross it in a single bound.",
+      "estimated_seconds": 27
+    }
+  ],
+  "through_line": "Act 1 constructs the 3D probability surface p_t(x) as forward Brownian motion melts a bimodal distribution into noise. Act 2 reveals the hidden compass inside that surface—the score field grad_x log p_t(x). Act 3 uses the score to invert time, first stochastically via the Reverse SDE and then deterministically via the Probability Flow ODE, giving smooth trajectories with identical marginals. Act 4 zooms into a single ODE streamline to reveal OpenAI's Consistency insight: because the trajectory is deterministic, every point along it shares one clean endpoint x_epsilon, which f_theta(x_t, t) learns directly with exact skip-connection boundary weights. Act 5 cashes in the geometry by contrasting 50-step ODE integration against 1-step Consistency generation."
+}

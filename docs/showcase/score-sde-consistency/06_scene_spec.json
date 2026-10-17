@@ -1,0 +1,101 @@
+{
+  "scene_name": "ScoreSDEConsistencyJourney",
+  "scene_class": "ThreeDScene",
+  "palette": {
+    "background": "#0c0c0b",
+    "text": "#faf9f5",
+    "secondary_text": "#b0aea5",
+    "matter": "#d97757",
+    "light": "#6a9bcc",
+    "structure": "#788c5d",
+    "interaction": "#d4a27f",
+    "surface_tint": "#263829"
+  },
+  "objects": [
+    {
+      "id": "spacetime_axes",
+      "kind": "ThreeDAxes",
+      "spec": "x in [-4.2, 4.2] (data space), y in [0, 2.6] (time t in [epsilon, T]), z in [0, 0.7] (density p_t(x)), centered cleanly below the HUD."
+    },
+    {
+      "id": "density_surface",
+      "kind": "VGroup of 3D parametric ribbons and cross-section slices",
+      "spec": "Exact bimodal Gaussian convolution p_t(x) rendered as glowing time-slice ribbons and longitudinal surface filaments from t = 0.002 to t = 2.5."
+    },
+    {
+      "id": "forward_sde_paths",
+      "kind": "VGroup of VMobject",
+      "spec": "Eight seeded Euler-Maruyama trajectories of dx = sqrt(2t) dw_t starting near x = -2.0 and x = +2.0."
+    },
+    {
+      "id": "score_vector_field",
+      "kind": "VGroup of Arrow3D / Line + tip",
+      "spec": "Grid of sky-blue vectors showing exact grad_x log p_t(x) across (x, t), vanishing on x = 0 and pointing toward +/- 2.0."
+    },
+    {
+      "id": "prob_flow_ode_streamlines",
+      "kind": "VGroup of VMobject",
+      "spec": "Nine exact Runge-Kutta integrated trajectories of dx/dt = -t grad_x log p_t(x) lifted onto the 3D density surface p_t(x)."
+    },
+    {
+      "id": "consistency_projection_arcs",
+      "kind": "VGroup of 3D CubicBezier arcs",
+      "spec": "Golden arcs leaping from (x(t_k), t_k) at t_k in [2.20, 1.25, 0.50] along a hero ODE streamline directly to (x_epsilon, epsilon)."
+    },
+    {
+      "id": "skip_parametrization_panel",
+      "kind": "Fixed-in-frame 2D diagnostic plot + HUD card",
+      "spec": "Plots c_skip(t) = sigma_data^2 / ((t-epsilon)^2 + sigma_data^2) in olive and c_out(t) = sigma_data(t-epsilon)/sqrt(sigma_data^2 + t^2) in gold over t in [0.002, 2.5]."
+    }
+  ],
+  "timeline": [
+    {
+      "beat": 1,
+      "verb": "HEADLINE",
+      "target": "act1_headline"
+    },
+    {
+      "beat": 3,
+      "verb": "SHOW",
+      "target": "density_surface"
+    },
+    {
+      "beat": 6,
+      "verb": "SHOW",
+      "target": "score_vector_field"
+    },
+    {
+      "beat": 10,
+      "verb": "TRANSFORM",
+      "target": "prob_flow_ode_streamlines"
+    },
+    {
+      "beat": 12,
+      "verb": "SHOW",
+      "target": "consistency_projection_arcs"
+    },
+    {
+      "beat": 13,
+      "verb": "PULL_BACK",
+      "target": "skip_parametrization_panel"
+    },
+    {
+      "beat": 15,
+      "verb": "ORBIT",
+      "target": "spacetime_axes"
+    }
+  ],
+  "constraints": [
+    "Manim Community Edition ThreeDScene",
+    "move_camera or set_camera_orientation only; never .animate on self.camera",
+    "All 2D text/LaTeX HUD elements registered via add_fixed_in_frame_mobjects with dark translucent backing panels so text never collides with 3D geometry",
+    "All mathematical functions (marginal_pdf, exact_score, tweedie_denoiser, integrate_prob_flow_ode, consistency_map, c_skip, c_out) exposed at module top-level for deterministic unit testing"
+  ],
+  "acceptance": [
+    "Single ThreeDScene subclass named ScoreSDEConsistencyJourney",
+    "Zero blocked imports or calls; passes argon.validation.verify_scene_report",
+    "Exact bimodal score vanishes at x = 0 and satisfies Tweedie identity D(x, t) = x + t^2 score(x, t)",
+    "Probability Flow ODE trajectories preserve the sign of x_T and converge to the two data modes at t = epsilon",
+    "Consistency function satisfies f_theta(x_t, t) == f_theta(x_t', t') == x_epsilon along every ODE trajectory and c_skip(epsilon) == 1, c_out(epsilon) == 0"
+  ]
+}

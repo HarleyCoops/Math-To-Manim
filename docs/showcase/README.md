@@ -31,6 +31,25 @@ They are not just decoration. They define the bar M2M2 should eventually hit:
 
 ---
 
+## From Score SDEs to One-Step Consistency · an Argon Google Agent SDK film
+
+[![Continuous-time Score SDEs, the Probability Flow ODE, and OpenAI Consistency Models rendered in 3D](assets/score-sde-consistency.gif)](assets/score-sde-consistency.mp4)
+
+A bimodal data distribution melts under the variance-exploding Itô forward SDE
+$\mathrm{d}x=\sqrt{2t}\,\mathrm{d}w_t$, merging its modes at the exact
+bifurcation time $t^*=\sqrt{\mu_0^2-\sigma_0^2}\approx 1.969$. The score vector
+field $\nabla_x\log p_t(x)$ and Tweedie's MMSE denoiser point uphill toward the
+modes; stripping out half the score drift yields the deterministic Probability
+Flow ODE $\mathrm{d}x/\mathrm{d}t=-t\,\nabla_x\log p_t(x)$ with identical
+marginals $p_t(x)$; and OpenAI Consistency Models learn the boundary-enforced
+map $f_\theta(x_t,t)=x_\varepsilon$ so every point on an ODE trajectory jumps to
+the clean manifold in one step.
+
+[Watch the movie](assets/score-sde-consistency.mp4) ·
+[Contact sheet](assets/score-sde-consistency-contact-sheet.png) ·
+[Production record](score-sde-consistency/README.md) ·
+[Scene](../../examples/argon/score_sde_consistency.py)
+
 ## The Shape and Its Shadow · an Astra paper film
 
 [![The polar octahedron opens into exact tetrahedra and one gold base-height calculation](assets/mahler-film.gif)](assets/mahler-film.mp4)

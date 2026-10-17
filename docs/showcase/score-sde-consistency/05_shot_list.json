@@ -1,0 +1,215 @@
+{
+  "shots": [
+    {
+      "beat": 1,
+      "act_number": 1,
+      "verb": "HEADLINE",
+      "target": "act1_headline",
+      "params": {
+        "font_size": 34,
+        "hold": 1.5
+      },
+      "caption_text": "Act I — Forward Diffusion SDE: Structure Dissolves into Noise",
+      "seconds": 3.5
+    },
+    {
+      "beat": 2,
+      "act_number": 1,
+      "verb": "TILT_3D",
+      "target": "spacetime_axes",
+      "params": {
+        "phi": 62,
+        "theta": -52,
+        "run_time": 2.5
+      },
+      "caption_text": "At t = epsilon = 0.002, data p_0(x) stands as two sharp coral peaks at x = -2 and x = +2.",
+      "seconds": 4.5
+    },
+    {
+      "beat": 3,
+      "act_number": 1,
+      "verb": "SHOW",
+      "target": "density_surface_and_slices",
+      "formula_id": "forward_sde",
+      "params": {
+        "run_time": 4.0
+      },
+      "caption_text": "Under dx = sqrt(2t) dw_t, variance grows as sigma_0^2 + t^2, carving the 3D surface p_t(x).",
+      "seconds": 6.0
+    },
+    {
+      "beat": 4,
+      "act_number": 1,
+      "verb": "SHOW",
+      "target": "forward_sde_paths",
+      "params": {
+        "count": 8,
+        "run_time": 4.5
+      },
+      "caption_text": "Eight stochastic Brownian paths wander from the two clean peaks into the Gaussian horizon at t = 2.5.",
+      "seconds": 6.0
+    },
+    {
+      "beat": 5,
+      "act_number": 2,
+      "verb": "HEADLINE",
+      "target": "act2_headline",
+      "params": {
+        "phi": 54,
+        "theta": -68,
+        "run_time": 2.2
+      },
+      "caption_text": "Act II — The Score Vector Field: The Compass Inside the Fog",
+      "seconds": 3.5
+    },
+    {
+      "beat": 6,
+      "act_number": 2,
+      "verb": "SHOW",
+      "target": "score_vector_field",
+      "formula_id": "exact_score_field",
+      "params": {
+        "run_time": 3.5
+      },
+      "caption_text": "Sky-blue arrows show grad_x log p_t(x): pointing away from the x = 0 watershed toward +/- mu_0.",
+      "seconds": 6.5
+    },
+    {
+      "beat": 7,
+      "act_number": 2,
+      "verb": "TERM_TOUR",
+      "target": "tweedie_denoiser_vectors",
+      "formula_id": "exact_score_field",
+      "part_index": 4,
+      "params": {
+        "run_time": 3.5
+      },
+      "caption_text": "Tweedie's formula D(x, t) = x + t^2 grad_x log p_t(x) points toward the conditional expectation.",
+      "seconds": 5.5
+    },
+    {
+      "beat": 8,
+      "act_number": 3,
+      "verb": "HEADLINE",
+      "target": "act3_headline",
+      "params": {
+        "phi": 60,
+        "theta": -42,
+        "run_time": 2.2
+      },
+      "caption_text": "Act III — Reverse-Time SDE vs. Deterministic Probability Flow ODE",
+      "seconds": 3.5
+    },
+    {
+      "beat": 9,
+      "act_number": 3,
+      "verb": "SHOW",
+      "target": "reverse_sde_paths",
+      "params": {
+        "run_time": 3.8
+      },
+      "caption_text": "Anderson's reverse SDE marches backward from t = 2.5 to t = epsilon, but writhes with stochastic noise.",
+      "seconds": 5.5
+    },
+    {
+      "beat": 10,
+      "act_number": 3,
+      "verb": "TRANSFORM",
+      "target": "reverse_sde_paths -> prob_flow_ode_streamlines",
+      "formula_id": "prob_flow_ode",
+      "params": {
+        "run_time": 3.5
+      },
+      "caption_text": "Halving the score drift to dx/dt = -t grad_x log p_t(x) strips away all noise while preserving p_t(x) exactly.",
+      "seconds": 6.5
+    },
+    {
+      "beat": 11,
+      "act_number": 4,
+      "verb": "ZOOM_IN",
+      "target": "hero_ode_trajectory",
+      "formula_id": "consistency_identity",
+      "params": {
+        "phi": 52,
+        "theta": -76,
+        "run_time": 3.0
+      },
+      "caption_text": "Act IV — The Big Zoom: OpenAI's Consistency Map f_theta(x_t, t) = x_epsilon",
+      "seconds": 6.0
+    },
+    {
+      "beat": 12,
+      "act_number": 4,
+      "verb": "SHOW",
+      "target": "consistency_projection_arcs",
+      "formula_id": "consistency_identity",
+      "params": {
+        "t_points": [2.2, 1.25, 0.5],
+        "run_time": 4.0
+      },
+      "caption_text": "Every point (x_t, t) along the same ODE streamline leaps in one step to the exact same clean endpoint x_epsilon.",
+      "seconds": 7.0
+    },
+    {
+      "beat": 13,
+      "act_number": 4,
+      "verb": "PULL_BACK",
+      "target": "skip_parametrization_panel",
+      "formula_id": "skip_parametrization",
+      "params": {
+        "run_time": 3.5
+      },
+      "caption_text": "Skip weights c_skip(t) and c_out(t) guarantee f_theta(x, epsilon) = x identically at the boundary.",
+      "seconds": 6.5
+    },
+    {
+      "beat": 14,
+      "act_number": 5,
+      "verb": "SHOW",
+      "target": "multistep_vs_onestep_comparison",
+      "params": {
+        "phi": 64,
+        "theta": -48,
+        "run_time": 4.5
+      },
+      "caption_text": "Act V — 50-Step ODE Solver (NFE = 50) vs. 1-Step Consistency Generation (NFE = 1).",
+      "seconds": 7.5
+    },
+    {
+      "beat": 15,
+      "act_number": 5,
+      "verb": "ORBIT",
+      "target": "full_3d_sculpture",
+      "params": {
+        "phi": 58,
+        "theta": -25,
+        "run_time": 6.0
+      },
+      "caption_text": "Score SDEs shape the density; the Probability Flow ODE straightens the path; Consistency crosses it in one step.",
+      "seconds": 7.0
+    }
+  ],
+  "camera_score": "The camera begins in a 3D perspective (phi=62, theta=-52) looking across the (x, t, p_t(x)) manifold as forward diffusion unfolds. In Act II it swings toward a top-angled view (phi=54, theta=-68) so the watershed symmetry of the score vector field grad_x log p_t(x) is unmistakable. In Act III it orbits to (phi=60, theta=-42) as tangled reverse SDE paths morph into laminar Probability Flow ODE streamlines riding the 3D surface. In Act IV it executes the Big Zoom into a single hero ODE trajectory, watching three time slices fire golden arcs to a single endpoint x_epsilon, then pulls back to verify the c_skip(t) and c_out(t) boundary curves. Act V concludes with a sweeping orbital panorama around the complete 3D mathematical sculpture.",
+  "stills": [
+    {
+      "filename": "act1_forward_sde_surface.png",
+      "prompt": "3D probability density surface p_t(x) over (x, t) melting from two coral peaks into an olive Gaussian ridge with stochastic paths.",
+      "purpose": "Verify 3D depth separation and axis legibility in Act I."
+    },
+    {
+      "filename": "act3_probability_flow_ode.png",
+      "prompt": "Laminar sky-blue and gold Probability Flow ODE streamlines gliding over the 3D density surface p_t(x).",
+      "purpose": "Verify streamline smoothness and formula HUD clearance in Act III."
+    },
+    {
+      "filename": "act4_consistency_big_zoom.png",
+      "prompt": "Three points along a 3D Probability Flow ODE trajectory firing golden consistency arcs to a single endpoint x_epsilon at t = epsilon.",
+      "purpose": "Verify the Big Zoom composition and self-consistency identity f_theta(x_t, t) = f_theta(x_t', t') = x_epsilon."
+    }
+  ],
+  "visual_seeds": [
+    "Bimodal Gaussian mixture ridge in 3D space-time (x in [-4, 4], t in [0.002, 2.5], z = p_t(x))",
+    "Watershed saddle point at (x = 0, t* = 1.969) where bimodal valleys merge into a single Gaussian crest",
+    "Golden consistency arcs arching above the ODE streamline to land on x_epsilon in a single bound"
+  ]
+}

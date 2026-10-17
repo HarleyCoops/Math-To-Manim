@@ -43,6 +43,10 @@ render = [
 grok = [
   "httpx>=0.27",
 ]
+argon = [
+  "google-adk>=2.0",
+  "google-genai>=2.0",
+]
 
 [project.scripts]
 math-to-manim = "astra.cli:main"
@@ -57,13 +61,15 @@ math-to-manim-glm = "glm.cli:main"
 m2m-glm = "glm.cli:main"
 math-to-manim-mimo = "mimo.cli:main"
 m2m-mimo = "mimo.cli:main"
+math-to-manim-argon = "argon.cli:main"
+m2m-argon = "argon.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/HarleyCoops/Math-To-Manim"
 Repository = "https://github.com/HarleyCoops/Math-To-Manim"
 
 [tool.setuptools.packages.find]
-include = ["astra*", "mythos*", "sol*", "grok*", "glm*", "mimo*"]
+include = ["astra*", "mythos*", "sol*", "grok*", "glm*", "mimo*", "argon*"]
 
 [tool.setuptools.package-data]
 astra = ["*.mjs", "node/*.json"]
@@ -71,6 +77,7 @@ mythos = ["agents/*.md"]
 grok = ["agents/*.md"]
 glm = ["agents/*.md"]
 mimo = ["agents/*.md"]
+argon = ["agents/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

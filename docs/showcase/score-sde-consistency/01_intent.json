@@ -1,0 +1,35 @@
+{
+  "core_claim": "Every continuous-time diffusion SDE hides a deterministic Probability Flow ODE with the exact same marginal densities p_t(x), and OpenAI's Consistency Model collapses each entire ODE trajectory into a single one-step map f_theta(x_t, t) = x_epsilon.",
+  "audience": "Engineers, researchers, and mathematically curious viewers who know what a probability density curve and a derivative are, and who have heard that diffusion models denoise step-by-step, but want to see geometrically how stochastic SDEs, score vector fields, deterministic ODE flows, and one-step consistency maps fit together in 3D space.",
+  "emotional_arc": [
+    "Curiosity: two sharp data peaks at t = epsilon melt into a single featureless Gaussian cloud at t = T as dozens of jittering Brownian sample paths wander outward.",
+    "Discovery: beneath the noisy surface, a clean sky-blue vector field—the score grad_x log p_t(x)—points uphill toward the two original data modes from every point in space-time.",
+    "Relief: subtracting half the diffusion term strips away all randomness, turning the tangled web of reverse SDE paths into laminar golden-blue streamlines—the Probability Flow ODE—without changing the density surface p_t(x) by a single hair.",
+    "Revelation (The Big Zoom): the camera dives into one ODE streamline and watches three points at t = 2.2, 1.2, and 0.5 project in a single golden arc to the exact same clean endpoint x_epsilon: the consistency identity f_theta(x_t, t) = f_theta(x_t', t').",
+    "Awe: fifty sequential ODE integration steps collapse into one direct evaluation f_theta(x_T, T) = x_epsilon, guaranteed at the boundary by the skip-connection identity c_skip(epsilon) = 1, c_out(epsilon) = 0."
+  ],
+  "scope": {
+    "in": [
+      "Symmetric bimodal Gaussian mixture data distribution p_0(x) = 0.5 N(x; -2.0, 0.35^2) + 0.5 N(x; +2.0, 0.35^2)",
+      "Variance-Exploding / Karras continuous-time forward SDE dx = sqrt(2 t) dw_t on t in [epsilon, T] with epsilon = 0.002 and T = 2.5, giving exact marginal variance v(t) = sigma_0^2 + t^2",
+      "Exact closed-form score field grad_x log p_t(x) = (mu_0 tanh(mu_0 x / (sigma_0^2 + t^2)) - x) / (sigma_0^2 + t^2) and Tweedie denoiser D(x, t) = x + t^2 grad_x log p_t(x)",
+      "Reverse-time SDE dx = [-t^2 grad_x log p_t(x) * (2/t)] dt + sqrt(2 t) dw_bar_t versus deterministic Probability Flow ODE dx/dt = -t grad_x log p_t(x)",
+      "Fokker-Planck marginal equivalence between the stochastic SDE and deterministic Probability Flow ODE (Song et al., 2021)",
+      "Consistency Models (Song, Dhariwal, Chen, & Sutskever, OpenAI 2023): self-consistency f_theta(x_t, t) = f_theta(x_t', t') = x_epsilon along Probability Flow ODE trajectories",
+      "Boundary condition f_theta(x, epsilon) = x enforced via skip parametrization f_theta(x, t) = c_skip(t) x + c_out(t) F_theta(x, t) with sigma_data = 0.5"
+    ],
+    "out": [
+      "Discrete-time DDPM beta_t indexing clutter (everything is unified in continuous time t in [epsilon, T])",
+      "U-Net or DiT architectural layer diagrams (the film focuses on the exact differential and geometric flow equations)",
+      "Classifier-free guidance weights and text-conditioning cross-attention"
+    ]
+  },
+  "duration_seconds": 145,
+  "title_options": [
+    "From Score SDEs to One-Step Consistency",
+    "The Probability Flow Highway",
+    "Collapsing the Trajectory: Score SDEs & Consistency Models"
+  ],
+  "the_big_zoom": "In Act 4, the camera flies into a single 3D Probability Flow ODE streamline x(t) hovering above the density surface p_t(x). Three glowing beads at t = 2.20, t' = 1.25, and t'' = 0.50 fire synchronized gold consistency arcs that converge onto the exact same point x_epsilon on the t = epsilon manifold, while the camera zooms into the self-consistency law f_theta(x_t, t) = f_theta(x_t', t') = x_epsilon.",
+  "image_read": null
+}

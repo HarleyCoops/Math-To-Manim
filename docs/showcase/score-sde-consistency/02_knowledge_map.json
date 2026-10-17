@@ -1,0 +1,96 @@
+{
+  "target": "For any continuous-time diffusion SDE dx = f(x,t)dt + g(t)dw_t evolving p_0(x) into p_t(x), the deterministic Probability Flow ODE dx = [f(x,t) - 0.5 g(t)^2 grad_x log p_t(x)]dt shares the exact same marginal densities p_t(x), and a Consistency Model f_theta(x_t, t) = c_skip(t) x_t + c_out(t) F_theta(x_t, t) maps every point along an ODE trajectory directly to its clean origin x_epsilon in a single step.",
+  "nodes": [
+    {
+      "id": "consistency_map_collapse",
+      "name": "Consistency Model f_theta(x_t, t) = x_epsilon collapses the ODE trajectory to 1 step",
+      "why_needed": "This is the depth-0 target claim: learning the ODE flow map directly eliminates multi-step numerical integration.",
+      "depth": 0,
+      "assumed": false,
+      "visual_seed": "Gold arcs jumping from multiple points (x_t, t) along the same streamline directly to a single glowing bead x_epsilon on the clean manifold t = epsilon."
+    },
+    {
+      "id": "boundary_skip_parametrization",
+      "name": "Skip parametrization c_skip(t) x + c_out(t) F_theta(x,t) anchors f_theta(x, epsilon) = x",
+      "why_needed": "Self-consistency alone could collapse to a constant unless the boundary condition at t = epsilon is satisfied identically.",
+      "depth": 1,
+      "assumed": false,
+      "visual_seed": "Two smooth weight curves c_skip(t) and c_out(t) crossing as t approaches epsilon, pinning c_skip(epsilon)=1 and c_out(epsilon)=0."
+    },
+    {
+      "id": "probability_flow_ode",
+      "name": "Deterministic Probability Flow ODE dx/dt = f(x,t) - 0.5 g(t)^2 grad_x log p_t(x)",
+      "why_needed": "A consistency map requires a well-defined deterministic trajectory connecting noise x_T to clean data x_epsilon.",
+      "depth": 2,
+      "assumed": false,
+      "visual_seed": "Tangled coral reverse-SDE paths smoothing into laminar golden-blue streamlines that slice cleanly through the 3D density surface p_t(x)."
+    },
+    {
+      "id": "reverse_time_sde",
+      "name": "Reverse-time SDE driven by the score and reverse Brownian motion",
+      "why_needed": "Shows how diffusion is inverted stochastically before stripping out the noise term to reveal the deterministic ODE.",
+      "depth": 3,
+      "assumed": false,
+      "visual_seed": "Noisy particles at t = T riding the score arrows backward in time while still jittering randomly."
+    },
+    {
+      "id": "score_vector_field",
+      "name": "The score grad_x log p_t(x) points uphill toward the data modes",
+      "why_needed": "Both the reverse SDE and the Probability Flow ODE depend on the gradient of log marginal density as their compass.",
+      "depth": 4,
+      "assumed": false,
+      "visual_seed": "Sky-blue vector arrows across the (x, t) floor pointing away from the x=0 saddle and toward the two ridge crests at x = -2 and x = +2."
+    },
+    {
+      "id": "forward_sde_marginals",
+      "name": "Forward SDE dx = f(x,t)dt + g(t)dw_t smooths p_0(x) into Gaussian marginals p_t(x)",
+      "why_needed": "Establishes the 3D space-time density surface p_t(x) over (x, t) that the rest of the film navigates.",
+      "depth": 5,
+      "assumed": true,
+      "visual_seed": "A 3D translucent olive surface where a sharp two-peaked curve at t = 0 spreads and flattens into a broad single-humped bell at t = T."
+    }
+  ],
+  "edges": [
+    [
+      "forward_sde_marginals",
+      "score_vector_field"
+    ],
+    [
+      "score_vector_field",
+      "reverse_time_sde"
+    ],
+    [
+      "reverse_time_sde",
+      "probability_flow_ode"
+    ],
+    [
+      "score_vector_field",
+      "probability_flow_ode"
+    ],
+    [
+      "probability_flow_ode",
+      "boundary_skip_parametrization"
+    ],
+    [
+      "boundary_skip_parametrization",
+      "consistency_map_collapse"
+    ],
+    [
+      "probability_flow_ode",
+      "consistency_map_collapse"
+    ]
+  ],
+  "spine": [
+    "forward_sde_marginals",
+    "score_vector_field",
+    "reverse_time_sde",
+    "probability_flow_ode",
+    "boundary_skip_parametrization",
+    "consistency_map_collapse"
+  ],
+  "sources": [
+    "Song, Sohl-Dickstein, Kingma, Kumar, Ermon, & Poole (2021). Score-Based Generative Modeling through Stochastic Differential Equations. ICLR 2021.",
+    "Song, Dhariwal, Chen, & Sutskever (2023). Consistency Models. ICML 2023 (OpenAI).",
+    "Anderson (1982). Reverse-time diffusion equation models. Stochastic Processes and their Applications."
+  ]
+}

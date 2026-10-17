@@ -8,6 +8,38 @@
   </picture>
 </a>
 
+## New Film (Argon Google Agent SDK): From Score SDEs to One-Step Consistency
+
+[![Continuous-time Score SDEs, the Probability Flow ODE, and OpenAI Consistency Models rendered in 3D](docs/showcase/assets/score-sde-consistency.gif)](docs/showcase/assets/score-sde-consistency.mp4)
+
+[Watch the complete `.mp4` (70.4 s, 720p30)](docs/showcase/assets/score-sde-consistency.mp4) ·
+[View the contact sheet](docs/showcase/assets/score-sde-consistency-contact-sheet.png) ·
+[Inspect the Manim source](examples/argon/score_sde_consistency.py) ·
+[Read the 6-stage Argon ADK production record](docs/showcase/score-sde-consistency/README.md) ·
+[Production request](docs/prompts/score-sde-consistency.md)
+
+A sharp bimodal data distribution $p_0(x)=\tfrac12\mathcal{N}(-\mu_0,\sigma_0^2)+\tfrac12\mathcal{N}(+\mu_0,\sigma_0^2)$ melts under the variance-exploding Itô forward SDE $\mathrm{d}x=\sqrt{2t}\,\mathrm{d}w_t$, merging its two modes at the exact bifurcation time $t^*=\sqrt{\mu_0^2-\sigma_0^2}\approx 1.969$. The score vector field $\nabla_x\log p_t(x)=\bigl(\mu_0\tanh(\mu_0 x/v(t))-x\bigr)/v(t)$ and Tweedie's MMSE denoiser $D(x,t)=x+t^2\nabla_x\log p_t(x)$ point back uphill toward the clean modes. Stripping away half the score drift removes the Brownian jitter to yield the deterministic **Probability Flow ODE** $\mathrm{d}x/\mathrm{d}t=-t\,\nabla_x\log p_t(x)$ with identical marginals $p_t(x)$, and **OpenAI Consistency Models** (Song, Dhariwal, Chen, & Sutskever, ICML 2023) learn the boundary-enforced flow map $f_\theta(x_t,t)=c_{\text{skip}}(t)\,x_t+c_{\text{out}}(t)\,F_\theta(x_t,t)=x_\varepsilon$ so every point along an ODE trajectory leaps to the clean manifold in **1 NFE**.
+
+$$
+\mathrm{d}x = -t\,\nabla_x\log p_t(x)\,\mathrm{d}t \quad\Longrightarrow\quad f_\theta(x_t,t)=f_\theta(x_{t'},t')=x_\varepsilon,\qquad c_{\text{skip}}(\varepsilon)=1,\;c_{\text{out}}(\varepsilon)=0.
+$$
+
+### How the Argon Google Agent SDK (`google-adk`) pipeline built this film
+
+The [`argon/`](argon/) package ports the six-stage Math-To-Manim reasoning chain to the **Google Agent Development Kit (`google-adk`)** and **`google-genai` SDK** (`gemini-4-argon` / `ArgonGoogleADKClient`):
+
+1. **Six `LlmAgent` specialists** (`argon_intent`, `argon_cartographer`, `argon_curriculum`, `argon_math_director`, `argon_cinematographer`, `argon_composer`) orchestrated via `google.adk.agents.SequentialAgent` and `InMemoryRunner`.
+2. **ADK FunctionTools**: `execute_math_check` verifies algebraic identities, bifurcation thresholds, and skip-connection boundary conditions in a sandboxed AST NumPy evaluator during stage 4; `verify_scene` checks AST syntax, banned imports, and `ThreeDScene` camera discipline (`set_camera_orientation` / `move_camera`) during stage 6.
+3. **Strict contract validation & reproducible operator harness**: [`scripts/operate_argon_chain.py`](scripts/operate_argon_chain.py) validates all six JSON artifacts (`01_intent.json` through `06_scene_spec.json`), runs the ADK tools, renders the 3D scene via Manim, and writes a versioned `manifest.json` under `runs/argon/`.
+
+```bash
+pip install -e ".[argon,dev,render]"
+math-to-manim-argon doctor
+python scripts/operate_argon_chain.py docs/showcase/score-sde-consistency --render -q m
+```
+
+---
+
 <a href="docs/showcase/README.md">
   <picture>
     <source media="(prefers-reduced-motion: reduce)" srcset="docs/showcase/assets/showcase-collage-poster.png" />
@@ -516,6 +548,7 @@ September 24, 2026, not on release morning.
 ```bash
 python -m pytest
 python -m pytest tests/test_astra.py
+python -m pytest tests/test_argon.py tests/test_score_sde_consistency.py
 ```
 
 Offline tests verify gate failures, backward repair, invalidated approvals,
@@ -523,12 +556,13 @@ evidence references, credential filtering, source checks and resume behavior.
 Live runs have separate manifests; a passing unit suite does not prove that a
 film has been generated.
 
-## Earlier Pipelines And Films
+## Provider Pipelines And Films
 
-The existing provider implementations remain available under their explicit
-commands: `math-to-manim-mythos`, `math-to-manim-sol`, `math-to-manim-grok`,
-`math-to-manim-glm`, and `math-to-manim-mimo`. They do not orchestrate the new
-Astra chain. The primary `math-to-manim` and `m2m` commands now run Astra.
+The provider-specific implementations remain available under their explicit
+commands: `math-to-manim-argon` (`m2m-argon`), `math-to-manim-mythos`,
+`math-to-manim-sol`, `math-to-manim-grok`, `math-to-manim-glm`, and
+`math-to-manim-mimo`. They do not orchestrate the Astra chain. The primary
+`math-to-manim` and `m2m` commands run Astra.
 
 The [motion showcase](docs/showcase/README.md) retains the older films.
 Legacy service and pipeline references remain in [the documentation](docs/).

@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "run_id": "20261017-155825-explain-continuous-time-score-sdes-the-probabili",
+  "prompt": "Explain Continuous-Time Score SDEs, the Probability Flow ODE, and OpenAI's Consistency Models in 3D space.\n\nShow how a bimodal data distribution p_0(x) dissolves under a forward continuous-time SDE dx = f(x,t)dt + g(t)dw_t into a wide Gaussian marginal p_t(x), why the score vector field grad_x log p_t(x) points back toward the data modes, how the deterministic Probability Flow ODE dx = [f(x,t) - 1/2 g(t)^2 grad_x log p_t(x)] dt shares the exact same marginals p_t(x) without stochastic jitter, and how OpenAI's Consistency Models (Song, Dhariwal, Chen, & Sutskever, 2023) collapse every entire Probability Flow ODE trajectory into a single one-step consistency map f_theta(x_t, t) = f_theta(x_t', t') = x_epsilon with exact boundary parametrization c_skip(epsilon) = 1, c_out(epsilon) = 0.",
+  "model": "gemini-4-argon",
+  "backend": "argon-operator",
+  "sdk": "google-adk + google-genai",
+  "offline": false,
+  "render_requested": true,
+  "quality": "m",
+  "image": null,
+  "status": "completed",
+  "created_utc": "2026-10-17T15:58:25.928503+00:00",
+  "completed_utc": "2026-10-17T16:01:11.822551+00:00",
+  "stages": [
+    {
+      "stage": "intent",
+      "artifact": "01_intent.json",
+      "adk_agent": "argon_intent",
+      "bytes": 3756,
+      "tool_calls": 0
+    },
+    {
+      "stage": "cartographer",
+      "artifact": "02_knowledge_map.json",
+      "adk_agent": "argon_cartographer",
+      "bytes": 3913,
+      "tool_calls": 0
+    },
+    {
+      "stage": "curriculum",
+      "artifact": "03_curriculum.json",
+      "adk_agent": "argon_curriculum",
+      "bytes": 6416,
+      "tool_calls": 0
+    },
+    {
+      "stage": "math-director",
+      "artifact": "04_math_dossier.json",
+      "adk_agent": "argon_math_director",
+      "bytes": 9060,
+      "tool_calls": 14
+    },
+    {
+      "stage": "cinematographer",
+      "artifact": "05_shot_list.json",
+      "adk_agent": "argon_cinematographer",
+      "bytes": 6005,
+      "tool_calls": 0
+    },
+    {
+      "stage": "composer",
+      "artifact": "06_scene_spec.json",
+      "adk_agent": "argon_composer",
+      "bytes": 3280,
+      "tool_calls": 0
+    }
+  ],
+  "attempts": [],
+  "scene_file": "argon_scene.py",
+  "scene_name": "ScoreSDEConsistencyJourney",
+  "video_path": "C:\\Users\\admin\\Math-To-Manim\\runs\\argon\\20261017-155825-explain-continuous-time-score-sdes-the-probabili\\media\\videos\\argon_scene\\720p30\\ScoreSDEConsistencyJourney.mp4",
+  "artifacts": {
+    "01_intent.json": "01_intent.json",
+    "02_knowledge_map.json": "02_knowledge_map.json",
+    "03_curriculum.json": "03_curriculum.json",
+    "04_math_dossier.json": "04_math_dossier.json",
+    "05_shot_list.json": "05_shot_list.json",
+    "06_scene_spec.json": "06_scene_spec.json",
+    "argon_scene.py": "argon_scene.py",
+    "validation.json": "validation.json",
+    "review.json": "review.json"
+  },
+  "status_detail": {
+    "validation": "complete"
+  },
+  "operator_note": "Stages executed with Gemini 4 Argon acting as the Google ADK model backend (scripts/operate_argon_chain.py); every stage artifact and ADK tool call was verified by the harness.",
+  "error": null
+}
