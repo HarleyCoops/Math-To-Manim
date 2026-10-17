@@ -21,3 +21,17 @@ How to apply:
 
 Using gpt-5.5 inside workflows and subagents (the model parameter only takes Claude models, so use a wrapper):
 - Spawn a thin Claude wrapper agent with `model: 'sonnet', effort: 'low'` whose prompt instructs it to write a self-contained codex prompt, run `codex exec` via Bash, and return the result.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in Linear: team `WAR` (Warreandvavasour), project `Math-To-Manim Upgrade`, through the Linear connector. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five default role labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
