@@ -8,6 +8,20 @@
   </picture>
 </a>
 
+## Chapters in production
+
+1. **Local smoothing and the Kakeya conjecture**
+2. **The Exponential Time Hypothesis is false**
+3. **Existence of quantum chromodynamics and completions of the Standard Model**
+
+[Production brief](papers/three-frontiers/README.md) | [Production request](papers/three-frontiers/prompt.txt)
+
+The film retains these exact original titles. Static full-screen explanations alternate with 3D exploration, LaTeX, rotations and zooms. GPT-6 Astra is the author/auditor model; orchestration and Manim rendering run on the local Windows workstation, with no four-minute ceiling.
+
+**Status:** the full Astra film is not yet rendered. Local Manim preview rendering works, but the latest local Codex startup failed with Windows access denied before its first model response.
+
+
+
 ## New Film (Argon Google Agent SDK): From Score SDEs to One-Step Consistency
 
 [![Continuous-time Score SDEs, the Probability Flow ODE, and OpenAI Consistency Models rendered in 3D](docs/showcase/assets/score-sde-consistency.gif)](docs/showcase/assets/score-sde-consistency.mp4)
