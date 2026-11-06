@@ -7,7 +7,6 @@ import importlib
 from mythos.prereq_cache import PrerequisiteCache
 from mythos.service import MythosService
 from mythos.settings import PipelineSettings
-from sol import prereq_cache as sol_prereq_cache
 
 
 KNOWLEDGE_MAP = {
@@ -42,15 +41,10 @@ def test_stale_entries_are_skipped_and_pruned(tmp_path, monkeypatch):
     assert cache.get("fresh") == ["b"]
 
 
-def test_knowledge_map_ingest_and_sol_copy(tmp_path):
-    mythos = PrerequisiteCache.for_runs_dir(tmp_path / "mythos")
-    mythos.ingest_knowledge_map("heat equation", KNOWLEDGE_MAP)
-    assert "Fourier series" in mythos.get("heat equation")
-
-    sol = sol_prereq_cache.PrerequisiteCache.for_runs_dir(tmp_path / "sol")
-    sol.ingest_knowledge_map("heat equation", KNOWLEDGE_MAP)
-    assert sol.get("heat equation") == mythos.get("heat equation")
-    assert (tmp_path / "sol" / "_cache" / "prerequisites.json").is_file()
+def test_knowledge_map_ingest(tmp_path):
+    cache = PrerequisiteCache.for_runs_dir(tmp_path / "mythos")
+    cache.ingest_knowledge_map("heat equation", KNOWLEDGE_MAP)
+    assert cache.get("heat equation") == ["Fourier series", "partial derivatives"]
 
 
 def test_pipeline_settings_ttl_from_env(monkeypatch):

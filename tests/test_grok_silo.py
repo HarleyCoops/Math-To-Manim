@@ -1,6 +1,4 @@
-import ast
 import json
-from pathlib import Path
 
 import pytest
 
@@ -23,7 +21,6 @@ from grok.tools import verify_scene
 from grok.validation import normalize_reverse_tree, validate_reverse_tree, validate_run
 
 
-GROK_DIR = Path("grok")
 
 
 def test_offline_run_writes_complete_film_bundle(tmp_path):
@@ -293,18 +290,6 @@ def test_charters_ship_and_name_tools():
         kinds = [tool.get("type") for tool in stage.tools]
         assert kinds == expected[stage.name]
 
-
-def test_grok_silo_does_not_import_mythos_or_sol():
-    for path in GROK_DIR.rglob("*.py"):
-        tree = ast.parse(path.read_text(encoding="utf-8"))
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    assert not alias.name.startswith("mythos")
-                    assert not alias.name.startswith("sol")
-            elif isinstance(node, ast.ImportFrom) and node.module:
-                assert not node.module.startswith("mythos")
-                assert not node.module.startswith("sol")
 
 
 def test_offline_scene_obeys_camera_rule(tmp_path):

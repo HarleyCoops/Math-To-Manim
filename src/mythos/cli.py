@@ -85,7 +85,7 @@ def build_parser() -> argparse.ArgumentParser:
         description="Ask a question -> get a freakin' movie.",
     )
     parser.add_argument("--version", action="version",
-                        version=f"math-to-manim {__version__}")
+                        version=f"math-to-manim-mythos {__version__}")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     run = sub.add_parser("run", help="Run the Mythos 6-agent chain on a prompt")
