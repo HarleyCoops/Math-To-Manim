@@ -1,15 +1,13 @@
 """One fresh Astra Codex SDK session per specialist or evidence audit."""
 import json
-import os
 from pathlib import Path
 import subprocess
 
-BRIDGE = Path(__file__).with_name("bridge.mjs")
-MODEL = "gpt-6-astra"
+from astra.environment import clean_environment
+from astra.runtime import runtime_directory
 
-def clean_environment():
-    return {k:v for k,v in os.environ.items() if not any(
-        word in k.upper() for word in ("API_KEY", "SECRET", "TOKEN", "PASSWORD"))}
+BRIDGE = Path(__file__).with_name("bridge.mjs")
+MODEL = "gpt-6-astra"  # the only place the Astra model is named; bridge.mjs receives it per call
 
 class CodexSDK:
     def call(self, prompt, *, cwd, output, schema, images=(), effort="high", search=False,
@@ -20,12 +18,11 @@ class CodexSDK:
         output_schema = schema.model_json_schema()
         if evidence_paths is not None:
             output_schema['properties']['evidence']['items']['enum'] = evidence_paths
-        payload = dict(prompt=prompt, cwd=str(Path(cwd).resolve()), output=str(output),
+        payload = dict(model=MODEL, prompt=prompt, cwd=str(Path(cwd).resolve()), output=str(output),
                        trace=str(trace), schema=output_schema,
                        images=[str(Path(p).resolve()) for p in images], effort=effort,
-                       sandbox="read-only", search=search, timeoutMs=1800000)
-        from astra.runtime import runtime_directory
-        payload['runtime'] = str(runtime_directory())
+                       sandbox="read-only", search=search, timeoutMs=1800000,
+                       runtime=str(runtime_directory()))
         output.with_suffix(".prompt.txt").write_text(prompt, encoding="utf-8")
         result = subprocess.run(["node", str(BRIDGE)], input=json.dumps(payload),
                                 text=True, encoding="utf-8", capture_output=True,

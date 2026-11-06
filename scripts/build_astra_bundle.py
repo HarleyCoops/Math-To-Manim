@@ -11,6 +11,9 @@ try:
 except ImportError:
     import tomli as tomllib
 
+from astra.client import MODEL
+from astra.runtime import ASSETS, CODEX_VERSION
+
 
 def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -59,7 +62,7 @@ def build_bundle(root, dist, film_dir):
         f'packages/{sdist.name}': sdist.read_bytes(),
     }
     for name in ('package.json', 'package-lock.json'):
-        entries[f'runtime/{name}'] = (root / 'src/astra/node' / name).read_bytes()
+        entries[f'runtime/{name}'] = (ASSETS / name).read_bytes()
     for name in ('quasi-riemann-720p.mp4', 'quasi-riemann-contact-sheet.png',
                  'quasi-riemann-render-manifest.json', 'quasi-riemann-film-evidence.json'):
         entries[f'films/{name}'] = (film_dir / name).read_bytes()
@@ -73,7 +76,7 @@ def build_bundle(root, dist, film_dir):
         entries[f'docs/{name}'] = (root / 'docs' / name).read_bytes()
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
     record = dict(schema_version=1, distribution='math-to-manim-astra-bundle', version=version,
-                  source_commit=commit, model='gpt-6-astra', codex_version='0.156.1',
+                  source_commit=commit, model=MODEL, codex_version=CODEX_VERSION,
                   primary_commands=['math-to-manim', 'math-to-manim-astra', 'm2m'],
                   film=dict(video='films/quasi-riemann-720p.mp4', video_sha256=manifest['video_sha256'],
                             candidate_sha256=manifest['source_candidate_sha256'],

@@ -6,11 +6,11 @@ from pathlib import Path
 import shutil
 import subprocess
 
+from astra.environment import clean_environment
 
 ASSETS = Path(__file__).with_name('node')
-PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = PACKAGE_ROOT.parent if PACKAGE_ROOT.name == "src" else PACKAGE_ROOT
-CODEX_VERSION = '0.156.1'
+# The pin lives in the packaged npm manifest; everything else reads it from here.
+CODEX_VERSION = json.loads((ASSETS / 'package.json').read_text(encoding='utf-8'))['dependencies']['@openai/codex']
 
 
 def cache_directory():
@@ -34,9 +34,10 @@ def is_installed(folder):
 
 
 def runtime_directory():
-    # Keep an existing source installation working, including its pinned runtime.
-    if is_installed(REPOSITORY):
-        return REPOSITORY
+    # A source checkout run from its root keeps using its own pinned node_modules.
+    checkout = Path.cwd()
+    if is_installed(checkout):
+        return checkout
     cached = cache_directory()
     if is_installed(cached):
         return cached
@@ -44,8 +45,6 @@ def runtime_directory():
 
 
 def setup_runtime():
-    from astra.client import clean_environment
-
     npm = shutil.which('npm')
     if not npm or not shutil.which('node'):
         raise RuntimeError('Install Node.js 18+ and npm, then run: math-to-manim setup')

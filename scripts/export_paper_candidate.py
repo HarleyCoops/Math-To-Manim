@@ -6,17 +6,18 @@ import shutil
 
 from astra.client import MODEL
 from astra.models import Artifact, STAGES
-from astra.pipeline import ROOT, digest, save
+from astra.pipeline import AUDITOR_ROLE
 from astra.rendering import validate_source
+from astra.runs import attempt_paths, digest, parse_attempt, runs_root, save
 
 
-def export_candidate(paper, run_dir, *, root=ROOT):
-    root = Path(root).resolve()
+def export_candidate(paper, run_dir, *, root=None):
+    root = Path(root or Path.cwd()).resolve()
     paper = Path(paper).resolve()
     run_dir = Path(run_dir).resolve()
     if paper.parent != root / 'papers' or not paper.is_dir():
         raise ValueError('Expected an existing paper folder directly under papers/')
-    if run_dir.parent != root / 'runs/astra' or not run_dir.is_dir():
+    if run_dir.parent != runs_root(root) or not run_dir.is_dir():
         raise ValueError('Expected an Astra run directly under runs/astra/')
     ledger = json.loads((run_dir / 'manifest.json').read_text(encoding='utf-8'))
     if ledger.get('status') != 'completed' or ledger.get('model') != MODEL:
@@ -35,20 +36,22 @@ def export_candidate(paper, run_dir, *, root=ROOT):
     validate_source(artifact.content)
     audits = []
     audited_stages = set()
-    for path in sorted((run_dir / 'attempts').glob('*-astra-audit.json')):
+    for path in attempt_paths(run_dir, 'astra-audit'):
         record = path.with_suffix('.record.json')
         if not record.is_file():
             raise ValueError(f'Missing audit bindings: {path.name}')
         binding = json.loads(record.read_text(encoding='utf-8'))
         assessment = json.loads(path.read_text(encoding='utf-8'))
-        if binding.get('model') != MODEL or binding.get('role') != 'astra-evidence-auditor':
+        if binding.get('model') != MODEL or binding.get('role') != AUDITOR_ROLE:
             raise ValueError(f'Unexpected audit model or role: {path.name}')
         for name, expected in binding.get('input_hashes', {}).items():
             evidence = (run_dir / name).resolve()
             if run_dir not in evidence.parents or not evidence.is_file() or digest(evidence) != expected:
                 raise ValueError(f'Changed or invalid audit evidence: {name}')
-            for stage in STAGES:
-                if name.endswith(f'-{stage}-candidate.json') and expected == digest(run_dir / f'{stage}.json'):
+            attempt = parse_attempt(name)
+            if attempt is not None:
+                _, stage, kind = attempt
+                if kind == 'candidate' and stage in STAGES and expected == digest(run_dir / f'{stage}.json'):
                     audited_stages.add(stage)
         audits.append({
             'file': path.relative_to(run_dir).as_posix(),

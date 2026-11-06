@@ -1,20 +1,41 @@
-"""Real TypeSafe Jev integration. No Codex or LLM substitute on failure."""
+"""Real TypeSafe Jev integration. No Codex or LLM substitute on failure.
+
+A reviewer offers two calls. ``review`` applies the gate contract to one
+checkpoint; ``ask`` answers raw typed questions (design advice, action
+selection). Answers are validated here; every caller shares one parser and
+one set of thresholds.
+"""
 import json
 import math
 import os
 import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Literal
 from pydantic import BaseModel, ConfigDict
+from astra.models import Stage, STAGES, REPAIR_OWNER
 
 JEV_MODEL = 'jev-1.13.0'
 POLICY_VERSION = 'typesafe-jev-v1'
+ASTRA_ONLY_POLICY = 'astra-only-v1'
+# Provisional engineering policy, not calibrated accuracy (docs/JEV.md).
+CONFIDENCE_FLOOR = 0.65   # below this an answer requests evidence instead of acting
+SCORE_FLOOR = 3.2         # rubric score (0-4) required to count as supported
+STATE_BUDGET_BYTES = 90000
+SCORE_LEVELS = ('0', '1', '2', '3', '4')
+
+
+def evaluator_name(review_mode):
+    return 'disabled' if review_mode == 'off' else JEV_MODEL
+
+
+def policy_name(review_mode):
+    return ASTRA_ONLY_POLICY if review_mode == 'off' else POLICY_VERSION
+
 
 class GateDecision(BaseModel):
     model_config = ConfigDict(extra='forbid')
     approved: bool
-    repair_stage: Literal['brief','mathematics','storyboard','scene']
+    repair_stage: Stage
     feedback: str
     defects: list[str]
     evaluator: str = 'typesafe-jev'
@@ -41,55 +62,79 @@ def questions_for(stage):
               'Supported with minor limitations','Clearly supported by specific evidence']
     questions={f'criterion_{i}':{'type':'score','instructions':q+' Evaluate only the supplied text state; do not infer unseen images or unperformed checks.',
                                  'criteria':criteria} for i,q in enumerate(focus,1)}
+    owners={'brief':'Learner, scope or prerequisites','mathematics':'Equations, assumptions, derivations or topology',
+            'storyboard':'Teaching sequence, camera, color or notation plan','scene':'Implementation, rendering or visible layout'}
+    assert set(owners) == set(STAGES)
     questions.update({
         'evidence_sufficient':{'type':'noul','instructions':'Does the state contain concrete evidence sufficient to evaluate this checkpoint at its current scope, without assuming later stages are already implemented?'},
         'blocking_defect':{'type':'noul','instructions':'Does the evidence audit identify an unresolved blocking defect supported by the supplied candidate or observations? Nonblocking limitations do not count.'},
         'repair_target':{'type':'choice','instructions':'If revision is required, which earliest role owns the issue identified by the evidence? Select the current role when the only issue is insufficient evidence.',
-                         'criteria':{'brief':'Learner, scope or prerequisites','mathematics':'Equations, assumptions, derivations or topology','storyboard':'Teaching sequence, camera, color or notation plan','scene':'Implementation, rendering or visible layout'}},
+                         'criteria':owners},
     })
     return questions
 
 
-def _unit(value):
+def unit_interval(value):
     if isinstance(value,bool) or not isinstance(value,(float,int)) or not math.isfinite(value) or not 0<=value<=1:
         raise ValueError('Invalid TypeSafe probability or confidence')
     return float(value)
 
 
-def evaluate_response(response, *, stage, audit):
+def answers_from(response, questions):
+    """The answers of a Jev response, which must address exactly the questions asked."""
     if not str(response.get('model','')).startswith('jev-'):
         raise ValueError('Evaluation response is not a Jev model')
-    answers=response['answers']; reasons=[]
+    answers=response.get('answers',{})
+    if set(answers)!=set(questions):raise ValueError('Missing or unexpected Jev answers')
+    return answers
+
+
+def parse_score(answer):
+    """(score, confidence) of a Score answer; its 0-4 distribution must agree with the score."""
+    if answer.get('type')!='score':raise ValueError('Expected Jev Score')
+    score=answer['score'];confidence=unit_interval(answer['confidence'])
+    if isinstance(score,bool) or not isinstance(score,(float,int)) or not math.isfinite(score) or not 0<=score<=4:
+        raise ValueError('Invalid Jev rubric score')
+    probabilities=answer['probabilities']
+    if set(probabilities)!=set(SCORE_LEVELS):raise ValueError('Invalid score distribution levels')
+    values=[unit_interval(probabilities[level]) for level in SCORE_LEVELS]
+    if abs(sum(values)-1)>0.02:raise ValueError('Invalid score distribution total')
+    if abs(sum(i*p for i,p in enumerate(values))-score)>0.06:raise ValueError('Score differs from expected value')
+    return score,confidence
+
+
+def parse_noul(answer):
+    if answer.get('type')!='noul':raise ValueError('Expected Jev Noul')
+    return unit_interval(answer['noul'])
+
+
+def parse_choice(answer, options):
+    """(choice, confidence, probabilities) of a Choice answer over exactly these options."""
+    if answer.get('type')!='choice' or answer.get('choice') not in options:
+        raise ValueError('Invalid Jev choice')
+    probabilities=answer.get('probabilities',{})
+    if set(probabilities)!=set(options):raise ValueError('Invalid choice distribution')
+    probabilities={k:unit_interval(v) for k,v in probabilities.items()}
+    if abs(sum(probabilities.values())-1)>0.02:raise ValueError('Invalid choice distribution total')
+    return answer['choice'],unit_interval(answer['confidence']),probabilities
+
+
+def evaluate_response(response, *, stage, audit):
     required=questions_for(stage)
-    if set(answers)!=set(required):raise ValueError('Missing or unexpected Jev answers')
+    answers=answers_from(response,required); reasons=[]
     for key in ['criterion_1','criterion_2']:
-        a=answers[key]
-        if a.get('type')!='score':raise ValueError('Expected Jev Score')
-        score=a['score'];confidence=_unit(a['confidence'])
-        if isinstance(score,bool) or not isinstance(score,(float,int)) or not math.isfinite(score) or not 0<=score<=4:
-            raise ValueError('Invalid Jev rubric score')
-        probs=a['probabilities']
-        if set(probs)!={'0','1','2','3','4'}:raise ValueError('Invalid score distribution levels')
-        values=[_unit(probs[str(i)]) for i in range(5)]
-        if abs(sum(values)-1)>0.02:raise ValueError('Invalid score distribution total')
-        if abs(sum(i*p for i,p in enumerate(values))-score)>0.06:raise ValueError('Score differs from expected value')
-        if score<3.2 or confidence<0.65:reasons.append(f"{key}: score={score:.3f}/4, confidence={confidence:.3f}; {required[key]['instructions']}")
-    for key in ['evidence_sufficient','blocking_defect']:
-        if answers[key].get('type')!='noul':raise ValueError('Expected Jev Noul')
-    enough=_unit(answers['evidence_sufficient']['noul']);blocked=_unit(answers['blocking_defect']['noul'])
+        score,confidence=parse_score(answers[key])
+        if score<SCORE_FLOOR or confidence<CONFIDENCE_FLOOR:
+            reasons.append(f"{key}: score={score:.3f}/4, confidence={confidence:.3f}; {required[key]['instructions']}")
+    enough=parse_noul(answers['evidence_sufficient']);blocked=parse_noul(answers['blocking_defect'])
     if enough<0.8:reasons.append(f'Insufficient evidence: probability={enough:.3f}; gather concrete checks')
     if blocked>0.2:reasons.append(f'Blocking defect probability={blocked:.3f}; resolve the evidence audit defects')
-    route=answers['repair_target']
-    if route.get('type')!='choice' or route['choice'] not in required['repair_target']['criteria']:
-        raise ValueError('Invalid Jev repair choice')
-    route_confidence=_unit(route['confidence'])
-    if set(route['probabilities'])!=set(required['repair_target']['criteria']):raise ValueError('Invalid repair distribution')
-    if abs(sum(_unit(v) for v in route['probabilities'].values())-1)>0.02:raise ValueError('Invalid repair distribution total')
+    route,route_confidence,_=parse_choice(answers['repair_target'],required['repair_target']['criteria'])
     # An Astra audit with unresolved blockers cannot be overruled by a probabilistic approval.
     if not audit.verified or audit.defects:reasons.append('Astra evidence audit has unresolved blockers or insufficient verification')
-    current='scene' if stage=='render' else stage
-    target=route['choice'] if route_confidence>=0.65 else current
-    if reasons and route_confidence<0.65:reasons.append('Repair routing uncertain; gather evidence at the current stage')
+    current=REPAIR_OWNER[stage]
+    target=route if route_confidence>=CONFIDENCE_FLOOR else current
+    if reasons and route_confidence<CONFIDENCE_FLOOR:reasons.append('Repair routing uncertain; gather evidence at the current stage')
     return GateDecision(approved=not reasons,repair_stage=target,defects=reasons,
                         feedback='\n'.join(reasons)+('\nAstra evidence audit (not Jev-generated prose):\n'+audit.feedback if reasons else ''),
                         model=response['model'],answers=answers)
@@ -131,28 +176,28 @@ class JevClient:
                                    model=JEV_MODEL,base_url='https://api.typesafe.ai',http_client=http)
 
     def ask(self, *, state, questions, output):
-        """Retain actual HTTP receipts, including retries, without secret headers."""
+        """Ask raw typed questions; retain the request, response and HTTP receipts (no secrets)."""
+        # Avoid silently truncating mathematical state. Split upstream artifacts deliberately instead.
+        if len(json.dumps(state,ensure_ascii=False).encode('utf-8'))>STATE_BUDGET_BYTES:
+            raise ValueError('Jev state exceeds local evidence budget; reduce the checkpoint scope')
+        output=Path(output)
+        output.with_suffix('.request.json').write_text(json.dumps(
+            {'model':JEV_MODEL,'state':state,'questions':questions},indent=2,ensure_ascii=False),encoding='utf-8')
         start=len(self.http_events)
         try:
             response=self.client.system_one(state=state,questions=questions,model=JEV_MODEL)
             raw=response.model_dump(mode='json')
-            Path(output).with_suffix('.response.json').write_text(json.dumps(raw,indent=2),encoding='utf-8')
+            output.with_suffix('.response.json').write_text(json.dumps(raw,indent=2),encoding='utf-8')
             return raw
         finally:
-            Path(output).with_suffix('.http.json').write_text(
+            output.with_suffix('.http.json').write_text(
                 json.dumps(self.http_events[start:],indent=2),encoding='utf-8')
 
     def review(self, *, state, stage, audit, output):
-        # Avoid silently truncating mathematical state. Split upstream artifacts deliberately instead.
-        if len(json.dumps(state,ensure_ascii=False).encode('utf-8'))>90000:
-            raise ValueError('Jev state exceeds local evidence budget; reduce the checkpoint scope')
-        questions=questions_for(stage)
-        output=Path(output)
-        payload={'model':JEV_MODEL,'state':state,'questions':questions,'policy_version':POLICY_VERSION}
-        output.with_suffix('.request.json').write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding='utf-8')
-        raw=self.ask(state=state,questions=questions,output=output)
+        """Apply the gate contract at one checkpoint and retain the deterministic decision."""
+        raw=self.ask(state=state,questions=questions_for(stage),output=output)
         decision=evaluate_response(raw,stage=stage,audit=audit)
-        output.write_text(decision.model_dump_json(indent=2),encoding='utf-8')
+        Path(output).write_text(decision.model_dump_json(indent=2),encoding='utf-8')
         return decision
 
     def close(self):

@@ -5,7 +5,7 @@ import pytest
 from astra import runtime
 
 
-def installed_runtime(folder, version='0.156.1'):
+def installed_runtime(folder, version=runtime.CODEX_VERSION):
     for name in ('codex', 'codex-sdk'):
         package = folder / f'node_modules/@openai/{name}'
         package.mkdir(parents=True)
@@ -18,21 +18,21 @@ def installed_runtime(folder, version='0.156.1'):
 
 def test_wheel_runtime_resolves_from_cache(tmp_path, monkeypatch):
     cached = installed_runtime(tmp_path / 'cache')
-    monkeypatch.setattr(runtime, 'REPOSITORY', tmp_path / 'absent-checkout')
+    monkeypatch.chdir(tmp_path)  # no checkout runtime in the working directory
     monkeypatch.setattr(runtime, 'cache_directory', lambda: cached)
     assert runtime.runtime_directory() == cached
 
 
 def test_source_install_keeps_its_existing_runtime(tmp_path, monkeypatch):
     checkout = installed_runtime(tmp_path / 'source')
-    monkeypatch.setattr(runtime, 'REPOSITORY', checkout)
+    monkeypatch.chdir(checkout)
     monkeypatch.setattr(runtime, 'cache_directory', lambda: pytest.fail('Source runtime is ready'))
     assert runtime.runtime_directory() == checkout
 
 
 def test_wrong_version_requires_setup(tmp_path, monkeypatch):
-    cached = installed_runtime(tmp_path / 'cache', version='0.156.0')
-    monkeypatch.setattr(runtime, 'REPOSITORY', tmp_path / 'absent-checkout')
+    cached = installed_runtime(tmp_path / 'cache', version='0.0.0')
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(runtime, 'cache_directory', lambda: cached)
     with pytest.raises(RuntimeError, match='math-to-manim setup'):
         runtime.runtime_directory()

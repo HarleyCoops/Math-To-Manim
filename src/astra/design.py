@@ -1,7 +1,8 @@
 """Verbose, inspectable design decisions for Jev; evidence-scoped artistic advice."""
 import json
 from pathlib import Path
-from astra.jev import JEV_MODEL, _unit
+from astra.actions import STAGE_ACTIONS
+from astra.jev import CONFIDENCE_FLOOR, SCORE_FLOOR, answers_from, parse_score
 
 # Each rubric asks one question. Artistic advice never overrides correctness gates.
 RUBRICS = [
@@ -28,11 +29,16 @@ LEVELS=['Absent or contradicted by supplied evidence','Major design failure supp
         'Exceptionally clear and purposeful, supported by concrete evidence']
 
 
+# A rubric's investigation may not exist yet at an earlier checkpoint (no frames before a
+# render, no source before a scene); fall back to the nearest one that does.
+FALLBACK_ACTION = {'inspect_frames': 'inspect_scene', 'inspect_scene': 'replan_camera'}
+
+
 def mapping(stage=None):
     result=[dict(r) for r in RUBRICS if stage is None or stage in r['stages']]
-    for r in result:
-        if stage=='storyboard' and r['action']=='inspect_scene':r['action']='replan_camera'
-        if stage=='scene' and r['action']=='inspect_frames':r['action']='inspect_scene'
+    if stage is not None:
+        for r in result:
+            while r['action'] not in STAGE_ACTIONS[stage]:r['action']=FALLBACK_ACTION[r['action']]
     return result
 
 
@@ -43,21 +49,11 @@ def questions(stage):
 
 
 def interpret(raw,stage):
-    if raw.get('model')!=JEV_MODEL or set(raw.get('answers',{}))!=set(questions(stage)):
-        raise ValueError('Invalid design response')
+    answers=answers_from(raw,questions(stage))
     findings=[]
     for r in mapping(stage):
-        a=raw['answers'][r['id']]
-        if a.get('type')!='score':raise ValueError('Expected design Score')
-        score=a['score'];confidence=_unit(a['confidence'])
-        if isinstance(score,bool) or not isinstance(score,(int,float)) or not 0<=score<=4:
-            raise ValueError('Invalid design score')
-        probabilities=a['probabilities']
-        if set(probabilities)!={'0','1','2','3','4'}:raise ValueError('Invalid design distribution')
-        values=[_unit(probabilities[str(i)]) for i in range(5)]
-        if abs(sum(values)-1)>.02 or abs(sum(i*p for i,p in enumerate(values))-score)>.06:
-            raise ValueError('Invalid design expected score')
-        status='investigate' if confidence<.65 else ('improve' if score<3.2 else 'supported')
+        score,confidence=parse_score(answers[r['id']])
+        status='investigate' if confidence<CONFIDENCE_FLOOR else ('improve' if score<SCORE_FLOOR else 'supported')
         # These are provisional design signals, never permission to weaken correctness.
         findings.append(dict(r,score=score,confidence=confidence,status=status))
     return {'model':raw['model'],'policy':'design-advice-v1','advisory_only':True,
@@ -67,11 +63,14 @@ def interpret(raw,stage):
 
 def review_design(jev,state,stage,output):
     output=Path(output)
-    if len(json.dumps(state,ensure_ascii=False).encode('utf-8'))>90000:
-        raise ValueError('Jev design state exceeds local evidence budget')
-    q=questions(stage)
-    output.with_suffix('.request.json').write_text(json.dumps({'model':JEV_MODEL,'state':state,'questions':q},indent=2),encoding='utf-8')
-    raw=jev.ask(state=state,questions=q,output=output)
+    raw=jev.ask(state=state,questions=questions(stage),output=output)
     result=interpret(raw,stage)
     output.write_text(json.dumps(result,indent=2),encoding='utf-8')
     return result
+
+
+def design_summary(report):
+    """The part of a design report that goes back into Jev state as advice."""
+    return {'policy':report['policy'],'advisory_only':True,'priority':report['priority'],
+            'findings':[{k:f[k] for k in ['id','score','confidence','status','action','repair']}
+                        for f in report['findings']]}

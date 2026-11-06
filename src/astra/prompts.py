@@ -8,7 +8,7 @@ Respect the duration in the original request. If none is specified, aim for a
 coherent 70-100 second silent film with excellent visual teaching:
 sculptural 3D surfaces, staged zooms, geometry-driven color, precisely placed readable
 LaTeX, explicit definitions, and an earned mathematical conclusion. Never overcrowd.
-Do not claim a visual metaphor is a proof. Prefer reliable Manim CE 0.20 Cairo APIs.
+Do not claim a visual metaphor is a proof. Prefer reliable Manim CE 0.19 Cairo APIs.
 """
 CHARTERS = {
 "brief": """Define the learner, the central question, prerequisite graph, teaching goals,

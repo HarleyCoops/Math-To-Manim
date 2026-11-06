@@ -18,8 +18,3 @@ def text_evidence(folder, paths):
                 result[name]=dict(value,content={'exact_source_supplied_under':match})
     return result
 
-
-def design_summary(report):
-    return {'policy':report['policy'],'advisory_only':True,'priority':report['priority'],
-            'findings':[{k:f[k] for k in ['id','score','confidence','status','action','repair']}
-                        for f in report['findings']]}

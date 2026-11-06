@@ -1,4 +1,5 @@
-/** Codex SDK bridge: cached ChatGPT login only, one independent thread per call. */
+/** Codex SDK bridge: cached ChatGPT login only, one independent thread per call.
+ * The request names the model; Python (astra/client.py) is the only place it is defined. */
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { readFile, writeFile, appendFile } from 'node:fs/promises';
@@ -11,7 +12,7 @@ const sdkPackage = JSON.parse(await readFile(join(sdkRoot, 'package.json'), 'utf
 const { Codex } = await import(pathToFileURL(join(sdkRoot, sdkPackage.exports['.'].import)).href);
 if (checkRuntime) {
   if (typeof Codex !== 'function') throw new Error('Codex SDK export missing');
-  process.stdout.write(JSON.stringify({model: 'gpt-6-astra', sdk_version: sdkPackage.version}));
+  process.stdout.write(JSON.stringify({sdk_version: sdkPackage.version}));
   process.exit(0);
 }
 const env = Object.fromEntries(Object.entries(process.env).filter(([key]) =>
@@ -20,8 +21,9 @@ const codex = new Codex({ env, config: {
   service_tier: 'fast', forced_login_method: 'chatgpt',
   features: { hooks: false },
 } });
+if (typeof req.model !== 'string' || !req.model) throw new Error('Request names no model');
 const thread = codex.startThread({
-  model: 'gpt-6-astra', modelReasoningEffort: req.effort ?? 'high',
+  model: req.model, modelReasoningEffort: req.effort ?? 'high',
   sandboxMode: req.sandbox ?? 'read-only', approvalPolicy: 'never',
   workingDirectory: req.cwd, skipGitRepoCheck: true,
   webSearchMode: req.search ? 'live' : 'disabled', networkAccessEnabled: false,
