@@ -1,28 +1,60 @@
-"""GLM-native chain: intent through composer, then local verify and render."""
+"""GLM-native chain: intent through composer, then local verify and render.
+
+One run is one directory under the runs dir. The harness writes the request,
+the manifest (kept current after every stage), each stage's artifact and
+traces, the scene, and finally validation.json and review.json, exactly once
+each, whether the chain ran live or offline.
+"""
 
 from __future__ import annotations
 
+import os
 import json
 import re
 import shutil
 import subprocess
+import sys
+from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 
-from glm.charters import VERIFY_SCENE_TOOL, load_charter
-from glm.client import GlmClient, GlmClientError
+from glm.client import GlmClient, GlmClientError, StageReply
 from glm.jsonutil import extract_json_object, extract_scene_source
-from glm.models import ARTIFACT_NAMES, RunManifest, RunRequest
-from glm.offline import write_offline_bundle
-from glm.tools import verify_scene
-from glm.validation import normalize_reverse_tree, validate_run, verify_scene_report
+from glm.models import (
+    MANIFEST_FILE,
+    REPAIR_TRACE_FILE,
+    REQUEST_FILE,
+    REVIEW_CHECKS,
+    REVIEW_FILE,
+    SCENE_FILE,
+    TRACES_DIR,
+    VALIDATION_FILE,
+    RunManifest,
+    RunRequest,
+)
+from glm.offline import OFFLINE_LIMITATION, write_offline_bundle
+from glm.stages import BUNDLE_FILES, SCENE_STAGE, STAGES, Stage, stage_prompt
+from glm.validation import verify_scene_report
 
-PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = PACKAGE_ROOT.parent if PACKAGE_ROOT.name == "src" else PACKAGE_ROOT
+Progress = Callable[[str], None]
 
 
 def default_runs_dir() -> Path:
-    return REPO_ROOT / "runs" / "glm"
+    """``$M2M_RUNS_DIR/glm``; else ``runs/glm`` in the source checkout this
+    package runs from; else ``./runs/glm`` (installed wheel). Resolved at call time."""
+    if os.getenv("M2M_RUNS_DIR"):
+        return Path(os.environ["M2M_RUNS_DIR"]) / "glm"
+    checkout = Path(__file__).resolve().parents[2]
+    base = checkout if (checkout / "pyproject.toml").is_file() else Path.cwd()
+    return base / "runs" / "glm"
+
+
+def stderr_progress(line: str) -> None:
+    print(line, file=sys.stderr)
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 
 class GlmHarness:
@@ -33,9 +65,11 @@ class GlmHarness:
         *,
         runs_dir: Path | None = None,
         client: GlmClient | None = None,
+        progress: Progress | None = None,
     ):
         self.runs_dir = Path(runs_dir) if runs_dir else default_runs_dir()
-        self.client = client or GlmClient()
+        self.client = client or GlmClient.from_env()
+        self.progress = progress or stderr_progress
 
     def _create_run_dir(self, prompt: str) -> Path:
         stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
@@ -49,15 +83,14 @@ class GlmHarness:
         return candidate
 
     @staticmethod
-    def _write_manifest(path: Path, manifest: RunManifest) -> None:
+    def _write_manifest(run_dir: Path, manifest: RunManifest) -> None:
+        path = run_dir / MANIFEST_FILE
         temporary = path.with_suffix(".tmp")
         temporary.write_text(manifest.model_dump_json(indent=2), encoding="utf-8")
         temporary.replace(path)
 
     def run(self, request: RunRequest) -> dict:
-        self.client.reasoning_effort = request.reasoning_effort
         run_dir = self._create_run_dir(request.prompt)
-        now = datetime.now(timezone.utc).isoformat()
         manifest = RunManifest(
             run_id=run_dir.name,
             prompt=request.prompt,
@@ -67,168 +100,144 @@ class GlmHarness:
             render_requested=request.render,
             quality=request.quality,
             image=request.image,
-            created_utc=now,
-            artifacts={"validation": "validation.json", "scene": "glm_scene.py"},
+            created_utc=_utc_now(),
             status_detail={"validation": "pending"},
         )
-        manifest_path = run_dir / "manifest.json"
-        self._write_manifest(manifest_path, manifest)
-        (run_dir / "request.json").write_text(
-            request.model_dump_json(indent=2), encoding="utf-8"
-        )
-        traces_dir = run_dir / "traces"
-        traces_dir.mkdir(exist_ok=True)
+        self._write_manifest(run_dir, manifest)
+        (run_dir / REQUEST_FILE).write_text(request.model_dump_json(indent=2), encoding="utf-8")
+        (run_dir / TRACES_DIR).mkdir(exist_ok=True)
+        report: dict | None = None
 
         try:
             if request.offline:
                 write_offline_bundle(run_dir, request)
-                manifest.attempts.append(
-                    {"attempt": 0, "mode": "offline", "status": "completed"}
-                )
+                manifest.attempts.append({"attempt": 0, "mode": "offline", "status": "completed"})
             else:
                 self._run_live(run_dir, request, manifest)
-
-            failures, scene_name, video_path = validate_run(run_dir, require_video=False)
-            repair = 0
-            while failures and not request.offline and repair < request.max_repairs:
-                repair += 1
-                self._repair_scene(run_dir, failures)
                 manifest.attempts.append(
-                    {
-                        "attempt": repair,
-                        "mode": "composer-repair",
-                        "input_failures": failures,
-                    }
+                    {"attempt": 0, "mode": "zai-chat-completions", "status": "completed"}
                 )
-                failures, scene_name, video_path = validate_run(run_dir, require_video=False)
 
-            if failures:
-                raise RuntimeError("run bundle validation failed: " + "; ".join(failures))
+            report = verify_scene_report((run_dir / SCENE_FILE).read_text(encoding="utf-8"))
+            repair = 0
+            while not report["passed"] and repair < request.max_repairs:
+                repair += 1
+                self._repair_scene(run_dir, request, report["errors"])
+                manifest.attempts.append(
+                    {"attempt": repair, "mode": "composer-repair", "input_failures": report["errors"]}
+                )
+                report = verify_scene_report((run_dir / SCENE_FILE).read_text(encoding="utf-8"))
+            if not report["passed"]:
+                raise RuntimeError("run bundle validation failed: " + "; ".join(report["errors"]))
 
-            video_path = video_path or (
-                self._render(run_dir, scene_name or "GlmOfflineStory", request.quality)
+            video_path = (
+                self._render(run_dir, report["scene_name"], request.quality)
                 if request.render
                 else None
             )
+            self._write_review(run_dir, request, rendered=video_path is not None)
+            self._write_validation(run_dir, report)
 
-            report = verify_scene_report(
-                (run_dir / "glm_scene.py").read_text(encoding="utf-8")
-            )
-            (run_dir / "validation.json").write_text(
-                json.dumps(report, indent=2), encoding="utf-8"
-            )
-            manifest.scene_file = "glm_scene.py"
-            manifest.scene_name = scene_name
+            manifest.scene_file = SCENE_FILE
+            manifest.scene_name = report["scene_name"]
             manifest.video_path = video_path
             manifest.status = "completed"
-            manifest.completed_utc = datetime.now(timezone.utc).isoformat()
+            manifest.completed_utc = _utc_now()
             manifest.status_detail["validation"] = "complete"
-            manifest.artifacts = {name: name for name in ARTIFACT_NAMES}
-            self._write_manifest(manifest_path, manifest)
+            manifest.artifacts = {name: name for name in BUNDLE_FILES}
+            self._write_manifest(run_dir, manifest)
             return json.loads(manifest.model_dump_json())
         except Exception as exc:
+            if report is not None:
+                self._write_validation(run_dir, report)
             manifest.status = "failed"
             manifest.error = str(exc)
-            manifest.completed_utc = datetime.now(timezone.utc).isoformat()
-            self._write_manifest(manifest_path, manifest)
+            manifest.completed_utc = _utc_now()
+            self._write_manifest(run_dir, manifest)
             raise
 
+    @staticmethod
+    def _write_validation(run_dir: Path, report: dict) -> None:
+        (run_dir / VALIDATION_FILE).write_text(json.dumps(report, indent=2), encoding="utf-8")
+
+    def _write_review(self, run_dir: Path, request: RunRequest, *, rendered: bool) -> None:
+        review = {
+            "offline": request.offline,
+            "model": "offline" if request.offline else self.client.model,
+            "thinking_enabled": not request.offline,
+            "checks": list(REVIEW_CHECKS),
+            "rendered": rendered,
+            "limitations": [OFFLINE_LIMITATION] if request.offline else [],
+        }
+        (run_dir / REVIEW_FILE).write_text(json.dumps(review, indent=2), encoding="utf-8")
+
     def _run_live(self, run_dir: Path, request: RunRequest, manifest: RunManifest) -> None:
-        if not self.client.api_key:
-            raise GlmClientError("no GLM key found; set ZHIPU_API_KEY or ZAI_API_KEY")
-        prior: dict[str, dict] = {}
         image_path = Path(request.image) if request.image else None
         if image_path is not None and not image_path.is_file():
             raise GlmClientError(f"image file not found: {request.image}")
 
-        for stage in load_stages():
-            charter = load_charter(stage.charter_file)
-            user_text = _stage_prompt(stage.name, request.prompt, prior, stage.tools)
-            # Only real local functions reach the wire; server-side abilities
-            # (web research, sandbox) stay advisory notes inside the prompt.
-            api_tools = tuple(tool for tool in stage.tools if tool.get("type") == "function")
-            handlers = {"verify_scene": verify_scene} if stage.name == "composer" else None
-            result = self.client.complete(
-                instructions=charter,
-                text=user_text,
-                tools=api_tools,
-                image_path=image_path if stage.name == "intent" else None,
-                function_handlers=handlers,
+        prior: dict[str, dict] = {}
+        for stage in STAGES:
+            reply = self.client.complete(
+                instructions=stage.charter(),
+                text=stage_prompt(stage, request.prompt, prior),
+                reasoning_effort=request.reasoning_effort,
+                image_path=image_path if stage.takes_image else None,
+                tools=stage.tools,
             )
-            payload = result.payload or None
-            if payload is None and result.text.strip():
-                try:
-                    payload = extract_json_object(result.text)
-                except (ValueError, json.JSONDecodeError) as exc:
-                    raise GlmClientError(
-                        f"stage {stage.name} did not return JSON"
-                    ) from exc
-            if not isinstance(payload, dict) or not payload:
-                raise GlmClientError(f"stage {stage.name} did not return JSON")
-            if stage.name == "cartographer":
-                payload = normalize_reverse_tree(payload)
-            artifact_path = run_dir / stage.artifact
-            artifact_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+            payload = self._stage_payload(stage, reply)
+            (run_dir / stage.artifact).write_text(json.dumps(payload, indent=2), encoding="utf-8")
             prior[stage.artifact] = payload
-
-            if stage.name == "composer":
+            if stage.writes_scene:
                 try:
-                    source = extract_scene_source(payload, result.text, result.tool_calls)
+                    source = extract_scene_source(reply.text, reply.tool_calls)
                 except ValueError as exc:
-                    raise GlmClientError(
-                        "composer did not return glm_scene.py source"
-                    ) from exc
-                (run_dir / "glm_scene.py").write_text(source, encoding="utf-8")
+                    raise GlmClientError(f"composer did not return {SCENE_FILE} source") from exc
+                (run_dir / SCENE_FILE).write_text(source, encoding="utf-8")
 
-            trace = {
-                "stage": stage.name,
-                "model": self.client.model,
-                "reasoning_effort": self.client.reasoning_effort,
-                "thinking_enabled": True,
-                "tools_requested": [
-                    tool.get("function", {}).get("name") or tool.get("type")
-                    for tool in stage.tools
-                ],
-                "tool_calls": result.tool_calls,
-                "thinking": result.thinking,
-            }
-            (run_dir / "traces" / f"{stage.name}.json").write_text(
-                json.dumps(trace, indent=2), encoding="utf-8"
-            )
-            (run_dir / "traces" / f"{stage.name}.raw.json").write_text(
-                json.dumps(result.raw, indent=2), encoding="utf-8"
-            )
+            self._write_trace(run_dir, stage, request, reply)
             manifest.stages.append(
-                {
-                    "stage": stage.name,
-                    "artifact": stage.artifact,
-                    "tool_calls": len(result.tool_calls),
-                }
+                {"stage": stage.name, "artifact": stage.artifact, "tool_calls": len(reply.tool_calls)}
             )
-            self._write_manifest(run_dir / "manifest.json", manifest)
-            print(f"  [glm] {stage.name:16} -> {stage.artifact}")
+            self._write_manifest(run_dir, manifest)
+            self.progress(f"  [glm] {stage.name:16} -> {stage.artifact}")
 
-        scene_source = (run_dir / "glm_scene.py").read_text(encoding="utf-8")
-        (run_dir / "validation.json").write_text(
-            json.dumps(verify_scene_report(scene_source), indent=2),
-            encoding="utf-8",
-        )
-        review = {
-            "offline": False,
+    @staticmethod
+    def _stage_payload(stage: Stage, reply: StageReply) -> dict:
+        """The stage's JSON object, normalized and checked against its contract."""
+        try:
+            payload = extract_json_object(reply.text)
+        except ValueError as exc:
+            raise GlmClientError(f"stage {stage.name} did not return JSON") from exc
+        if not isinstance(payload, dict) or not payload:
+            raise GlmClientError(f"stage {stage.name} did not return JSON")
+        if stage.normalize is not None:
+            payload = stage.normalize(payload)
+        failures = stage.check(payload) if stage.check is not None else []
+        if failures:
+            raise GlmClientError(
+                f"stage {stage.name} returned an invalid {stage.artifact}: " + "; ".join(failures)
+            )
+        return payload
+
+    def _write_trace(self, run_dir: Path, stage: Stage, request: RunRequest, reply: StageReply) -> None:
+        trace = {
+            "stage": stage.name,
             "model": self.client.model,
+            "reasoning_effort": request.reasoning_effort,
             "thinking_enabled": True,
-            "checks": ["artifact contract", "reverse tree", "python compilation"],
-            "rendered": False,
+            "tools_requested": stage.tools_requested,
+            "tool_calls": reply.tool_calls,
+            "thinking": reply.thinking,
         }
-        (run_dir / "review.json").write_text(json.dumps(review, indent=2), encoding="utf-8")
-        manifest.attempts.append(
-            {"attempt": 0, "mode": "zai-chat-completions", "status": "completed"}
-        )
+        traces = run_dir / TRACES_DIR
+        (traces / f"{stage.name}.json").write_text(json.dumps(trace, indent=2), encoding="utf-8")
+        (traces / f"{stage.name}.raw.json").write_text(json.dumps(reply.raw, indent=2), encoding="utf-8")
 
-    def _repair_scene(self, run_dir: Path, failures: list[str]) -> None:
-        source = (run_dir / "glm_scene.py").read_text(encoding="utf-8")
-        result = self.client.complete(
-            instructions=load_charter("glm-composer.md"),
+    def _repair_scene(self, run_dir: Path, request: RunRequest, failures: list[str]) -> None:
+        source = (run_dir / SCENE_FILE).read_text(encoding="utf-8")
+        reply = self.client.complete(
+            instructions=SCENE_STAGE.charter(),
             text=(
                 "Repair this Manim scene. Keep the class name, ThreeDScene "
                 "contract, paper palette, and camera rule. Return JSON with a "
@@ -237,21 +246,16 @@ class GlmHarness:
                 + "\n\nCURRENT FILE:\n"
                 + source
             ),
-            tools=(VERIFY_SCENE_TOOL,),
-            function_handlers={"verify_scene": verify_scene},
+            reasoning_effort=request.reasoning_effort,
+            tools=SCENE_STAGE.tools,
         )
         try:
-            repaired = extract_scene_source(result.payload, result.text, result.tool_calls)
+            repaired = extract_scene_source(reply.text, reply.tool_calls)
         except ValueError as exc:
-            raise GlmClientError(
-                "composer repair did not return glm_scene.py source"
-            ) from exc
-        (run_dir / "glm_scene.py").write_text(repaired, encoding="utf-8")
-        (run_dir / "traces" / "repair.json").write_text(
-            json.dumps(
-                {"tool_calls": result.tool_calls, "thinking": result.thinking},
-                indent=2,
-            ),
+            raise GlmClientError(f"composer repair did not return {SCENE_FILE} source") from exc
+        (run_dir / SCENE_FILE).write_text(repaired, encoding="utf-8")
+        (run_dir / TRACES_DIR / REPAIR_TRACE_FILE).write_text(
+            json.dumps({"tool_calls": reply.tool_calls, "thinking": reply.thinking}, indent=2),
             encoding="utf-8",
         )
 
@@ -261,49 +265,11 @@ class GlmHarness:
         if not manim:
             raise RuntimeError("manim was not found; pip install -e '.[render]'")
         media = run_dir / "media"
-        command = [
-            manim,
-            f"-q{quality}",
-            "--media_dir",
-            str(media),
-            str(run_dir / "glm_scene.py"),
-            scene_name,
-        ]
-        completed = subprocess.run(
-            command, cwd=run_dir, capture_output=True, text=True, check=False
-        )
+        command = [manim, f"-q{quality}", "--media_dir", str(media), str(run_dir / SCENE_FILE), scene_name]
+        completed = subprocess.run(command, cwd=run_dir, capture_output=True, text=True, check=False)
         if completed.returncode != 0:
             raise RuntimeError((completed.stderr or completed.stdout)[-4000:])
         videos = sorted(media.rglob("*.mp4"))
         if not videos:
             raise RuntimeError("manim exited 0 but wrote no mp4")
         return str(videos[-1])
-
-
-def load_stages():
-    from glm.charters import STAGES
-
-    return STAGES
-
-
-def _stage_prompt(stage: str, prompt: str, prior: dict[str, dict], tools=()) -> str:
-    """User turn for one stage; platform-only abilities become advisories."""
-    dossier = json.dumps(prior, indent=2) if prior else "{}"
-    platform_only = [
-        tool.get("type") for tool in tools or [] if tool.get("type") != "function"
-    ]
-    advisory = ""
-    if platform_only:
-        advisory = (
-            f"Platform abilities this stage may reference conceptually: "
-            f"{', '.join(filter(None, platform_only))}. Output stays plain text/JSON.\n"
-        )
-    return (
-        f"User request:\n{prompt}\n\n"
-        f"You are the {stage} stage of the GLM chain. Thinking is on.\n"
-        "Return one JSON object with exactly the keys the charter names.\n"
-        "If you write the scene, also include a source field with the complete "
-        "Python file, or a fenced python block.\n"
-        f"{advisory}\n"
-        f"Upstream artifacts:\n{dossier}\n"
-    )

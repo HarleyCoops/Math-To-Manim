@@ -2,9 +2,15 @@
 
 One endpoint: ``https://api.z.ai/api/coding/paas/v4/chat/completions``.
 Thinking is always on (``{"type": "enabled"}``); reasoning effort low|high|max
-maps to sampling latitude plus a token budget (see models.py). The API key is
-resolved from ZHIPU_API_KEY, then ZAI_API_KEY, then an OpenCode auth.json
-entry named ``zai-coding-plan`` -- and is never printed or logged.
+maps to sampling latitude plus a token budget (see models.py) and is chosen
+per call, so one client can serve many runs at once.
+
+The environment is read in exactly one place, ``GlmSettings.from_env``: model
+(GLM_MODEL), base URL (GLM_BASE_URL), default effort (GLM_REASONING_EFFORT),
+timeout (GLM_TIMEOUT) and the API key, resolved from ZHIPU_API_KEY, then
+ZAI_API_KEY, then an OpenCode auth.json entry named ``zai-coding-plan``. A
+client built with an explicit ``api_key`` touches neither the environment nor
+that file. The key is never printed or logged.
 
 This module never imports Mythos, Sol, or Grok.
 """
@@ -15,24 +21,18 @@ import base64
 import json
 import mimetypes
 import os
-import time
 import urllib.error
 import urllib.request
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass, field
 from pathlib import Path
 
-from glm.jsonutil import extract_json_object
-from glm.models import (
-    EFFORT_MAX_TOKENS,
-    EFFORT_TEMPERATURE,
-    REASONING_EFFORTS,
-    StageCallResult,
-    tool_record,
-)
+from glm.models import EFFORT_MAX_TOKENS, EFFORT_TEMPERATURE, REASONING_EFFORTS
 
-DEFAULT_BASE_URL = os.getenv("GLM_BASE_URL", "https://api.z.ai/api/coding/paas/v4")
-DEFAULT_MODEL = os.getenv("GLM_MODEL", "glm-5.3-flash")
-DEFAULT_REASONING_EFFORT = os.getenv("GLM_REASONING_EFFORT", "high")
-DEFAULT_TIMEOUT = float(os.getenv("GLM_TIMEOUT", "600"))
+DEFAULT_BASE_URL = "https://api.z.ai/api/coding/paas/v4"
+DEFAULT_MODEL = "glm-5.3-flash"
+DEFAULT_REASONING_EFFORT = "high"
+DEFAULT_TIMEOUT = 600.0
 PING_TIMEOUT = 45.0
 PING_PROMPT = "Reply with the single word pong."
 MAX_TOOL_ROUNDS = 6
@@ -41,6 +41,11 @@ THINKING_ON = {"type": "enabled"}
 
 _ENV_KEYS = ("ZHIPU_API_KEY", "ZAI_API_KEY")
 OPENCODE_PROVIDER = "zai-coding-plan"
+NO_KEY_MESSAGE = "no GLM key found; set ZHIPU_API_KEY or ZAI_API_KEY"
+
+# A transport takes (url, headers, body, timeout) and returns the decoded JSON
+# object, raising GlmClientError for anything short of that.
+Transport = Callable[[str, dict, dict, float], dict]
 
 
 class GlmClientError(RuntimeError):
@@ -54,11 +59,18 @@ def redact_secret(text: str, secret: str | None) -> str:
     return text.replace(secret.strip(), "[redacted]")
 
 
-def opencode_auth_path() -> Path:
-    home = os.getenv("HOME", str(Path.home()))
-    override = os.getenv("OPENCODE_AUTH_JSON")
-    base = Path(override) if override else Path(home) / ".local" / "share" / "opencode" / "auth.json"
-    return base
+# --------------------------------------------------------------------------
+# Environment and key resolution
+# --------------------------------------------------------------------------
+
+
+def opencode_auth_path(env: Mapping[str, str] | None = None) -> Path:
+    source = os.environ if env is None else env
+    override = source.get("OPENCODE_AUTH_JSON")
+    if override:
+        return Path(override)
+    home = source.get("HOME") or str(Path.home())
+    return Path(home) / ".local" / "share" / "opencode" / "auth.json"
 
 
 def _read_opencode_key(path: Path) -> str | None:
@@ -76,31 +88,108 @@ def _read_opencode_key(path: Path) -> str | None:
     return None
 
 
-def resolve_api_key(env: dict | None = None) -> tuple[str | None, str | None]:
+def resolve_api_key(env: Mapping[str, str] | None = None) -> tuple[str | None, str | None]:
     """Return (key, source_name). Values never leave this module except to callers."""
-    source = env if env is not None else os.environ
+    source = os.environ if env is None else env
     for name in _ENV_KEYS:
         value = source.get(name)
         if value and value.strip():
             return value.strip(), name
-    path = opencode_auth_path()
+    path = opencode_auth_path(source)
     key = _read_opencode_key(path)
     if key:
         return key, f"opencode:{path.name}:{OPENCODE_PROVIDER}"
     return None, None
 
 
-def api_key_status(env: dict | None = None) -> tuple[bool, str]:
+def api_key_status(env: Mapping[str, str] | None = None) -> tuple[bool, str]:
     """Describe the key situation without ever revealing a value."""
     key, origin = resolve_api_key(env)
     if not key:
-        return False, (
-            "no GLM key found; set ZHIPU_API_KEY or ZAI_API_KEY, "
-            f"or log in via OpenCode ({OPENCODE_PROVIDER})"
-        )
+        return False, f"{NO_KEY_MESSAGE}, or log in via OpenCode ({OPENCODE_PROVIDER})"
     if len(key) < 8:
         return False, "a GLM key is present but too short to be valid"
     return True, f"a GLM key is set (source: {origin})"
+
+
+@dataclass(frozen=True)
+class GlmSettings:
+    """Everything the environment decides, read once at call time."""
+
+    model: str = DEFAULT_MODEL
+    base_url: str = DEFAULT_BASE_URL
+    reasoning_effort: str = DEFAULT_REASONING_EFFORT
+    timeout: float = DEFAULT_TIMEOUT
+    api_key: str | None = None
+    key_source: str | None = None
+
+    @classmethod
+    def from_env(cls, env: Mapping[str, str] | None = None) -> GlmSettings:
+        source = os.environ if env is None else env
+        effort = source.get("GLM_REASONING_EFFORT") or DEFAULT_REASONING_EFFORT
+        if effort not in REASONING_EFFORTS:
+            raise GlmClientError(
+                f"GLM_REASONING_EFFORT must be one of {REASONING_EFFORTS}, got {effort!r}"
+            )
+        key, origin = resolve_api_key(source)
+        return cls(
+            model=source.get("GLM_MODEL") or DEFAULT_MODEL,
+            base_url=source.get("GLM_BASE_URL") or DEFAULT_BASE_URL,
+            reasoning_effort=effort,
+            timeout=float(source.get("GLM_TIMEOUT") or DEFAULT_TIMEOUT),
+            api_key=key,
+            key_source=origin,
+        )
+
+
+# --------------------------------------------------------------------------
+# Wire shapes
+# --------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class FunctionTool:
+    """A local function the model may call; schema and handler travel together."""
+
+    name: str
+    description: str
+    parameters: dict
+    handler: Callable[..., dict]
+
+    def schema(self) -> dict:
+        # Z.ai chat/completions tool shape: nested under "function".
+        return {
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": self.parameters,
+            },
+        }
+
+
+@dataclass
+class StageReply:
+    """One finished chat/completions exchange, tool rounds included."""
+
+    text: str
+    tool_calls: list[dict] = field(default_factory=list)
+    thinking: list[str] = field(default_factory=list)
+    raw: dict = field(default_factory=dict)
+
+
+def tool_record(tool_call: dict) -> dict:
+    """Normalize one OpenAI-style tool_call into {id, name, arguments}."""
+    nested = tool_call.get("function") if isinstance(tool_call.get("function"), dict) else {}
+    return {
+        "id": tool_call.get("id"),
+        "name": tool_call.get("name") or nested.get("name"),
+        "arguments": (
+            tool_call.get("arguments")
+            if tool_call.get("arguments") is not None
+            else nested.get("arguments")
+        ),
+    }
 
 
 def encode_image(path: Path) -> dict:
@@ -126,8 +215,8 @@ def user_content(text: str, image_path: Path | None = None) -> list[dict] | str:
 
 def _thinking_block(message: dict) -> list[str]:
     found: list[str] = []
-    for field in ("reasoning_content", "reasoning"):
-        value = message.get(field)
+    for name in ("reasoning_content", "reasoning"):
+        value = message.get(name)
         if isinstance(value, str) and value.strip():
             found.append(value)
         elif isinstance(value, list):
@@ -139,31 +228,75 @@ def _thinking_block(message: dict) -> list[str]:
     return found
 
 
+def _call_arguments(call: dict) -> dict:
+    arguments = call.get("arguments")
+    if isinstance(arguments, str):
+        try:
+            arguments = json.loads(arguments)
+        except json.JSONDecodeError:
+            arguments = {}
+    return arguments if isinstance(arguments, dict) else {}
+
+
+def post_json(url: str, headers: dict, body: dict, timeout: float) -> dict:
+    """Default transport: one HTTPS POST, JSON in, JSON object out."""
+    request = urllib.request.Request(
+        url, data=json.dumps(body).encode("utf-8"), headers=headers, method="POST"
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            raw = response.read().decode("utf-8", errors="replace")
+    except urllib.error.HTTPError as exc:
+        detail = ""
+        try:
+            detail = exc.read().decode("utf-8", errors="replace")[:2000]
+        except Exception:  # noqa: BLE001 - body best effort
+            pass
+        raise GlmClientError(f"Z.ai returned HTTP {exc.code}: {detail}") from exc
+    except urllib.error.URLError as exc:
+        raise GlmClientError(f"could not reach Z.ai: {exc.reason}") from exc
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise GlmClientError("Z.ai reply was not valid JSON") from exc
+    if not isinstance(payload, dict):
+        raise GlmClientError("Z.ai reply was not a JSON object")
+    return payload
+
+
 class GlmClient:
     """Thin sync wrapper around Z.ai's OpenAI-compatible chat/completions."""
 
     def __init__(
         self,
         *,
+        api_key: str | None,
         model: str = DEFAULT_MODEL,
         base_url: str = DEFAULT_BASE_URL,
-        reasoning_effort: str = DEFAULT_REASONING_EFFORT,
         timeout: float = DEFAULT_TIMEOUT,
-        api_key: str | None = None,
+        key_source: str | None = "explicit",
+        transport: Transport | None = None,
     ):
-        if reasoning_effort not in REASONING_EFFORTS:
-            raise GlmClientError(
-                f"reasoning_effort must be one of {REASONING_EFFORTS}, got {reasoning_effort!r}"
-            )
+        self.api_key = api_key.strip() if api_key and api_key.strip() else None
+        self.key_source = key_source if self.api_key else None
         self.model = model
         self.base_url = base_url.rstrip("/")
-        self.reasoning_effort = reasoning_effort
         self.timeout = timeout
-        resolved, origin = resolve_api_key()
-        if api_key is not None and api_key.strip():
-            resolved, origin = api_key.strip(), "explicit"
-        self.api_key = resolved
-        self.key_source = origin
+        self._transport = transport or post_json
+
+    @classmethod
+    def from_env(
+        cls, env: Mapping[str, str] | None = None, *, transport: Transport | None = None
+    ) -> GlmClient:
+        settings = GlmSettings.from_env(env)
+        return cls(
+            api_key=settings.api_key,
+            key_source=settings.key_source,
+            model=settings.model,
+            base_url=settings.base_url,
+            timeout=settings.timeout,
+            transport=transport,
+        )
 
     @property
     def endpoint(self) -> str:
@@ -177,62 +310,30 @@ class GlmClient:
         }
 
     def _post(self, body: dict, timeout: float | None = None) -> dict:
-        request = urllib.request.Request(
-            self.endpoint,
-            data=json.dumps(body).encode("utf-8"),
-            headers=self._headers(),
-            method="POST",
-        )
         try:
-            with urllib.request.urlopen(request, timeout=timeout or self.timeout) as response:
-                raw = response.read().decode("utf-8", errors="replace")
-        except urllib.error.HTTPError as exc:
-            detail = ""
-            try:
-                detail = exc.read().decode("utf-8", errors="replace")[:2000]
-            except Exception:  # noqa: BLE001 - body best effort
-                pass
-            raise GlmClientError(
-                redact_secret(f"Z.ai returned HTTP {exc.code}: {detail}", self.api_key)
-            ) from exc
-        except urllib.error.URLError as exc:
-            raise GlmClientError(redact_secret(f"could not reach Z.ai: {exc.reason}", self.api_key)) from exc
-        try:
-            payload = json.loads(raw)
-        except json.JSONDecodeError as exc:
-            raise GlmClientError(redact_secret("Z.ai reply was not valid JSON", self.api_key)) from exc
-        if not isinstance(payload, dict):
-            raise GlmClientError("Z.ai reply was not a JSON object")
-        return payload
+            return self._transport(self.endpoint, self._headers(), body, timeout or self.timeout)
+        except GlmClientError as exc:
+            raise GlmClientError(redact_secret(str(exc), self.api_key)) from exc
 
     def _body(
         self,
         *,
         instructions: str,
         messages_extra: list[dict],
-        tools: tuple[dict, ...] | list[dict] | None,
-        tool_choice=None,
-        max_tokens: int | None = None,
-        temperature: float | None = None,
+        tools: Sequence[FunctionTool] = (),
+        max_tokens: int,
+        temperature: float,
     ) -> dict:
-        messages: list[dict] = [{"role": "system", "content": instructions}]
-        messages.extend(messages_extra)
         body: dict = {
             "model": self.model,
-            "messages": messages,
+            "messages": [{"role": "system", "content": instructions}, *messages_extra],
             # Thinking is always on in this silo; effort tunes latitude only.
             "thinking": dict(THINKING_ON),
-            "temperature": temperature
-            if temperature is not None
-            else EFFORT_TEMPERATURE[self.reasoning_effort],
-            "max_tokens": max_tokens
-            if max_tokens is not None
-            else EFFORT_MAX_TOKENS[self.reasoning_effort],
+            "temperature": temperature,
+            "max_tokens": max_tokens,
         }
         if tools:
-            body["tools"] = list(tools)
-            if tool_choice is not None:
-                body["tool_choice"] = tool_choice
+            body["tools"] = [tool.schema() for tool in tools]
         return body
 
     def complete(
@@ -240,66 +341,55 @@ class GlmClient:
         *,
         instructions: str,
         text: str,
+        reasoning_effort: str = DEFAULT_REASONING_EFFORT,
         image_path: Path | None = None,
-        history: list[dict] | None = None,
-        tools: tuple[dict, ...] | list[dict] | None = None,
-        tool_choice=None,
-        function_handlers: dict | None = None,
-        max_rounds: int = MAX_TOOL_ROUNDS,
-    ) -> StageCallResult:
-        """Send one turn, resolving any local function calls until they drain."""
+        tools: Sequence[FunctionTool] = (),
+    ) -> StageReply:
+        """Send one turn, resolving local function calls until they drain."""
         if not self.api_key:
-            raise GlmClientError("no GLM key found; set ZHIPU_API_KEY or ZAI_API_KEY")
-        messages_extra: list[dict] = list(history or [])
-        messages_extra.append({"role": "user", "content": user_content(text, image_path)})
-        handlers = function_handlers or {}
-        raw: dict = {}
-        final_text = ""
-        all_tool_calls: list[dict] = []
-        all_thinking: list[str] = []
+            raise GlmClientError(NO_KEY_MESSAGE)
+        handlers = {tool.name: tool.handler for tool in tools}
+        messages_extra: list[dict] = [{"role": "user", "content": user_content(text, image_path)}]
+        reply = StageReply(text="")
 
-        for _round in range(max_rounds + 1):
-            raw = self._post(
+        for _round in range(MAX_TOOL_ROUNDS + 1):
+            reply.raw = self._post(
                 self._body(
                     instructions=instructions,
                     messages_extra=messages_extra,
                     tools=tools,
-                    tool_choice=tool_choice,
+                    max_tokens=EFFORT_MAX_TOKENS[reasoning_effort],
+                    temperature=EFFORT_TEMPERATURE[reasoning_effort],
                 )
             )
-            choices = raw.get("choices") or []
+            choices = reply.raw.get("choices") or []
             if not choices or not isinstance(choices[0].get("message"), dict):
                 raise GlmClientError("Z.ai reply carried no assistant message")
             message = choices[0]["message"]
-            final_text = message.get("content") or ""
-            all_thinking.extend(_thinking_block(message))
+            reply.text = message.get("content") or ""
+            reply.thinking.extend(_thinking_block(message))
 
             calls = [tool_record(call) for call in message.get("tool_calls") or []]
             if not calls or not handlers:
                 break
-            assistant_entry: dict = {"role": "assistant", "content": final_text}
-            assistant_entry["tool_calls"] = message.get("tool_calls") or []
-            messages_extra.append(assistant_entry)
-            pending = False
+            messages_extra.append(
+                {
+                    "role": "assistant",
+                    "content": reply.text,
+                    "tool_calls": message.get("tool_calls") or [],
+                }
+            )
             for call in calls:
-                all_tool_calls.append(call)
+                reply.tool_calls.append(call)
                 name = call.get("name") or ""
                 handler = handlers.get(name)
-                arguments = call.get("arguments")
-                if isinstance(arguments, str):
-                    try:
-                        arguments = json.loads(arguments)
-                    except json.JSONDecodeError:
-                        arguments = {}
-                arguments = arguments if isinstance(arguments, dict) else {}
                 if handler is None:
                     result_payload = {"error": f"no local handler for {name}"}
                 else:
                     try:
-                        result_payload = handler(**arguments)
+                        result_payload = handler(**_call_arguments(call))
                     except Exception as exc:  # noqa: BLE001 - tool boundary
                         result_payload = {"error": f"{type(exc).__name__}: {exc}"}
-                pending = True
                 messages_extra.append(
                     {
                         "role": "tool",
@@ -308,57 +398,26 @@ class GlmClient:
                         "content": json.dumps(result_payload, ensure_ascii=False),
                     }
                 )
-            if not pending:
-                break
-
-        payload: dict = {}
-        if final_text.strip():
-            try:
-                payload = extract_json_object(final_text)
-            except (ValueError, json.JSONDecodeError):
-                payload = {}
-        return StageCallResult(
-            text=final_text,
-            payload=payload,
-            tool_calls=all_tool_calls,
-            thinking=all_thinking,
-            raw=raw,
-        )
+        return reply
 
     def ping(self) -> tuple[bool, str]:
-        """Live doctor probe: expect pong back from glm-5.3-flash."""
+        """Live doctor probe, one attempt: expect pong back from the model."""
         if not self.api_key:
-            return False, "no GLM key found; set ZHIPU_API_KEY or ZAI_API_KEY"
+            return False, NO_KEY_MESSAGE
         body = self._body(
             instructions="You are a connectivity probe.",
             messages_extra=[{"role": "user", "content": PING_PROMPT}],
-            tools=None,
             # Thinking tokens come out of this budget; 16 was eaten whole.
             max_tokens=1024,
             temperature=0.0,
         )
-        for attempt in range(2):
-            try:
-                raw = self._post(body, timeout=PING_TIMEOUT)
-            except GlmClientError as exc:
-                if attempt == 0:
-                    time.sleep(1.5)
-                    continue
-                return False, redact_secret(str(exc), self.api_key)
-            message = (raw.get("choices") or [{}])[0].get("message") or {}
-            said = (message.get("content") or "").strip().lower()
-            if "pong" in said:
-                return True, f"pong from {self.model}"
-            snippet = " ".join(said.split())[:80]
-            return False, f"expected pong, got: {snippet!r}"
-        return False, "ping did not converge"
-
-    def doctor_line(self) -> str:
-        ok, detail = api_key_status()
-        return (
-            f"endpoint={self.endpoint} model={self.model} "
-            f"thinking={'on'} effort={self.reasoning_effort} {detail}"
-        ) if ok else (
-            f"endpoint={self.endpoint} model={self.model} thinking=on "
-            f"effort={self.reasoning_effort} {detail}"
-        )
+        try:
+            raw = self._post(body, timeout=PING_TIMEOUT)
+        except GlmClientError as exc:
+            return False, str(exc)
+        message = (raw.get("choices") or [{}])[0].get("message") or {}
+        said = (message.get("content") or "").strip().lower()
+        if "pong" in said:
+            return True, f"pong from {self.model}"
+        snippet = " ".join(said.split())[:80]
+        return False, f"expected pong, got: {snippet!r}"

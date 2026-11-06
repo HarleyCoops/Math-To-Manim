@@ -1,24 +1,23 @@
-"""Command line for the independent GLM-native Math To Manim silo."""
+"""Command line for the independent GLM-native Math To Manim silo.
+
+stdout carries only the command's output (the run manifest as JSON, the run
+list, a manifest); progress lines go to stderr.
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
-import os
+import sys
 
 from glm import __version__
-from glm.client import (
-    DEFAULT_MODEL,
-    DEFAULT_REASONING_EFFORT,
-    GlmClient,
-    api_key_status,
-    opencode_auth_path,
-)
-from glm.models import REASONING_EFFORTS, RunRequest
+from glm.client import GlmClient, GlmSettings, api_key_status, opencode_auth_path
+from glm.models import MAX_REPAIRS_LIMIT, QUALITIES, REASONING_EFFORTS, RunRequest
 from glm.service import GlmService
 
 
 def build_parser() -> argparse.ArgumentParser:
+    fields = RunRequest.model_fields
     parser = argparse.ArgumentParser(
         prog="math-to-manim-glm",
         description=(
@@ -33,13 +32,18 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("prompt")
     run.add_argument("--image", help="Photographed homework page or diagram")
     run.add_argument("--render", action="store_true")
-    run.add_argument("-q", "--quality", default="l", choices=["l", "m", "h", "p", "k"])
+    run.add_argument("-q", "--quality", default=fields["quality"].default, choices=list(QUALITIES))
     run.add_argument(
         "--reasoning-effort",
-        default=DEFAULT_REASONING_EFFORT,
+        default=None,
         choices=list(REASONING_EFFORTS),
     )
-    run.add_argument("--max-repairs", default=2, type=int, choices=range(0, 6))
+    run.add_argument(
+        "--max-repairs",
+        default=fields["max_repairs"].default,
+        type=int,
+        choices=range(0, MAX_REPAIRS_LIMIT + 1),
+    )
     run.add_argument("--offline", action="store_true")
 
     runs = sub.add_parser("runs", help="List recent GLM run manifests")
@@ -52,16 +56,17 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _doctor() -> int:
+def _doctor(settings: GlmSettings) -> int:
     ok, detail = api_key_status()
-    model = os.getenv("GLM_MODEL", DEFAULT_MODEL)
-    effort = os.getenv("GLM_REASONING_EFFORT", DEFAULT_REASONING_EFFORT)
-    print(f"endpoint chat/completions under {GlmClient().base_url}; model={model}; effort={effort}")
+    print(
+        f"endpoint chat/completions under {settings.base_url}; "
+        f"model={settings.model}; effort={settings.reasoning_effort}"
+    )
     if not ok:
         print(f"not ready: {detail}")
         print(f"opencode auth expected at: {opencode_auth_path()}")
         return 1
-    client = GlmClient()
+    client = GlmClient.from_env()
     ping_ok, ping_detail = client.ping()
     if not ping_ok:
         print(f"not ready: {ping_detail}")
@@ -72,13 +77,15 @@ def _doctor() -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "doctor":
+        return _doctor(GlmSettings.from_env())
     service = GlmService()
     if args.command == "run":
         response = service.run(
             RunRequest(
                 prompt=args.prompt,
                 image=args.image,
-                reasoning_effort=args.reasoning_effort,
+                reasoning_effort=args.reasoning_effort or GlmSettings.from_env().reasoning_effort,
                 offline=args.offline,
                 render=args.render,
                 quality=args.quality,
@@ -91,11 +98,9 @@ def main(argv: list[str] | None = None) -> int:
         for manifest in service.list_runs(limit=max(1, args.limit)):
             print(f"{manifest.run_id}\t{manifest.status}\t{manifest.prompt}")
         return 0
-    if args.command == "status":
-        print(service.get_run(args.run_id).model_dump_json(indent=2))
-        return 0
-    return _doctor()
+    print(service.get_run(args.run_id).model_dump_json(indent=2))
+    return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit(main())

@@ -1,30 +1,35 @@
-"""Typed contracts for the GLM-native film pipeline.
+"""On-disk contracts for the GLM-native film pipeline.
 
-GLM talks through the Z.ai Coding Plan OpenAI-compatible
-``chat/completions`` endpoint. Thinking is always on; reasoning effort is
-one of ``low``, ``high``, ``max``. This module never imports Mythos, Sol,
-or Grok.
+Everything a run bundle under ``runs/glm/<run_id>/`` is made of is named
+here: the request and manifest schemas and the file names the harness writes.
+GLM talks through the Z.ai Coding Plan OpenAI-compatible ``chat/completions``
+endpoint. Thinking is always on; reasoning effort is one of ``low``, ``high``,
+``max``. This module never imports Mythos, Sol, or Grok.
 """
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, get_args
 
 from pydantic import BaseModel, Field
 
-ARTIFACT_NAMES = (
-    "01_intent.json",
-    "02_knowledge_map.json",
-    "03_curriculum.json",
-    "04_math_dossier.json",
-    "05_shot_list.json",
-    "06_scene_spec.json",
-    "glm_scene.py",
-    "validation.json",
-    "review.json",
-)
+# Run bundle file names (stage artifacts are named on the stage table).
+SCENE_FILE = "glm_scene.py"
+VALIDATION_FILE = "validation.json"
+REVIEW_FILE = "review.json"
+MANIFEST_FILE = "manifest.json"
+REQUEST_FILE = "request.json"
+TRACES_DIR = "traces"
+REPAIR_TRACE_FILE = "repair.json"
 
-REASONING_EFFORTS = ("low", "high", "max")
+# What review.json certifies about a completed bundle.
+REVIEW_CHECKS = ("artifact contract", "reverse tree", "python compilation")
+
+Quality = Literal["l", "m", "h", "p", "k"]
+Effort = Literal["low", "high", "max"]
+QUALITIES: tuple[str, ...] = get_args(Quality)
+REASONING_EFFORTS: tuple[str, ...] = get_args(Effort)
+MAX_REPAIRS_LIMIT = 5
 
 # The chat/completions body has no effort enum, so the GLM-native way to
 # honor low|high|max is sampling latitude plus a token budget, while the
@@ -34,9 +39,7 @@ EFFORT_MAX_TOKENS = {"low": 2048, "high": 6144, "max": 12288}
 
 # The default paper stage every GLM scene starts on.
 PAPER_STAGE_COLOR = "#f3ecd8"
-
-Quality = Literal["l", "m", "h", "p", "k"]
-Effort = Literal["low", "high", "max"]
+OFFLINE_SCENE_NAME = "GlmOfflineStory"
 
 
 class RunRequest(BaseModel):
@@ -45,7 +48,7 @@ class RunRequest(BaseModel):
     render: bool = False
     quality: Quality = "l"
     reasoning_effort: Effort = "high"
-    max_repairs: int = Field(default=2, ge=0, le=5)
+    max_repairs: int = Field(default=2, ge=0, le=MAX_REPAIRS_LIMIT)
     offline: bool = False
 
 
@@ -72,27 +75,3 @@ class RunManifest(BaseModel):
     artifacts: dict[str, str] = Field(default_factory=dict)
     status_detail: dict[str, str] = Field(default_factory=dict)
     error: str | None = None
-
-
-class StageCallResult(BaseModel):
-    """One finished chat/completions exchange for a pipeline stage."""
-
-    text: str
-    payload: dict = Field(default_factory=dict)
-    tool_calls: list[dict] = Field(default_factory=list)
-    thinking: list[str] = Field(default_factory=list)
-    raw: dict = Field(default_factory=dict)
-
-
-def tool_record(tool_call: dict) -> dict:
-    """Normalize one OpenAI-style tool_call into {id, name, arguments}."""
-    nested = tool_call.get("function") if isinstance(tool_call.get("function"), dict) else {}
-    return {
-        "id": tool_call.get("id"),
-        "name": tool_call.get("name") or nested.get("name"),
-        "arguments": (
-            tool_call.get("arguments")
-            if tool_call.get("arguments") is not None
-            else nested.get("arguments")
-        ),
-    }

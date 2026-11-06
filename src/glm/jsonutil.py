@@ -58,7 +58,7 @@ def extract_json_object(text: str) -> dict:
     for candidate in (strip_fence(text), text.strip()):
         try:
             return first_json_object(candidate)
-        except (ValueError, json.JSONDecodeError) as exc:
+        except ValueError as exc:  # json.JSONDecodeError is a ValueError
             last_error = exc
     assert last_error is not None
     raise last_error
@@ -83,8 +83,6 @@ def extract_python_block(text: str) -> str:
     if fences:
         return fences[-1].strip() + "\n"
     stripped = strip_fence(text) if text.strip().startswith("```") else text.strip()
-    if stripped.lstrip().startswith("{") and '"source"' not in stripped[:80]:
-        raise ValueError("model text did not contain a Python scene")
     if looks_like_scene(stripped) and not stripped.lstrip().startswith("{"):
         return stripped.strip() + "\n"
     raise ValueError("model text did not contain a Python scene")
@@ -100,20 +98,20 @@ def sources_in_payload(payload: dict | None) -> list[str]:
     return found
 
 
-def extract_scene_source(
-    payload: dict | None,
-    text: str = "",
-    tool_calls: list[dict] | None = None,
-) -> str:
-    """The composer may put glm_scene.py in JSON, a fence, or verify_scene args."""
-    candidates: list[str] = sources_in_payload(payload)
+def extract_scene_source(text: str, tool_calls: list[dict] | None = None) -> str:
+    """The composer may put glm_scene.py in JSON, a fence, or verify_scene args.
+
+    The last candidate wins: a verified tool-call source outranks the prose
+    that preceded it.
+    """
+    candidates: list[str] = []
     if text:
         try:
             candidates.append(extract_python_block(text))
         except ValueError:
             try:
                 parsed = extract_json_object(text)
-            except (ValueError, json.JSONDecodeError):
+            except ValueError:
                 parsed = None
             candidates.extend(sources_in_payload(parsed))
     for call in tool_calls or []:

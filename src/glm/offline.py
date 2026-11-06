@@ -5,18 +5,20 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from glm.models import ARTIFACT_NAMES, PAPER_STAGE_COLOR, RunRequest
-from glm.validation import verify_scene_report
+from glm.models import OFFLINE_SCENE_NAME, PAPER_STAGE_COLOR, SCENE_FILE, TRACES_DIR, RunRequest
+from glm.stages import STAGES, Stage
 
-_OFFLINE_SCENE = """from manim import *
+OFFLINE_LIMITATION = "deterministic rehearsal; no Z.ai call"
+
+_OFFLINE_SCENE = f"""from manim import *
 
 
-class GlmOfflineStory(ThreeDScene):
+class {OFFLINE_SCENE_NAME}(ThreeDScene):
     \"\"\"Deterministic rehearsal of the complete GLM artifact contract.\"\"\"
 
     def construct(self):
         # Paper stage, ink text: the GLM house look, no network, no files.
-        self.camera.background_color = "#f3ecd8"
+        self.camera.background_color = "{PAPER_STAGE_COLOR}"
         self.set_camera_orientation(phi=0 * DEGREES, theta=-90 * DEGREES)
         ink = "#2b261f"
         title = Text("GLM pipeline: offline rehearsal", color=ink)
@@ -310,7 +312,7 @@ def _shot_list() -> dict:
 def _scene_spec() -> dict:
     return {
         "offline": True,
-        "scene_name": "GlmOfflineStory",
+        "scene_name": OFFLINE_SCENE_NAME,
         "scene_class": "ThreeDScene",
         "palette": {"background": PAPER_STAGE_COLOR, "text": "#2b261f"},
         "objects": [
@@ -321,64 +323,43 @@ def _scene_spec() -> dict:
             "Manim CE",
             "set_camera_orientation or move_camera only",
             "never .animate on the camera",
-            "paper stage #f3ecd8",
+            f"paper stage {PAPER_STAGE_COLOR}",
         ],
         "acceptance": ["one ThreeDScene", "camera rule held", "paper palette"],
     }
 
 
-def _trace(stage: str, tools: list[str]) -> dict:
+def _trace(stage: Stage) -> dict:
     return {
-        "stage": stage,
+        "stage": stage.name,
         "offline": True,
         "model": "offline",
         "thinking_enabled": False,
-        "tools_requested": tools,
+        "tools_requested": stage.tools_requested,
         "tool_calls": [],
-        "thinking": ["offline rehearsal; no Z.ai call"],
+        "thinking": [OFFLINE_LIMITATION],
     }
 
 
-def write_offline_bundle(run_dir: Path, request: RunRequest) -> dict:
+def write_offline_bundle(run_dir: Path, request: RunRequest) -> None:
+    """Write every stage artifact, the scene, and one trace per stage."""
     tree = reverse_tree_for(request.prompt)
+    intent, cartographer, curriculum, math_director, cinematographer, composer = STAGES
     artifacts = {
-        "01_intent.json": _intent(request),
-        "02_knowledge_map.json": tree,
-        "03_curriculum.json": _curriculum(tree),
-        "04_math_dossier.json": _math_dossier(request),
-        "05_shot_list.json": _shot_list(),
-        "06_scene_spec.json": _scene_spec(),
-        "review.json": {
-            "offline": True,
-            "checks": ["artifact contract", "reverse tree", "python compilation"],
-            "rendered": False,
-            "limitations": ["deterministic rehearsal; no Z.ai call"],
-        },
-        "validation.json": verify_scene_report(_OFFLINE_SCENE),
+        intent.artifact: _intent(request),
+        cartographer.artifact: tree,
+        curriculum.artifact: _curriculum(tree),
+        math_director.artifact: _math_dossier(request),
+        cinematographer.artifact: _shot_list(),
+        composer.artifact: _scene_spec(),
     }
     for name, payload in artifacts.items():
         (run_dir / name).write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    (run_dir / "glm_scene.py").write_text(_OFFLINE_SCENE, encoding="utf-8")
+    (run_dir / SCENE_FILE).write_text(_OFFLINE_SCENE, encoding="utf-8")
 
-    traces = run_dir / "traces"
+    traces = run_dir / TRACES_DIR
     traces.mkdir(exist_ok=True)
-    stage_tools = {
-        "intent": [],
-        "cartographer": ["web_search"],
-        "curriculum": [],
-        "math-director": ["code_interpreter", "web_search"],
-        "cinematographer": ["web_search"],
-        "composer": ["verify_scene"],
-    }
-    for stage, tools in stage_tools.items():
-        (traces / f"{stage}.json").write_text(
-            json.dumps(_trace(stage, tools), indent=2),
-            encoding="utf-8",
+    for stage in STAGES:
+        (traces / f"{stage.name}.json").write_text(
+            json.dumps(_trace(stage), indent=2), encoding="utf-8"
         )
-    assert all((run_dir / name).is_file() for name in ARTIFACT_NAMES)
-    return {
-        "status": "completed",
-        "scene_file": "glm_scene.py",
-        "scene_name": "GlmOfflineStory",
-        "artifacts": list(ARTIFACT_NAMES),
-    }
