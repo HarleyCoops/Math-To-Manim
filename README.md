@@ -1,78 +1,5 @@
 # Math To Manim
 
-**Turn a mathematical question into an animated explanation.**
-
-Math To Manim develops a learning brief, checks the mathematics, plans the visual
-story, writes a Manim scene, and reviews the rendered result. Explore the films,
-or use the Astra pipeline to make your own.
-
-[Watch the films](docs/showcase/README.md) · [Get started](#make-your-first-film) · [Project guide](docs/PROJECT_GUIDE.md) · [Research films](papers/README.md)
-
-<a href="docs/showcase/assets/every-orbit-great-circle.mp4">
-  <picture>
-    <source media="(prefers-reduced-motion: reduce)" srcset="docs/showcase/assets/every-orbit-great-circle-poster.png" />
-    <img src="docs/showcase/assets/every-orbit-great-circle.gif" alt="Orbital velocity circles lifted onto a glass sphere become great circles" width="100%" />
-  </picture>
-</a>
-
-*Every Orbit Is a Great Circle* — orbital motion becomes geometry on a sphere.
-[Watch the film](docs/showcase/assets/every-orbit-great-circle.mp4) · [How it was made](docs/showcase/every-orbit-great-circle/README.md)
-
-## Explore the films
-
-| Film | The visual idea | Watch / explore |
-| --- | --- | --- |
-| From Score SDEs to One-Step Consistency | Noise, probability flow, and a path back to data | [Film and production record](docs/showcase/score-sde-consistency/README.md) |
-| The Shape and Its Shadow | A cube, its polar octahedron, and their volume product | [Film and source](papers/mahler/README.md) |
-| A Frontier for the Zeros | Zeta landscapes and a manuscript's proposed zero-free frontier | [Film and source](papers/quasi-riemann/README.md) |
-| Morse Theory | Four critical moments change the topology of a torus | [Film and production record](docs/showcase/astra-morse-torus/README.md) |
-
-Research films explain their source manuscripts; they do not independently certify
-those manuscripts' claims. See each production record for review scope.
-
-[Browse the full motion showcase →](docs/showcase/README.md)
-
-## Make your first film
-
-Install Python 3.10+, Node.js 18+, and the Manim rendering dependencies, including
-FFmpeg and LaTeX. The [setup guide](docs/PROJECT_GUIDE.md#installation) covers
-Windows, macOS, Linux, and installation from source.
-
-```bash
-python -m pip install "math-to-manim[astra] @ https://github.com/HarleyCoops/Math-To-Manim/releases/download/v2.0.0/math_to_manim-2.0.0-py3-none-any.whl"
-math-to-manim setup
-math-to-manim login
-math-to-manim doctor --review-mode off
-math-to-manim run "Explain the geometry of a torus" -q m --review-mode off
-```
-
-Astra uses your Codex ChatGPT login. This example keeps independent Astra audits
-and skips Jev. Jev reviews are advisory by default when enabled; strict gates are
-opt-in. [Review modes and architecture](docs/ASTRA_PIPELINE.md).
-
-## How it works
-
-**Question → learning brief → mathematics → storyboard → scene → rendered film**
-
-Each run retains its source, candidate attempts, reviews, render logs, sampled
-frames, and completion manifest. You can inspect the evidence and resume work.
-The primary `math-to-manim` command runs Astra; other provider pipelines have
-[their own commands](docs/PROJECT_GUIDE.md#provider-pipelines-and-films).
-
-## Go deeper
-
-- [Complete project guide](docs/PROJECT_GUIDE.md) — setup, review modes, testing, and project history.
-- [Astra bundle](docs/ASTRA_BUNDLE.md) — packaged runtime and completed film assets.
-- [Mathematics in 3D](papers/README.md) — research episodes and source dossiers.
-- [Visual inventory](docs/showcase/VISUAL_INVENTORY.md) — existing animations and candidates for future features.
-- [Contributing guidance](AGENTS.md) · [MIT license](LICENSE).
-
-<details>
-<summary>Project history and stars</summary>
-
-Math To Manim began on January 20, 2025, exploring how recursive reasoning could
-turn mathematical ideas into visual explanations. [Read the story](docs/PROJECT_GUIDE.md#the-morning-of-january-20-2025).
-
 <a href="https://www.star-history.com/?repos=HarleyCoops%2FMath-To-Manim&type=date&legend=top-left">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=HarleyCoops/Math-To-Manim&type=date&theme=dark&legend=top-left&sealed_token=EjITEOSI8nKcGNkepdjUHZ8WTRNOw4dKGtyggkiM_yrNBnjxIr00U2Pgt5DqaUF8Qgx4-WIhM4WdOM2ipFiXTXOJxhJU87yp_iOKrGOHkaIBES1Wrpn1f7i_TMd8chdgnaa09DKge1DJ93Hwe4MmjX0YO1PpzSsDF9ebqWr0MDDTnpRzPNbPUvweMI00" />
@@ -81,4 +8,579 @@ turn mathematical ideas into visual explanations. [Read the story](docs/PROJECT_
   </picture>
 </a>
 
-</details>
+## Chapters in production
+
+1. **Local smoothing and the Kakeya conjecture**
+2. **The Exponential Time Hypothesis is false**
+3. **Existence of quantum chromodynamics and completions of the Standard Model**
+
+[Production brief](papers/three-frontiers/README.md) | [Production request](papers/three-frontiers/prompt.txt)
+
+The film retains these exact original titles. Static full-screen explanations alternate with 3D exploration, LaTeX, rotations and zooms. GPT-6 Astra is the author/auditor model; orchestration and Manim rendering run on the local Windows workstation, with no four-minute ceiling.
+
+**Status:** the full Astra film is not yet rendered. Local Manim preview rendering works, but the latest local Codex startup failed with Windows access denied before its first model response.
+
+
+
+## New Film (Argon Google Agent SDK): From Score SDEs to One-Step Consistency
+
+[![Continuous-time Score SDEs, the Probability Flow ODE, and OpenAI Consistency Models rendered in 3D](docs/showcase/assets/score-sde-consistency.gif)](docs/showcase/assets/score-sde-consistency.mp4)
+
+[Watch the complete `.mp4` (70.4 s, 720p30)](docs/showcase/assets/score-sde-consistency.mp4) ·
+[View the contact sheet](docs/showcase/assets/score-sde-consistency-contact-sheet.png) ·
+[Inspect the Manim source](examples/argon/score_sde_consistency.py) ·
+[Read the 6-stage Argon ADK production record](docs/showcase/score-sde-consistency/README.md) ·
+[Production request](docs/prompts/score-sde-consistency.md)
+
+A sharp bimodal data distribution $p_0(x)=\tfrac12\mathcal{N}(-\mu_0,\sigma_0^2)+\tfrac12\mathcal{N}(+\mu_0,\sigma_0^2)$ melts under the variance-exploding Itô forward SDE $\mathrm{d}x=\sqrt{2t}\,\mathrm{d}w_t$, merging its two modes at the exact bifurcation time $t^*=\sqrt{\mu_0^2-\sigma_0^2}\approx 1.969$. The score vector field $\nabla_x\log p_t(x)=\bigl(\mu_0\tanh(\mu_0 x/v(t))-x\bigr)/v(t)$ and Tweedie's MMSE denoiser $D(x,t)=x+t^2\nabla_x\log p_t(x)$ point back uphill toward the clean modes. Stripping away half the score drift removes the Brownian jitter to yield the deterministic **Probability Flow ODE** $\mathrm{d}x/\mathrm{d}t=-t\,\nabla_x\log p_t(x)$ with identical marginals $p_t(x)$, and **OpenAI Consistency Models** (Song, Dhariwal, Chen, & Sutskever, ICML 2023) learn the boundary-enforced flow map $f_\theta(x_t,t)=c_{\text{skip}}(t)\,x_t+c_{\text{out}}(t)\,F_\theta(x_t,t)=x_\varepsilon$ so every point along an ODE trajectory leaps to the clean manifold in **1 NFE**.
+
+$$
+\mathrm{d}x = -t\,\nabla_x\log p_t(x)\,\mathrm{d}t \quad\Longrightarrow\quad f_\theta(x_t,t)=f_\theta(x_{t'},t')=x_\varepsilon,\qquad c_{\text{skip}}(\varepsilon)=1,\;c_{\text{out}}(\varepsilon)=0.
+$$
+
+### How the Argon Google Agent SDK (`google-adk`) pipeline built this film
+
+The [`argon/`](argon/) package ports the six-stage Math-To-Manim reasoning chain to the **Google Agent Development Kit (`google-adk`)** and **`google-genai` SDK** (`gemini-4-argon` / `ArgonGoogleADKClient`):
+
+1. **Six `LlmAgent` specialists** (`argon_intent`, `argon_cartographer`, `argon_curriculum`, `argon_math_director`, `argon_cinematographer`, `argon_composer`) orchestrated via `google.adk.agents.SequentialAgent` and `InMemoryRunner`.
+2. **ADK FunctionTools**: `execute_math_check` verifies algebraic identities, bifurcation thresholds, and skip-connection boundary conditions in a sandboxed AST NumPy evaluator during stage 4; `verify_scene` checks AST syntax, banned imports, and `ThreeDScene` camera discipline (`set_camera_orientation` / `move_camera`) during stage 6.
+3. **Strict contract validation & reproducible operator harness**: [`scripts/operate_argon_chain.py`](scripts/operate_argon_chain.py) validates all six JSON artifacts (`01_intent.json` through `06_scene_spec.json`), runs the ADK tools, renders the 3D scene via Manim, and writes a versioned `manifest.json` under `runs/argon/`.
+
+```bash
+pip install -e ".[argon,dev,render]"
+math-to-manim-argon doctor
+python scripts/operate_argon_chain.py docs/showcase/score-sde-consistency --render -q m
+```
+
+---
+
+<a href="docs/showcase/README.md">
+  <picture>
+    <source media="(prefers-reduced-motion: reduce)" srcset="docs/showcase/assets/showcase-collage-poster.png" />
+    <img src="docs/showcase/assets/showcase-collage.gif" alt="Six animated examples: Morse theory, the box diagonal, Hopf fibers, parallel transport, polyhedral geometry, and minimal surfaces" width="100%" />
+  </picture>
+</a>
+
+*Six real renders from the Astra Morse film and the existing showcase. [Explore the films →](docs/showcase/README.md)*
+
+### A question becomes a mathematical world you can move through.
+
+**GPT-6 Astra builds the explanation. Jev challenges every step. Manim makes it visible.**
+
+The primary pipeline now uses the official **Codex SDK**, your **Codex ChatGPT
+login**, and `gpt-6-astra` for authors and evidence auditors. Real **TypeSafe Jev
+(`jev-1.13.0`)** evaluates each checkpoint through its separate API. Astra develops the
+learning brief, verifies the mathematics, directs the visual argument, writes
+the scene, and reviews the actual render. Jev reviews are **advisory by default**:
+their scores are retained, but do not trigger regeneration or extra investigations.
+Strict gates remain available with `--review-mode gated`.
+
+Use `--review-mode off` to skip Jev and its credential requirement while keeping
+independent Astra audits. These runs are labeled `astra_only`.
+`math-to-manim serve-mcp` now exposes this same Astra chain over MCP.
+The [Astra bundle pathway](docs/ASTRA_BUNDLE.md) distributes the installable
+package, locked Codex runtime, completed Quasi-Riemann film and its evidence.
+The [OpenAI mathematics in 3D series](papers/README.md) starts with the Mahler
+pilot, *The Shape and Its Shadow*: a completed three-minute cloud render with
+independent Astra review of its source and 23 actual frames.
+Its completed flagship is the Quasi-Riemann film,
+*A Frontier for the Zeros*: bone backgrounds, sculptural zeta landscapes,
+phase-winding closeups, and a journey into the manuscript's zero-free frontier.
+The 221-second cloud movie is now available at 720p/30 fps with a completed
+manifest, matching source and movie hashes, and a successful full-file decode.
+
+### OpenAI Mathematics in 3D
+
+An open film project inspired by the [OpenAI manuscript map](https://github.com/HarleyCoops/math).
+Each episode follows one mathematical idea through space: geometry first,
+readable LaTeX at the moment it matters, and camera motion that explains.
+
+**Watch [A Frontier for the Zeros](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4).**
+The September 30 Quasi-Riemann manuscript reports that zeta and every
+Dirichlet L-function have no zeros in `Re(s)>7/8`, with principal poles
+allowed. The film explains how the paper's two estimates lead to a
+holomorphic continuation of the reciprocal. The full Riemann hypothesis
+remains open in the source.
+
+[Explore the series and proposed episodes](papers/README.md) ·
+[Read the source dossier](papers/quasi-riemann/source-context.md) ·
+[Cloud film jobs](https://github.com/HarleyCoops/Math-To-Manim/actions/workflows/quasi-riemann-film.yml)
+
+To finish an existing scene without spending additional model credits:
+
+```bash
+math-to-manim render-existing runs/astra/<run-id> --candidate runs/astra/<run-id>/attempts/<candidate>.json -q m
+```
+
+This local-only path makes **zero Astra or Jev calls**. Manim renders and joins
+the animation segments, then extracts review frames. Output is marked
+`not_reviewed`, not Jev-approved; previous review records remain unchanged.
+
+[Run the chain](#installation) · [How jev works](#astra-and-jev) ·
+[Creation story](#the-morning-of-january-20-2025) · [Older films](docs/showcase/README.md)
+
+## OpenAI Mathematics in 3D: A Frontier for the Zeros
+
+Primes become sculptural zeta landscapes. A loop around a sampled zero winds
+once in the image plane. The camera then travels through the manuscript's
+comparison estimates and reciprocal-L continuation argument, with LaTeX at
+each step and the strict 7/8 frontier kept visible.
+
+**221.03 seconds, rendered on GitHub Actions at 720p/30 fps.** Astra source
+audits are retained. The saved scene was rendered with zero model calls and
+retains `not_reviewed` status; Jev was off.
+
+[![The numerical zeta landscape and the manuscript's zero-free frontier](docs/assets/quasi-riemann-film-poster.png)](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4)
+
+[Watch the complete film](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4) ·
+[Get the Astra bundle](https://github.com/HarleyCoops/Math-To-Manim/releases/tag/v2.0.0) ·
+[View the rendered frames](docs/assets/quasi-riemann-film-contact-sheet.png) ·
+[Read the episode and scope](papers/quasi-riemann/README.md)
+
+The film illustrates the manuscript's reported result. The full Riemann
+hypothesis remains open; this project has not independently verified the
+complete proof or Lean artifacts.
+
+## OpenAI Mathematics in 3D: The Shape and Its Shadow
+
+A coral cube reveals its cyan polar octahedron. Eight exact tetrahedra earn the
+volume product $32/3$; reciprocal stretches preserve it. The camera then follows
+the manuscript's tilted analytic lens, feasible simplices and integrated-volume
+argument, flying into the LaTeX terms before returning to the full inequality.
+
+**179.8 seconds, rendered on GitHub Actions at 720p/30 fps.** Codex SDK / GPT-6
+Astra authoring and evidence audits; Jev explicitly off for this pilot.
+
+[![An isolated gold tetrahedron explains the octahedron's exact volume](docs/showcase/assets/mahler-film.gif)](docs/showcase/assets/mahler-film.mp4)
+
+[Watch the complete movie](docs/showcase/assets/mahler-film.mp4) ·
+[See the rendered frames](docs/showcase/assets/mahler-contact-sheet.png) ·
+[Read the episode and review scope](papers/mahler/README.md) ·
+[Inspect the scene](papers/mahler/scene.py)
+
+The all-dimensional theorem and reported formalization are attributed manuscript
+claims. The film explains the route; it does not independently validate the proof.
+
+## The New Film: Every Orbit Is a Great Circle
+
+A planet's position traces an ellipse, but its velocity traces a circle. Lift
+the velocity circles of every orbit with one energy onto a sphere and each one
+becomes a great circle through the same two points. An orbit's eccentricity is
+the sine of its circle's tilt, a head-on fall toward the star is the circle
+through the north pole, and changing an orbit's shape at fixed energy is a
+rotation of the sphere.
+
+$$
+\vec v=\frac{GM}{h}\,(-\sin\theta,\;e+\cos\theta),\qquad e=\sin\alpha .
+$$
+
+Earth's circle tilts 0.96°; Halley's comet's tilts 75.3°.
+
+**166 seconds, rendered at 1080p and 60 fps.**
+
+[![Velocity circles lift onto a glass sphere and become great circles hinged on two gold points](docs/showcase/assets/every-orbit-great-circle.gif)](docs/showcase/assets/every-orbit-great-circle.mp4)
+
+[Watch the full movie](docs/showcase/assets/every-orbit-great-circle.mp4) ·
+[View the contact sheet](docs/showcase/assets/every-orbit-great-circle-contact-sheet.png) ·
+[Inspect the Manim source](examples/mythos/every_orbit_great_circle.py) ·
+[Read the production record](docs/showcase/every-orbit-great-circle/README.md) ·
+[Production request](docs/prompts/every-orbit-great-circle.md)
+
+### How it was made
+
+**A Claude session was the model inside the Mythos six-agent chain.** The
+Mythos harness builds a prompt for each stage: intent, knowledge map,
+curriculum, math dossier, shot list and scene spec. Each prompt holds the stage
+charter, the previous stage's JSON and the Cinematic Charter. The session
+answered every prompt and then wrote the Manim scene. The harness's own checks
+judged each answer: `validate_stage_artifact`, the versioned run manifest and
+the static scene checks (AST, LaTeX fragments and charter lint).
+[`scripts/operate_mythos_chain.py`](scripts/operate_mythos_chain.py)
+runs the chain this way for any operator. It writes the next stage's exact
+prompt, waits for the reply, validates it and records the run.
+
+**The session reviewed its own renders.** Four passes over contact sheets and
+full-resolution crops changed the scene. The drawings got larger, the camera
+gained a 3× dive into α, and a right triangle now shows why
+$R^2=d^2+p_0^2$. Three defects that only appear at 1080p were fixed: seams in
+the rings, banding in the glows and faceted highlights. The six stage artifacts
+are unchanged; each revision and the frame that prompted it is logged in
+[`08_review.json`](docs/showcase/every-orbit-great-circle/08_review.json).
+
+**The lighting is computed in the scene.** Manim's built-in shading is off.
+Every frame, the glass sphere's 2,592 faces get key light, a soft sheen and a
+faint Fresnel term from the true camera position. The sharp highlight and the
+rim glow are smooth layers that face the camera. Each great circle is split
+into the arcs in front of the glass and the arcs behind it, so the near half of
+the glass veils the far half. Planets move by Kepler's equation, so they speed
+up near the star and slow down far from it.
+
+**The numbers are tested.**
+[`tests/test_every_orbit_great_circle.py`](tests/test_every_orbit_great_circle.py)
+checks Kepler timing, the velocity circle, equal energy across the family, the
+two shared points, the lift to great circles and every angle quoted on screen.
+The film was rendered with Manim in parallel animation ranges and joined
+without re-encoding. FFprobe and a full FFmpeg decode verified the result. No Astra or
+Jev calls were made.
+
+## Morse Theory On A Torus
+
+A horizontal plane rises through an upright torus. The included surface changes
+from a disk to a cylinder, then a punctured torus, and finally a closed torus.
+Four critical points explain when those changes happen:
+
+$$
+M_a=\{p\in T^2:h(p)\le a\},\qquad
+\chi(T^2)=m_0-m_1+m_2=1-2+1=0.
+$$
+
+The film uses a genuine Morse height with isolated critical points, rather than
+the degenerate height of a horizontal donut. The colored object is the surface
+below the scanning plane; it is not a volume of water.
+
+**The complete 98-second movie is rendered and stitched at 720p, 30 fps.**
+
+[![Morse theory on a torus — selected moments](docs/showcase/assets/astra-morse-torus.gif)](docs/showcase/assets/astra-morse-torus.mp4)
+
+[Watch the full movie](docs/showcase/assets/astra-morse-torus.mp4) ·
+[View the contact sheet](docs/showcase/assets/astra-morse-torus-contact-sheet.png) ·
+[Inspect the Manim source](examples/astra/morse_torus.py) ·
+[Read the production record](docs/showcase/astra-morse-torus/README.md) ·
+[Production request](docs/prompts/astra-morse-torus.md)
+
+The GIF shows selected moments. The full MP4 decoded without errors and its
+resolution, frame rate, and duration were checked with FFprobe. At the user's
+request, the final candidate was rendered locally with **no further model/API
+calls**. Earlier Jev verdicts are preserved; the final film is **not Jev-approved**.
+
+## Astra And Jev
+
+The diagram below documents the optional **gated** mode. Default advisory mode
+records one Jev evaluation per checkpoint and continues without repair loops.
+
+```mermaid
+flowchart TD
+    Q[Your mathematics or physics question] --> B[Astra: learner and prerequisite brief]
+    B --> A1[Astra: evidence audit]
+    A1 --> J1{jev: scope and teaching gate}
+    J1 -- revise --> B
+    J1 -- pass --> M[Astra: mathematical dossier and tool checks]
+    M --> A2[Astra: mathematical evidence audit]
+    A2 --> J2{Jev: mathematical evidence gate}
+    J2 -- revise --> M
+    J2 -- pass --> S[Astra: geometry, camera and LaTeX storyboard]
+    S --> A3[Astra: storyboard audit]
+    A3 --> J3{jev: visual argument and notation gate}
+    J3 -- revise --> S
+    J3 -- pass --> C[Astra: complete Manim scene]
+    C --> V[Static source checks]
+    V --> P[Manim: real final-frame execution probe]
+    P --> A4[Astra: source and probe audit]
+    A4 --> J4{jev: code and storyboard fidelity}
+    J4 -- revise --> C
+    J4 -- pass --> R[Local Manim render and frame extraction]
+    R --> A5[Astra: frame inspection and text observations]
+    A5 --> J5{Jev: text observations of rendered frames}
+    J5 -- math defect --> M
+    J5 -- visual defect --> S
+    J5 -- implementation defect --> C
+    J5 -- pass --> F[Accepted film, evidence and run manifest]
+    classDef author fill:#102c46,stroke:#41d6c3,color:#f2f7ff
+    classDef judge fill:#34234c,stroke:#c69aff,color:#f2f7ff
+    classDef output fill:#453617,stroke:#ffd166,color:#fff5d6
+    class B,M,S,C author
+    class J1,J2,J3,J4,J5 judge
+    class R,F output
+```
+
+| Checkpoint | What Astra produces | What jev must check |
+|---|---|---|
+| Brief | Learner, prerequisites, definitions, scope and acceptance criteria | Does the proposed explanation answer the question at the right level? |
+| Mathematics | Derivations, hypotheses, parametrizations, references and numerical checks | Does the text evidence support explicit domains and documented formula checks? |
+| Storyboard | Timed shots, surface geometry, camera moves, color semantics and exact formulas | Do the pictures teach the argument? Can the notation be read? |
+| Scene | Complete Python scene | Does the implementation preserve the checked mathematics and shot plan? |
+| Render | MP4 and sampled frames | Do Astra’s frame observations support readable formulas and intended geometry? |
+
+Each gate has two parts: a fresh **Astra evidence audit**, followed by a real
+**TypeSafe Jev** request. Jev receives the candidate and the audit as text and
+returns typed **Score**, **Noul**, and **Choice** answers. It does not receive
+images: Astra inspects the rendered frames and supplies explicit observations.
+
+Two focused Score questions require an expected score of at least **3.2/4** and
+confidence of **0.65**. Evidence sufficiency must be at least **0.8** and blocking
+defect probability at most **0.2**. Astra's unresolved blockers also prevent
+approval. Choice routes repairs to the earliest responsible role; uncertain
+routing stays at the current stage. Repairs invalidate downstream approvals.
+
+These are initial engineering thresholds, not calibrated correctness guarantees
+or formal proofs. Jev evaluates supplied evidence; it does not independently
+prove the mathematics. API failures stop the run without an Astra substitute.
+See [the Jev contract](docs/JEV.md) for the exact gates and evidence handling.
+
+The [detailed design map](docs/JEV_DESIGN_MAP.md) covers 16 artistic and teaching
+decisions, from geometric reveals to LaTeX hierarchy and local-to-global camera
+movement. Jev can also select focused investigations: check a formula, clarify a definition,
+inspect source or frames, or replan camera and label layout. Our CLI executes the
+choice through Astra and records concrete recommendations; Jev itself does not
+run tools or write prose. Low-confidence selections do not execute.
+
+```mermaid
+flowchart LR
+    D[Uncertainty or rejected gate] --> J{Jev: choose investigation}
+    J --> T[CLI dispatches an allowed Astra tool task]
+    T --> E[Specific findings and evidence]
+    E --> R[Astra revises candidate]
+    R --> G[Fresh audit and Jev gate]
+```
+
+```bash
+math-to-manim recommend runs/astra/<run-id> --stage render --design --execute
+```
+
+### What Jev Decides
+
+| Decision | TypeSafe primitive | What the chain does with it |
+|---|---|---|
+| Is the checkpoint supported by evidence? | Two `Score` answers plus `Noul` checks | Advance only when the readiness policy passes and Astra has no unresolved blockers |
+| Where should a repair start? | `Choice` | Route to brief, mathematics, storyboard or scene; invalidate downstream approvals |
+| Which investigation would help? | `Choice` over allowed actions | Dispatch a focused Astra tool session when confidence is sufficient |
+| Where can the film improve? | Sixteen independent `Score` questions | Record supported strengths, concrete improvement opportunities and evidence gaps |
+
+The artistic map examines **dramatic questions and geometric reveals**,
+**definition order and reading time**, **LaTeX hierarchy and mathematical
+integrity**, **symbol-to-geometry links**, **purposeful camera movement and
+local-to-global views**, **depth and overlay clearance**, **surface/volume/boundary
+distinctions**, **topology changes**, **color semantics**, and **an earned finale**.
+Every rubric specifies its evidence, repair action and verification criterion.
+
+Available investigations are `check_math`, `clarify_definitions`, `inspect_scene`,
+`inspect_frames`, and `replan_camera`, plus `no_action`. Jev chooses among these;
+our CLI executes them through Astra. For example, a camera investigation can
+recommend an exact target, zoom and label position, while a definition check can
+identify the first unexplained symbol and propose replacement wording. These
+written recommendations come from Astra, not from Jev.
+
+A rejected gate may receive one additional investigation and a new Jev decision
+on the expanded evidence. Both decisions remain recorded. Mathematical blockers
+cannot be overruled by an artistic score. Low-confidence action choices do not
+execute, and advisory design scores do not silently change an approved film.
+Source changes still require a new render and review.
+
+```bash
+# Inspect every decision, evidence requirement and repair mapping offline.
+math-to-manim design-map
+math-to-manim design-map --stage render
+
+# Ask real Jev to evaluate the design and select a focused investigation.
+math-to-manim recommend runs/astra/<run-id> --stage render --design --execute
+```
+
+Each live evaluation retains its input, raw TypeSafe response, interpreted
+scores and action selection. New calls also retain **HTTP receipts**: UTC time,
+endpoint, status and request-body hash, with credentials excluded. Astra tool
+traces and recommendations are separate, so model roles remain inspectable.
+See the [complete design and optimization map](docs/JEV_DESIGN_MAP.md) and
+[API/evidence contract](docs/JEV.md).
+
+## Installation
+
+The [Astra bundle](https://github.com/HarleyCoops/Math-To-Manim/releases/tag/v2.0.0)
+includes the wheel, source distribution, locked runtime manifests, finished
+Quasi-Riemann film, retained scene and checksums. Follow the
+[bundle guide](docs/ASTRA_BUNDLE.md), or install its wheel directly:
+
+```bash
+python -m pip install "math-to-manim[astra] @ https://github.com/HarleyCoops/Math-To-Manim/releases/download/v2.0.0/math_to_manim-2.0.0-py3-none-any.whl"
+math-to-manim setup
+math-to-manim login
+math-to-manim doctor --review-mode off
+math-to-manim run "Explain a mathematical idea through 3D geometry" -q m --review-mode off
+```
+
+This pathway uses Codex ChatGPT login and independent Astra audits. Install
+Python 3.10+, Node.js 18+ and npm, plus Manim's system dependencies, FFmpeg
+and LaTeX. `setup` installs the locked SDK in a user-writable cache; runs go
+under `runs/astra/` in the current working directory. Jev-off mode needs no
+TypeSafe credential.
+
+### Render system setup
+
+The Python `render` extra installs Manim; it does not install system TeX tools
+or FFmpeg. Manim's default `MathTex`/`Tex` path needs **both `latex` and
+`dvisvgm` on PATH**, plus the packages used by its TeX template. Start with
+the [official Manim installation guide](https://docs.manim.community/en/stable/installation/uv.html).
+Installing the two binaries alone does not prove every formula or template can compile.
+
+**macOS:** a compact system installation is
+[Homebrew BasicTeX](https://formulae.brew.sh/cask/basictex). With Homebrew
+already installed:
+
+```bash
+brew install cairo pkg-config ffmpeg
+brew install --cask basictex
+# Open a new terminal, or add the MacTeX binary link for this shell:
+export PATH="/Library/TeX/texbin:$PATH"
+sudo tlmgr update --self
+sudo tlmgr install dvisvgm standalone preview varwidth
+```
+
+BasicTeX uses TeX Live's package manager. The [TUG tlmgr guide](https://www.tug.org/texlive/tlmgr.html)
+explains updates and why system MacTeX installations use `sudo`.
+`standalone`, `preview`, and `varwidth` provide the small standalone-document
+support; these four additions are a starting point, not Manim's complete
+default template package set. Install the additional packages listed in the
+Manim guide if its default preamble reports missing files, or use full MacTeX.
+
+For a user-owned installation without `sudo`, follow
+[TinyTeX's official instructions](https://yihui.org/tinytex/#installation).
+On macOS, `--no-path` avoids the installer's request to modify system PATH:
+
+```bash
+curl -sL "https://tinytex.yihui.org/install-bin-unix.sh" | sh -s -- --no-path
+export PATH="$HOME/Library/TinyTeX/bin/universal-darwin:$PATH"
+tlmgr install dvisvgm standalone preview varwidth
+```
+
+Use the actual binary directory beneath `~/Library/TinyTeX/bin` if your
+architecture differs. Add it to your shell startup configuration for future
+sessions. TinyTeX also needs the Manim template packages described above;
+Manim does not automatically install missing TeX packages.
+
+**Windows:** Manim recommends [MiKTeX](https://miktex.org/howto/install-miktex).
+Choose its per-user installation, then use MiKTeX Console to install missing
+template packages and `dvisvgm`. Install FFmpeg separately using the
+[downloads linked by FFmpeg](https://ffmpeg.org/download.html).
+Ensure the selected TeX binary directory and FFmpeg binary directory are on
+your user PATH and restart PowerShell. Find the actual locations with
+`Get-Command latex,dvisvgm,ffmpeg`; a common system MiKTeX location is
+`C:\Program Files\MiKTeX\miktex\bin\x64`, but per-user locations differ.
+TeX Live and TinyTeX are alternatives; TinyTeX normally installs beneath
+`%APPDATA%\TinyTeX` (see its official installation page).
+
+**Linux:** install TeX Live through your distribution package manager.
+The [Manim guide](https://docs.manim.community/en/stable/installation/uv.html)
+documents full TeX Live packages for Debian/Ubuntu and Fedora. For this
+repository's smaller Debian/Ubuntu setup, the existing
+[`requirements-system.txt`](requirements-system.txt) lists Cairo/Pango build
+dependencies, FFmpeg, `dvisvgm`, and the LaTeX/font packages;
+[`scripts/bootstrap-render.sh`](scripts/bootstrap-render.sh) installs that list
+and creates a render venv. Review it before running it. Other distributions
+need equivalent packages. TinyTeX's Linux installer supports a user-owned
+`~/.TinyTeX`; put its binaries or the user-local symlinks on PATH.
+
+Verify from the same terminal and active Python environment used for a run:
+
+```bash
+python -m manim --version
+ffmpeg -version
+latex --version
+dvisvgm --version
+math-to-manim-mythos doctor
+```
+
+Mythos doctor exits nonzero when either TeX binary is missing and explicitly
+reports that MathTex/Tex cannot render. For a scene using only plain `Text`
+and geometry, `math-to-manim-mythos doctor --no-latex` checks the remaining
+requirements while still reporting unavailable TeX rendering. It does not
+disable LaTeX inside scenes. Scene generation without `--render` needs no
+render toolchain.
+
+If a render reports a named missing executable (such as
+`FileNotFoundError: ... 'latex'`), the Mythos harness records an environment
+error and stops with **zero model repair calls**. The CLI exits nonzero; API
+jobs are marked failed. Inspect `manifest.json` (`render_error`) and the
+recorded render log, install/fix PATH, then rerender the saved scene.
+Ordinary scene syntax/API errors retain the existing repair loop.
+
+### Install from source
+
+Install Python 3.10+, Node.js 18+, Manim's system dependencies, FFmpeg and LaTeX.
+Then, in the repository:
+
+```bash
+python -m venv .venv
+# Activate .venv with the command for your shell.
+pip install -e ".[dev,render]"
+npm ci
+npx codex login
+# Save TYPESAFE_API_KEY=your-key in the git-ignored .env.local file.
+math-to-manim doctor
+math-to-manim run "Explain a new mathematical or physical idea" -q h
+```
+
+The pinned Codex SDK and CLI are **0.156.1**. Astra uses **GPT-6 Astra**; TypeSafe SDK **0.7.2** calls **Jev 1.13.0**.
+Use `--effort high`, `xhigh`, or `max`; `high` is the default. `-q h` renders
+1080p at 60 fps with Manim's high quality preset. `--max-revisions 6` bounds the
+repair loop. `--no-render` stops after the checked scene and produces no film.
+
+```bash
+math-to-manim resume runs/astra/<run-id>
+math-to-manim runs
+```
+
+Astra authentication uses cached Codex login. TypeSafe uses `TYPESAFE_API_KEY`
+from the environment or repository `.env.local`. API keys are removed from
+child environments. The SDK's built-in read only permission mode applies to
+Astra author and audit sessions; the trusted Python harness writes returned artifacts
+and launches the local renderer. **Local rendering is not a container security
+boundary.** Static checks reduce accidental misuse but do not make arbitrary
+Python safe. See [the architecture](docs/ASTRA_PIPELINE.md).
+
+## Run Artifacts
+
+Each `runs/astra/<run-id>/` records the original request, accepted artifacts,
+all candidate attempts, independent reviews, SDK thread IDs, tool traces,
+render logs, sampled frames and a completion manifest. SHA-256 hashes bind
+reviews to their supplied files. Resume reuses only matching accepted stages
+and always rerenders and rechecks the film before completion.
+
+## The Morning Of January 20, 2025
+
+I started Math To Manim on the morning of January 20, 2025, the day
+[DeepSeek R1 was released](https://huggingface.co/deepseek-ai/DeepSeek-R1/commit/5a56bdbde75a16bdfbf3a8e9c852be3dfcfb8eef).
+GRPO made me wonder how far **recursive self reasoning** could go: could a model
+revisit its own argument, discover what it skipped, and explain it better?
+
+The repository was created at 11:04:50 UTC; the
+[earliest original commit](https://github.com/HarleyCoops/Math-To-Manim/commit/09a2f22ec02b0374d38373d28f76c5764a1e9a2e)
+was authored at 04:24:50 Mountain time, twenty minutes later. That intuition
+became a practical loop: discover prerequisites, teach them forward, inspect
+the result, and revise. It remains a research hypothesis about learning.
+
+Today's Astra/jev loop repairs artifacts at inference time. **It does not update
+model weights.** The separate [RL experiment](docs/PRIME_INTELLECT_RL.md) and
+[visual improvement environment](environments/m2m2_visual_improvement/README.md)
+explore learning across attempts. Neither measured training gains nor recursive
+self improvement is claimed here.
+
+[Repository screenshot](docs/assets/math-to-manim-root.png) ·
+[R1 release screenshot](docs/assets/deepseek-r1-release.png). Both were captured
+September 24, 2026, not on release morning.
+
+## Testing
+
+```bash
+python -m pytest
+python -m pytest tests/test_astra.py
+python -m pytest tests/test_argon.py tests/test_score_sde_consistency.py
+```
+
+Offline tests verify gate failures, backward repair, invalidated approvals,
+evidence references, credential filtering, source checks and resume behavior.
+Live runs have separate manifests; a passing unit suite does not prove that a
+film has been generated.
+
+## Provider Pipelines And Films
+
+The provider-specific implementations remain available under their explicit
+commands: `math-to-manim-argon` (`m2m-argon`), `math-to-manim-mythos`,
+`math-to-manim-sol`, `math-to-manim-grok`, `math-to-manim-glm`, and
+`math-to-manim-mimo`. They do not orchestrate the Astra chain. The primary
+`math-to-manim` and `m2m` commands run Astra.
+
+The [motion showcase](docs/showcase/README.md) retains the older films.
+Legacy service and pipeline references remain in [the documentation](docs/).
+
+## License
+
+[MIT](LICENSE).
