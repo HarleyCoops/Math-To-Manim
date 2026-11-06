@@ -14,9 +14,9 @@ unchanged. A completed local render is not a Jev approval.
 Jev is TypeSafe's separate System One model, **jev-1.13.0**, accessed with
 **typesafe-sdk 0.7.1** and `TYPESAFE_API_KEY`. It is not an Astra persona.
 Earlier Sol reviewer code used the name “jev” incorrectly; it is now named
-`sol/astra_reviewer.py`, with the explicit `--evaluator astra_review` option.
+`src/sol/astra_reviewer.py`, with the explicit `--evaluator astra_review` option.
 Historical review artifacts retain their original records; they are not
-TypeSafe evaluations. The primary `astra/jev.py` implementation is authoritative.
+TypeSafe evaluations. The primary `src/astra/jev.py` implementation is authoritative.
 
 At every brief, mathematics, storyboard, scene and render checkpoint:
 

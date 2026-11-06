@@ -1,38 +1,53 @@
-"""Grok-native chain: intent through composer, then local verify and render."""
+"""Argon Google ADK (`google-adk` + `google-genai`) 6-stage reasoning chain harness."""
 
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from grok.charters import STAGES, VERIFY_SCENE_TOOL, load_charter
-from grok.client import XAIClient, XAIClientError
-from grok.jsonutil import extract_json_object, extract_scene_source
-from grok.models import ARTIFACT_NAMES, RunManifest, RunRequest
-from grok.offline import write_offline_bundle
-from grok.tools import verify_scene, write_stills
-from grok.validation import normalize_reverse_tree, validate_run, verify_scene_report
+from argon.charters import STAGES, load_charter
+from argon.client import ArgonClient, ArgonClientError
+from argon.jsonutil import extract_json_object, extract_scene_source
+from argon.models import ARTIFACT_NAMES, RunManifest, RunRequest
+from argon.offline import write_offline_bundle
+from argon.tools import execute_math_check, verify_scene
+from argon.validation import normalize_reverse_tree, validate_run, verify_scene_report
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = PACKAGE_ROOT.parent if PACKAGE_ROOT.name == "src" else PACKAGE_ROOT
 
 
 def default_runs_dir() -> Path:
-    return REPO_ROOT / "runs" / "grok"
+    return REPO_ROOT / "runs" / "argon"
 
 
-class GrokHarness:
+def _resolve_manim_cmd() -> list[str]:
+    override = os.getenv("M2M_MANIM")
+    if override:
+        return [override]
+    manim_bin = shutil.which("manim")
+    if manim_bin:
+        return [manim_bin]
+    return [sys.executable, "-m", "manim"]
+
+
+class ArgonHarness:
+    """Runs the 6-stage Argon Google ADK chain: intent -> cartographer -> curriculum -> math-director -> cinematographer -> composer, then static verify & Manim render."""
+
     def __init__(
         self,
         *,
         runs_dir: Path | None = None,
-        client: XAIClient | None = None,
+        client: ArgonClient | None = None,
     ):
         self.runs_dir = Path(runs_dir) if runs_dir else default_runs_dir()
-        self.client = client or XAIClient()
+        self.client = client or ArgonClient()
 
     def _create_run_dir(self, prompt: str) -> Path:
         stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
@@ -64,7 +79,7 @@ class GrokHarness:
             quality=request.quality,
             image=request.image,
             created_utc=now,
-            artifacts={"validation": "validation.json", "scene": "grok_scene.py"},
+            artifacts={"validation": "validation.json", "scene": "argon_scene.py"},
             status_detail={"validation": "pending"},
         )
         manifest_path = run_dir / "manifest.json"
@@ -98,11 +113,11 @@ class GrokHarness:
                 raise RuntimeError("run bundle validation failed: " + "; ".join(failures))
 
             if request.render and not request.offline:
-                video_path = self._render(run_dir, scene_name or "GrokOfflineStory", request.quality)
+                video_path = self._render(run_dir, scene_name or "ArgonOfflineJourney", request.quality)
 
-            report = verify_scene_report((run_dir / "grok_scene.py").read_text(encoding="utf-8"))
+            report = verify_scene_report((run_dir / "argon_scene.py").read_text(encoding="utf-8"))
             (run_dir / "validation.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-            manifest.scene_file = "grok_scene.py"
+            manifest.scene_file = "argon_scene.py"
             manifest.scene_name = scene_name
             manifest.video_path = video_path
             manifest.status = "completed"
@@ -120,33 +135,36 @@ class GrokHarness:
 
     def _run_live(self, run_dir: Path, request: RunRequest, manifest: RunManifest) -> None:
         if not self.client.api_key:
-            raise XAIClientError("XAI_API_KEY is not set")
+            raise ArgonClientError("GEMINI_API_KEY (or GOOGLE_API_KEY) is not set")
         prior: dict[str, dict] = {}
         image_path = Path(request.image) if request.image else None
         if image_path is not None and not image_path.is_file():
-            raise XAIClientError(f"image file not found: {request.image}")
+            raise ArgonClientError(f"image file not found: {request.image}")
+
+        tool_registry = {
+            "execute_math_check": execute_math_check,
+            "verify_scene": verify_scene,
+        }
 
         for stage in STAGES:
             charter = load_charter(stage.charter_file)
             user_text = _stage_prompt(stage.name, request.prompt, prior)
-            tool_choice = "required" if stage.name == "math-director" else None
-            handlers = {"verify_scene": verify_scene} if stage.name == "composer" else None
+            stage_tools = [tool_registry[name] for name in stage.tools if name in tool_registry]
             result = self.client.complete(
+                stage_name=stage.name,
                 instructions=charter,
                 text=user_text,
-                tools=stage.tools,
+                tools=stage_tools,
                 image_path=image_path if stage.name == "intent" else None,
-                tool_choice=tool_choice,
-                function_handlers=handlers,
             )
             payload = result.payload if result.payload and "raw_text" not in result.payload else None
             if payload is None and result.text.strip():
                 try:
                     payload = extract_json_object(result.text)
                 except (ValueError, json.JSONDecodeError) as exc:
-                    raise XAIClientError(f"stage {stage.name} did not return JSON") from exc
+                    raise ArgonClientError(f"stage {stage.name} did not return JSON") from exc
             if not isinstance(payload, dict) or not payload:
-                raise XAIClientError(f"stage {stage.name} did not return JSON")
+                raise ArgonClientError(f"stage {stage.name} did not return JSON")
             if stage.name == "cartographer":
                 payload = normalize_reverse_tree(payload)
             artifact_path = run_dir / stage.artifact
@@ -157,18 +175,17 @@ class GrokHarness:
                 try:
                     source = extract_scene_source(payload, result.text, result.tool_calls)
                 except ValueError as exc:
-                    raise XAIClientError("composer did not return grok_scene.py source") from exc
-                (run_dir / "grok_scene.py").write_text(source, encoding="utf-8")
+                    raise ArgonClientError("composer did not return argon_scene.py source") from exc
+                (run_dir / "argon_scene.py").write_text(source, encoding="utf-8")
 
-            stills = write_stills(run_dir, result.images)
             trace = {
                 "stage": stage.name,
+                "sdk": "google-adk",
                 "model": self.client.model,
                 "reasoning_effort": self.client.reasoning_effort,
-                "tools_requested": [tool.get("type") or tool.get("name") for tool in stage.tools],
+                "tools_requested": list(stage.tools),
                 "tool_calls": result.tool_calls,
                 "thinking": result.thinking,
-                "stills": stills,
             }
             (run_dir / "traces" / f"{stage.name}.json").write_text(
                 json.dumps(trace, indent=2),
@@ -186,26 +203,28 @@ class GrokHarness:
                 }
             )
             self._write_manifest(run_dir / "manifest.json", manifest)
-            print(f"  [grok] {stage.name:16} -> {stage.artifact}")
+            print(f"  [argon-adk] {stage.name:16} -> {stage.artifact}")
 
-        scene_source = (run_dir / "grok_scene.py").read_text(encoding="utf-8")
+        scene_source = (run_dir / "argon_scene.py").read_text(encoding="utf-8")
         (run_dir / "validation.json").write_text(
             json.dumps(verify_scene_report(scene_source), indent=2),
             encoding="utf-8",
         )
         review = {
             "offline": False,
+            "sdk": "google-adk + google-genai",
             "model": self.client.model,
             "checks": ["artifact contract", "reverse tree", "python compilation"],
             "rendered": False,
         }
         (run_dir / "review.json").write_text(json.dumps(review, indent=2), encoding="utf-8")
-        manifest.attempts.append({"attempt": 0, "mode": "xai-responses", "status": "completed"})
+        manifest.attempts.append({"attempt": 0, "mode": "google-adk", "status": "completed"})
 
     def _repair_scene(self, run_dir: Path, request: RunRequest, failures: list[str]) -> None:
-        source = (run_dir / "grok_scene.py").read_text(encoding="utf-8")
+        source = (run_dir / "argon_scene.py").read_text(encoding="utf-8")
         result = self.client.complete(
-            instructions=load_charter("grok-composer.md"),
+            stage_name="composer-repair",
+            instructions=load_charter("argon-composer.md"),
             text=(
                 "Repair this Manim scene. Keep the class name, ThreeDScene contract, "
                 "and camera rule. Return JSON with a source field containing the "
@@ -214,14 +233,13 @@ class GrokHarness:
                 + "\n\nCURRENT FILE:\n"
                 + source
             ),
-            tools=(VERIFY_SCENE_TOOL,),
-            function_handlers={"verify_scene": verify_scene},
+            tools=(verify_scene,),
         )
         try:
             repaired = extract_scene_source(result.payload, result.text, result.tool_calls)
         except ValueError as exc:
-            raise XAIClientError("composer repair did not return grok_scene.py source") from exc
-        (run_dir / "grok_scene.py").write_text(repaired, encoding="utf-8")
+            raise ArgonClientError("composer repair did not return argon_scene.py source") from exc
+        (run_dir / "argon_scene.py").write_text(repaired, encoding="utf-8")
         (run_dir / "traces" / "repair.json").write_text(
             json.dumps({"tool_calls": result.tool_calls, "thinking": result.thinking}, indent=2),
             encoding="utf-8",
@@ -229,24 +247,31 @@ class GrokHarness:
 
     @staticmethod
     def _render(run_dir: Path, scene_name: str, quality: str) -> str:
-        manim = shutil.which("manim")
-        if not manim:
-            raise RuntimeError("manim was not found; pip install -e '.[render]'")
+        cmd_prefix = _resolve_manim_cmd()
         media = run_dir / "media"
         command = [
-            manim,
+            *cmd_prefix,
             f"-q{quality}",
             "--media_dir",
             str(media),
-            str(run_dir / "grok_scene.py"),
+            str(run_dir / "argon_scene.py"),
             scene_name,
         ]
-        completed = subprocess.run(command, cwd=run_dir, capture_output=True, text=True, check=False)
+        env = dict(os.environ)
+        miktex_bin = r"C:\Program Files\MiKTeX\miktex\bin\x64"
+        if os.path.isdir(miktex_bin) and miktex_bin.lower() not in env.get("PATH", "").lower():
+            env["PATH"] = env.get("PATH", "") + os.pathsep + miktex_bin
+        for secret_var in ("GEMINI_API_KEY", "GOOGLE_API_KEY", "ARGON_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"):
+            env.pop(secret_var, None)
+        completed = subprocess.run(command, cwd=run_dir, env=env, capture_output=True, text=True, check=False)
         if completed.returncode != 0:
             raise RuntimeError((completed.stderr or completed.stdout)[-4000:])
-        videos = sorted(media.rglob("*.mp4"))
+        videos = [
+            p for p in sorted(media.rglob("*.mp4"))
+            if "partial_movie_files" not in p.parts
+        ]
         if not videos:
-            raise RuntimeError("manim exited 0 but wrote no mp4")
+            raise RuntimeError("manim exited 0 but wrote no final mp4")
         return str(videos[-1])
 
 
@@ -254,8 +279,8 @@ def _stage_prompt(stage: str, prompt: str, prior: dict[str, dict]) -> str:
     dossier = json.dumps(prior, indent=2) if prior else "{}"
     return (
         f"User request:\n{prompt}\n\n"
-        f"You are the {stage} stage. Read the charter. Return one JSON object "
-        "with exactly the keys the charter names.\n"
+        f"You are the {stage} stage in the Argon Google ADK chain. Read the charter. "
+        "Return one JSON object with exactly the keys the charter names.\n"
         "If you write the scene, also include a source field with the complete "
         "Python file, or a fenced python block.\n\n"
         f"Upstream artifacts:\n{dossier}\n"

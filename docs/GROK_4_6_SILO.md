@@ -8,12 +8,12 @@ code and keep their own CLIs.
 
 | Silo | Native runtime | Entry point |
 |---|---|---|
-| `grok/` | xAI Responses API, model `grok-4.6` | `math-to-manim-grok`; MCP via `math-to-manim serve-mcp` |
-| `mythos/` | Anthropic charter chain | `math-to-manim` |
-| `sol/` | Codex CLI + GPT-5.6 Sol | `math-to-manim-sol` |
+| `src/grok/` | xAI Responses API, model `grok-4.6` | `math-to-manim-grok`; MCP via `math-to-manim serve-mcp` |
+| `src/mythos/` | Anthropic charter chain | `math-to-manim` |
+| `src/sol/` | Codex CLI + GPT-5.6 Sol | `math-to-manim-sol` |
 
 The Grok silo imports no Mythos prompt, backend, or harness, and no Sol
-client. It is not routed through `mythos/harness.py`.
+client. It is not routed through `src/mythos/harness.py`.
 
 ## Why the stages are cut this way
 
@@ -118,7 +118,7 @@ Every run contains:
 
 ## Custom bot
 
-Edit `grok/agents/*.md`. Those charters are the product: thinking contract,
+Edit `src/grok/agents/*.md`. Those charters are the product: thinking contract,
 allowed tools, JSON keys, forbidden moves. A custom bot for Manim explainer
 videos is a charter edit, not a new application.
 

@@ -4,11 +4,11 @@
 
 | Silo | Native runtime | Entry point |
 |---|---|---|
-| `mythos/` | Anthropic charter chain | `math-to-manim` |
-| `sol/` | Codex CLI / GPT-5.6 Sol | `math-to-manim-sol` |
-| `grok/` | xAI Responses API | `math-to-manim-grok` |
-| `glm/` | Z.ai chat/completions | `math-to-manim-glm` |
-| `mimo/` | **MiMo 2.6 tool calling** | `math-to-manim-mimo` |
+| `src/mythos/` | Anthropic charter chain | `math-to-manim` |
+| `src/sol/` | Codex CLI / GPT-5.6 Sol | `math-to-manim-sol` |
+| `src/grok/` | xAI Responses API | `math-to-manim-grok` |
+| `src/glm/` | Z.ai chat/completions | `math-to-manim-glm` |
+| `src/mimo/` | **MiMo 2.6 tool calling** | `math-to-manim-mimo` |
 
 The MiMo silo is an independent implementation of the complete Math-To-Manim
 outcome. It imports no Mythos prompt, backend, or orchestrator and does not

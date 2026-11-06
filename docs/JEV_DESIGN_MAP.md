@@ -311,6 +311,6 @@ math-to-manim recommend runs/astra/<run-id> --stage storyboard --design
 math-to-manim recommend runs/astra/<run-id> --stage render --design --execute
 ```
 
-Machine-readable decisions live in `astra/design.py`. Each invocation saves the
+Machine-readable decisions live in `src/astra/design.py`. Each invocation saves the
 request, raw TypeSafe answer, interpreted design map, selected action and any
 Astra investigation. API failure stops evaluation; no simulated answer is used.

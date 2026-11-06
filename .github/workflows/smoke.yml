@@ -6,14 +6,14 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
-        if: ${{ hashFiles('requirements.txt', 'pyproject.toml', 'setup.py') != '' }}
+        if: ${{ hashFiles('requirements/requirements.txt', 'pyproject.toml', 'setup.py') != '' }}
         with:
           python-version: '3.x'
       - name: pip install
-        if: ${{ hashFiles('requirements.txt') != '' }}
-        run: pip install -r requirements.txt
+        if: ${{ hashFiles('requirements/requirements.txt') != '' }}
+        run: pip install -r requirements/requirements.txt
       - name: pip install (pyproject)
-        if: ${{ hashFiles('requirements.txt') == '' && hashFiles('pyproject.toml') != '' }}
+        if: ${{ hashFiles('requirements/requirements.txt') == '' && hashFiles('pyproject.toml') != '' }}
         run: pip install .
       - uses: actions/setup-node@v7
         if: ${{ hashFiles('package.json') != '' }}

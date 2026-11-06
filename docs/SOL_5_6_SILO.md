@@ -6,8 +6,8 @@ The Codex-native chain runs independently of the other provider pipelines:
 
 | Silo | Native runtime | Entry point |
 |---|---|---|
-| `mythos/` | Anthropic charter chain | `math-to-manim` |
-| `sol/` | Six durable Codex specialist sessions using GPT-6 Astra | `math-to-manim-sol` |
+| `src/mythos/` | Anthropic charter chain | `math-to-manim` |
+| `src/sol/` | Six durable Codex specialist sessions using GPT-6 Astra | `math-to-manim-sol` |
 
 The Sol silo is not a calculator, web API, or adapter around Mythos. It is a
 parallel implementation of the complete Math-To-Manim outcome. It imports no
@@ -66,10 +66,10 @@ environment, and the repository-pinned Codex CLI:
 
 The dependency layers are explicit and independently inspectable:
 
-- `requirements-system.txt`: native build and render packages
-- `requirements.txt`: core development and offline tests
-- `requirements-render.txt`: development plus Manim
-- `requirements-sol.txt`: complete Python side of the Sol pipeline
+- `requirements/requirements-system.txt`: native build and render packages
+- `requirements/requirements.txt`: core development and offline tests
+- `requirements/requirements-render.txt`: development plus Manim
+- `requirements/requirements-sol.txt`: complete Python side of the Sol pipeline
 - `package.json` and `package-lock.json`: exact Codex CLI runtime
 
 The bootstrap script uses the local `.venv` and `node_modules` trees and links

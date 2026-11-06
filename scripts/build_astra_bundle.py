@@ -59,7 +59,7 @@ def build_bundle(root, dist, film_dir):
         f'packages/{sdist.name}': sdist.read_bytes(),
     }
     for name in ('package.json', 'package-lock.json'):
-        entries[f'runtime/{name}'] = (root / 'astra/node' / name).read_bytes()
+        entries[f'runtime/{name}'] = (root / 'src/astra/node' / name).read_bytes()
     for name in ('quasi-riemann-720p.mp4', 'quasi-riemann-contact-sheet.png',
                  'quasi-riemann-render-manifest.json', 'quasi-riemann-film-evidence.json'):
         entries[f'films/{name}'] = (film_dir / name).read_bytes()

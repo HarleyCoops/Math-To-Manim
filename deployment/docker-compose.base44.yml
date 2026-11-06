@@ -11,7 +11,7 @@ services:
       - BASE44_PUBLIC_HOST_SUFFIX=${BASE44_PUBLIC_HOST_SUFFIX}
     volumes:
       # Bind-mount the cloned source so edits appear live (uvicorn --reload).
-      - .:/app
+      - ..:/app
     ports:
       - "3000:3000"
     command: >

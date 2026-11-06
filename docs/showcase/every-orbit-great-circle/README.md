@@ -36,7 +36,7 @@ angles.
 
 ## How it was made
 
-This film is a run of the **Mythos six-agent chain** (`mythos/harness.py`)
+This film is a run of the **Mythos six-agent chain** (`src/mythos/harness.py`)
 with a Claude session as the model backend. For each stage the operator
 received the exact prompt the harness builds (the stage charter, the
 previous artifact, the JSON contract, and the Cinematic Charter as system

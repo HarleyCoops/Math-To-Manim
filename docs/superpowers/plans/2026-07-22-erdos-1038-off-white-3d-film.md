@@ -6,12 +6,12 @@
 
 **Architecture:** Save one self-contained source prompt and pass it to the independent `math-to-manim-sol` CLI. Sol performs the complete long-horizon reasoning, Manim authoring, rendering, frame inspection, and bounded Codex repair inside `runs/sol/`; repository-side work verifies the artifact bundle and packages only the accepted GIF and README feature.
 
-**Tech Stack:** GPT-5.6 Sol, Codex CLI cached ChatGPT login, `sol/`, Python 3.10+, pytest, Manim CE 0.19+, LaTeX, FFmpeg/ffprobe, Markdown.
+**Tech Stack:** GPT-5.6 Sol, Codex CLI cached ChatGPT login, `src/sol/`, Python 3.10+, pytest, Manim CE 0.19+, LaTeX, FFmpeg/ffprobe, Markdown.
 
 ## Global Constraints
 
 - Use `math-to-manim-sol` and `runs/sol/` only; never route through Mythos.
-- Do not modify or import `mythos/` prompts, agents, backends, orchestration, or GIF helpers.
+- Do not modify or import `src/mythos/` prompts, agents, backends, orchestration, or GIF helpers.
 - Do not add a Sol MCP, HTTP API, Responses API client, or API-key fallback.
 - Source mathematics is `runs/user-clones/erdos/1038/paper.tex` and `numerical_verifier.py`.
 - Every frame uses archival off-white near `#f3ecd8` and dark sepia near `#241a12`.
@@ -272,7 +272,7 @@ git commit -m "docs: add Sol prompt for Erdős 1038"
 ### Task 2: Verify the Sol Silo and Rehearse Offline
 
 **Files:**
-- Read: `sol/`, `docs/SOL_5_6_SILO.md`
+- Read: `src/sol/`, `docs/SOL_5_6_SILO.md`
 - Generate, do not commit: `runs/sol/<offline-run-id>/`
 
 **Interfaces:**

@@ -51,4 +51,4 @@ round-trips a fixture from the previous version to the new one.
 
 WAR-1532 named `src/hermes_learns_manim/prompts.py::manifest_template`.
 That package is not in this repository. The live writers are
-`mythos/manifest_schema.py` and `sol/manifest_schema.py`.
+`src/mythos/manifest_schema.py` and `src/sol/manifest_schema.py`.

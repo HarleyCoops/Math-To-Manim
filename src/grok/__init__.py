@@ -1,7 +1,7 @@
 """Grok-native Math-To-Manim silo.
 
-This package is independent of ``mythos/`` and ``sol/``. It talks to the
-xAI Responses API, reads charters from ``grok/agents/``, and writes
+This package is independent of ``src/mythos/`` and ``src/sol/``. It talks to the
+xAI Responses API, reads charters from ``src/grok/agents/``, and writes
 inspectable runs under ``runs/grok/``.
 """
 

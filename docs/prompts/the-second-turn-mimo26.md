@@ -1,6 +1,6 @@
 # THE SECOND TURN — MiMo 2.6 production prompt
 
-**Silo:** `mimo/` (MiMo 2.6 tool-calling chain)  
+**Silo:** `src/mimo/` (MiMo 2.6 tool-calling chain)
 **Film type:** pure three-dimensional space (no charts, no abstract lattices)  
 **Concept novelty:** Dirac belt / spinor double cover / π₁(SO(3)) ≅ ℤ/2 — **not present** in any showcase, example, or prompt in this repository as of the addition of this file.  
 **Method:** reverse knowledge tree (cartographer first, then forward curriculum).
@@ -197,7 +197,7 @@ Palette: near-black studio `#0b0d10`, bone highlight `#f2ead8`, vermilion belt `
 
 ## 7. MiMo 2.6 tool-calling contract (silo-native)
 
-This film is the flagship exercise of the `mimo/` chain. Each stage must call tools rather than only emitting free text:
+This film is the flagship exercise of the `src/mimo/` chain. Each stage must call tools rather than only emitting free text:
 
 | Stage | Tools |
 | --- | --- |

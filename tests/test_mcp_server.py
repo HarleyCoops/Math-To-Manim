@@ -72,8 +72,8 @@ def test_tool_can_be_called_through_mcp2_server():
 def test_mcp2_dependency_and_import_surface():
     root = Path(__file__).resolve().parents[1]
     project = (root / "pyproject.toml").read_text(encoding="utf-8")
-    source = (root / "grok/mcp_server.py").read_text(encoding="utf-8")
-    shim = (root / "mythos/mcp_server.py").read_text(encoding="utf-8")
+    source = (root / "src/grok/mcp_server.py").read_text(encoding="utf-8")
+    shim = (root / "src/mythos/mcp_server.py").read_text(encoding="utf-8")
 
     try:
         import tomllib

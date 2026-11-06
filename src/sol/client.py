@@ -17,7 +17,9 @@ from sol.models import CodexRunResult
 DEFAULT_MODEL = os.getenv("M2M_SOL_MODEL", "gpt-6-astra")
 DEFAULT_REASONING_EFFORT = os.getenv("M2M_SOL_REASONING", "high")
 DEFAULT_TIMEOUT = float(os.getenv("M2M_SOL_TIMEOUT", "3600"))
-_LOCAL_CLI = Path(__file__).resolve().parents[1] / "node_modules" / ".bin" / ("codex.cmd" if os.name == "nt" else "codex")
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = PACKAGE_ROOT.parent if PACKAGE_ROOT.name == "src" else PACKAGE_ROOT
+_LOCAL_CLI = REPO_ROOT / "node_modules" / ".bin" / ("codex.cmd" if os.name == "nt" else "codex")
 DEFAULT_COMMAND = os.getenv("M2M_SOL_CODEX", str(_LOCAL_CLI) if _LOCAL_CLI.is_file() else "codex")
 FAST_SERVICE_TIER = 'service_tier="fast"'
 

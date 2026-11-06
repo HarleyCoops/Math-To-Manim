@@ -8,7 +8,8 @@ import subprocess
 
 
 ASSETS = Path(__file__).with_name('node')
-REPOSITORY = Path(__file__).resolve().parents[1]
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY = PACKAGE_ROOT.parent if PACKAGE_ROOT.name == "src" else PACKAGE_ROOT
 CODEX_VERSION = '0.156.1'
 
 

@@ -1,6 +1,6 @@
 """Mythos harness: the 6-agent reasoning chain, driven through Claude Fable 5.
 
-The agent charters live in ``mythos/agents/*.md`` (mirrored to
+The agent charters live in ``src/mythos/agents/*.md`` (mirrored to
 ``.claude/agents/`` for native Claude Code use). This harness reads those
 same charters and drives them headlessly through the configured model
 backend, so interactive sessions and automated runs share one source of
@@ -31,9 +31,10 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = PACKAGE_ROOT.parent if PACKAGE_ROOT.name == "src" else PACKAGE_ROOT
+if str(PACKAGE_ROOT) not in sys.path:
+    sys.path.insert(0, str(PACKAGE_ROOT))
 
 from mythos.backends import (  # noqa: E402
     DEFAULT_COMMAND,
@@ -74,7 +75,7 @@ from mythos.scene_checks import (  # noqa: E402
 # canonical copies that ship with the repo.
 AGENT_DIRS = [
     REPO_ROOT / ".claude" / "agents",
-    REPO_ROOT / "mythos" / "agents",
+    Path(__file__).resolve().parent / "agents",
 ]
 
 #: (slug, agent definition file, artifact name)

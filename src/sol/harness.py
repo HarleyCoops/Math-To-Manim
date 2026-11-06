@@ -18,7 +18,8 @@ from sol.rendering import RenderError, preflight_render, render_scene
 from sol.staged import StagedPipeline, write_offline_stage_records
 from sol.validation import validate_run
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = PACKAGE_ROOT.parent if PACKAGE_ROOT.name == "src" else PACKAGE_ROOT
 
 
 def default_runs_dir() -> Path:

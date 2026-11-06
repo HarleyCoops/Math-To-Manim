@@ -1,6 +1,6 @@
 # Agent guide
 
-Math-To-Manim's primary product is the Astra-native Codex SDK chain in `astra/`.
+Math-To-Manim's primary product is the Astra-native Codex SDK chain in `src/astra/`.
 The user's September 24, 2026 direction supersedes the former multi-provider
 homepage and requirement to preserve its featured GIF block. Keep the star
 chart and older showcase files; feature new verified films on the homepage from
@@ -9,14 +9,14 @@ September 25, 2026: the homepage is not limited to Astra films.
 
 ## Architecture
 
-- `astra/cli.py`: primary `math-to-manim`, `m2m`, `math-to-manim-astra` commands.
-- `astra/pipeline.py`: brief -> mathematics -> storyboard -> scene -> render,
+- `src/astra/cli.py`: primary `math-to-manim`, `m2m`, `math-to-manim-astra` commands.
+- `src/astra/pipeline.py`: brief -> mathematics -> storyboard -> scene -> render,
   with advisory Jev reviews by default; strict gates are explicitly opt-in.
-- `astra/bridge.mjs`: official Codex SDK, GPT-6 Astra, cached ChatGPT login.
-- `astra/prompts.py`: specialist and evaluator charters.
-- `astra/rendering.py`: static source checks, local Manim and frame extraction.
+- `src/astra/bridge.mjs`: official Codex SDK, GPT-6 Astra, cached ChatGPT login.
+- `src/astra/prompts.py`: specialist and evaluator charters.
+- `src/astra/rendering.py`: static source checks, local Manim and frame extraction.
 - `docs/JEV.md`, `docs/ASTRA_PIPELINE.md`: evaluation and architecture contracts.
-- `mythos/`, `sol/`, `grok/`, `glm/`, `mimo/`: compatibility pipelines, accessed
+- `src/mythos/`, `src/sol/`, `src/grok/`, `src/glm/`, `src/mimo/`: compatibility pipelines, accessed
   by explicit provider commands; do not route Astra through their orchestration.
 - `scripts/operate_mythos_chain.py`: runs the Mythos chain with a session as the
   model backend; the harness validates every reply (see

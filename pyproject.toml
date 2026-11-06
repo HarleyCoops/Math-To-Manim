@@ -69,6 +69,7 @@ Homepage = "https://github.com/HarleyCoops/Math-To-Manim"
 Repository = "https://github.com/HarleyCoops/Math-To-Manim"
 
 [tool.setuptools.packages.find]
+where = ["src"]
 include = ["astra*", "mythos*", "sol*", "grok*", "glm*", "mimo*", "argon*"]
 
 [tool.setuptools.package-data]
@@ -81,5 +82,5 @@ argon = ["agents/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
+pythonpath = ["src", "."]
 addopts = "-q"

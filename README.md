@@ -40,7 +40,7 @@ $$
 
 ### How the Argon Google Agent SDK (`google-adk`) pipeline built this film
 
-The [`argon/`](argon/) package ports the six-stage Math-To-Manim reasoning chain to the **Google Agent Development Kit (`google-adk`)** and **`google-genai` SDK** (`gemini-4-argon` / `ArgonGoogleADKClient`):
+The [`argon/`](src/argon/) package ports the six-stage Math-To-Manim reasoning chain to the **Google Agent Development Kit (`google-adk`)** and **`google-genai` SDK** (`gemini-4-argon` / `ArgonGoogleADKClient`):
 
 1. **Six `LlmAgent` specialists** (`argon_intent`, `argon_cartographer`, `argon_curriculum`, `argon_math_director`, `argon_cinematographer`, `argon_composer`) orchestrated via `google.adk.agents.SequentialAgent` and `InMemoryRunner`.
 2. **ADK FunctionTools**: `execute_math_check` verifies algebraic identities, bifurcation thresholds, and skip-connection boundary conditions in a sandboxed AST NumPy evaluator during stage 4; `verify_scene` checks AST syntax, banned imports, and `ThreeDScene` camera discipline (`set_camera_orientation` / `move_camera`) during stage 6.
@@ -461,7 +461,7 @@ TeX Live and TinyTeX are alternatives; TinyTeX normally installs beneath
 The [Manim guide](https://docs.manim.community/en/stable/installation/uv.html)
 documents full TeX Live packages for Debian/Ubuntu and Fedora. For this
 repository's smaller Debian/Ubuntu setup, the existing
-[`requirements-system.txt`](requirements-system.txt) lists Cairo/Pango build
+[`requirements-system.txt`](requirements/requirements-system.txt) lists Cairo/Pango build
 dependencies, FFmpeg, `dvisvgm`, and the LaTeX/font packages;
 [`scripts/bootstrap-render.sh`](scripts/bootstrap-render.sh) installs that list
 and creates a render venv. Review it before running it. Other distributions

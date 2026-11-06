@@ -13,7 +13,8 @@ from mimo.offline import write_offline_bundle
 from mimo.staged import ToolCallingPipeline
 from mimo.validation import validate_run
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = PACKAGE_ROOT.parent if PACKAGE_ROOT.name == "src" else PACKAGE_ROOT
 
 
 def default_runs_dir() -> Path:

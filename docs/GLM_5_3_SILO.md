@@ -1,9 +1,9 @@
 # GLM-5.3-Flash Silo
 
-The `glm/` package is the provider-native Math-To-Manim silo for
+The `src/glm/` package is the provider-native Math-To-Manim silo for
 **GLM-5.3-Flash** (Z.ai). It talks only to Z.ai's OpenAI-compatible Coding
-Plan endpoint and never routes through, or imports from, `mythos/`, `sol/`,
-or `grok/`.
+Plan endpoint and never routes through, or imports from, `src/mythos/`, `src/sol/`,
+or `src/grok/`.
 
 ## Wire contract
 
@@ -15,7 +15,7 @@ or `grok/`.
 - **Reasoning effort** — `low | high | max`. The chat/completions body has no
   effort enum, so effort maps to sampling latitude plus a token budget:
   temperature `{0.15, 0.65, 0.9}` and max tokens `{2048, 6144, 12288}`
-  (`glm/models.py`).
+  (`src/glm/models.py`).
 - **Auth** — key resolved from `ZHIPU_API_KEY`, then `ZAI_API_KEY`, then an
   OpenCode `auth.json` entry named `zai-coding-plan`
   (`~/.local/share/opencode/auth.json`). The key is never printed, logged, or
@@ -28,7 +28,7 @@ or `grok/`.
 intent → cartographer → curriculum → math-director → cinematographer → composer → verify → optional render
 ```
 
-Each stage reads its charter from `glm/agents/*.md`, receives upstream
+Each stage reads its charter from `src/glm/agents/*.md`, receives upstream
 artifacts in the user turn, and must answer with one JSON object. The chat/
 completions tool surface exposes exactly one local function,
 `verify_scene(source)`; the composer calls it on its own output and repairs
