@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
-from argon.models import ARTIFACT_NAMES, RunRequest
-from argon.validation import verify_scene_report
+from argon import bundle
+from argon.models import RunRequest
+from argon.stages import STAGES
+
+OFFLINE_MODEL = "offline"
 
 _OFFLINE_SCENE = '''from manim import *
 
@@ -257,59 +259,36 @@ def _scene_spec() -> dict:
     }
 
 
-def _trace(stage: str, tools: list[str]) -> dict:
-    return {
-        "stage": stage,
-        "offline": True,
-        "sdk": "google-adk",
-        "model": "offline",
-        "tools_requested": tools,
-        "tool_calls": [],
-        "thinking": ["offline rehearsal; no Google ADK network call"],
-    }
-
-
-def write_offline_bundle(run_dir: Path, request: RunRequest) -> dict:
+def offline_payloads(request: RunRequest) -> dict[str, dict]:
+    """Deterministic stage payloads keyed by stage name."""
     tree = reverse_tree_for(request.prompt)
-    artifacts = {
-        "01_intent.json": _intent(request),
-        "02_knowledge_map.json": tree,
-        "03_curriculum.json": _curriculum(tree),
-        "04_math_dossier.json": _math_dossier(request),
-        "05_shot_list.json": _shot_list(),
-        "06_scene_spec.json": _scene_spec(),
-        "review.json": {
-            "offline": True,
-            "sdk": "google-adk + google-genai",
-            "checks": ["artifact contract", "reverse tree", "python compilation"],
-            "rendered": False,
-            "limitations": ["deterministic rehearsal; no live API call"],
-        },
-        "validation.json": verify_scene_report(_OFFLINE_SCENE),
-    }
-    for name, payload in artifacts.items():
-        (run_dir / name).write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    (run_dir / "argon_scene.py").write_text(_OFFLINE_SCENE, encoding="utf-8")
-
-    traces = run_dir / "traces"
-    traces.mkdir(exist_ok=True)
-    stage_tools = {
-        "intent": [],
-        "cartographer": [],
-        "curriculum": [],
-        "math-director": ["execute_math_check"],
-        "cinematographer": [],
-        "composer": ["verify_scene"],
-    }
-    for stage, tools in stage_tools.items():
-        (traces / f"{stage}.json").write_text(
-            json.dumps(_trace(stage, tools), indent=2),
-            encoding="utf-8",
-        )
-    assert all((run_dir / name).is_file() for name in ARTIFACT_NAMES)
     return {
-        "status": "completed",
-        "scene_file": "argon_scene.py",
-        "scene_name": "ArgonOfflineJourney",
-        "artifacts": list(ARTIFACT_NAMES),
+        "intent": _intent(request),
+        "cartographer": tree,
+        "curriculum": _curriculum(tree),
+        "math-director": _math_dossier(request),
+        "cinematographer": _shot_list(),
+        "composer": _scene_spec(),
     }
+
+
+def write_offline_bundle(run_dir: Path, request: RunRequest) -> None:
+    """Write every stage artifact, its trace and the scene with zero network calls."""
+    payloads = offline_payloads(request)
+    for stage in STAGES:
+        bundle.write_artifact(run_dir, stage, stage.prepare(payloads[stage.name]))
+        bundle.write_trace(
+            run_dir,
+            stage.name,
+            {
+                "stage": stage.name,
+                "offline": True,
+                "sdk": "google-adk",
+                "adk_agent_name": stage.agent_name,
+                "model": OFFLINE_MODEL,
+                "tools_requested": stage.tool_names,
+                "tool_calls": [],
+                "thinking": ["offline rehearsal; no Google ADK network call"],
+            },
+        )
+    bundle.write_scene(run_dir, _OFFLINE_SCENE)

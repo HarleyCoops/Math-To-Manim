@@ -4,12 +4,11 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 
-from argon import __version__
-from argon.client import DEFAULT_MODEL, DEFAULT_REASONING_EFFORT, ArgonClient, api_key_status, resolve_api_key
+from argon import __version__, bundle
+from argon.harness import ArgonHarness
 from argon.models import REASONING_EFFORTS, RunRequest
-from argon.service import ArgonService
+from argon.settings import api_key_status, default_model, default_reasoning_effort
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -27,10 +26,10 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("-q", "--quality", default="l", choices=["l", "m", "h", "p", "k"])
     run.add_argument(
         "--reasoning-effort",
-        default=DEFAULT_REASONING_EFFORT,
+        default=default_reasoning_effort(),
         choices=list(REASONING_EFFORTS),
     )
-    run.add_argument("--max-repairs", default=2, type=int, choices=range(0, 6))
+    run.add_argument("--max-repairs", default=2, type=int, choices=range(6))
     run.add_argument("--offline", action="store_true")
 
     runs = sub.add_parser("runs", help="List recent Argon run manifests")
@@ -45,29 +44,31 @@ def build_parser() -> argparse.ArgumentParser:
 
 def _doctor() -> int:
     ok, detail = api_key_status()
-    model = os.getenv("ARGON_MODEL", DEFAULT_MODEL)
-    effort = os.getenv("ARGON_REASONING_EFFORT", DEFAULT_REASONING_EFFORT)
-    key, _ = resolve_api_key()
     if not ok:
         print(f"not ready: {detail}")
         return 1
+    from argon.client import ArgonClient
+
     client = ArgonClient()
     ok, detail = client.ping()
-    if key and key in detail:
+    if client.api_key in detail:
         print("not ready: doctor refused to describe the key")
         return 1
     if not ok:
         print(f"not ready: {detail}")
         return 1
-    print(f"ready: {detail}; sdk=google-adk+google-genai; model={model}; reasoning_effort={effort}")
+    print(
+        f"ready: {detail}; sdk=google-adk+google-genai; "
+        f"model={default_model()}; reasoning_effort={default_reasoning_effort()}"
+    )
     return 0
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    service = ArgonService()
+    runs_dir = bundle.default_runs_dir()
     if args.command == "run":
-        response = service.run(
+        response = ArgonHarness(runs_dir=runs_dir).run(
             RunRequest(
                 prompt=args.prompt,
                 image=args.image,
@@ -81,11 +82,11 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(response, indent=2))
         return 0
     if args.command == "runs":
-        for manifest in service.list_runs(limit=max(1, args.limit)):
+        for manifest in bundle.list_manifests(runs_dir, limit=max(1, args.limit)):
             print(f"{manifest.run_id}\t{manifest.status}\t{manifest.prompt}")
         return 0
     if args.command == "status":
-        print(service.get_run(args.run_id).model_dump_json(indent=2))
+        print(bundle.load_manifest(runs_dir, args.run_id).model_dump_json(indent=2))
         return 0
     return _doctor()
 

@@ -1,7 +1,6 @@
 ---
 name: argon-math-director
 description: Stage 4 of the Argon Google ADK chain. Verifies equations, SDE/ODE schedules, and concrete numerical invariants via execute_math_check, and decomposes every formula into color-coded LaTeX parts.
-tools: [execute_math_check]
 json_keys: [formulas, color_identity, numbers, checks, sources]
 ---
 

@@ -1,14 +1,15 @@
-"""Artifact, reverse-tree, and static Manim scene checks for Argon Google ADK runs."""
+"""Reverse-tree and static Manim scene checks for Argon Google ADK runs.
+
+Pure functions over payloads and source text; the run-bundle walk that applies
+them to files lives in ``argon.bundle``.
+"""
 
 from __future__ import annotations
 
 import ast
-import json
-import py_compile
 import re
-from pathlib import Path
 
-from argon.models import ARTIFACT_NAMES
+from argon.models import SCENE_FILE
 
 _BLOCKED_IMPORTS = {"os", "subprocess", "socket", "requests", "urllib", "httpx", "shutil"}
 _BLOCKED_CALLS = {"eval", "exec", "compile", "open", "__import__"}
@@ -164,9 +165,9 @@ def validate_reverse_tree(payload: dict) -> list[str]:
     return failures
 
 
-def discover_scene_classes(tree: ast.AST) -> list[str]:
+def _scene_classes(tree: ast.Module) -> list[str]:
     found: list[str] = []
-    for node in tree.body if isinstance(tree, ast.Module) else []:
+    for node in tree.body:
         if not isinstance(node, ast.ClassDef):
             continue
         for base in node.bases:
@@ -177,94 +178,50 @@ def discover_scene_classes(tree: ast.AST) -> list[str]:
     return found
 
 
-def re_search_camera_animate(source: str) -> bool:
-    return "self.camera.animate" in source or "self.camera.animate" in source.replace(" ", "")
+def _animates_camera(source: str) -> bool:
+    return "self.camera.animate" in source.replace(" ", "")
 
 
-def validate_scene_source(source: str) -> tuple[list[str], str | None]:
+def verify_scene_report(source: str) -> dict:
+    """The one static check of a scene file: compiles, no blocked imports/calls,
+    no camera animation, exactly one Scene subclass.
+
+    Returns ``{"passed": bool, "scene_name": str | None, "errors": [...]}``.
+    """
     failures: list[str] = []
     try:
         tree = ast.parse(source)
     except SyntaxError as exc:
-        return [f"argon_scene.py: syntax error ({exc})"], None
+        return {"passed": False, "scene_name": None, "errors": [f"{SCENE_FILE}: syntax error ({exc})"]}
+    try:
+        compile(tree, f"<{SCENE_FILE}>", "exec")
+    except (SyntaxError, ValueError) as exc:
+        failures.append(f"{SCENE_FILE}: Python compilation failed ({exc})")
 
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 if alias.name.split(".")[0] in _BLOCKED_IMPORTS:
-                    failures.append(f"argon_scene.py: blocked import {alias.name!r}")
+                    failures.append(f"{SCENE_FILE}: blocked import {alias.name!r}")
         elif isinstance(node, ast.ImportFrom):
             if (node.module or "").split(".")[0] in _BLOCKED_IMPORTS:
-                failures.append(f"argon_scene.py: blocked import {node.module!r}")
+                failures.append(f"{SCENE_FILE}: blocked import {node.module!r}")
         elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
             if node.func.id in _BLOCKED_CALLS:
-                failures.append(f"argon_scene.py: blocked call {node.func.id}()")
+                failures.append(f"{SCENE_FILE}: blocked call {node.func.id}()")
 
-    if re_search_camera_animate(source):
+    if _animates_camera(source):
         failures.append(
-            "argon_scene.py: never animate self.camera; "
-            "use move_camera or set_camera_orientation"
+            f"{SCENE_FILE}: never animate self.camera; use move_camera or set_camera_orientation"
         )
 
-    scene_classes = discover_scene_classes(tree)
+    scene_classes = _scene_classes(tree)
     if len(scene_classes) != 1:
         failures.append(
-            f"argon_scene.py: expected exactly one Scene subclass, found {len(scene_classes)}"
+            f"{SCENE_FILE}: expected exactly one Scene subclass, found {len(scene_classes)}"
         )
-    return failures, scene_classes[0] if len(scene_classes) == 1 else None
-
-
-def verify_scene_report(source: str) -> dict:
-    compile_error = None
-    try:
-        compile(source, "<argon_scene>", "exec")
-    except SyntaxError as exc:
-        compile_error = str(exc)
-    failures, scene_name = validate_scene_source(source)
-    if compile_error:
-        failures = [f"argon_scene.py: Python compilation failed ({compile_error})"] + failures
     return {
         "passed": not failures,
-        "scene_name": scene_name,
+        "scene_name": scene_classes[0] if len(scene_classes) == 1 else None,
         "errors": failures,
     }
-
-
-def validate_run(run_dir: Path, *, require_video: bool = False) -> tuple[list[str], str | None, str | None]:
-    failures: list[str] = []
-    for name in ARTIFACT_NAMES:
-        path = run_dir / name
-        if not path.is_file():
-            failures.append(f"missing required artifact: {name}")
-            continue
-        if name.endswith(".json"):
-            try:
-                payload = json.loads(path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError) as exc:
-                failures.append(f"{name}: invalid JSON ({exc})")
-                continue
-            if not isinstance(payload, dict) or not payload:
-                failures.append(f"{name}: expected a non-empty JSON object")
-            if name == "02_knowledge_map.json":
-                failures.extend(validate_reverse_tree(normalize_reverse_tree(payload)))
-
-    scene_path = run_dir / "argon_scene.py"
-    scene_name = None
-    if scene_path.is_file():
-        try:
-            py_compile.compile(str(scene_path), doraise=True)
-        except py_compile.PyCompileError as exc:
-            failures.append(f"argon_scene.py: Python compilation failed ({exc})")
-        source = scene_path.read_text(encoding="utf-8")
-        scene_failures, scene_name = validate_scene_source(source)
-        failures.extend(scene_failures)
-
-    video_path = None
-    media = run_dir / "media"
-    if media.is_dir():
-        videos = sorted(media.rglob("*.mp4"))
-        if videos:
-            video_path = str(videos[-1])
-    if require_video and not video_path:
-        failures.append("render requested but no mp4 was found")
-    return failures, scene_name, video_path

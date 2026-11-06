@@ -6,17 +6,16 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-ARTIFACT_NAMES = (
-    "01_intent.json",
-    "02_knowledge_map.json",
-    "03_curriculum.json",
-    "04_math_dossier.json",
-    "05_shot_list.json",
-    "06_scene_spec.json",
-    "argon_scene.py",
-    "validation.json",
-    "review.json",
-)
+# Files every run bundle contains besides the per-stage JSON artifacts
+# (those names live on the stage table in argon.stages).
+SCENE_FILE = "argon_scene.py"
+VALIDATION_FILE = "validation.json"
+REVIEW_FILE = "review.json"
+MANIFEST_FILE = "manifest.json"
+REQUEST_FILE = "request.json"
+TRACES_DIR = "traces"
+
+SDK_NAME = "google-adk + google-genai"
 
 REASONING_EFFORTS = ("low", "medium", "high", "xhigh")
 
@@ -37,7 +36,7 @@ class RunManifest(BaseModel):
     prompt: str
     model: str
     backend: Literal["google-adk-genai", "argon-operator"] = "google-adk-genai"
-    sdk: str = "google-adk + google-genai"
+    sdk: str = SDK_NAME
     offline: bool
     render_requested: bool
     quality: str
@@ -57,8 +56,10 @@ class RunManifest(BaseModel):
 
 
 class StageCallResult(BaseModel):
+    """One model turn. ``payload`` is the parsed JSON object, or None when the reply was not JSON."""
+
     text: str
-    payload: dict
+    payload: dict | None = None
     tool_calls: list[dict] = Field(default_factory=list)
     thinking: list[str] = Field(default_factory=list)
     raw: dict = Field(default_factory=dict)

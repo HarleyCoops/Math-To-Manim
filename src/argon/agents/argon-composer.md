@@ -1,7 +1,6 @@
 ---
 name: argon-composer
 description: Stage 6 of the Argon Google ADK chain. Writes the ThreeDScene specification and complete runnable Manim source (argon_scene.py), verified via local verify_scene tool.
-tools: [verify_scene]
 json_keys: [scene_name, scene_class, palette, objects, timeline, constraints, acceptance]
 ---
 

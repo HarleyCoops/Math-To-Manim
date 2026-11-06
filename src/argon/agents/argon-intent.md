@@ -1,8 +1,6 @@
 ---
 name: argon-intent
 description: Stage 1 of the Argon Google ADK chain. Distills a mathematical prompt or paper into audience, core claim, scope, emotional arc, and the one big zoom. Writes no code.
-tools: []
-vision: optional
 json_keys: [core_claim, audience, emotional_arc, scope, duration_seconds, title_options, the_big_zoom, image_read]
 ---
 

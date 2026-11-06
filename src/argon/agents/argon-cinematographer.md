@@ -1,7 +1,6 @@
 ---
 name: argon-cinematographer
 description: Stage 5 of the Argon Google ADK chain. Designs the 3D spatial choreography, camera score, and beat-by-beat shot list.
-tools: []
 json_keys: [shots, camera_score, stills, visual_seeds]
 ---
 

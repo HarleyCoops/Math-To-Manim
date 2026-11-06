@@ -1,28 +1,29 @@
-"""Google ADK (`google-adk`) and `google-genai` client for the Argon reasoning chain."""
+"""Google ADK (`google-adk`) and `google-genai` client for the Argon reasoning chain.
+
+Importing this module requires the ``argon`` extra (google-adk, google-genai);
+offline runs and the run ledger never import it.
+"""
 
 from __future__ import annotations
 
 import asyncio
 import json
 import mimetypes
-import os
-import re
 from pathlib import Path
-from typing import Callable
 
 from google import genai
-from google.adk.agents import LlmAgent, SequentialAgent
+from google.adk.agents import LlmAgent
+from google.adk.models.google_llm import Gemini
 from google.adk.runners import InMemoryRunner
 from google.genai import types
 
-from argon.charters import STAGES, load_charter
 from argon.jsonutil import extract_json_object
-from argon.models import REASONING_EFFORTS, StageCallResult
-from argon.tools import execute_math_check, verify_scene
+from argon.models import StageCallResult
+from argon.settings import api_key_status, default_model, redact_secret, resolve_api_key
+from argon.stages import Stage
 
-DEFAULT_MODEL = os.getenv("ARGON_MODEL", "gemini-2.5-pro")
-DEFAULT_REASONING_EFFORT = os.getenv("ARGON_REASONING_EFFORT", "high")
-DEFAULT_TIMEOUT = float(os.getenv("ARGON_TIMEOUT", "900"))
+APP_NAME = "math-to-manim-argon"
+USER_ID = "argon-operator"
 PING_PROMPT = "Reply with the single word pong."
 
 _THINKING_BUDGETS = {
@@ -31,134 +32,67 @@ _THINKING_BUDGETS = {
     "high": 8192,
     "xhigh": 16384,
 }
+_IMAGE_MIME_TYPES = {"image/png", "image/jpeg", "image/webp", "image/gif"}
 
 
 class ArgonClientError(RuntimeError):
     pass
 
 
-def resolve_api_key(explicit: str | None = None) -> tuple[str, str]:
-    """Return (key, env_source_name)."""
-    if explicit is not None and explicit.strip():
-        return explicit.strip(), "explicit"
-    for name in ("GEMINI_API_KEY", "GOOGLE_API_KEY", "ARGON_API_KEY"):
-        val = os.getenv(name, "").strip()
-        if val:
-            return val, name
-    return "", "GEMINI_API_KEY"
-
-
-def redact_secret(text: str, secret: str | None) -> str:
-    if not text or not secret or not secret.strip():
-        return text
-    return text.replace(secret.strip(), "[redacted]")
-
-
-def api_key_status(key: str | None = None) -> tuple[bool, str]:
-    """Check whether a Gemini/Google API key is configured without returning its value."""
-    value, source = resolve_api_key(key)
-    if not value:
-        return False, "GEMINI_API_KEY (or GOOGLE_API_KEY) is not set"
-    if len(value) < 8:
-        return False, f"{source} is present but too short to be valid"
-    return True, f"{source} is set"
-
-
-def extract_payload_or_empty(text: str) -> dict:
-    if not text or not text.strip():
-        return {}
+def _parse_payload(text: str) -> dict | None:
+    """The JSON object in a model reply, or None when there is none."""
+    if not text.strip():
+        return None
     try:
         return extract_json_object(text)
     except (ValueError, json.JSONDecodeError):
-        return {"raw_text": text}
-
-
-def _stage_adk_name(stage_name: str) -> str:
-    return "argon_" + re.sub(r"[^a-zA-Z0-9_]", "_", stage_name)
+        return None
 
 
 def build_stage_adk_agent(
-    stage_name: str,
+    stage: Stage,
     *,
-    instructions: str,
-    model: str = DEFAULT_MODEL,
-    reasoning_effort: str = DEFAULT_REASONING_EFFORT,
-    tools: list[Callable] | tuple[Callable, ...] = (),
-    output_key: str | None = None,
+    instructions: str | None = None,
+    model: str | Gemini | None = None,
+    reasoning_effort: str = "high",
 ) -> LlmAgent:
-    """Create a Google ADK LlmAgent for a single reasoning stage."""
-    budget = _THINKING_BUDGETS.get(reasoning_effort, 8192)
+    """Create the Google ADK LlmAgent for one stage of the table."""
+    budget = _THINKING_BUDGETS.get(reasoning_effort, _THINKING_BUDGETS["high"])
     gen_config = types.GenerateContentConfig(
         temperature=0.2,
-        thinking_config=types.ThinkingConfig(
-            include_thoughts=True,
-            thinking_budget=budget,
-        ),
+        thinking_config=types.ThinkingConfig(include_thoughts=True, thinking_budget=budget),
     )
     return LlmAgent(
-        name=_stage_adk_name(stage_name),
-        description=f"Argon Math-To-Manim stage agent: {stage_name}",
-        model=model,
-        instruction=instructions,
-        tools=list(tools),
-        output_key=output_key or f"{_stage_adk_name(stage_name)}_output",
+        name=stage.agent_name,
+        description=f"Argon Math-To-Manim stage agent: {stage.name}",
+        model=model or default_model(),
+        instruction=instructions if instructions is not None else stage.charter(),
+        tools=list(stage.tools),
+        output_key=stage.artifact,
         generate_content_config=gen_config,
     )
 
 
-def build_adk_sequential_pipeline(
-    *,
-    model: str = DEFAULT_MODEL,
-    reasoning_effort: str = DEFAULT_REASONING_EFFORT,
-) -> SequentialAgent:
-    """Build the 6-agent Google ADK SequentialAgent for the Argon reasoning chain."""
-    tool_map: dict[str, Callable] = {
-        "execute_math_check": execute_math_check,
-        "verify_scene": verify_scene,
-    }
-    sub_agents: list[LlmAgent] = []
-    for stage in STAGES:
-        charter = load_charter(stage.charter_file)
-        stage_tools = [tool_map[t] for t in stage.tools if t in tool_map]
-        sub_agents.append(
-            build_stage_adk_agent(
-                stage.name,
-                instructions=charter,
-                model=model,
-                reasoning_effort=reasoning_effort,
-                tools=stage_tools,
-                output_key=stage.artifact,
-            )
-        )
-    return SequentialAgent(
-        name="argon_math_to_manim_chain",
-        description="Six-stage Argon Google ADK mathematical animation reasoning chain.",
-        sub_agents=sub_agents,
-    )
+def _image_part(image_path: Path) -> types.Part:
+    mime, _ = mimetypes.guess_type(str(image_path))
+    if mime not in _IMAGE_MIME_TYPES:
+        mime = "image/png"
+    return types.Part.from_bytes(data=image_path.read_bytes(), mime_type=mime)
 
 
 class ArgonClient:
-    """Executes Argon reasoning stages via Google ADK InMemoryRunner and google-genai."""
+    """Executes Argon reasoning stages via Google ADK InMemoryRunner and google-genai.
 
-    def __init__(
-        self,
-        *,
-        api_key: str | None = None,
-        model: str | None = None,
-        reasoning_effort: str | None = None,
-        timeout: float | None = None,
-    ):
+    The API key is handed to the SDK explicitly; it is never written into the
+    process environment. Per-run settings (reasoning effort) are passed per call,
+    so one client can serve concurrent runs.
+    """
+
+    def __init__(self, *, api_key: str | None = None, model: str | None = None):
         key, source = resolve_api_key(api_key)
         self.api_key = key
         self.key_source = source
-        self.model = model or DEFAULT_MODEL
-        effort = reasoning_effort or DEFAULT_REASONING_EFFORT
-        if effort not in REASONING_EFFORTS:
-            raise ArgonClientError(
-                f"ARGON_REASONING_EFFORT must be one of {', '.join(REASONING_EFFORTS)}"
-            )
-        self.reasoning_effort = effort
-        self.timeout = DEFAULT_TIMEOUT if timeout is None else timeout
+        self.model = model or default_model()
 
     def require_key(self) -> str:
         ok, detail = api_key_status(self.api_key)
@@ -172,7 +106,7 @@ class ArgonClient:
         if not ok:
             return False, detail
         try:
-            client = genai.Client(api_key=self.require_key())
+            client = genai.Client(api_key=self.api_key)
             response = client.models.generate_content(
                 model=self.model,
                 contents=PING_PROMPT,
@@ -186,38 +120,28 @@ class ArgonClient:
             safe_msg = redact_secret(str(exc), self.api_key)
             return False, f"{self.key_source} is set but live ping failed ({safe_msg[:180]})"
 
-    async def _run_adk_stage_async(
+    async def _run_stage_async(
         self,
+        stage: Stage,
         *,
-        stage_name: str,
         instructions: str,
         text: str,
-        tools: list[Callable] | tuple[Callable, ...] = (),
-        image_path: Path | None = None,
+        reasoning_effort: str,
+        image_path: Path | None,
     ) -> StageCallResult:
-        key = self.require_key()
-        os.environ["GEMINI_API_KEY"] = key
-        os.environ["GOOGLE_API_KEY"] = key
-
+        llm = Gemini(model=self.model, client_kwargs={"api_key": self.require_key()})
         agent = build_stage_adk_agent(
-            stage_name,
+            stage,
             instructions=instructions,
-            model=self.model,
-            reasoning_effort=self.reasoning_effort,
-            tools=tools,
+            model=llm,
+            reasoning_effort=reasoning_effort,
         )
-        runner = InMemoryRunner(agent=agent, app_name="math-to-manim-argon")
-        session = await runner.session_service.create_session(
-            app_name="math-to-manim-argon",
-            user_id="argon-operator",
-        )
+        runner = InMemoryRunner(agent=agent, app_name=APP_NAME)
+        session = await runner.session_service.create_session(app_name=APP_NAME, user_id=USER_ID)
 
         parts: list[types.Part] = [types.Part.from_text(text=text)]
         if image_path is not None:
-            mime, _ = mimetypes.guess_type(str(image_path))
-            if mime not in {"image/png", "image/jpeg", "image/webp", "image/gif"}:
-                mime = "image/png"
-            parts.append(types.Part.from_bytes(data=image_path.read_bytes(), mime_type=mime))
+            parts.append(_image_part(image_path))
         user_msg = types.Content(role="user", parts=parts)
 
         texts: list[str] = []
@@ -225,11 +149,7 @@ class ArgonClient:
         tool_calls: list[dict] = []
         raw_events: list[dict] = []
 
-        async for event in runner.run_async(
-            user_id="argon-operator",
-            session_id=session.id,
-            new_message=user_msg,
-        ):
+        async for event in runner.run_async(user_id=USER_ID, session_id=session.id, new_message=user_msg):
             content = getattr(event, "content", None)
             if content and getattr(content, "parts", None):
                 for part in content.parts:
@@ -247,17 +167,12 @@ class ArgonClient:
                                 "arguments": dict(getattr(fn_call, "args", {}) or {}),
                             }
                         )
-            raw_events.append(
-                {
-                    "author": getattr(event, "author", None),
-                    "has_content": bool(content),
-                }
-            )
+            raw_events.append({"author": getattr(event, "author", None), "has_content": bool(content)})
 
         final_text = "\n".join(t for t in texts if t.strip()).strip()
         return StageCallResult(
             text=final_text,
-            payload=extract_payload_or_empty(final_text),
+            payload=_parse_payload(final_text),
             tool_calls=tool_calls,
             thinking=thinking,
             raw={"sdk": "google-adk", "model": self.model, "events": raw_events},
@@ -265,23 +180,24 @@ class ArgonClient:
 
     def complete(
         self,
+        stage: Stage,
         *,
-        stage_name: str = "stage",
-        instructions: str,
         text: str,
-        tools: list[Callable] | tuple[Callable, ...] = (),
+        reasoning_effort: str,
+        instructions: str | None = None,
         image_path: Path | None = None,
     ) -> StageCallResult:
+        """Run one stage turn. ``instructions`` defaults to the stage charter."""
         try:
             return asyncio.run(
-                self._run_adk_stage_async(
-                    stage_name=stage_name,
-                    instructions=instructions,
+                self._run_stage_async(
+                    stage,
+                    instructions=instructions if instructions is not None else stage.charter(),
                     text=text,
-                    tools=tools,
+                    reasoning_effort=reasoning_effort,
                     image_path=image_path,
                 )
             )
         except Exception as exc:
             safe = redact_secret(str(exc), self.api_key)
-            raise ArgonClientError(f"Google ADK stage {stage_name!r} failed: {safe}") from exc
+            raise ArgonClientError(f"Google ADK stage {stage.name!r} failed: {safe}") from exc

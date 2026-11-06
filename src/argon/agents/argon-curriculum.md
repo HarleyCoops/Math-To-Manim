@@ -1,7 +1,6 @@
 ---
 name: argon-curriculum
 description: Stage 3 of the Argon Google ADK chain. First forward pass: turns the reverse knowledge tree spine into dramatic acts joined by curiosity.
-tools: []
 json_keys: [acts, through_line]
 ---
 

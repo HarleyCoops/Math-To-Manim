@@ -1,7 +1,6 @@
 ---
 name: argon-cartographer
 description: Stage 2 of the Argon Google ADK chain. Builds the reverse knowledge tree from depth 0 (the core claim) back to assumed foundations, plus the forward spine.
-tools: []
 json_keys: [target, nodes, edges, spine, sources]
 ---
 

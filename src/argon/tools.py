@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 import math
 import operator
+
 import numpy as np
 
 from argon.validation import verify_scene_report
