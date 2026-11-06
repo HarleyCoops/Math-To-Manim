@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from sol.client import CodexCli
 from sol.harness import SolHarness
-from sol.astra_reviewer import Criterion, AstraAssessment, AstraReviewer
+from sol.astra_reviewer import REVIEW_EFFORT, Criterion, AstraAssessment, AstraReviewer
 from sol.models import RunRequest
 from sol.offline import write_offline_bundle
 
@@ -49,11 +49,12 @@ def review(bundle, client):
 
 def test_astra_independent_read_only_configuration(monkeypatch, tmp_path):
     monkeypatch.setattr("sol.client.shutil.which", lambda _: "codex")
-    evaluator = AstraReviewer.from_client(CodexCli(model="writer", reasoning_effort="low"))
+    evaluator = AstraReviewer.from_client(CodexCli(model="writer"))
     assert evaluator.client.model == "gpt-6-astra"
-    assert evaluator.client.reasoning_effort == "high"
+    assert REVIEW_EFFORT == "high"
     command = evaluator.client.build_command(cwd=tmp_path, schema_path=tmp_path / "schema",
                                              output_path=tmp_path / "output",
+                                             reasoning_effort=REVIEW_EFFORT,
                                              image_paths=[tmp_path / "frame.png"])
     assert command[command.index("--sandbox") + 1] == "read-only"
     assert "resume" not in command
@@ -71,6 +72,7 @@ def test_gate_and_attempt_snapshots(bundle):
     assert (bundle / "astra_review/002/inputs/frame.png").read_bytes() == b"new frame"
     assert all("session_id" not in call for call in client.calls)
     assert client.calls[0]["image_paths"] == [bundle / "frame.png"]
+    assert client.calls[0]["reasoning_effort"] == "high"
     schema = json.loads(client.calls[0]["schema_path"].read_text())
     allowed = schema["$defs"]["Criterion"]["properties"]["evidence"]["items"]["enum"]
     assert "frame.png" in allowed
@@ -78,6 +80,7 @@ def test_gate_and_attempt_snapshots(bundle):
     assert "sol_scene.py:10 explanatory prose" not in allowed
     record = json.loads((bundle / "astra_review/001/record.json").read_text())
     assert record["status"] == "completed"
+    assert record["reasoning_effort"] == "high"
     assert record["score_kind"] == "uncalibrated_model_judgment"
 
 
@@ -133,32 +136,34 @@ def test_missing_and_outside_frames_rejected(bundle):
                                               evidence_paths=[bundle.parent / "outside.png"])
 
 
+class FailingReviewer:
+    def review_render(self, *args, **kwargs):
+        pytest.fail("unexpected review")
+
+
 @pytest.mark.parametrize("reject_forever", [False, True])
-def test_repair_and_resume_always_render_and_review(monkeypatch, tmp_path, reject_forever):
+def test_repair_and_resume_always_render_and_review(tmp_path, reject_forever):
     calls = []
     class Pipeline:
-        def __init__(self, **kwargs):
-            pass
         def run(self, root, request, **kwargs):
             calls.append(("pipeline", kwargs))
-            return write_offline_bundle(root, request)
+            write_offline_bundle(root, request)
+            return []
     def render(root, **kwargs):
         calls.append(("render", kwargs))
         (root / "frame.png").write_bytes(b"test frame")
         video = root / "film.mp4"
         video.write_bytes(b"v" * 4096)
-        return SimpleNamespace(frame_paths=[root / "frame.png"], contact_sheet_path=None)
+        return [root / "frame.png"]
     class SequenceReviewer(Reviewer):
         def run(self, prompt, **kwargs):
             calls.append(("review", {}))
             if reject_forever or sum(c[0] == "review" for c in calls) == 1:
                 return assessment(0.2)
             return assessment()
-    monkeypatch.setattr("sol.harness.StagedPipeline", Pipeline)
-    monkeypatch.setattr("sol.harness.render_scene", render)
-    monkeypatch.setattr("sol.harness.preflight_render", lambda: [])
-    monkeypatch.setattr(AstraReviewer, "from_client", lambda client: AstraReviewer(SequenceReviewer()))
-    harness = SolHarness(runs_dir=tmp_path)
+    harness = SolHarness(runs_dir=tmp_path, pipeline=Pipeline(),
+                         astra_reviewer=AstraReviewer(SequenceReviewer()),
+                         render=render, preflight=lambda: [])
     request = RunRequest(prompt="Explain a theorem", render=True, evaluator="astra_review", max_repairs=1)
     if reject_forever:
         with pytest.raises(RuntimeError, match="requires repair"):
@@ -168,7 +173,7 @@ def test_repair_and_resume_always_render_and_review(monkeypatch, tmp_path, rejec
         assert sum(c[0] == "review" for c in calls) == 2
     else:
         manifest = harness.run(request)
-        repair = [kwargs for name, kwargs in calls if name == "pipeline" and kwargs]
+        repair = [kwargs for name, kwargs in calls if name == "pipeline" and kwargs.get("from_stage")]
         assert repair[0]["from_stage"] == "math-director"
         assert "mathematics" in repair[0]["feedback"]["math-director"]
         assert manifest["status"] == "completed"
@@ -178,9 +183,8 @@ def test_repair_and_resume_always_render_and_review(monkeypatch, tmp_path, rejec
         assert sum(c[0] == "review" for c in calls) == 2
 
 
-def test_no_render_and_offline_do_not_claim_astra_review_review(monkeypatch, tmp_path):
-    monkeypatch.setattr(AstraReviewer, "from_client", lambda _: pytest.fail("unexpected review"))
-    harness = SolHarness(runs_dir=tmp_path)
+def test_no_render_and_offline_do_not_claim_astra_review_review(tmp_path):
+    harness = SolHarness(runs_dir=tmp_path, astra_reviewer=FailingReviewer())
     result = harness.run(RunRequest(prompt="Explain a theorem", evaluator="astra_review", offline=True, render=True))
     harness.resume(result["run_id"])
     assert not list(tmp_path.glob("*/astra_review"))

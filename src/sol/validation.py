@@ -1,27 +1,30 @@
-"""Final application-side validation for Codex-produced run bundles."""
+"""Final application-side validation for Codex-produced run bundles.
+
+``validate_run`` is the only writer of ``validation.json``: every pass records
+what it found about the scene source, or an empty template when none exists.
+"""
 
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import py_compile
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
-from sol.models import ARTIFACT_NAMES
-from sol.rendering import find_final_video
-from sol.scene_checks import (
-    discover_scene_classes,
-    validate_manim_code_report,
-    validation_from_scene,
-    validation_template,
-    write_json,
-)
+from sol.agents import ARTIFACT_NAMES
+from sol.layout import SCENE_FILE, VALIDATION_FILE
+from sol.rendering import MIN_VIDEO_BYTES, find_final_video
+from sol.scene_checks import SceneCheckReport, validate_manim_code_report
 
 _BLOCKED_IMPORTS = {"os", "subprocess", "socket", "requests", "urllib", "httpx", "shutil"}
 _BLOCKED_CALLS = {"eval", "exec", "compile", "open", "__import__"}
 
 
-def _validate_json(path: Path) -> str | None:
+def json_object_failure(path: Path) -> str | None:
+    """Why ``path`` is not a non-empty JSON object, or None when it is one."""
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -31,69 +34,93 @@ def _validate_json(path: Path) -> str | None:
     return None
 
 
-def _validate_scene(path: Path) -> tuple[list[str], str | None]:
+def validation_payload(source: str | None, report: SceneCheckReport | None) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "latex": None,
+        "manim_code": None,
+        "complexity": None,
+        "ran_at": datetime.now(timezone.utc).isoformat(),
+    }
+    if source is None or report is None:
+        return payload
+    payload.update({
+        "latex": report.latex.to_dict() if report.latex is not None else None,
+        "manim_code": {
+            "valid": report.valid,
+            "scene_names": report.scene_names,
+            "errors": report.errors,
+            "warnings": report.warnings,
+            "suggestions": report.suggestions,
+        },
+        "complexity": report.complexity,
+        "source_sha256": hashlib.sha256(source.encode("utf-8")).hexdigest(),
+    })
+    return payload
+
+
+def _validate_scene(
+    path: Path, source: str
+) -> tuple[list[str], str | None, SceneCheckReport | None]:
     failures: list[str] = []
     try:
         py_compile.compile(str(path), doraise=True)
     except py_compile.PyCompileError as exc:
-        return [f"sol_scene.py: Python compilation failed ({exc})"], None
-    source = path.read_text(encoding="utf-8")
-    try:
-        tree = ast.parse(source)
-    except SyntaxError as exc:
-        return [f"sol_scene.py: syntax error ({exc})"], None
+        return [f"{SCENE_FILE}: Python compilation failed ({exc})"], None, None
+    tree = ast.parse(source)
 
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 if alias.name.split(".")[0] in _BLOCKED_IMPORTS:
-                    failures.append(f"sol_scene.py: blocked import {alias.name!r}")
+                    failures.append(f"{SCENE_FILE}: blocked import {alias.name!r}")
         elif isinstance(node, ast.ImportFrom):
             if (node.module or "").split(".")[0] in _BLOCKED_IMPORTS:
-                failures.append(f"sol_scene.py: blocked import {node.module!r}")
+                failures.append(f"{SCENE_FILE}: blocked import {node.module!r}")
         elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
             if node.func.id in _BLOCKED_CALLS:
-                failures.append(f"sol_scene.py: blocked call {node.func.id}()")
+                failures.append(f"{SCENE_FILE}: blocked call {node.func.id}()")
 
-    scene_classes = discover_scene_classes(tree)
-    if len(scene_classes) != 1:
+    report = validate_manim_code_report(source, tree)
+    if len(report.scene_names) != 1:
         failures.append(
-            f"sol_scene.py: expected exactly one Scene subclass, found {len(scene_classes)}"
+            f"{SCENE_FILE}: expected exactly one Scene subclass, found {len(report.scene_names)}"
         )
-    report = validate_manim_code_report(source)
-    failures.extend(f"sol_scene.py: {error}" for error in report.errors)
-    return failures, scene_classes[0] if len(scene_classes) == 1 else None
+    failures.extend(f"{SCENE_FILE}: {error}" for error in report.errors)
+    scene_name = report.scene_names[0] if len(report.scene_names) == 1 else None
+    return failures, scene_name, report
 
 
 def validate_run(run_dir: Path, *, require_video: bool) -> tuple[list[str], str | None, str | None]:
+    """Check the artifact contract, scene safety, and render evidence.
+
+    Returns ``(failures, scene_name, video_path)`` and rewrites validation.json.
+    """
     failures: list[str] = []
-    scene_path = run_dir / "sol_scene.py"
-    validation_path = run_dir / "validation.json"
+    scene_name = None
+    scene_path = run_dir / SCENE_FILE
+    source = report = None
     if scene_path.is_file():
-        write_json(validation_path, validation_from_scene(scene_path.read_text(encoding="utf-8")))
-    elif not validation_path.is_file():
-        write_json(validation_path, validation_template())
+        source = scene_path.read_text(encoding="utf-8")
+        scene_failures, scene_name, report = _validate_scene(scene_path, source)
+        failures.extend(scene_failures)
+    (run_dir / VALIDATION_FILE).write_text(
+        json.dumps(validation_payload(source, report), indent=2), encoding="utf-8"
+    )
 
     for name in ARTIFACT_NAMES:
         path = run_dir / name
         if not path.is_file():
             failures.append(f"missing required artifact: {name}")
         elif name.endswith(".json"):
-            failure = _validate_json(path)
+            failure = json_object_failure(path)
             if failure:
                 failures.append(failure)
-
-    scene_name = None
-    scene_path = run_dir / "sol_scene.py"
-    if scene_path.is_file():
-        scene_failures, scene_name = _validate_scene(scene_path)
-        failures.extend(scene_failures)
 
     video_path = None
     video = find_final_video(run_dir)
     if video:
         video_path = video.relative_to(run_dir).as_posix()
-        if video.stat().st_size < 1024:
+        if video.stat().st_size < MIN_VIDEO_BYTES:
             failures.append("rendered video is unexpectedly small")
     elif require_video:
         failures.append("render requested but no MP4 exists inside the run directory")

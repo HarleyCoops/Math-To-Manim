@@ -7,13 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from sol.agents import AGENT_STAGES, build_stage_prompt
+from sol.agents import AGENT_STAGES, ARTIFACT_NAMES, build_stage_prompt
 from sol.cli import build_parser
 from sol.client import CodexCli
 from sol.harness import SolHarness
-from sol.models import ARTIFACT_NAMES, RunRequest, StageRunResult
+from sol.models import RunRequest, StageRunResult
 from sol.rendering import (
-    RenderOutcome,
     build_manim_command,
     find_final_video,
     render_environment,
@@ -25,11 +24,9 @@ from sol.validation import validate_run
 def _completed_result() -> dict:
     return {
         "status": "completed",
-        "scene_file": "sol_scene.py",
-        "scene_name": "ExampleScene",
-        "artifacts": list(ARTIFACT_NAMES),
-        "rendered": False,
-        "video_path": None,
+        "role": "intent",
+        "artifacts": ["01_intent.json"],
+        "summary": "structured output",
         "checks": ["structured output"],
         "notes": [],
     }
@@ -42,6 +39,7 @@ def test_codex_resume_command_targets_existing_thread(monkeypatch, tmp_path):
         cwd=tmp_path,
         schema_path=tmp_path / "schema.json",
         output_path=tmp_path / "result.json",
+        reasoning_effort="high",
         session_id="thread-1038",
     )
 
@@ -99,6 +97,8 @@ def test_codex_streams_jsonl_events_to_trace_and_sink(monkeypatch, tmp_path):
         output_path=tmp_path / "result.json",
         trace_path=tmp_path / "trace.jsonl",
         event_sink=event_sink,
+        reasoning_effort="high",
+        result_model=StageRunResult,
     )
 
     assert result.status == "completed"
@@ -188,19 +188,22 @@ def test_stage_hash_changes_with_upstream_artifact():
     request = RunRequest(prompt="explain a theorem")
     stage = next(item for item in AGENT_STAGES if item.name == "curriculum")
 
-    first = stage_input_hash(stage, request, {"02_knowledge_map.json": "aaa"})
-    second = stage_input_hash(stage, request, {"02_knowledge_map.json": "bbb"})
+    first = stage_input_hash(stage, request, {"02_knowledge_map.json": "aaa"}, "gpt-6-astra")
+    second = stage_input_hash(stage, request, {"02_knowledge_map.json": "bbb"}, "gpt-6-astra")
 
     assert first != second
     assert first == stage_input_hash(
         stage,
         request,
         {"02_knowledge_map.json": "aaa"},
+        "gpt-6-astra",
     )
 
 
 class FakeStageClient:
+    command = "codex"
     model = "gpt-5.6-sol"
+    timeout = 60.0
 
     def __init__(self):
         self.calls: list[tuple[str, str | None]] = []
@@ -485,10 +488,7 @@ def test_render_review_returns_to_saved_cinematographer_thread(tmp_path):
     )
 
 
-def test_harness_renders_then_reviews_with_saved_cinematographer(
-    monkeypatch,
-    tmp_path,
-):
+def test_harness_renders_then_reviews_with_saved_cinematographer(tmp_path):
     class ReviewClient(FakeStageClient):
         def run(self, prompt, **kwargs):
             if "render-review continuation" not in prompt:
@@ -535,19 +535,13 @@ def test_harness_renders_then_reviews_with_saved_cinematographer(
         sheet = review_dir / "contact_sheet.png"
         frame.write_bytes(b"frame")
         sheet.write_bytes(b"sheet")
-        return RenderOutcome(
-            video_path=video,
-            stdout_path=run_dir / "render_stdout.log",
-            stderr_path=run_dir / "render_stderr.log",
-            frame_paths=(frame,),
-            contact_sheet_path=sheet,
-        )
+        return [frame, sheet]
 
-    monkeypatch.setattr("sol.harness.preflight_render", fake_preflight, raising=False)
-    monkeypatch.setattr("sol.harness.render_scene", fake_render, raising=False)
     client = ReviewClient()
 
-    manifest = SolHarness(runs_dir=tmp_path, client=client).run(
+    manifest = SolHarness(
+        runs_dir=tmp_path, client=client, render=fake_render, preflight=fake_preflight
+    ).run(
         RunRequest(
             prompt="explain a theorem",
             render=True,
@@ -574,6 +568,92 @@ def test_model_change_invalidates_stage_cache():
 def test_resume_keeps_sandbox_and_directory_before_subcommand(monkeypatch, tmp_path):
     monkeypatch.setattr("sol.client.shutil.which", lambda _: "codex")
     command = CodexCli().build_command(cwd=tmp_path, schema_path=tmp_path / "schema.json",
-        output_path=tmp_path / "out.json", session_id="thread")
+        output_path=tmp_path / "out.json", reasoning_effort="high", session_id="thread")
     assert command.index("--sandbox") < command.index("resume")
     assert command.index("--cd") < command.index("resume")
+
+
+def test_request_reasoning_effort_overrides_every_stage_and_changes_hash(tmp_path):
+    class EffortClient(FakeStageClient):
+        def __init__(self):
+            super().__init__()
+            self.efforts: list[str] = []
+
+        def run(self, prompt, **kwargs):
+            self.efforts.append(kwargs["reasoning_effort"])
+            return super().run(prompt, **kwargs)
+
+    client = EffortClient()
+    StagedPipeline(client=client).run(tmp_path, RunRequest(prompt="explain a theorem"))
+    assert sorted(client.efforts) == sorted(stage.reasoning_effort for stage in AGENT_STAGES)
+
+    override = tmp_path / "xhigh"
+    override.mkdir()
+    client = EffortClient()
+    StagedPipeline(client=client).run(
+        override, RunRequest(prompt="explain a theorem", reasoning_effort="xhigh")
+    )
+    assert set(client.efforts) == {"xhigh"}
+
+    stage = AGENT_STAGES[0]
+    plain = RunRequest(prompt="explain a theorem")
+    low = RunRequest(prompt="explain a theorem", reasoning_effort="low")
+    assert stage_input_hash(stage, plain, {}, "m") != stage_input_hash(stage, low, {}, "m")
+
+
+def test_offline_stage_records_match_live_input_hashes(tmp_path):
+    from sol.staged import write_offline_stage_records
+
+    client = FakeStageClient()
+    request = RunRequest(prompt="explain a theorem")
+    live = StagedPipeline(client=client).run(tmp_path, request)
+    live_hashes = {
+        relative: json.loads((tmp_path / relative).read_text(encoding="utf-8"))["input_hash"]
+        for relative in live
+    }
+
+    offline = write_offline_stage_records(tmp_path, request, client.model)
+    offline_hashes = {
+        relative: json.loads((tmp_path / relative).read_text(encoding="utf-8"))["input_hash"]
+        for relative in offline
+    }
+
+    assert live == offline
+    assert live_hashes == offline_hashes
+
+
+def test_render_review_rejects_session_that_writes_no_review(tmp_path):
+    class SilentReviewClient(FakeStageClient):
+        def run(self, prompt, **kwargs):
+            if "render-review continuation" not in prompt:
+                return super().run(prompt, **kwargs)
+            result = StageRunResult(
+                status="completed", role="cinematographer", artifacts=["review.json"],
+                summary="claims approval", checks=[], notes=[],
+            )
+            kwargs["output_path"].write_text(result.model_dump_json(), encoding="utf-8")
+            kwargs["trace_path"].touch(exist_ok=True)
+            return result
+
+    request = RunRequest(prompt="explain a theorem", render=True)
+    pipeline = StagedPipeline(client=SilentReviewClient())
+    pipeline.run(tmp_path, request)
+    (tmp_path / "review.json").write_text(json.dumps({"status": "approved", "defects": []}))
+    sheet = tmp_path / "review_frames" / "contact_sheet.png"
+    sheet.parent.mkdir()
+    sheet.write_bytes(b"image")
+
+    with pytest.raises(RuntimeError, match="did not write review.json"):
+        pipeline.review_render(tmp_path, request, evidence_paths=[sheet])
+    assert not (tmp_path / "review.json").exists()
+
+
+def test_cli_choices_come_from_the_stage_table_and_request_model():
+    parser = build_parser()
+    resume = next(
+        action for action in parser._subparsers._group_actions[0].choices["resume"]._actions
+        if action.dest == "from_stage"
+    )
+    assert tuple(resume.choices) == tuple(stage.name for stage in AGENT_STAGES)
+    run = parser.parse_args(["run", "explain", "--offline"])
+    assert run.reasoning_effort is None

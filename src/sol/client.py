@@ -1,4 +1,8 @@
-"""Non-interactive Codex CLI driver using cached ChatGPT authentication."""
+"""Non-interactive Codex CLI driver using cached ChatGPT authentication.
+
+Everything about how Codex is invoked lives here: executable discovery, the
+service-tier override, the OPENAI_API_KEY scrub, structured output flags.
+"""
 
 from __future__ import annotations
 
@@ -12,16 +16,31 @@ from typing import Callable
 
 from pydantic import BaseModel
 
-from sol.models import CodexRunResult
-
-DEFAULT_MODEL = os.getenv("M2M_SOL_MODEL", "gpt-6-astra")
-DEFAULT_REASONING_EFFORT = os.getenv("M2M_SOL_REASONING", "high")
-DEFAULT_TIMEOUT = float(os.getenv("M2M_SOL_TIMEOUT", "3600"))
-PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = PACKAGE_ROOT.parent if PACKAGE_ROOT.name == "src" else PACKAGE_ROOT
-_LOCAL_CLI = REPO_ROOT / "node_modules" / ".bin" / ("codex.cmd" if os.name == "nt" else "codex")
-DEFAULT_COMMAND = os.getenv("M2M_SOL_CODEX", str(_LOCAL_CLI) if _LOCAL_CLI.is_file() else "codex")
 FAST_SERVICE_TIER = 'service_tier="fast"'
+SANDBOXES = ("read-only", "workspace-write")
+
+
+def default_codex_command() -> str:
+    """M2M_SOL_CODEX, else the npm-pinned Codex under the current checkout, else PATH."""
+    configured = os.getenv("M2M_SOL_CODEX")
+    if configured:
+        return configured
+    local = Path.cwd() / "node_modules" / ".bin" / ("codex.cmd" if os.name == "nt" else "codex")
+    return str(local) if local.is_file() else "codex"
+
+
+def default_model() -> str:
+    return os.getenv("M2M_SOL_MODEL", "gpt-6-astra")
+
+
+def default_timeout() -> float:
+    return float(os.getenv("M2M_SOL_TIMEOUT", "3600"))
+
+
+def codex_env() -> dict[str, str]:
+    # A stray API key would silently switch billing/auth modes. This silo is
+    # deliberately ChatGPT-login-only, so remove it from the child process.
+    return {key: value for key, value in os.environ.items() if key != "OPENAI_API_KEY"}
 
 
 class CodexCliError(RuntimeError):
@@ -32,17 +51,15 @@ class CodexCli:
     def __init__(
         self,
         *,
-        command: str = DEFAULT_COMMAND,
-        model: str = DEFAULT_MODEL,
-        reasoning_effort: str = DEFAULT_REASONING_EFFORT,
-        timeout: float = DEFAULT_TIMEOUT,
+        command: str | None = None,
+        model: str | None = None,
+        timeout: float | None = None,
         sandbox: str = "workspace-write",
     ):
-        self.command = command
-        self.model = model
-        self.reasoning_effort = reasoning_effort
-        self.timeout = timeout
-        if sandbox not in {"read-only", "workspace-write"}:
+        self.command = command or default_codex_command()
+        self.model = model or default_model()
+        self.timeout = default_timeout() if timeout is None else timeout
+        if sandbox not in SANDBOXES:
             raise ValueError("unsupported Codex sandbox")
         self.sandbox = sandbox
 
@@ -55,35 +72,51 @@ class CodexCli:
             )
         return resolved
 
+    def _base_command(self) -> list[str]:
+        # The fast tier override also shadows an invalid global service_tier
+        # setting that would otherwise stop Codex before any subcommand runs.
+        return [self.resolve(), "-c", FAST_SERVICE_TIER]
+
+    def check_login(self) -> tuple[bool, list[str]]:
+        """Whether Codex runs and holds a ChatGPT login, plus the two status lines.
+
+        Raises CodexCliError when the executable cannot be found at all.
+        """
+        version = subprocess.run(
+            [self.resolve(), "--version"],
+            capture_output=True, text=True, env=codex_env(), check=False,
+        )
+        login = subprocess.run(
+            [*self._base_command(), "login", "status"],
+            capture_output=True, text=True, env=codex_env(), check=False,
+        )
+        lines = [(version.stdout or version.stderr).strip(), (login.stdout or login.stderr).strip()]
+        return not (version.returncode or login.returncode), lines
+
     def build_command(
         self,
         *,
         cwd: Path,
         schema_path: Path,
         output_path: Path,
+        reasoning_effort: str,
         session_id: str | None = None,
-        reasoning_effort: str | None = None,
         image_paths: list[Path] | None = None,
     ) -> list[str]:
-        effort = reasoning_effort or self.reasoning_effort
         command = [
-            self.resolve(),
-            "-c", FAST_SERVICE_TIER,
-            "-c", f'model_reasoning_effort="{effort}"',
+            *self._base_command(),
+            "-c", f'model_reasoning_effort="{reasoning_effort}"',
             "exec",
+            "--sandbox", self.sandbox,
+            "--cd", str(cwd),
         ]
-        command.extend(["--sandbox", self.sandbox, "--cd", str(cwd)])
         if session_id:
             command.extend(["resume", session_id])
-        command.extend([
-            "--model", self.model,
-            "--json",
-            "--output-schema", str(schema_path),
-            "--output-last-message", str(output_path),
-            "-",
-        ])
+        command.extend(["--model", self.model, "--json", "--output-schema", str(schema_path),
+                        "--output-last-message", str(output_path)])
         for path in image_paths or []:
-            command[-1:-1] = ["--image", str(path)]
+            command.extend(["--image", str(path)])
+        command.append("-")
         return command
 
     def run(
@@ -94,23 +127,20 @@ class CodexCli:
         schema_path: Path,
         output_path: Path,
         trace_path: Path,
+        reasoning_effort: str,
+        result_model: type[BaseModel],
         event_sink: Callable[[dict], None] | None = None,
         session_id: str | None = None,
-        reasoning_effort: str | None = None,
-        result_model: type[BaseModel] = CodexRunResult,
         image_paths: list[Path] | None = None,
     ) -> BaseModel:
         command = self.build_command(
             cwd=cwd,
             schema_path=schema_path,
             output_path=output_path,
-            session_id=session_id,
             reasoning_effort=reasoning_effort,
+            session_id=session_id,
             image_paths=image_paths,
         )
-        # A stray API key would silently switch billing/auth modes. This silo is
-        # deliberately ChatGPT-login-only, so remove it from the child process.
-        env = {key: value for key, value in os.environ.items() if key != "OPENAI_API_KEY"}
         process = subprocess.Popen(
             command,
             text=True,
@@ -119,7 +149,7 @@ class CodexCli:
             stderr=subprocess.PIPE,
             encoding="utf-8",
             errors="replace",
-            env=env,
+            env=codex_env(),
         )
         if process.stdin is None or process.stdout is None or process.stderr is None:
             process.kill()

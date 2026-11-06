@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
+from sol.agents import ARTIFACT_NAMES
 from sol.cli import build_parser
 from sol.client import CodexCli, CodexCliError
 from sol.harness import SolHarness
-from sol.models import ARTIFACT_NAMES, RunRequest
-from sol.service import SolService
+from sol.models import RunRequest, StageRunResult
 from sol.validation import validate_run
 
 
@@ -31,11 +31,12 @@ def test_offline_run_writes_complete_film_bundle(tmp_path):
 
 def test_codex_command_is_cli_native(monkeypatch, tmp_path):
     monkeypatch.setattr("sol.client.shutil.which", lambda _: "/usr/bin/codex")
-    client = CodexCli(model="gpt-5.6-sol", reasoning_effort="xhigh")
+    client = CodexCli(model="gpt-5.6-sol")
     command = client.build_command(
         cwd=tmp_path,
         schema_path=tmp_path / "schema.json",
         output_path=tmp_path / "result.json",
+        reasoning_effort="xhigh",
     )
     assert command[0] == "/usr/bin/codex"
     assert "exec" in command
@@ -49,27 +50,19 @@ def test_codex_command_is_cli_native(monkeypatch, tmp_path):
 def test_doctor_overrides_invalid_global_service_tier(monkeypatch):
     observed = []
 
-    monkeypatch.setattr("sol.cli.CodexCli.resolve", lambda self: "codex")
+    monkeypatch.setattr("sol.client.CodexCli.resolve", lambda self: "codex")
 
     def fake_run(command, **kwargs):
         observed.append(command)
         return subprocess.CompletedProcess(command, 0, stdout="ok\n", stderr="")
 
-    monkeypatch.setattr("sol.cli.subprocess.run", fake_run)
+    monkeypatch.setattr("sol.client.subprocess.run", fake_run)
 
     from sol.cli import main
 
     assert main(["doctor"]) == 0
     login_command = next(command for command in observed if "login" in command)
     assert 'service_tier="fast"' in login_command
-
-
-def test_codex_result_schema_is_strict_for_structured_outputs():
-    from sol.models import CodexRunResult
-
-    schema = CodexRunResult.model_json_schema()
-    assert schema["additionalProperties"] is False
-    assert set(schema["required"]) == set(schema["properties"])
 
 
 def test_codex_failure_preserves_stdout_error_when_stderr_has_warnings(monkeypatch, tmp_path):
@@ -95,6 +88,8 @@ def test_codex_failure_preserves_stdout_error_when_stderr_has_warnings(monkeypat
             schema_path=tmp_path / "schema.json",
             output_path=tmp_path / "result.json",
             trace_path=tmp_path / "trace.jsonl",
+            reasoning_effort="high",
+            result_model=StageRunResult,
         )
     assert "invalid_json_schema" in (tmp_path / "trace.jsonl").read_text()
 
@@ -121,11 +116,9 @@ def test_codex_child_never_receives_api_key(monkeypatch, tmp_path):
         output = Path(command[command.index("--output-last-message") + 1])
         output.write_text(json.dumps({
             "status": "completed",
-            "scene_file": "sol_scene.py",
-            "scene_name": "Example",
-            "artifacts": list(ARTIFACT_NAMES),
-            "rendered": False,
-            "video_path": None,
+            "role": "intent",
+            "artifacts": ["01_intent.json"],
+            "summary": "ok",
             "checks": ["ok"],
             "notes": [],
         }))
@@ -138,6 +131,8 @@ def test_codex_child_never_receives_api_key(monkeypatch, tmp_path):
         schema_path=tmp_path / "schema.json",
         output_path=tmp_path / "result.json",
         trace_path=tmp_path / "trace.jsonl",
+        reasoning_effort="high",
+        result_model=StageRunResult,
     )
     assert "OPENAI_API_KEY" not in observed["env"]
     assert os.environ["OPENAI_API_KEY"] == "must-not-leak"
@@ -154,13 +149,13 @@ def test_validator_blocks_generated_code_with_process_access(tmp_path):
     assert any("blocked import 'subprocess'" in failure for failure in failures)
 
 
-def test_service_reads_run_ledger(tmp_path):
-    service = SolService(runs_dir=tmp_path)
-    manifest = service.run(RunRequest(prompt="visualize curvature", offline=True))
-    assert service.get_run(manifest["run_id"]).status == "completed"
-    assert service.list_runs(limit=1)[0].run_id == manifest["run_id"]
+def test_harness_reads_run_ledger(tmp_path):
+    harness = SolHarness(runs_dir=tmp_path)
+    manifest = harness.run(RunRequest(prompt="visualize curvature", offline=True))
+    assert harness.get_run(manifest["run_id"]).status == "completed"
+    assert harness.list_runs(limit=1)[0].run_id == manifest["run_id"]
     with pytest.raises(ValueError):
-        service.get_run("../escape")
+        harness.get_run("../escape")
 
 
 def test_cli_surface_has_no_server_or_calculator_commands():
@@ -172,3 +167,38 @@ def test_cli_surface_has_no_server_or_calculator_commands():
         parser.parse_args(["serve"])
     with pytest.raises(SystemExit):
         parser.parse_args(["calculate", "1+1"])
+
+
+def test_paths_resolve_from_cwd_and_env_at_call_time(monkeypatch, tmp_path):
+    from sol.client import default_codex_command
+    from sol.harness import default_runs_dir
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("M2M_SOL_CODEX", raising=False)
+    assert default_runs_dir() == tmp_path / "runs" / "sol"
+    assert default_codex_command() == "codex"
+    local = tmp_path / "node_modules" / ".bin" / "codex"
+    local.parent.mkdir(parents=True)
+    local.write_text("#!/bin/sh\n")
+    assert default_codex_command() == str(local)
+    monkeypatch.setenv("M2M_SOL_CODEX", "/opt/codex")
+    assert CodexCli().command == "/opt/codex"
+
+
+def test_validator_reports_latex_structure_errors_once(tmp_path):
+    for name in ARTIFACT_NAMES:
+        path = tmp_path / name
+        if name == "sol_scene.py":
+            path.write_text(
+                "from manim import *\n\nclass Bad(Scene):\n"
+                "    def construct(self):\n        self.add(MathTex(r'\\frac{a}'))\n"
+            )
+        else:
+            path.write_text('{"ok": true}')
+    failures, scene_name, _ = validate_run(tmp_path, require_video=False)
+    assert scene_name == "Bad"
+    latex_failures = [failure for failure in failures if "LaTeX" in failure]
+    assert len(latex_failures) == 1
+    validation = json.loads((tmp_path / "validation.json").read_text())
+    assert validation["manim_code"]["valid"] is False
+    assert validation["latex"]["errors"]

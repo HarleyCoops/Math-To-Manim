@@ -1,10 +1,16 @@
-"""Sol-native specialist contracts for the staged Codex CLI pipeline."""
+"""Sol-native specialist contracts for the staged Codex CLI pipeline.
+
+``AGENT_STAGES`` is the single source of stage structure: artifacts, the
+dependency graph, default reasoning effort, and the charter. Everything that
+needs stage order, record names, or the artifact contract derives it here.
+"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
 
+from sol.layout import REVIEW_FILE, SCENE_FILE, STAGES_DIR, VALIDATION_FILE
 from sol.models import RunRequest
 
 
@@ -15,7 +21,6 @@ class AgentStage:
     dependencies: tuple[str, ...]
     reasoning_effort: str
     charter: str
-    version: str = "1"
 
 
 AGENT_STAGES = (
@@ -78,7 +83,7 @@ AGENT_STAGES = (
     ),
     AgentStage(
         name="scene-composer",
-        artifacts=("06_scene_spec.json", "sol_scene.py"),
+        artifacts=("06_scene_spec.json", SCENE_FILE),
         dependencies=("cinematographer",),
         reasoning_effort="high",
         charter=(
@@ -90,12 +95,58 @@ AGENT_STAGES = (
     ),
 )
 
+STAGE_NAMES = tuple(stage.name for stage in AGENT_STAGES)
+
+# Every file a complete run bundle must contain: the stage artifacts plus the
+# two wrapper-owned verdict files.
+ARTIFACT_NAMES = (
+    *(artifact for stage in AGENT_STAGES for artifact in stage.artifacts),
+    VALIDATION_FILE,
+    REVIEW_FILE,
+)
+
 
 def stage_by_name(name: str) -> AgentStage:
     for stage in AGENT_STAGES:
         if stage.name == name:
             return stage
     raise ValueError(f"unknown Sol stage: {name}")
+
+
+def stage_index(stage: AgentStage) -> int:
+    """1-based position in the table; fixes stage record and trace names."""
+    return AGENT_STAGES.index(stage) + 1
+
+
+def stage_record_path(stage: AgentStage) -> str:
+    return f"{STAGES_DIR}/{stage_index(stage):02d}-{stage.name}.json"
+
+
+def stage_effort(stage: AgentStage, request: RunRequest) -> str:
+    return request.reasoning_effort or stage.reasoning_effort
+
+
+def upstream_artifacts(stage: AgentStage) -> tuple[str, ...]:
+    """Artifacts of the direct dependencies, in table order."""
+    return tuple(
+        artifact
+        for dependency in stage.dependencies
+        for artifact in stage_by_name(dependency).artifacts
+    )
+
+
+def downstream_of(name: str) -> set[str]:
+    """``name`` and every stage that transitively depends on it."""
+    stage_by_name(name)
+    selected = {name}
+    changed = True
+    while changed:
+        changed = False
+        for stage in AGENT_STAGES:
+            if stage.name not in selected and set(stage.dependencies) & selected:
+                selected.add(stage.name)
+                changed = True
+    return selected
 
 
 def build_stage_prompt(
@@ -105,13 +156,7 @@ def build_stage_prompt(
     run_dir: Path,
     feedback: str | None = None,
 ) -> str:
-    by_name = {item.name: item for item in AGENT_STAGES}
-    upstream = [
-        artifact
-        for dependency in stage.dependencies
-        for artifact in by_name[dependency].artifacts
-    ]
-    upstream_text = "\n".join(f"- {name}" for name in upstream) or "- none"
+    upstream_text = "\n".join(f"- {name}" for name in upstream_artifacts(stage)) or "- none"
     outputs = "\n".join(f"- {name}" for name in stage.artifacts)
     repair = (
         f"\n<repair_evidence>\n{feedback}\n</repair_evidence>\n"

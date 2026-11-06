@@ -6,8 +6,10 @@ import os
 import re
 import subprocess
 import sys
-from dataclasses import dataclass
 from pathlib import Path
+
+from sol.layout import REVIEW_FRAMES_DIR, SCENE_FILE
+from sol.models import QUALITY_CHOICES
 
 try:
     import resource
@@ -15,7 +17,9 @@ except ImportError:  # pragma: no cover - Windows
     resource = None  # type: ignore[assignment]
 
 _SCENE_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-_QUALITY = re.compile(r"^[lmhpk]$")
+RENDER_TIMEOUT_SECONDS = 1200
+REVIEW_FRAME_COUNT = 12
+MIN_VIDEO_BYTES = 1024
 
 
 class RenderError(RuntimeError):
@@ -45,28 +49,19 @@ def apply_resource_limits() -> None:
         pass
 
 
-@dataclass(frozen=True)
-class RenderOutcome:
-    video_path: Path
-    stdout_path: Path
-    stderr_path: Path
-    frame_paths: tuple[Path, ...]
-    contact_sheet_path: Path | None
-
-
 def build_manim_command(
     run_dir: Path,
     *,
     scene_name: str,
     quality: str,
 ) -> list[str]:
-    if not _QUALITY.fullmatch(quality):
+    if quality not in QUALITY_CHOICES:
         raise RenderError(f"invalid Manim quality flag: {quality!r}")
     if not _SCENE_NAME.fullmatch(scene_name):
         raise RenderError(f"invalid scene class name: {scene_name!r}")
     root = Path(run_dir).resolve()
     media_dir = resolve_inside(root, root / "media")
-    resolve_inside(root, root / "sol_scene.py")
+    resolve_inside(root, root / SCENE_FILE)
     return [
         sys.executable,
         "-m",
@@ -76,7 +71,7 @@ def build_manim_command(
         str(media_dir),
         "--progress_bar",
         "none",
-        "sol_scene.py",
+        SCENE_FILE,
         scene_name,
     ]
 
@@ -137,13 +132,12 @@ def preflight_render() -> list[str]:
     return versions
 
 
-def render_scene(
-    run_dir: Path,
-    *,
-    scene_name: str,
-    quality: str,
-    timeout: float = 1200,
-) -> RenderOutcome:
+def render_scene(run_dir: Path, *, scene_name: str, quality: str) -> list[Path]:
+    """Render the scene and return the frame evidence (sampled frames, contact sheet).
+
+    Raises RenderError when Manim fails, produces no fresh video, or no frame
+    evidence could be extracted from it.
+    """
     run_dir = Path(run_dir)
     stdout_path = run_dir / "render_stdout.log"
     stderr_path = run_dir / "render_stderr.log"
@@ -159,7 +153,7 @@ def render_scene(
         text=True,
         encoding="utf-8",
         errors="replace",
-        timeout=timeout,
+        timeout=RENDER_TIMEOUT_SECONDS,
         check=False,
         preexec_fn=apply_resource_limits if resource is not None else None,
     )
@@ -173,24 +167,23 @@ def render_scene(
         )[-6000:]
         raise RenderError(f"Manim failed with exit {completed.returncode}:\n{detail}")
     video = find_final_video(run_dir)
-    if video is None or video.stat().st_size < 1024:
+    if video is None or video.stat().st_size < MIN_VIDEO_BYTES:
         raise RenderError("Manim completed without a valid final MP4")
     if previous_videos.get(video.resolve()) == (video.stat().st_mtime_ns, video.stat().st_size):
         raise RenderError("Manim did not produce fresh video evidence")
     frames, contact_sheet = extract_review_frames(run_dir, video)
-    return RenderOutcome(
-        video_path=video,
-        stdout_path=stdout_path,
-        stderr_path=stderr_path,
-        frame_paths=tuple(frames),
-        contact_sheet_path=contact_sheet,
-    )
+    evidence = [*frames, *([contact_sheet] if contact_sheet else [])]
+    if not evidence:
+        raise RenderError("render completed without representative frame evidence")
+    return evidence
 
 
 def extract_review_frames(run_dir: Path, video_path: Path) -> tuple[list[Path], Path | None]:
-    review_dir = Path(run_dir) / "review_frames"
+    review_dir = Path(run_dir) / REVIEW_FRAMES_DIR
     review_dir.mkdir(exist_ok=True)
-    for name in [*(f"frame_{index:02d}.png" for index in range(1, 13)), "contact_sheet.png"]:
+    names = [*(f"frame_{index:02d}.png" for index in range(1, REVIEW_FRAME_COUNT + 1)),
+             "contact_sheet.png"]
+    for name in names:
         (review_dir / name).unlink(missing_ok=True)
     duration_result = subprocess.run(
         [
@@ -211,7 +204,7 @@ def extract_review_frames(run_dir: Path, video_path: Path) -> tuple[list[Path], 
         duration = float(duration_result.stdout.strip())
     except ValueError:
         return [], None
-    timestamps = [duration * (index + 0.5) / 12 for index in range(12)]
+    timestamps = [duration * (index + 0.5) / REVIEW_FRAME_COUNT for index in range(REVIEW_FRAME_COUNT)]
     frames: list[Path] = []
     for index, timestamp in enumerate(timestamps, start=1):
         frame = review_dir / f"frame_{index:02d}.png"
@@ -243,7 +236,7 @@ def extract_review_frames(run_dir: Path, video_path: Path) -> tuple[list[Path], 
             "-i",
             str(video_path),
             "-vf",
-            f"fps=12/{duration},scale=480:-1,tile=4x3:padding=8:margin=8",
+            f"fps={REVIEW_FRAME_COUNT}/{duration},scale=480:-1,tile=4x3:padding=8:margin=8",
             "-frames:v",
             "1",
             str(contact_sheet),

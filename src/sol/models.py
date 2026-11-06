@@ -2,50 +2,38 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, get_args
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-ARTIFACT_NAMES = (
-    "01_intent.json",
-    "02_knowledge_map.json",
-    "03_curriculum.json",
-    "04_math_dossier.json",
-    "05_shot_list.json",
-    "06_scene_spec.json",
-    "sol_scene.py",
-    "validation.json",
-    "review.json",
-)
+from sol.manifest_schema import CURRENT_SCHEMA_VERSION
+
+Quality = Literal["l", "m", "h", "p", "k"]
+ReasoningEffort = Literal["low", "medium", "high", "xhigh", "max"]
+Evaluator = Literal["cinematographer", "astra_review"]
+
+QUALITY_CHOICES: tuple[str, ...] = get_args(Quality)
+REASONING_EFFORT_CHOICES: tuple[str, ...] = get_args(ReasoningEffort)
+EVALUATOR_CHOICES: tuple[str, ...] = get_args(Evaluator)
+MAX_REPAIRS_LIMIT = 5
 
 
 class RunRequest(BaseModel):
     prompt: str = Field(min_length=3, max_length=12_000)
     render: bool = False
-    quality: Literal["l", "m", "h", "p", "k"] = "l"
-    reasoning_effort: Literal["low", "medium", "high", "xhigh", "max"] = "high"
-    max_repairs: int = Field(default=2, ge=0, le=5)
+    quality: Quality = "l"
+    # None keeps each stage's own effort from the stage table; a value overrides
+    # every stage of this run.
+    reasoning_effort: ReasoningEffort | None = None
+    max_repairs: int = Field(default=2, ge=0, le=MAX_REPAIRS_LIMIT)
     offline: bool = False
-    evaluator: Literal["cinematographer", "astra_review"] = "cinematographer"
+    evaluator: Evaluator = "cinematographer"
 
     @field_validator('evaluator', mode='before')
     @classmethod
     def migrate_legacy_reviewer_name(cls, value):
         # Old saved requests used this incorrect name for an Astra reviewer.
         return 'astra_review' if value == 'jev' else value
-
-
-class CodexRunResult(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    status: Literal["completed", "failed"]
-    scene_file: str
-    scene_name: str
-    artifacts: list[str]
-    rendered: bool
-    video_path: str | None
-    checks: list[str]
-    notes: list[str]
 
 
 class StageRunResult(BaseModel):
@@ -76,7 +64,7 @@ class StageRecord(BaseModel):
 
 
 class RunManifest(BaseModel):
-    schema_version: int = 2
+    schema_version: int = CURRENT_SCHEMA_VERSION
     run_id: str
     prompt: str
     model: str

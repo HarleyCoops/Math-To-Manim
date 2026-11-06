@@ -1,4 +1,8 @@
-"""Versioned Sol run-manifest contract."""
+"""Versioned Sol run-manifest contract.
+
+Migrations spell file names out literally on purpose: each one describes the
+layout that existed at that schema version and must not follow a later rename.
+"""
 
 from __future__ import annotations
 
@@ -10,15 +14,6 @@ Migrator = Callable[[dict[str, Any]], dict[str, Any]]
 
 class ManifestSchemaError(ValueError):
     """The on-disk manifest cannot be migrated to the current schema."""
-
-
-def validation_template() -> dict[str, Any]:
-    return {
-        "latex": None,
-        "manim_code": None,
-        "complexity": None,
-        "ran_at": None,
-    }
 
 
 def _as_dict(value: Any) -> dict[str, Any]:

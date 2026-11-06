@@ -1,55 +1,42 @@
-"""Deterministic full-pipeline rehearsal with no Codex call or render."""
+"""Deterministic full-pipeline rehearsal with no Codex call or render.
+
+Writes every stage artifact; validation.json and review.json are owned by the
+harness and written by its validate-and-review pass.
+"""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-from sol.models import ARTIFACT_NAMES, CodexRunResult, RunRequest
-from sol.scene_checks import validation_from_scene
+from sol.agents import AGENT_STAGES
+from sol.models import RunRequest
+
+OFFLINE_SCENE_NAME = "SolOfflineScene"
 
 
-def write_offline_bundle(run_dir: Path, request: RunRequest) -> CodexRunResult:
-    for index, name in enumerate(ARTIFACT_NAMES, start=1):
-        path = run_dir / name
-        if name == "sol_scene.py":
-            path.write_text(_OFFLINE_SCENE, encoding="utf-8")
-        elif name == "validation.json":
-            path.write_text(
-                json.dumps(validation_from_scene(_OFFLINE_SCENE), indent=2),
-                encoding="utf-8",
-            )
-        elif name == "review.json":
-            path.write_text(json.dumps({
-                "offline": True,
-                "checks": ["artifact contract", "python compilation", "static safety"],
-                "rendered": False,
-                "limitations": ["deterministic rehearsal; no Codex call"],
-            }, indent=2), encoding="utf-8")
-        else:
-            path.write_text(json.dumps({
-                "offline": True,
-                "stage": name.removesuffix(".json"),
-                "topic": request.prompt,
-                "sequence": index,
-                "content": ["deterministic full-pipeline rehearsal"],
-            }, indent=2), encoding="utf-8")
-    return CodexRunResult(
-        status="completed",
-        scene_file="sol_scene.py",
-        scene_name="SolOfflineScene",
-        artifacts=list(ARTIFACT_NAMES),
-        rendered=False,
-        video_path=None,
-        checks=["offline artifact contract", "python compilation", "static safety"],
-        notes=["No Codex CLI call or render was performed"],
-    )
+def write_offline_bundle(run_dir: Path, request: RunRequest) -> None:
+    sequence = 0
+    for stage in AGENT_STAGES:
+        for name in stage.artifacts:
+            sequence += 1
+            path = run_dir / name
+            if name.endswith(".json"):
+                path.write_text(json.dumps({
+                    "offline": True,
+                    "stage": name.removesuffix(".json"),
+                    "topic": request.prompt,
+                    "sequence": sequence,
+                    "content": ["deterministic full-pipeline rehearsal"],
+                }, indent=2), encoding="utf-8")
+            else:
+                path.write_text(_OFFLINE_SCENE, encoding="utf-8")
 
 
-_OFFLINE_SCENE = '''from manim import *
+_OFFLINE_SCENE = f'''from manim import *
 
 
-class SolOfflineScene(Scene):
+class {OFFLINE_SCENE_NAME}(Scene):
     """Deterministic rehearsal of the complete Sol artifact contract."""
 
     def construct(self):

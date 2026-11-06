@@ -1,25 +1,22 @@
 """Static scene, LaTeX, and MathTex checks for generated Sol films.
 
 Sol-native copy of the AST/parser checks. Scene discovery and MathTex
-raw-string policy are AST-based. LaTeX is tokenized and parsed as a document
-of commands, groups, and environments — not counted braces. ``chktex`` is
-used when present and treated as an optional second opinion.
+raw-string policy are AST-based. LaTeX fragments are tokenized and parsed as
+a document of commands, groups, and environments — not counted braces.
+``chktex`` is used when present and treated as an optional second opinion.
 """
 
 from __future__ import annotations
 
 import ast
-import hashlib
-import json
 import os
 import re
 import shutil
 import subprocess
 import tempfile
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 # Manim Community scene bases all end in ``Scene``. Matching that suffix via
 # AST (not the substring ``"Scene)"``) is what keeps ThreeDScene, ZoomedScene,
@@ -128,10 +125,6 @@ def _call_name(node: ast.AST) -> str | None:
     return None
 
 
-def _base_name(node: ast.AST) -> str | None:
-    return _call_name(node)
-
-
 def discover_scene_classes(tree: ast.AST) -> list[str]:
     """Return class names whose bases look like a Manim Scene subclass."""
     names: list[str] = []
@@ -139,23 +132,11 @@ def discover_scene_classes(tree: ast.AST) -> list[str]:
         if not isinstance(node, ast.ClassDef):
             continue
         for base in node.bases:
-            name = _base_name(base)
+            name = _call_name(base)
             if name and name.endswith(_SCENE_SUFFIX):
                 names.append(node.name)
                 break
     return names
-
-
-def find_scene_class(code: str) -> str:
-    """Return the first Scene subclass name, or raise if none exist."""
-    try:
-        tree = ast.parse(code)
-    except SyntaxError as exc:
-        raise RuntimeError(f"Generated code is not valid Python: {exc}") from exc
-    names = discover_scene_classes(tree)
-    if not names:
-        raise RuntimeError("Generated code defines no Scene subclass")
-    return names[0]
 
 
 def _is_raw_string_literal(source: str, node: ast.Constant) -> bool:
@@ -322,15 +303,14 @@ def _read_group_name(tokens: list[tuple[str, str, int]], start: int) -> tuple[st
     return None, start
 
 
-def parse_latex(text: str, *, math_fragment: bool = True) -> list[LatexIssue]:
-    """Parse a LaTeX fragment and return structural issues with line numbers."""
+def parse_latex(text: str) -> list[LatexIssue]:
+    """Parse a MathTex/Tex fragment and return structural issues with line numbers."""
     tokens = tokenize_latex(text)
     issues: list[LatexIssue] = []
     braces: list[int] = []
     brackets: list[int] = []
     environments: list[tuple[str, int]] = []
     math_inline = 0
-    math_display = 0
     math_pairs: list[tuple[str, int]] = []
     index = 0
 
@@ -422,7 +402,6 @@ def parse_latex(text: str, *, math_fragment: bool = True) -> list[LatexIssue]:
             index += 1
             continue
         if kind == "MATH_DISPLAY":
-            math_display += 1
             index += 1
             continue
         if kind == "MATH_PAIR":
@@ -479,12 +458,7 @@ def parse_latex(text: str, *, math_fragment: bool = True) -> list[LatexIssue]:
         issues.append(LatexIssue(open_line, "error", f"unclosed \\begin{{{env}}}"))
     for closer, open_line in math_pairs:
         issues.append(LatexIssue(open_line, "error", f"unclosed math delimiter (expected {closer})"))
-    if not math_fragment:
-        if math_inline % 2:
-            issues.append(LatexIssue(1, "error", "unmatched $ math delimiter"))
-        if math_display % 2:
-            issues.append(LatexIssue(1, "error", "unmatched $$ math delimiter"))
-    elif math_inline % 2:
+    if math_inline % 2:
         issues.append(LatexIssue(1, "warning", "unmatched $ inside a MathTex fragment"))
     return issues
 
@@ -570,16 +544,12 @@ def _run_lualatex(text: str) -> list[LatexIssue]:
     return issues
 
 
-def validate_latex_report(latex: str, *, math_fragment: bool = True) -> LatexReport:
-    """Return the historical ``{valid, errors, warnings}`` MCP-compatible report."""
-    issues = parse_latex(latex, math_fragment=math_fragment)
+def validate_latex_report(latex: str) -> LatexReport:
+    """Structural, chktex, and optional lualatex findings for one MathTex fragment."""
+    issues = parse_latex(latex)
     # chktex is a full-document linter. On MathTex fragments it is useful as
     # a second opinion but too noisy to fail a run. Keep those hits as warnings.
-    for issue in _run_chktex(latex):
-        if math_fragment:
-            issues.append(LatexIssue(issue.line, "warning", issue.message))
-        else:
-            issues.append(issue)
+    issues.extend(LatexIssue(issue.line, "warning", issue.message) for issue in _run_chktex(latex))
     issues.extend(_run_lualatex(latex))
     errors = [issue.as_text() for issue in issues if issue.severity == "error"]
     warnings = [issue.as_text() for issue in issues if issue.severity != "error"]
@@ -591,19 +561,11 @@ def validate_latex_report(latex: str, *, math_fragment: bool = True) -> LatexRep
     )
 
 
-def validate_manim_code_report(source: str) -> SceneCheckReport:
-    """AST-based Manim scene report used by verify and validation.json."""
+def validate_manim_code_report(source: str, tree: ast.AST) -> SceneCheckReport:
+    """AST-based Manim scene report; ``tree`` is the parsed ``source``."""
     errors: list[str] = []
     warnings: list[str] = []
     suggestions: list[str] = []
-    try:
-        tree = ast.parse(source)
-    except SyntaxError as exc:
-        return SceneCheckReport(
-            valid=False,
-            scene_names=[],
-            errors=[f"syntax error: {exc}"],
-        )
 
     scene_names = discover_scene_classes(tree)
     if not scene_names:
@@ -626,7 +588,7 @@ def validate_manim_code_report(source: str) -> SceneCheckReport:
     latex_warnings: list[str] = []
     latex_issues: list[LatexIssue] = []
     for line, fragment in extract_tex_fragments(source, tree):
-        report = validate_latex_report(fragment, math_fragment=True)
+        report = validate_latex_report(fragment)
         for issue in report.issues:
             relocated = LatexIssue(line, issue.severity, issue.message)
             latex_issues.append(relocated)
@@ -650,47 +612,4 @@ def validate_manim_code_report(source: str) -> SceneCheckReport:
         suggestions=suggestions,
         latex=latex,
         complexity=scene_complexity(tree),
-    )
-
-
-def validation_template() -> dict[str, Any]:
-    return {
-        "latex": None,
-        "manim_code": None,
-        "complexity": None,
-        "ran_at": None,
-    }
-
-
-def validation_from_scene(source: str) -> dict[str, Any]:
-    report = validate_manim_code_report(source)
-    latex = report.latex.to_dict() if report.latex is not None else None
-    return {
-        "latex": latex,
-        "manim_code": {
-            "valid": report.valid,
-            "scene_names": report.scene_names,
-            "errors": report.errors,
-            "warnings": report.warnings,
-            "suggestions": report.suggestions,
-        },
-        "complexity": report.complexity,
-        "ran_at": datetime.now(timezone.utc).isoformat(),
-        "source_sha256": hashlib.sha256(source.encode("utf-8")).hexdigest(),
-    }
-
-
-def write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-
-
-def iter_known_scene_bases() -> Iterable[str]:
-    return (
-        "Scene",
-        "ThreeDScene",
-        "MovingCameraScene",
-        "ZoomedScene",
-        "LinearTransformationScene",
-        "VectorScene",
-        "GraphScene",
     )
