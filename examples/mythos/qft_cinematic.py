@@ -19,9 +19,9 @@ import numpy as np
 from manim import *
 
 # Import the Mythos visual grammar (repo-root import with fallback).
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
+_SRC = Path(__file__).resolve().parents[2] / "src"
+if str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
 
 from mythos.cinematography import (  # noqa: E402
     CORAL, EMBER, FOG, GOLD, INK, IVORY, OLIVE, SKY,

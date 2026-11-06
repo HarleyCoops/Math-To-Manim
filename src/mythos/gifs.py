@@ -1,6 +1,6 @@
-"""One-command showcase GIFs: `math-to-manim gif <run_id | scene.mp4>`.
+"""One-command showcase GIFs: `math-to-manim-mythos gif <run_id | scene.mp4>`.
 
-Manim leaves rendered MP4s under ``media/videos/<module>/<quality>/``; the
+A rendered run keeps its MP4 under ``<run_dir>/media/videos/...``; the
 showcase (and the README) wants palette-optimized GIFs. This module turns
 one into the other with ffmpeg's two-pass palette pipeline — the same recipe
 behind every GIF on the front page.
@@ -8,35 +8,21 @@ behind every GIF on the front page.
 
 from __future__ import annotations
 
-import json
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
-from mythos.harness import REPO_ROOT, default_runs_dir
+from mythos.layout import MANIFEST_FILE, read_manifest
+from mythos.render import find_final_video
+from mythos.settings import default_runs_dir
 
 DEFAULT_FPS = 12
 DEFAULT_WIDTH = 640
 
 
-def find_scene_mp4(scene_name: str, media_root: Path | None = None) -> Path | None:
-    """Newest rendered MP4 for a scene, searching media/videos recursively."""
-    root = media_root or (REPO_ROOT / "media" / "videos")
-    if not root.exists():
-        return None
-    candidates = sorted(
-        root.rglob(f"{scene_name}.mp4"),
-        key=lambda p: (p.stat().st_mtime_ns, p.as_posix()),
-        reverse=True,
-    )
-    for candidate in candidates:
-        if "partial_movie_files" not in candidate.parts:
-            return candidate
-    return None
-
-
-def resolve_source(target: str) -> tuple[Path, Path]:
+def resolve_source(target: str, *, runs_dir: Path | None = None) -> tuple[Path, Path]:
     """Map a run id or mp4 path to (mp4_path, default_output_path)."""
     as_path = Path(target)
     if as_path.suffix.lower() == ".mp4":
@@ -44,23 +30,22 @@ def resolve_source(target: str) -> tuple[Path, Path]:
             raise FileNotFoundError(f"No such file: {as_path}")
         return as_path, as_path.with_suffix(".gif")
 
-    run_dir = default_runs_dir() / target
-    manifest_path = run_dir / "manifest.json"
-    if not manifest_path.exists():
+    runs_dir = Path(runs_dir) if runs_dir else default_runs_dir()
+    run_dir = runs_dir / target
+    if not (run_dir / MANIFEST_FILE).exists():
         raise FileNotFoundError(
             f"{target!r} is neither an .mp4 path nor a run id under "
-            f"{default_runs_dir()} (no manifest.json found)")
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    scene_name = manifest.get("scene_name")
+            f"{runs_dir} (no {MANIFEST_FILE} found)")
+    scene_name = read_manifest(run_dir).get("scene_name")
     if not scene_name:
         raise ValueError(f"Run {target!r} has no scene_name in its manifest "
                          "(did the chain reach codegen?)")
-    local = run_dir / f"{scene_name}.mp4"
-    mp4 = local if local.exists() else find_scene_mp4(scene_name)
+    mp4 = find_final_video(run_dir)
     if mp4 is None:
         raise FileNotFoundError(
-            f"No rendered MP4 found for scene {scene_name!r}. "
-            "Render first: manim -qm <scene file> " + scene_name)
+            f"No rendered MP4 found in run {target!r} for scene {scene_name!r}. "
+            f"Render first: math-to-manim-mythos run ... --render, or "
+            f"manim -qm --media_dir {run_dir / 'media'} {run_dir / 'mythos_scene.py'} {scene_name}")
     return mp4, run_dir / f"{scene_name}.gif"
 
 
@@ -90,12 +75,12 @@ def mp4_to_gif(mp4: Path, out: Path, *, fps: int = DEFAULT_FPS,
 
 def make_gif(target: str, output: str | None = None, *,
              fps: int = DEFAULT_FPS, width: int = DEFAULT_WIDTH) -> Path:
-    """The `math-to-manim gif` entry point. Returns the written GIF path."""
+    """The `math-to-manim-mythos gif` entry point. Returns the written GIF path."""
     mp4, default_out = resolve_source(target)
     out = Path(output) if output else default_out
     out.parent.mkdir(parents=True, exist_ok=True)
     mp4_to_gif(mp4, out, fps=fps, width=width)
     size_mb = out.stat().st_size / 1e6
     print(f"  [mythos] {mp4.name} -> {out}  ({size_mb:.1f} MB, "
-          f"{fps} fps, {width}px)")
+          f"{fps} fps, {width}px)", file=sys.stderr)
     return out

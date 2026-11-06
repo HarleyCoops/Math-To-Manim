@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import ast
 import hashlib
-import json
 import re
 import shutil
 import subprocess
@@ -18,8 +17,9 @@ import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
+from mythos.layout import validation_template
 from mythos.settings import PipelineSettings
 
 # Manim Community scene bases all end in ``Scene``. Matching that suffix via
@@ -129,10 +129,6 @@ def _call_name(node: ast.AST) -> str | None:
     return None
 
 
-def _base_name(node: ast.AST) -> str | None:
-    return _call_name(node)
-
-
 def discover_scene_classes(tree: ast.AST) -> list[str]:
     """Return class names whose bases look like a Manim Scene subclass."""
     names: list[str] = []
@@ -140,7 +136,7 @@ def discover_scene_classes(tree: ast.AST) -> list[str]:
         if not isinstance(node, ast.ClassDef):
             continue
         for base in node.bases:
-            name = _base_name(base)
+            name = _call_name(base)
             if name and name.endswith(_SCENE_SUFFIX):
                 names.append(node.name)
                 break
@@ -323,15 +319,14 @@ def _read_group_name(tokens: list[tuple[str, str, int]], start: int) -> tuple[st
     return None, start
 
 
-def parse_latex(text: str, *, math_fragment: bool = True) -> list[LatexIssue]:
-    """Parse a LaTeX fragment and return structural issues with line numbers."""
+def parse_latex(text: str) -> list[LatexIssue]:
+    """Parse a MathTex fragment and return structural issues with line numbers."""
     tokens = tokenize_latex(text)
     issues: list[LatexIssue] = []
     braces: list[int] = []
     brackets: list[int] = []
     environments: list[tuple[str, int]] = []
     math_inline = 0
-    math_display = 0
     math_pairs: list[tuple[str, int]] = []
     index = 0
 
@@ -423,7 +418,6 @@ def parse_latex(text: str, *, math_fragment: bool = True) -> list[LatexIssue]:
             index += 1
             continue
         if kind == "MATH_DISPLAY":
-            math_display += 1
             index += 1
             continue
         if kind == "MATH_PAIR":
@@ -480,12 +474,7 @@ def parse_latex(text: str, *, math_fragment: bool = True) -> list[LatexIssue]:
         issues.append(LatexIssue(open_line, "error", f"unclosed \\begin{{{env}}}"))
     for closer, open_line in math_pairs:
         issues.append(LatexIssue(open_line, "error", f"unclosed math delimiter (expected {closer})"))
-    if not math_fragment:
-        if math_inline % 2:
-            issues.append(LatexIssue(1, "error", "unmatched $ math delimiter"))
-        if math_display % 2:
-            issues.append(LatexIssue(1, "error", "unmatched $$ math delimiter"))
-    elif math_inline % 2:
+    if math_inline % 2:
         issues.append(LatexIssue(1, "warning", "unmatched $ inside a MathTex fragment"))
     return issues
 
@@ -571,16 +560,13 @@ def _run_lualatex(text: str) -> list[LatexIssue]:
     return issues
 
 
-def validate_latex_report(latex: str, *, math_fragment: bool = True) -> LatexReport:
+def validate_latex_report(latex: str) -> LatexReport:
     """Return the historical ``{valid, errors, warnings}`` MCP-compatible report."""
-    issues = parse_latex(latex, math_fragment=math_fragment)
+    issues = parse_latex(latex)
     # chktex is a full-document linter. On MathTex fragments it is useful as
     # a second opinion but too noisy to fail a run. Keep those hits as warnings.
     for issue in _run_chktex(latex):
-        if math_fragment:
-            issues.append(LatexIssue(issue.line, "warning", issue.message))
-        else:
-            issues.append(issue)
+        issues.append(LatexIssue(issue.line, "warning", issue.message))
     issues.extend(_run_lualatex(latex))
     errors = [issue.as_text() for issue in issues if issue.severity == "error"]
     warnings = [issue.as_text() for issue in issues if issue.severity != "error"]
@@ -592,8 +578,41 @@ def validate_latex_report(latex: str, *, math_fragment: bool = True) -> LatexRep
     )
 
 
-def validate_manim_code_report(source: str) -> SceneCheckReport:
-    """AST-based Manim scene report used by verify and validation.json."""
+def _requires_light_art_direction(prompt: str) -> bool:
+    text = prompt.lower()
+    positive = ("off-white", "archival", "paper", "warm paper")
+    negative = ("no black", "not black", "never black", "non-black")
+    return any(term in text for term in positive) and any(
+        term in text for term in negative)
+
+
+_DARK_BACKGROUND_PATTERNS = (
+    r"background_color\s*=\s*[\"']#0c0c0b[\"']",
+    r"background_color\s*=\s*BLACK\b",
+    r"\bBG\s*=\s*[\"']#0c0c0b[\"']",
+)
+
+
+def art_direction_errors(source: str, prompt: str) -> list[str]:
+    """The user's explicit art direction wins over the default dark stage."""
+    if not _requires_light_art_direction(prompt):
+        return []
+    for pattern in _DARK_BACKGROUND_PATTERNS:
+        if re.search(pattern, source, flags=re.IGNORECASE):
+            return [
+                "prompt art-direction lint: this prompt explicitly "
+                "requires an archival/off-white, non-black background; "
+                "replace the default dark Mythos background with warm "
+                "paper and use dark ink text/geometry."
+            ]
+    return []
+
+
+def validate_manim_code_report(source: str, *, prompt: str | None = None) -> SceneCheckReport:
+    """AST-based Manim scene report used by verify and validation.json.
+
+    With ``prompt``, the user's explicit art direction is checked too.
+    """
     errors: list[str] = []
     warnings: list[str] = []
     suggestions: list[str] = []
@@ -627,7 +646,7 @@ def validate_manim_code_report(source: str) -> SceneCheckReport:
     latex_warnings: list[str] = []
     latex_issues: list[LatexIssue] = []
     for line, fragment in extract_tex_fragments(source, tree):
-        report = validate_latex_report(fragment, math_fragment=True)
+        report = validate_latex_report(fragment)
         for issue in report.issues:
             relocated = LatexIssue(line, issue.severity, issue.message)
             latex_issues.append(relocated)
@@ -642,6 +661,8 @@ def validate_manim_code_report(source: str) -> SceneCheckReport:
     if latex_errors:
         errors.extend(f"LaTeX {item}" for item in latex_errors)
     warnings.extend(latex_warnings)
+    if prompt:
+        errors.extend(art_direction_errors(source, prompt))
 
     return SceneCheckReport(
         valid=not errors,
@@ -654,20 +675,11 @@ def validate_manim_code_report(source: str) -> SceneCheckReport:
     )
 
 
-def validation_template() -> dict[str, Any]:
-    return {
-        "latex": None,
-        "manim_code": None,
-        "complexity": None,
-        "ran_at": None,
-    }
-
-
-def validation_from_scene(source: str) -> dict[str, Any]:
-    report = validate_manim_code_report(source)
-    latex = report.latex.to_dict() if report.latex is not None else None
-    return {
-        "latex": latex,
+def validation_from_report(report: SceneCheckReport, source: str) -> dict[str, Any]:
+    """The ``validation.json`` payload for a checked scene source."""
+    payload = validation_template()
+    payload.update({
+        "latex": report.latex.to_dict() if report.latex is not None else None,
         "manim_code": {
             "valid": report.valid,
             "scene_names": report.scene_names,
@@ -678,20 +690,5 @@ def validation_from_scene(source: str) -> dict[str, Any]:
         "complexity": report.complexity,
         "ran_at": datetime.now(timezone.utc).isoformat(),
         "source_sha256": hashlib.sha256(source.encode("utf-8")).hexdigest(),
-    }
-
-
-def write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-
-
-def iter_known_scene_bases() -> Iterable[str]:
-    return (
-        "Scene",
-        "ThreeDScene",
-        "MovingCameraScene",
-        "ZoomedScene",
-        "LinearTransformationScene",
-        "VectorScene",
-        "GraphScene",
-    )
+    })
+    return payload

@@ -1,4 +1,4 @@
-"""`math-to-manim doctor`: preflight checks before you spend 30 minutes.
+"""`math-to-manim-mythos doctor`: preflight checks before you spend 30 minutes.
 
 Verifies, without touching any model unless asked:
 
@@ -14,25 +14,30 @@ TeX tools are required by default; ``--no-latex`` scopes doctor to non-LaTeX sce
 
 from __future__ import annotations
 
-import os
 import shutil
 import subprocess
 from pathlib import Path
 
 from mythos.backends import (
-    DEFAULT_COMMAND,
-    DEFAULT_MODEL,
-    DEFAULT_TIMEOUT,
     FUGU_API_COMMANDS,
     BackendAuthError,
-    fugu_api_key_from_env,
     is_claude_cli_command,
-    model_fallbacks_from_env,
+    resolve_command,
     run_model,
 )
-from mythos.charter import load_env_file, resolve_command
-from mythos.harness import DEFAULT_RENDER_TIMEOUT, default_runs_dir, resolve_manim
-from mythos.render import render_dependency_guidance
+from mythos.render import render_dependency_guidance, resolve_manim
+from mythos.settings import (
+    DEFAULT_COMMAND,
+    DEFAULT_MODEL,
+    DEFAULT_RENDER_TIMEOUT,
+    DEFAULT_TIMEOUT,
+    ENV_FILE,
+    SETTING_SOURCES,
+    default_runs_dir,
+    fugu_api_key_from_env,
+    ignored_legacy_vars,
+    model_fallbacks_from_env,
+)
 
 _OK = "  [ok]  "
 _BAD = "  [FAIL]"
@@ -45,28 +50,24 @@ def _which(name: str) -> str | None:
 
 def run_doctor(command: str = DEFAULT_COMMAND, model: str = DEFAULT_MODEL,
                ping: bool = False, no_latex: bool = False) -> int:
-    load_env_file()
     failures = 0
 
-    print("math-to-manim doctor")
+    print("math-to-manim-mythos doctor")
     print("configuration:")
-    src = "M2M_MODEL" if os.getenv("M2M_MODEL") else "default"
-    print(f"{_INFO}model:          {model}  (from {src})")
+    print(f"{_INFO}model:          {model}  (from {SETTING_SOURCES['model']})")
     fallbacks = model_fallbacks_from_env()
     if is_claude_cli_command(command):
         chain = " -> ".join([model, *[m for m in fallbacks if m != model]])
         print(f"{_INFO}fallbacks:      {chain}  "
               "(same CLI subscription login, no API key)")
-    if os.getenv("M2M2_MYTHOS_MODEL"):
-        print(f"{_INFO}note: M2M2_MYTHOS_MODEL is set but ignored "
+    for name in ignored_legacy_vars():
+        print(f"{_INFO}note: {name} is set but ignored "
               "(archived-pipeline setting); use M2M_MODEL")
-    print(f"{_INFO}command:        {command}  "
-          f"(from {'M2M_COMMAND' if os.getenv('M2M_COMMAND') else 'default'})")
+    print(f"{_INFO}command:        {command}  (from {SETTING_SOURCES['command']})")
     print(f"{_INFO}timeout:        {DEFAULT_TIMEOUT:.0f}s model / "
           f"{DEFAULT_RENDER_TIMEOUT:.0f}s render")
-    env_path = Path(".env")
     print(f"{_INFO}.env:           "
-          f"{'present (gitignored)' if env_path.exists() else 'none'}")
+          f"{'present (gitignored)' if ENV_FILE.exists() else 'none'}")
 
     print("backend:")
     if command in FUGU_API_COMMANDS:
@@ -165,21 +166,3 @@ def run_doctor(command: str = DEFAULT_COMMAND, model: str = DEFAULT_MODEL,
     print("summary:", summary)
     return 0 if failures == 0 else 1
 
-
-def main(argv: list[str] | None = None) -> int:
-    import argparse
-
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--command", default=DEFAULT_COMMAND)
-    parser.add_argument("--model", default=DEFAULT_MODEL)
-    parser.add_argument("--ping", action="store_true",
-                        help="make one tiny model call to verify login")
-    parser.add_argument("--no-latex", action="store_true",
-                        help="allow missing TeX tools for scenes that do not use LaTeX")
-    args = parser.parse_args(argv)
-    return run_doctor(command=args.command, model=args.model, ping=args.ping,
-                      no_latex=args.no_latex)
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

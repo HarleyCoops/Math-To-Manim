@@ -9,21 +9,15 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
+from mythos.layout import MANIFEST_FILE, SCENE_FILE, VALIDATION_FILE
+from mythos.stages import STAGES
+
 CURRENT_SCHEMA_VERSION = 2
 Migrator = Callable[[dict[str, Any]], dict[str, Any]]
 
 
 class ManifestSchemaError(ValueError):
     """The on-disk manifest cannot be migrated to the current schema."""
-
-
-def validation_template() -> dict[str, Any]:
-    return {
-        "latex": None,
-        "manim_code": None,
-        "complexity": None,
-        "ran_at": None,
-    }
 
 
 def _as_dict(value: Any) -> dict[str, Any]:
@@ -34,14 +28,10 @@ def _migrate_unversioned_to_v1(manifest: dict[str, Any]) -> dict[str, Any]:
     upgraded = dict(manifest)
     upgraded["schema_version"] = 1
     artifacts = dict(_as_dict(upgraded.get("artifacts")))
-    artifacts.setdefault("intent", "01_intent.json")
-    artifacts.setdefault("knowledge_map", "02_knowledge_map.json")
-    artifacts.setdefault("curriculum", "03_curriculum.json")
-    artifacts.setdefault("math_dossier", "04_math_dossier.json")
-    artifacts.setdefault("shot_list", "05_shot_list.json")
-    artifacts.setdefault("scene_spec", "06_scene_spec.json")
-    artifacts.setdefault("scene", upgraded.get("scene_file") or "mythos_scene.py")
-    artifacts.setdefault("manifest", "manifest.json")
+    for stage in STAGES:
+        artifacts.setdefault(stage.manifest_key, stage.artifact)
+    artifacts.setdefault("scene", upgraded.get("scene_file") or SCENE_FILE)
+    artifacts.setdefault("manifest", MANIFEST_FILE)
     upgraded["artifacts"] = artifacts
     return upgraded
 
@@ -49,7 +39,7 @@ def _migrate_unversioned_to_v1(manifest: dict[str, Any]) -> dict[str, Any]:
 def _migrate_v1_to_v2(manifest: dict[str, Any]) -> dict[str, Any]:
     upgraded = dict(manifest)
     artifacts = dict(_as_dict(upgraded.get("artifacts")))
-    artifacts.setdefault("validation", "validation.json")
+    artifacts.setdefault("validation", VALIDATION_FILE)
     upgraded["artifacts"] = artifacts
     status = dict(_as_dict(upgraded.get("status")))
     status.setdefault("validation", "pending")

@@ -1,15 +1,15 @@
-"""The math-to-manim command line.
+"""The math-to-manim-mythos command line.
 
-    math-to-manim run "explain quantum field theory" --render -q m
-    math-to-manim run "the heat equation" --offline
-    math-to-manim runs                      # list on-disk runs
-    math-to-manim doctor --ping             # preflight: config, auth, toolchain
-    math-to-manim serve-api                 # REST API on :8642
-    math-to-manim serve-mcp                 # Grok MCP server on stdio
+    math-to-manim-mythos run "explain quantum field theory" --render -q m
+    math-to-manim-mythos run "the heat equation" --offline
+    math-to-manim-mythos runs                # list on-disk runs
+    math-to-manim-mythos doctor --ping       # preflight: config, auth, toolchain
+    math-to-manim-mythos gif <run id>        # showcase GIF from a rendered run
+    math-to-manim-mythos serve-api           # REST API on :8642
+    math-to-manim-mythos serve-mcp           # Grok MCP server on stdio
 
-Configuration comes from the environment (or a local, gitignored .env):
-M2M_MODEL, M2M_COMMAND, M2M_TIMEOUT, M2M_RENDER_TIMEOUT, M2M_RUNS_DIR,
-M2M_MANIM.
+Configuration comes from the environment (or a local, gitignored .env); see
+:mod:`mythos.settings` for every variable.
 """
 
 from __future__ import annotations
@@ -19,23 +19,27 @@ import json
 import sys
 
 from mythos import __version__
-from mythos.backends import DEFAULT_COMMAND, DEFAULT_MODEL, DEFAULT_TIMEOUT
+from mythos.settings import (
+    DEFAULT_COMMAND,
+    DEFAULT_MODEL,
+    DEFAULT_RENDER_TIMEOUT,
+    DEFAULT_TIMEOUT,
+)
 
 
 def _cmd_run(args: argparse.Namespace) -> int:
-    from mythos.harness import DEFAULT_RENDER_TIMEOUT, MythosHarness
+    from mythos.harness import MythosHarness
 
     fallbacks = (tuple(m.strip() for m in args.fallbacks.split(",") if m.strip())
                  if args.fallbacks is not None else None)
     harness = MythosHarness(command=args.command, model=args.model,
                             timeout=args.timeout,
-                            render_timeout=(args.render_timeout
-                                            or DEFAULT_RENDER_TIMEOUT),
+                            render_timeout=args.render_timeout,
                             offline=args.offline,
                             model_fallbacks=fallbacks)
     manifest = harness.run(args.prompt, render=args.render, quality=args.quality,
                            max_repairs=args.max_repairs)
-    return 1 if manifest.get("render_error", {}).get("type") == "environment" else 0
+    return 1 if manifest.get("render_error") else 0
 
 
 def _cmd_doctor(args: argparse.Namespace) -> int:
@@ -81,7 +85,7 @@ def _cmd_serve_mcp(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="math-to-manim",
+        prog="math-to-manim-mythos",
         description="Ask a question -> get a freakin' movie.",
     )
     parser.add_argument("--version", action="version",
@@ -95,7 +99,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--model", default=DEFAULT_MODEL)
     run.add_argument("--command", default=DEFAULT_COMMAND)
     run.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
-    run.add_argument("--render-timeout", type=float, default=None,
+    run.add_argument("--render-timeout", type=float, default=DEFAULT_RENDER_TIMEOUT,
                      help="render wall-clock budget in seconds "
                           "(default: M2M_RENDER_TIMEOUT or 1800)")
     run.add_argument("--fallbacks", default=None,

@@ -6,59 +6,43 @@ Three ways to reach a reasoning model, one call signature:
 - ``codex``: the Codex CLI, ``codex exec --model <model> -``
 - ``fugu-api``: any OpenAI-compatible chat endpoint (Sakana Fugu Ultra)
 
-Secrets are read from environment variables only and are never stamped into
-artifacts or error messages.
+Configuration lives in :mod:`mythos.settings`. Secrets are read from
+environment variables only and are never stamped into artifacts or error
+messages.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import tempfile
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from mythos.charter import load_env_file, resolve_command
+from mythos.settings import (
+    DEFAULT_COMMAND,
+    DEFAULT_MODEL,
+    DEFAULT_TIMEOUT,
+    FUGU_API_KEY_ENV_CANDIDATES,
+    fugu_api_key_from_env,
+    fugu_base_url_from_env,
+)
 
-# ----------------------------------------------------------------------- #
-# Configuration: environment first, sane defaults second.                  #
-#                                                                          #
-#   M2M_MODEL           baseline model id      (default: claude-fable-5)   #
-#   M2M_COMMAND         backend                (default: claude)           #
-#   M2M_TIMEOUT         per-model-call seconds (default: 900)              #
-#                                                                          #
-# Values may live in the environment or in a local (gitignored) .env.      #
-# (The archived pipeline's M2M2_MYTHOS_MODEL is deliberately NOT read:     #
-# it configured a different engine and silently retargeting this one       #
-# to a non-Claude model with the claude backend would be a footgun.)       #
-# ----------------------------------------------------------------------- #
-load_env_file()
-
-DEFAULT_MODEL = os.getenv("M2M_MODEL") or "claude-fable-5"
-DEFAULT_COMMAND = os.getenv("M2M_COMMAND", "claude")
-DEFAULT_TIMEOUT = float(os.getenv("M2M_TIMEOUT", "900"))
-
-#: Anthropic models tried, in order, when the primary fails for a
-#: model-specific reason (overload, not-found, 5xx). All of them run through
-#: the same Claude CLI subscription login — no API key involved. Haiku is
-#: deliberately absent: it is below the quality bar for reasoning stages.
-_FALLBACKS_DEFAULT = "claude-opus-4-8,claude-sonnet-5"
+FUGU_API_COMMANDS = {"fugu-api", "sakana-api", "sakaa-api"}
 
 
-def model_fallbacks_from_env() -> tuple[str, ...]:
-    """Fallback model ids from M2M_MODEL_FALLBACKS (comma-separated).
-
-    Set it to an empty string to disable fallback entirely.
-    """
-    load_env_file()
-    raw = os.getenv("M2M_MODEL_FALLBACKS")
-    if raw is None:
-        raw = _FALLBACKS_DEFAULT
-    return tuple(m.strip() for m in raw.split(",") if m.strip())
+def backend_kind(command: str) -> str:
+    """``"fugu"``, ``"codex"`` or ``"claude"`` for a configured M2M_COMMAND."""
+    if command in FUGU_API_COMMANDS:
+        return "fugu"
+    if "codex" in Path(command).name.lower():
+        return "codex"
+    return "claude"
 
 
 def is_claude_cli_command(command: str) -> bool:
@@ -67,9 +51,7 @@ def is_claude_cli_command(command: str) -> bool:
     Model fallback only applies here: the codex and fugu-api backends have
     their own model namespaces and are explicit choices, never fallbacks.
     """
-    if command in FUGU_API_COMMANDS:
-        return False
-    return "codex" not in Path(command).name.lower()
+    return backend_kind(command) == "claude"
 
 
 class BackendAuthError(RuntimeError):
@@ -88,17 +70,93 @@ _AUTH_MARKERS = (
     "401 unauthorized",
 )
 
-FUGU_DEFAULT_BASE_URL = "https://api.sakana.ai/v1"
-FUGU_API_COMMANDS = {"fugu-api", "sakana-api", "sakaa-api"}
-FUGU_API_KEY_ENV_CANDIDATES = ("FUGU_API_KEY", "SAKANA_API_KEY", "SAKAA_API_KEY")
-
-#: Windows CreateProcess command lines top out near 32k chars; leave headroom.
-_ARGV_PROMPT_LIMIT = 28000
-
 #: Access-violation exit codes from a flaky Windows CLI, worth retrying.
 _CRASH_EXIT_CODES = {3221225477, -1073741819}
 _CLI_CRASH_RETRIES = 3
 
+
+# --------------------------------------------------------------------- #
+# Locating the CLI executable (Windows npm shims)                         #
+# --------------------------------------------------------------------- #
+
+#: Where ``npm install -g @anthropic-ai/claude-code`` puts the native binary,
+#: relative to the directory holding its ``claude.cmd`` shim.
+_CLAUDE_NATIVE_EXE = ("node_modules", "@anthropic-ai", "claude-code", "bin", "claude.exe")
+
+#: Windows command-line limits. A ``.cmd``/``.bat`` shim runs through
+#: cmd.exe, whose line tops out at 8191 characters; a native executable gets
+#: CreateProcess's ~32k. Leave headroom for quoting.
+_CMD_SHIM_LINE_LIMIT = 8191
+_CREATE_PROCESS_LINE_LIMIT = 32767
+_LINE_HEADROOM = 512
+
+
+def _is_cmd_shim(executable: str) -> bool:
+    return executable.lower().endswith((".cmd", ".bat"))
+
+
+def resolve_command(
+    command: str,
+    *,
+    which: Callable[[str], str | None] = shutil.which,
+    os_name: str = os.name,
+) -> str:
+    """Resolve a CLI executable, tolerating Windows .cmd shims.
+
+    On Windows the npm shim ``claude.cmd`` is what PATH finds; when the native
+    ``claude.exe`` sits beside it, prefer that (it is not bound by cmd.exe's
+    8191-character command line).
+    """
+    found = which(command)
+    if not found and os_name == "nt" and not _is_cmd_shim(command):
+        found = which(command + ".cmd")
+    if not found:
+        return command
+    if os_name == "nt" and _is_cmd_shim(found) and Path(found).stem.lower() == "claude":
+        native = Path(found).parent.joinpath(*_CLAUDE_NATIVE_EXE)
+        if native.is_file():
+            return str(native)
+    return found
+
+
+def command_line_limit(executable: str) -> int:
+    """Longest command line the OS will hand to ``executable`` (Windows)."""
+    if _is_cmd_shim(executable):
+        return _CMD_SHIM_LINE_LIMIT
+    return _CREATE_PROCESS_LINE_LIMIT
+
+
+def claude_cli_command(
+    executable: str,
+    *,
+    model: str,
+    system_extra: str | None,
+    prompt: str,
+    os_name: str = os.name,
+) -> tuple[list[str], str | None]:
+    """Build the ``claude -p`` argv and decide how the prompt travels.
+
+    Returns ``(argv, stdin_text)``. The Windows Claude CLI can crash reading
+    piped stdin, so on Windows the prompt rides in argv whenever the whole
+    command line fits the limit of the resolved executable; otherwise (and
+    always off Windows) it goes through stdin.
+    """
+    cmd = [executable, "-p", "--output-format", "text", "--model", model]
+    if system_extra:
+        cmd += ["--append-system-prompt", system_extra]
+    if os_name != "nt":
+        return cmd, prompt
+    with_prompt = cmd[:2] + [prompt] + cmd[2:]
+    # Each argument is quoted and space-separated on the command line.
+    line_length = sum(len(arg) + 3 for arg in with_prompt)
+    if line_length <= command_line_limit(executable) - _LINE_HEADROOM:
+        return with_prompt, None
+    return cmd, prompt
+
+
+# --------------------------------------------------------------------- #
+# One call, any backend                                                  #
+# --------------------------------------------------------------------- #
 
 def run_model(
     prompt: str,
@@ -109,7 +167,8 @@ def run_model(
     timeout: float = DEFAULT_TIMEOUT,
 ) -> str:
     """Send one prompt to the configured backend and return raw text output."""
-    if command in FUGU_API_COMMANDS:
+    kind = backend_kind(command)
+    if kind == "fugu":
         return call_fugu_chat(
             prompt,
             system_prompt=system_extra,
@@ -117,77 +176,65 @@ def run_model(
             base_url=fugu_base_url_from_env(),
             timeout=timeout,
         )
-    resolved = resolve_command(command)
-    if "codex" in Path(command).name.lower():
-        # Codex OAuth backend: prompt on stdin, system extra folded in.
-        with tempfile.NamedTemporaryFile(
-            mode="w", encoding="utf-8", delete=False,
-            prefix="mythos-codex-", suffix=".txt",
-        ) as output_file:
-            output_path = Path(output_file.name)
-        cmd = [
-            resolved,
-            "-c", 'service_tier="fast"',
-            "exec",
-            "--model", model,
-            "--output-last-message", str(output_path),
-            "-",
-        ]
-        payload = f"{system_extra}\n\n{prompt}" if system_extra else prompt
+    executable = resolve_command(command)
+    if kind == "codex":
+        return _run_codex(executable, prompt, system_extra=system_extra,
+                          model=model, timeout=timeout)
+    return _run_claude(executable, prompt, system_extra=system_extra,
+                       model=model, timeout=timeout)
+
+
+def _run_codex(executable: str, prompt: str, *, system_extra: str | None,
+               model: str, timeout: float) -> str:
+    """Codex OAuth backend: prompt on stdin, system extra folded in."""
+    with tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", delete=False,
+        prefix="mythos-codex-", suffix=".txt",
+    ) as output_file:
+        output_path = Path(output_file.name)
+    cmd = [
+        executable,
+        "-c", 'service_tier="fast"',
+        "exec",
+        "--model", model,
+        "--output-last-message", str(output_path),
+        "-",
+    ]
+    payload = f"{system_extra}\n\n{prompt}" if system_extra else prompt
+    try:
         completed = subprocess.run(
             cmd, input=payload, text=True, capture_output=True,
             encoding="utf-8", errors="replace",
             timeout=timeout, check=False,
         )
-        if completed.returncode == 0 and output_path.exists():
-            try:
-                return output_path.read_text(encoding="utf-8")
-            finally:
-                output_path.unlink(missing_ok=True)
-    else:
-        cmd = [resolved, "-p", "--output-format", "text", "--model", model]
-        if system_extra:
-            cmd += ["--append-system-prompt", system_extra]
-        stdin_prompt: str | None = prompt
-        if os.name == "nt" and len(prompt) < _ARGV_PROMPT_LIMIT:
-            # The Windows Claude CLI can crash reading piped stdin; pass the
-            # prompt as an argument when it fits in the command line.
-            cmd.insert(2, prompt)
-            stdin_prompt = None
-        # This repo runs the chain on the Claude CLI's subscription login.
-        # A stray ANTHROPIC_API_KEY in the environment would silently
-        # override that login (and 401 if stale), so scrub it.
-        env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}
-        # The Windows Claude CLI intermittently dies with an access
-        # violation (0xC0000005); retry those crashes a few times.
-        for attempt in range(_CLI_CRASH_RETRIES + 1):
-            completed = subprocess.run(
-                cmd, input=stdin_prompt, text=True, capture_output=True,
-                encoding="utf-8", errors="replace", env=env,
-                timeout=timeout, check=False,
-            )
-            if completed.returncode not in _CRASH_EXIT_CODES:
-                break
-            time.sleep(1.5 * (attempt + 1))
-    if completed.returncode != 0:
-        combined = f"{completed.stdout}\n{completed.stderr}".lower()
-        if any(marker in combined for marker in _AUTH_MARKERS):
-            raise BackendAuthError(
-                f"The {Path(cmd[0]).stem!r} backend rejected our credentials.\n"
-                "Fix one of:\n"
-                "  - Claude CLI: run `claude /login` (the chain uses the CLI's "
-                "subscription login; a stale ANTHROPIC_API_KEY is scrubbed on "
-                "purpose)\n"
-                "  - Codex CLI:  run `codex login`\n"
-                "  - Or point M2M_COMMAND / M2M_MODEL at a backend that is "
-                "logged in.\n"
-                f"backend output (tail):\n{combined[-1200:]}"
-            )
-        raise RuntimeError(
-            f"Mythos model command failed (exit {completed.returncode})\n"
-            f"command: {cmd[0]}\n"
-            f"stderr:\n{completed.stderr[-4000:]}"
+        _raise_for_failure(completed, cmd)
+        if output_path.exists():
+            return output_path.read_text(encoding="utf-8")
+        return completed.stdout
+    finally:
+        output_path.unlink(missing_ok=True)
+
+
+def _run_claude(executable: str, prompt: str, *, system_extra: str | None,
+                model: str, timeout: float) -> str:
+    cmd, stdin_prompt = claude_cli_command(
+        executable, model=model, system_extra=system_extra, prompt=prompt)
+    # This repo runs the chain on the Claude CLI's subscription login.
+    # A stray ANTHROPIC_API_KEY in the environment would silently
+    # override that login (and 401 if stale), so scrub it.
+    env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}
+    # The Windows Claude CLI intermittently dies with an access
+    # violation (0xC0000005); retry those crashes a few times.
+    for attempt in range(_CLI_CRASH_RETRIES + 1):
+        completed = subprocess.run(
+            cmd, input=stdin_prompt, text=True, capture_output=True,
+            encoding="utf-8", errors="replace", env=env,
+            timeout=timeout, check=False,
         )
+        if completed.returncode not in _CRASH_EXIT_CODES:
+            break
+        time.sleep(1.5 * (attempt + 1))
+    _raise_for_failure(completed, cmd)
     stripped = (completed.stdout or "").strip().lower()
     if stripped.startswith("not logged in"):
         raise BackendAuthError(
@@ -198,30 +245,32 @@ def run_model(
     return completed.stdout
 
 
+def _raise_for_failure(completed: subprocess.CompletedProcess, cmd: list[str]) -> None:
+    if completed.returncode == 0:
+        return
+    combined = f"{completed.stdout}\n{completed.stderr}".lower()
+    if any(marker in combined for marker in _AUTH_MARKERS):
+        raise BackendAuthError(
+            f"The {Path(cmd[0]).stem!r} backend rejected our credentials.\n"
+            "Fix one of:\n"
+            "  - Claude CLI: run `claude /login` (the chain uses the CLI's "
+            "subscription login; a stale ANTHROPIC_API_KEY is scrubbed on "
+            "purpose)\n"
+            "  - Codex CLI:  run `codex login`\n"
+            "  - Or point M2M_COMMAND / M2M_MODEL at a backend that is "
+            "logged in.\n"
+            f"backend output (tail):\n{combined[-1200:]}"
+        )
+    raise RuntimeError(
+        f"Mythos model command failed (exit {completed.returncode})\n"
+        f"command: {cmd[0]}\n"
+        f"stderr:\n{completed.stderr[-4000:]}"
+    )
+
+
 # --------------------------------------------------------------------- #
 # Fugu / OpenAI-compatible HTTP backend                                  #
 # --------------------------------------------------------------------- #
-
-def fugu_api_key_from_env() -> tuple[str | None, str | None]:
-    """Return (api_key, env_name) for the first configured Fugu key."""
-    load_env_file()
-    for name in FUGU_API_KEY_ENV_CANDIDATES:
-        value = os.getenv(name)
-        if value:
-            return value, name
-    return None, None
-
-
-def fugu_base_url_from_env(default: str = FUGU_DEFAULT_BASE_URL) -> str:
-    """Return the configured OpenAI-compatible base URL."""
-    load_env_file()
-    return (
-        os.getenv("FUGU_BASE_URL")
-        or os.getenv("SAKANA_BASE_URL")
-        or os.getenv("SAKAA_BASE_URL")
-        or default
-    ).rstrip("/")
-
 
 def call_fugu_chat(
     prompt: str,

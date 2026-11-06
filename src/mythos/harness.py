@@ -1,150 +1,198 @@
 """Mythos harness: the 6-agent reasoning chain, driven through Claude Fable 5.
 
-The agent charters live in ``src/mythos/agents/*.md`` (mirrored to
-``.claude/agents/`` for native Claude Code use). This harness reads those
-same charters and drives them headlessly through the configured model
-backend, so interactive sessions and automated runs share one source of
-truth.
+The agent charters ship with the package in ``src/mythos/agents/*.md``. This
+harness reads them and drives them headlessly through the configured model
+backend (see :mod:`mythos.backends`).
 
-Chain:
+Chain (:data:`mythos.stages.STAGES`):
     intent -> cartographer -> curriculum -> math-director
            -> cinematographer -> scene-composer -> [codegen -> verify -> render]
 
 Each reasoning stage receives the prior artifact JSON and must return one
 JSON object. Codegen returns a complete Manim CE file inside one fenced
-python block. Artifacts land in ``runs/mythos/<timestamp>-<slug>/``.
+python block. Artifacts land in ``runs/mythos/<timestamp>-<slug>/`` (see
+:mod:`mythos.layout`).
 
-Usage (from repo root):
-    python -m mythos.harness "explain quantum field theory" --render -q m
-    python -m mythos.harness "the heat equation" --offline      # no API needed
+The pure pieces an operator may drive by hand are module functions:
+``load_charter``, ``stage_prompt``, ``codegen_prompt``, ``repair_prompt``,
+``check_scene`` and ``record_check`` (``scripts/operate_mythos_chain.py``).
+
+Usage: ``math-to-manim-mythos run "explain quantum field theory" --render -q m``
 """
 
 from __future__ import annotations
 
-import argparse
 import json
-import os
-import py_compile
-import re
 import sys
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any, Callable
 
-PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = PACKAGE_ROOT.parent if PACKAGE_ROOT.name == "src" else PACKAGE_ROOT
-if str(PACKAGE_ROOT) not in sys.path:
-    sys.path.insert(0, str(PACKAGE_ROOT))
-
-from mythos.backends import (  # noqa: E402
+from mythos import backends
+from mythos.backends import BackendAuthError, is_claude_cli_command
+from mythos.charter import CINEMATIC_CHARTER, JSON_CONTRACT, extract_json_object, extract_python_block
+from mythos.layout import (
+    SCENE_FILE,
+    VALIDATION_FILE,
+    validation_template,
+    create_run_dir,
+    read_manifest,
+    write_json,
+    write_manifest,
+)
+from mythos.manifest_schema import manifest_template, migrate_manifest
+from mythos.prereq_cache import PrerequisiteCache
+from mythos.render import RenderEnvironmentError, render_scene_file
+from mythos.scene_checks import find_scene_class, validate_manim_code_report, validation_from_report
+from mythos.settings import (
     DEFAULT_COMMAND,
     DEFAULT_MODEL,
-    DEFAULT_TIMEOUT,
-    BackendAuthError,
-    is_claude_cli_command,
-    model_fallbacks_from_env,
-    run_model,
-)
-from mythos.charter import (  # noqa: E402
-    CINEMATIC_CHARTER,
-    JSON_CONTRACT,
-    extract_json_object,
-    extract_python_block,
-    find_scene_class,
-    load_env_file,
-)
-from mythos.manifest_schema import (  # noqa: E402
-    manifest_template,
-    migrate_manifest,
-    validation_template,
-)
-from mythos.prereq_cache import PrerequisiteCache  # noqa: E402
-from mythos.render import (  # noqa: E402
     DEFAULT_RENDER_TIMEOUT,
-    RenderEnvironmentError,
-    render_scene_file,
-    resolve_manim,
+    DEFAULT_TIMEOUT,
+    default_runs_dir,
+    model_fallbacks_from_env,
 )
-from mythos.scene_checks import (  # noqa: E402
-    validate_manim_code_report,
-    validation_from_scene,
-    write_json,
-)
+from mythos.stages import OFFLINE_SCENE, STAGES, Stage, offline_artifact, validate_stage_artifact
 
-# Charter search order: user-local Claude Code dir first, then the tracked
-# canonical copies that ship with the repo.
-AGENT_DIRS = [
-    REPO_ROOT / ".claude" / "agents",
-    Path(__file__).resolve().parent / "agents",
-]
+AGENT_DIR = Path(__file__).resolve().parent / "agents"
 
-#: (slug, agent definition file, artifact name)
-STAGES: list[tuple[str, str, str]] = [
-    ("intent", "mythos-intent.md", "01_intent.json"),
-    ("cartographer", "mythos-cartographer.md", "02_knowledge_map.json"),
-    ("curriculum", "mythos-curriculum.md", "03_curriculum.json"),
-    ("math-director", "mythos-math-director.md", "04_math_dossier.json"),
-    ("cinematographer", "mythos-cinematographer.md", "05_shot_list.json"),
-    ("scene-composer", "mythos-scene-composer.md", "06_scene_spec.json"),
-]
+#: ``run_model(prompt, *, system_extra, command, model, timeout) -> str``
+ModelRunner = Callable[..., str]
+Logger = Callable[[str], None]
 
-_LINT_RULES = [
-    (r"self\.camera\.animate",
-     "never animate self.camera in a ThreeDScene; use move_camera"),
-]
 
-# DEFAULT_RENDER_TIMEOUT and resolve_manim live in mythos.render so the
-# sandbox wrapper does not import this harness. Re-exported for callers.
+def log_to_stderr(message: str) -> None:
+    print(f"  [mythos] {message}", file=sys.stderr, flush=True)
 
 
 class StageValidationError(RuntimeError):
     """A reasoning stage returned a degenerate artifact twice in a row."""
 
 
-def validate_stage_artifact(slug: str, artifact: dict) -> str | None:
-    """Reject degenerate stage output before it poisons the chain.
-
-    Returns a human-readable problem description, or None when healthy.
-    (A real failure mode: the math-director once returned
-    ``{"formulas": [], "color_identity": {}, "numbers": []}`` — 48 bytes —
-    and every downstream agent faithfully storyboarded an empty film.)
-    """
-    if not isinstance(artifact, dict) or not artifact:
-        return "artifact is not a non-empty JSON object"
-    size = len(json.dumps(artifact))
-    if slug == "math-director":
-        formulas = artifact.get("formulas")
-        if isinstance(formulas, list) and not formulas:
-            return "math dossier has an empty 'formulas' list"
-        if size < 500:
-            return f"math dossier is only {size} bytes"
-    elif slug == "cinematographer":
-        shots = artifact.get("shots")
-        if isinstance(shots, list) and len(shots) < 8:
-            return f"shot list has only {len(shots)} beats"
-        if size < 500:
-            return f"shot list is only {size} bytes"
-    elif size < 200:
-        return f"artifact is only {size} bytes"
-    return None
+@dataclass(frozen=True)
+class RenderOutcome:
+    exit_code: int
+    output: str
+    #: Missing render tool or timeout: model repair cannot help.
+    blocked: bool
 
 
-def _requires_light_art_direction(prompt: str) -> bool:
-    text = prompt.lower()
-    positive = ("off-white", "archival", "paper", "warm paper")
-    negative = ("no black", "not black", "never black", "non-black")
-    return any(term in text for term in positive) and any(
-        term in text for term in negative)
+# ---------------------------------------------------------------------- #
+# Pure chain steps                                                        #
+# ---------------------------------------------------------------------- #
+
+def load_charter(stage: Stage) -> str:
+    """The stage's charter text, without its YAML front matter."""
+    path = AGENT_DIR / stage.charter_file
+    if not path.exists():
+        raise FileNotFoundError(f"No charter {stage.charter_file!r} in {AGENT_DIR}")
+    text = path.read_text(encoding="utf-8")
+    if text.startswith("---"):
+        end = text.find("\n---", 3)
+        if end != -1:
+            text = text[end + 4 :]
+    return text.strip()
 
 
-def default_runs_dir() -> Path:
-    load_env_file()
-    return Path(
-        os.getenv("M2M_RUNS_DIR")
-        or os.getenv("M2M2_RUNS_DIR")
-        or str(REPO_ROOT / "runs")
-    ) / "mythos"
+def stage_prompt(stage: Stage, prior: dict) -> str:
+    """The exact prompt a reasoning stage receives (system extra: the Charter)."""
+    return (
+        f"{load_charter(stage)}\n\nINPUT ARTIFACT JSON:\n"
+        f"{json.dumps(prior, indent=2)}{JSON_CONTRACT}"
+    )
 
+
+def retry_prompt(base_prompt: str, problem: str) -> str:
+    return (
+        f"{base_prompt}\n\nPREVIOUS ATTEMPT REJECTED: your last artifact "
+        f"was degenerate ({problem}). The input artifact above contains "
+        "real material — mine it. Return a complete, richly populated "
+        "JSON object this time; empty lists and placeholder text are "
+        "failures."
+    )
+
+
+def codegen_prompt(dossier: dict) -> str:
+    """The prompt that turns the six stage artifacts into a Manim file."""
+    return (
+        "You are the Mythos scene composer's hands: write the film.\n"
+        "Using the full dossier below (intent through scene spec), write ONE\n"
+        "complete, runnable Manim Community Edition Python file that\n"
+        "implements the shot list with the full Cinematic Charter — headlines\n"
+        "before symbols, camera zooms into terms, plain-language captions,\n"
+        "Mythos palette. The file must be self-contained (inline any helpers),\n"
+        "import `from manim import *`, and define exactly one ThreeDScene\n"
+        "subclass. Respond with exactly one fenced python block and nothing\n"
+        "else.\n\nDOSSIER JSON:\n" + json.dumps(dossier, indent=2)
+    )
+
+
+def repair_prompt(code: str, failure: str) -> str:
+    return (
+        "The Manim scene below failed. Repair it surgically: preserve the\n"
+        "cinematic structure, class name, and Charter rules; fix only what is\n"
+        "broken. Manim CE APIs only. Respond with exactly one fenced\n"
+        "python block containing the COMPLETE corrected file.\n\n"
+        f"CURRENT FILE:\n{code}\n\n"
+        f"FAILURE OUTPUT (tail):\n{failure[-8000:]}"
+    )
+
+
+def read_dossier(run_dir: Path) -> dict[str, Any]:
+    """Every stage artifact present in ``run_dir``, keyed by file name."""
+    return {
+        stage.artifact: json.loads((run_dir / stage.artifact).read_text(encoding="utf-8"))
+        for stage in STAGES if (run_dir / stage.artifact).exists()
+    }
+
+
+@dataclass(frozen=True)
+class SceneCheck:
+    """One static pass over a scene file: the verdict and its validation.json."""
+
+    ok: bool
+    failure: str | None
+    validation: dict[str, Any]
+
+
+def check_scene(code_path: Path, *, prompt: str | None = None) -> SceneCheck:
+    """Static checks (AST, LaTeX fragments, charter and art-direction lint)."""
+    source = code_path.read_text(encoding="utf-8")
+    report = validate_manim_code_report(source, prompt=prompt)
+    return SceneCheck(
+        ok=report.valid,
+        failure=None if report.valid else "; ".join(report.errors),
+        validation=validation_from_report(report, source),
+    )
+
+
+def record_check(run_dir: Path, manifest: dict, check: SceneCheck) -> None:
+    """Write ``validation.json`` and the manifest's static-check verdict."""
+    write_json(run_dir / VALIDATION_FILE, check.validation)
+    manifest["static_check"] = {
+        "passed": check.ok,
+        "detail": check.failure[:2000] if check.failure else None,
+    }
+    manifest.setdefault("status", {})["validation"] = "complete" if check.ok else "failed"
+
+
+def new_manifest(run_dir: Path, *, prompt: str, model: str, command: str,
+                 offline: bool) -> dict:
+    """A fresh manifest plus the seeded ``validation.json``, both on disk."""
+    manifest = manifest_template(
+        run_id=run_dir.name, prompt=prompt, model=model, command=command,
+        offline=offline, created_utc=datetime.now(timezone.utc).isoformat(),
+    )
+    write_json(run_dir / VALIDATION_FILE, validation_template())
+    write_manifest(run_dir, manifest)
+    return manifest
+
+
+# ---------------------------------------------------------------------- #
+# The harness                                                             #
+# ---------------------------------------------------------------------- #
 
 class MythosHarness:
     """Runs the full chain: six reasoning stages, codegen, verify, render, repair."""
@@ -159,16 +207,20 @@ class MythosHarness:
         offline: bool = False,
         runs_dir: Path | None = None,
         model_fallbacks: tuple[str, ...] | None = None,
+        run_model: ModelRunner = backends.run_model,
+        log: Logger = log_to_stderr,
     ):
         self.command = command
         self.model = model
         self.timeout = timeout
         self.render_timeout = render_timeout
         self.offline = offline
-        self.runs_dir = runs_dir or default_runs_dir()
+        self.runs_dir = Path(runs_dir) if runs_dir else default_runs_dir()
         self.model_fallbacks = (tuple(model_fallbacks)
                                 if model_fallbacks is not None
                                 else model_fallbacks_from_env())
+        self.run_model = run_model
+        self.log = log
         self.fallbacks_used: list[dict] = []
 
     # ------------------------------------------------------------------ #
@@ -185,13 +237,7 @@ class MythosHarness:
         manifest.
         """
         try:
-            return run_model(
-                prompt,
-                system_extra=system_extra,
-                command=self.command,
-                model=self.model,
-                timeout=self.timeout,
-            )
+            return self._call(prompt, system_extra, self.model)
         except BackendAuthError:
             raise
         except RuntimeError as primary_exc:
@@ -204,16 +250,9 @@ class MythosHarness:
             failed = self.model
             for fallback in candidates:
                 reason = str(last_exc).splitlines()[0][:200]
-                print(f"  [mythos] model {failed!r} failed ({reason}); "
-                      f"falling back to {fallback!r}")
+                self.log(f"model {failed!r} failed ({reason}); falling back to {fallback!r}")
                 try:
-                    output = run_model(
-                        prompt,
-                        system_extra=system_extra,
-                        command=self.command,
-                        model=fallback,
-                        timeout=self.timeout,
-                    )
+                    output = self._call(prompt, system_extra, fallback)
                 except BackendAuthError:
                     raise
                 except RuntimeError as exc:
@@ -234,27 +273,9 @@ class MythosHarness:
                 f"{last_exc}"
             ) from last_exc
 
-    # ------------------------------------------------------------------ #
-    # Charters                                                            #
-    # ------------------------------------------------------------------ #
-
-    @staticmethod
-    def load_charter(agent_file: str) -> str:
-        for candidate in AGENT_DIRS:
-            if (candidate / agent_file).exists():
-                path = candidate / agent_file
-                break
-        else:
-            raise FileNotFoundError(
-                f"No charter {agent_file!r} in any of: "
-                + ", ".join(str(d) for d in AGENT_DIRS)
-            )
-        text = path.read_text(encoding="utf-8")
-        if text.startswith("---"):
-            end = text.find("\n---", 3)
-            if end != -1:
-                text = text[end + 4 :]
-        return text.strip()
+    def _call(self, prompt: str, system_extra: str | None, model: str) -> str:
+        return self.run_model(prompt, system_extra=system_extra, command=self.command,
+                              model=model, timeout=self.timeout)
 
     # ------------------------------------------------------------------ #
     # Run                                                                 #
@@ -267,103 +288,67 @@ class MythosHarness:
         render: bool = False,
         quality: str = "l",
         max_repairs: int = 3,
-        run_dir_callback=None,
+        run_dir_callback: Callable[[str], None] | None = None,
     ) -> dict:
         prompt = prompt.replace(chr(0xFEFF), "").strip()
-        run_dir = self._create_run_dir(prompt)
+        run_dir = create_run_dir(self.runs_dir, prompt)
         if run_dir_callback is not None:
             run_dir_callback(run_dir.name)
-        manifest = manifest_template(
-            run_id=run_dir.name,
-            prompt=prompt,
-            model=self.model,
-            command=self.command,
-            offline=self.offline,
-            created_utc=datetime.now(timezone.utc).isoformat(),
-        )
-        write_json(run_dir / "validation.json", validation_template())
-        self._write_manifest(run_dir, manifest)
+        manifest = new_manifest(run_dir, prompt=prompt, model=self.model,
+                                command=self.command, offline=self.offline)
         prereq_cache = PrerequisiteCache.for_runs_dir(self.runs_dir)
 
         artifact: dict = {"user_prompt": prompt}
-        for slug, agent_file, artifact_name in STAGES:
+        for stage in STAGES:
             started = time.time()
             retried = False
             if self.offline:
-                artifact = _offline_artifact(slug, prompt, artifact)
+                artifact = offline_artifact(stage, prompt, artifact)
             else:
-                artifact, retried = self._run_stage(
-                    slug, agent_file, artifact, run_dir, artifact_name)
-            (run_dir / artifact_name).write_text(
+                artifact, retried = self._run_stage(stage, artifact, run_dir)
+            (run_dir / stage.artifact).write_text(
                 json.dumps(artifact, indent=2), encoding="utf-8")
-            if slug == "cartographer":
+            if stage.caches_prerequisites:
                 prereq_cache.ingest_knowledge_map(prompt, artifact)
-            stage_record = {"stage": slug, "artifact": artifact_name,
+            stage_record = {"stage": stage.slug, "artifact": stage.artifact,
                             "seconds": round(time.time() - started, 2)}
             if retried:
                 stage_record["retried"] = True
             manifest["stages"].append(stage_record)
-            manifest["model"] = self.model  # may have walked the fallback ladder
-            if self.fallbacks_used:
-                manifest["model_fallbacks"] = list(self.fallbacks_used)
-            self._write_manifest(run_dir, manifest)
-            print(f"  [mythos] {slug:<16} -> {artifact_name}")
+            self._save(run_dir, manifest)
+            self.log(f"{stage.slug:<16} -> {stage.artifact}")
 
         code_path, scene_name = self._codegen(run_dir, prompt, artifact, manifest)
-        ok, failure = self._verify(code_path, prompt=prompt)
-        self._record_validation(run_dir, manifest, code_path, ok, failure)
+        check = check_scene(code_path, prompt=prompt)
+        record_check(run_dir, manifest, check)
 
         if render:
             attempt = 0
             while True:
-                if ok:
-                    environment_error = None
-                    try:
-                        rc, out = self._render(code_path, scene_name, quality)
-                    except RenderEnvironmentError as exc:
-                        environment_error = exc.to_dict()
-                        rc, out = exc.exit_code, exc.output + "\n" + str(exc)
-                    log_name = f"render_{attempt}.log"
-                    (run_dir / log_name).write_text(out, encoding="utf-8")
-                    render_record = {"attempt": attempt, "exit_code": rc, "log": log_name}
-                    if environment_error:
-                        render_record["error"] = environment_error
-                    manifest.setdefault("renders", []).append(render_record)
-                    if rc == 0:
-                        manifest.setdefault("status", {})
-                        manifest["status"]["render"] = "complete"
+                failure = check.failure
+                if check.ok:
+                    outcome = self._render_and_record(
+                        run_dir, manifest, code_path, scene_name, quality,
+                        log_name=f"render_{attempt}.log", attempt=attempt)
+                    self._save(run_dir, manifest)
+                    if outcome.exit_code == 0 or outcome.blocked:
                         break
-                    manifest.setdefault("status", {})
-                    manifest["status"]["render"] = "failed"
-                    failure = out
-                    if environment_error:
-                        manifest["render_error"] = environment_error
-                        print(f"  [mythos] {environment_error['detail']}")
-                        break
-                    if rc == 124:
-                        # A timeout is a budget problem, not a code problem —
-                        # don't burn model-repair attempts on it.
-                        manifest["render_timed_out"] = True
-                        break
+                    failure = outcome.output
                 if attempt >= max_repairs or self.offline:
                     break
                 attempt += 1
-                print(f"  [mythos] repair attempt {attempt}")
+                self.log(f"repair attempt {attempt}")
                 code_path, scene_name = self._repair(
-                    run_dir, code_path, failure or "unknown failure",
-                    attempt, manifest)
-                ok, failure = self._verify(code_path, prompt=prompt)
-                self._record_validation(run_dir, manifest, code_path, ok, failure)
+                    run_dir, code_path, failure or "unknown failure", attempt, manifest)
+                check = check_scene(code_path, prompt=prompt)
+                record_check(run_dir, manifest, check)
 
         manifest["scene_file"] = str(code_path)
         manifest["scene_name"] = scene_name
-        manifest["model"] = self.model  # codegen/repair may have fallen back too
-        if self.fallbacks_used:
-            manifest["model_fallbacks"] = list(self.fallbacks_used)
         manifest["completed_utc"] = datetime.now(timezone.utc).isoformat()
-        self._write_manifest(run_dir, manifest)
+        self._save(run_dir, manifest)
         outcome = "render blocked" if manifest.get("render_error") else "run complete"
-        print(f"  [mythos] {outcome} -> {run_dir}")
+        self.log(f"{outcome} -> {run_dir}")
         return manifest
 
     def render_workspace(
@@ -374,284 +359,119 @@ class MythosHarness:
     ) -> dict:
         """Render an already-initialized run directory and update its manifest."""
         run_dir = Path(run_dir)
-        manifest_path = run_dir / "manifest.json"
-        manifest = migrate_manifest(json.loads(manifest_path.read_text(encoding="utf-8")))
-        scene_file = run_dir / "mythos_scene.py"
-        manifest.pop("render_error", None)
-        try:
-            code, output = self._render(scene_file, scene_name, quality)
-        except RenderEnvironmentError as exc:
-            code, output = exc.exit_code, exc.output + "\n" + str(exc)
-            manifest["render_error"] = exc.to_dict()
-        log_name = f"render_workspace_{len(manifest.get('renders', []))}.log"
-        (run_dir / log_name).write_text(output, encoding="utf-8")
-        render_record = {"exit_code": code, "log": log_name}
-        if manifest.get("render_error"):
-            render_record["error"] = manifest["render_error"]
-        manifest.setdefault("renders", []).append(render_record)
-        manifest.setdefault("status", {})
-        manifest["status"]["render"] = "complete" if code == 0 else "failed"
-        self._write_manifest(run_dir, manifest)
-        return {"exit_code": code, "output": output, "manifest": manifest}
+        manifest = migrate_manifest(read_manifest(run_dir))
+        outcome = self._render_and_record(
+            run_dir, manifest, run_dir / SCENE_FILE, scene_name, quality,
+            log_name=f"render_workspace_{len(manifest.get('renders', []))}.log")
+        write_manifest(run_dir, manifest)
+        return {"exit_code": outcome.exit_code, "output": outcome.output,
+                "manifest": manifest}
 
     # ------------------------------------------------------------------ #
     # Stage execution with degenerate-output retry                        #
     # ------------------------------------------------------------------ #
 
-    def _run_stage(self, slug: str, agent_file: str, prior: dict,
-                   run_dir: Path, artifact_name: str) -> tuple[dict, bool]:
+    def _run_stage(self, stage: Stage, prior: dict, run_dir: Path) -> tuple[dict, bool]:
         """Run one reasoning stage; retry once if the artifact is degenerate."""
-        charter = self.load_charter(agent_file)
-        base_prompt = (
-            f"{charter}\n\nINPUT ARTIFACT JSON:\n"
-            f"{json.dumps(prior, indent=2)}{JSON_CONTRACT}"
-        )
+        base_prompt = stage_prompt(stage, prior)
         raw = self._model(base_prompt, system_extra=CINEMATIC_CHARTER)
-        (run_dir / f"{artifact_name.split('.')[0]}.raw.txt").write_text(
-            raw, encoding="utf-8")
+        (run_dir / f"{stage.stem}.raw.txt").write_text(raw, encoding="utf-8")
         artifact = extract_json_object(raw)
-        problem = validate_stage_artifact(slug, artifact)
+        problem = validate_stage_artifact(stage.slug, artifact)
         if problem is None:
             return artifact, False
 
-        print(f"  [mythos] {slug}: degenerate output ({problem}); retrying")
-        retry_prompt = (
-            f"{base_prompt}\n\nPREVIOUS ATTEMPT REJECTED: your last artifact "
-            f"was degenerate ({problem}). The input artifact above contains "
-            "real material — mine it. Return a complete, richly populated "
-            "JSON object this time; empty lists and placeholder text are "
-            "failures."
-        )
-        raw = self._model(retry_prompt, system_extra=CINEMATIC_CHARTER)
-        (run_dir / f"{artifact_name.split('.')[0]}.retry.raw.txt").write_text(
-            raw, encoding="utf-8")
+        self.log(f"{stage.slug}: degenerate output ({problem}); retrying")
+        raw = self._model(retry_prompt(base_prompt, problem), system_extra=CINEMATIC_CHARTER)
+        (run_dir / f"{stage.stem}.retry.raw.txt").write_text(raw, encoding="utf-8")
         artifact = extract_json_object(raw)
-        problem = validate_stage_artifact(slug, artifact)
+        problem = validate_stage_artifact(stage.slug, artifact)
         if problem is not None:
             raise StageValidationError(
-                f"Stage {slug!r} returned a degenerate artifact twice "
+                f"Stage {stage.slug!r} returned a degenerate artifact twice "
                 f"({problem}). Aborting instead of filming an empty story. "
-                f"Inspect {run_dir / artifact_name} and the .raw.txt traces."
+                f"Inspect {run_dir / stage.artifact} and the .raw.txt traces."
             )
         return artifact, True
 
     # ------------------------------------------------------------------ #
-    # Codegen / verify / render / repair                                  #
+    # Codegen / render / repair                                           #
     # ------------------------------------------------------------------ #
 
     def _codegen(self, run_dir: Path, prompt: str, scene_spec: dict,
                  manifest: dict) -> tuple[Path, str]:
         started = time.time()
         if self.offline:
-            code = _OFFLINE_SCENE
+            code = OFFLINE_SCENE
         else:
-            dossier = {
-                name: json.loads((run_dir / name).read_text(encoding="utf-8"))
-                for _, _, name in STAGES if (run_dir / name).exists()
-            }
-            codegen_prompt = (
-                "You are the Mythos scene composer's hands: write the film.\n"
-                "Using the full dossier below (intent through scene spec), write ONE\n"
-                "complete, runnable Manim Community Edition Python file that\n"
-                "implements the shot list with the full Cinematic Charter — headlines\n"
-                "before symbols, camera zooms into terms, plain-language captions,\n"
-                "Mythos palette. The file must be self-contained (inline any helpers),\n"
-                "import `from manim import *`, and define exactly one ThreeDScene\n"
-                "subclass. Respond with exactly one fenced python block and nothing\n"
-                "else.\n\nDOSSIER JSON:\n" + json.dumps(dossier, indent=2)
-            )
-            raw = self._model(codegen_prompt, system_extra=CINEMATIC_CHARTER)
+            raw = self._model(codegen_prompt(read_dossier(run_dir)),
+                              system_extra=CINEMATIC_CHARTER)
             (run_dir / "07_codegen.raw.txt").write_text(raw, encoding="utf-8")
             code = extract_python_block(raw)
-        code_path = run_dir / "mythos_scene.py"
+        code_path = run_dir / SCENE_FILE
         code_path.write_text(code, encoding="utf-8")
         scene_name = find_scene_class(code)
         manifest["stages"].append(
-            {"stage": "codegen", "artifact": "mythos_scene.py",
+            {"stage": "codegen", "artifact": SCENE_FILE,
              "seconds": round(time.time() - started, 2)})
-        self._write_manifest(run_dir, manifest)
-        print(f"  [mythos] codegen          -> mythos_scene.py ({scene_name})")
+        self._save(run_dir, manifest)
+        self.log(f"{'codegen':<16} -> {SCENE_FILE} ({scene_name})")
         return code_path, scene_name
 
-    @staticmethod
-    def _verify(code_path: Path, *, prompt: str | None = None) -> tuple[bool, str | None]:
+    def _render_and_record(self, run_dir: Path, manifest: dict, code_path: Path,
+                           scene_name: str, quality: str, *, log_name: str,
+                           attempt: int | None = None) -> RenderOutcome:
+        """One render; the log file, render record and status land in the manifest.
+
+        The caller persists the manifest.
+        """
+        self.log(f"rendering {scene_name} -q{quality} in {run_dir}")
+        manifest.pop("render_error", None)
+        environment_error = None
+        timed_out = False
         try:
-            py_compile.compile(str(code_path), doraise=True)
-        except py_compile.PyCompileError as exc:
-            return False, str(exc)
-        code = code_path.read_text(encoding="utf-8")
-        report = validate_manim_code_report(code)
-        if not report.valid:
-            return False, "; ".join(report.errors)
-        for pattern, message in _LINT_RULES:
-            if re.search(pattern, code):
-                return False, f"charter lint: {message}"
-        if prompt and _requires_light_art_direction(prompt):
-            dark_background_patterns = [
-                r"background_color\s*=\s*[\"']#0c0c0b[\"']",
-                r"background_color\s*=\s*BLACK\b",
-                r"\bBG\s*=\s*[\"']#0c0c0b[\"']",
-            ]
-            for pattern in dark_background_patterns:
-                if re.search(pattern, code, flags=re.IGNORECASE):
-                    return False, (
-                        "prompt art-direction lint: this prompt explicitly "
-                        "requires an archival/off-white, non-black background; "
-                        "replace the default dark Mythos background with warm "
-                        "paper and use dark ink text/geometry."
-                    )
-        return True, None
-
-    @staticmethod
-    def _record_validation(
-        run_dir: Path,
-        manifest: dict,
-        code_path: Path,
-        ok: bool,
-        failure: str | None,
-    ) -> None:
-        source = code_path.read_text(encoding="utf-8") if code_path.is_file() else ""
-        payload = validation_from_scene(source) if source else validation_template()
-        write_json(run_dir / "validation.json", payload)
-        manifest["static_check"] = {
-            "passed": ok,
-            "detail": failure[:2000] if failure else None,
-        }
-        status = dict(manifest.get("status") or {})
-        status["validation"] = "complete" if ok else "failed"
-        manifest["status"] = status
-
-    def _render(self, code_path: Path, scene_name: str,
-                quality: str) -> tuple[int, str]:
-        run_dir = code_path.parent
-        command = resolve_manim() + [
-            f"-q{quality}", "--media_dir", str(run_dir / "media"),
-            code_path.name, scene_name,
-        ]
-        print(f"  [mythos] rendering: {' '.join(command)}")
-        return render_scene_file(
-            run_dir,
-            scene_file=code_path,
-            scene_name=scene_name,
-            quality=quality,
-            timeout=self.render_timeout,
-        )
+            result = render_scene_file(
+                run_dir, scene_file=code_path, scene_name=scene_name,
+                quality=quality, timeout=self.render_timeout)
+            exit_code, output, timed_out = result.exit_code, result.output, result.timed_out
+        except RenderEnvironmentError as exc:
+            environment_error = exc.to_dict()
+            exit_code, output = exc.exit_code, exc.output + "\n" + str(exc)
+        (run_dir / log_name).write_text(output, encoding="utf-8")
+        record: dict[str, Any] = {"exit_code": exit_code, "log": log_name}
+        if attempt is not None:
+            record = {"attempt": attempt, **record}
+        if environment_error:
+            record["error"] = environment_error
+            manifest["render_error"] = environment_error
+            self.log(environment_error["detail"])
+        if timed_out:
+            # A timeout is a budget problem, not a code problem — don't burn
+            # model-repair attempts on it.
+            manifest["render_timed_out"] = True
+        manifest.setdefault("renders", []).append(record)
+        manifest.setdefault("status", {})["render"] = "complete" if exit_code == 0 else "failed"
+        return RenderOutcome(exit_code, output, bool(environment_error) or timed_out)
 
     def _repair(self, run_dir: Path, code_path: Path, failure: str,
                 attempt: int, manifest: dict) -> tuple[Path, str]:
-        prompt = (
-            "The Manim scene below failed. Repair it surgically: preserve the\n"
-            "cinematic structure, class name, and Charter rules; fix only what is\n"
-            "broken. Manim CE APIs only. Respond with exactly one fenced\n"
-            "python block containing the COMPLETE corrected file.\n\n"
-            f"CURRENT FILE:\n{code_path.read_text(encoding='utf-8')}\n\n"
-            f"FAILURE OUTPUT (tail):\n{failure[-8000:]}"
-        )
-        raw = self._model(prompt, system_extra=CINEMATIC_CHARTER)
+        raw = self._model(repair_prompt(code_path.read_text(encoding="utf-8"), failure),
+                          system_extra=CINEMATIC_CHARTER)
         (run_dir / f"repair_{attempt}.raw.txt").write_text(raw, encoding="utf-8")
         code = extract_python_block(raw)
         code_path.write_text(code, encoding="utf-8")
         manifest["stages"].append({"stage": f"repair_{attempt}",
                                    "artifact": code_path.name})
-        self._write_manifest(run_dir, manifest)
+        self._save(run_dir, manifest)
         return code_path, find_scene_class(code)
 
     # ------------------------------------------------------------------ #
     # Bookkeeping                                                         #
     # ------------------------------------------------------------------ #
 
-    @staticmethod
-    def _write_manifest(run_dir: Path, manifest: dict) -> None:
-        migrated = migrate_manifest(manifest)
-        manifest.clear()
-        manifest.update(migrated)
-        # Atomic: readers polling the run dir must never see a half-written
-        # manifest (mid-write JSON parse errors were a real observed failure).
-        # On Windows, os.replace onto a file a poller currently holds open
-        # raises PermissionError — retry briefly, then fall back to a direct
-        # write rather than killing the run over a progress file.
-        payload = json.dumps(manifest, indent=2)
-        target = run_dir / "manifest.json"
-        tmp = run_dir / ".manifest.json.tmp"
-        tmp.write_text(payload, encoding="utf-8")
-        for attempt in range(8):
-            try:
-                os.replace(tmp, target)
-                return
-            except PermissionError:
-                time.sleep(0.02 * (attempt + 1))
-        target.write_text(payload, encoding="utf-8")
-        tmp.unlink(missing_ok=True)
-
-    def _create_run_dir(self, prompt: str) -> Path:
-        slug = re.sub(r"[^a-z0-9]+", "-", prompt.lower()).strip("-")[:48] or "run"
-        stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-        run_dir = self.runs_dir / f"{stamp}-{slug}"
-        run_dir.mkdir(parents=True, exist_ok=True)
-        return run_dir
-
-
-# ---------------------------------------------------------------------- #
-# Offline mode                                                            #
-# ---------------------------------------------------------------------- #
-
-def _offline_artifact(slug: str, prompt: str, prior: dict) -> dict:
-    """Deterministic stand-ins so the chain runs without a CLI login."""
-    base = {"stage": slug, "topic": prompt, "offline": True,
-            "prior_keys": sorted(prior)}
-    if slug == "cinematographer":
-        base["shots"] = [
-            {"beat": 1, "move": "HEADLINE", "text": "A deterministic rehearsal."},
-            {"beat": 2, "move": "ZOOM_IN", "target": "formula"},
-            {"beat": 3, "move": "PULL_BACK"},
-        ]
-    if slug == "scene-composer":
-        base["scene_name"] = "MythosOfflineScene"
-    return base
-
-
-_OFFLINE_SCENE = '''from manim import *
-
-
-class MythosOfflineScene(ThreeDScene):
-    """Offline rehearsal scene: proves the harness plumbing end to end."""
-
-    def construct(self):
-        self.camera.background_color = "#0c0c0b"
-        self.set_camera_orientation(phi=0 * DEGREES, theta=-90 * DEGREES)
-        title = Text("Mythos harness: offline rehearsal", font_size=40, color="#faf9f5")
-        formula = MathTex(r"e^{i\\pi} + 1 = 0", font_size=64, color="#d97757")
-        self.play(FadeIn(title))
-        self.wait(0.6)
-        self.play(title.animate.scale(0.5).to_edge(UP), FadeIn(formula))
-        self.move_camera(frame_center=formula.get_center(), zoom=2.2, run_time=1.2)
-        self.wait(0.6)
-        self.move_camera(frame_center=ORIGIN, zoom=1.0, run_time=1.0)
-        self.play(FadeOut(formula), FadeOut(title))
-'''
-
-
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Run the Mythos 6-agent chain.")
-    parser.add_argument("prompt", help="What should the film explain?")
-    parser.add_argument("--render", action="store_true", help="Render after codegen")
-    parser.add_argument("-q", "--quality", default="l", choices=list("lmhpk"))
-    parser.add_argument("--model", default=DEFAULT_MODEL)
-    parser.add_argument("--command", default=DEFAULT_COMMAND,
-                        help="Model backend: claude (default), fugu-api, "
-                             "or another CLI executable")
-    parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
-    parser.add_argument("--offline", action="store_true",
-                        help="Deterministic artifacts; no CLI calls")
-    parser.add_argument("--max-repairs", type=int, default=3)
-    args = parser.parse_args(argv)
-
-    harness = MythosHarness(command=args.command, model=args.model,
-                            timeout=args.timeout, offline=args.offline)
-    manifest = harness.run(args.prompt, render=args.render, quality=args.quality,
-                           max_repairs=args.max_repairs)
-    return 1 if manifest.get("render_error", {}).get("type") == "environment" else 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+    def _save(self, run_dir: Path, manifest: dict) -> None:
+        """Persist the manifest, stamping the model actually in use."""
+        manifest["model"] = self.model  # may have walked the fallback ladder
+        if self.fallbacks_used:
+            manifest["model_fallbacks"] = list(self.fallbacks_used)
+        write_manifest(run_dir, manifest)

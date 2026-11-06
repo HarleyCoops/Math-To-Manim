@@ -23,26 +23,20 @@ from __future__ import annotations
 
 import numpy as np
 from manim import (
-    BLACK,
     DEGREES,
     DOWN,
     UP,
-    LEFT,
-    RIGHT,
     ORIGIN,
     Create,
     Dot,
-    FadeIn,
     FadeOut,
     MathTex,
     Mobject,
     ParametricFunction,
-    Sphere,
     SurroundingRectangle,
     Text,
     ThreeDScene,
     VGroup,
-    Write,
     interpolate_color,
     rgb_to_color,
 )
@@ -59,13 +53,6 @@ OLIVE = "#788c5d"        # mass, structure / tertiary accent
 FOG = "#b0aea5"          # secondary text
 GOLD = "#d4a27f"         # interaction, emphasis
 EMBER = "#bd5d3a"        # deep accent for glows
-
-TERM_COLORS = {
-    "matter": CORAL,
-    "light": SKY,
-    "mass": OLIVE,
-    "interaction": GOLD,
-}
 
 HEADLINE_FONT = "Poppins"   # falls back silently if not installed
 CAPTION_FONT = "Lora"
@@ -314,7 +301,7 @@ def photon_path(p0, p1, color: str = SKY, waves: float = 9.0, amp: float = 0.16,
 
 
 __all__ = [
-    "INK", "IVORY", "CORAL", "SKY", "OLIVE", "FOG", "GOLD", "EMBER", "TERM_COLORS",
+    "INK", "IVORY", "CORAL", "SKY", "OLIVE", "FOG", "GOLD", "EMBER",
     "stage", "headline", "caption", "clear_caption",
     "zoom_to", "pull_back", "tilt_to_3d", "return_to_stage", "orbit",
     "spotlight", "unspotlight", "term_tour",

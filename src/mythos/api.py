@@ -1,7 +1,7 @@
 """Math-To-Manim REST API: a thin FastAPI wrapper over MythosService.
 
 Run it:
-    math-to-manim serve-api                # http://127.0.0.1:8642
+    math-to-manim-mythos serve-api         # http://127.0.0.1:8642
     uvicorn mythos.api:app --reload
 
 Endpoints:
@@ -28,8 +28,8 @@ except ImportError as exc:  # pragma: no cover
     ) from exc
 
 from mythos import __version__
-from mythos.backends import DEFAULT_COMMAND, DEFAULT_MODEL
 from mythos.service import MythosService
+from mythos.settings import DEFAULT_COMMAND, DEFAULT_MODEL
 
 
 class RunRequest(BaseModel):

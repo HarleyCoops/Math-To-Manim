@@ -60,15 +60,16 @@ def test_render_scene_file_uses_run_dir_cwd(tmp_path, monkeypatch):
         return type("Completed", (), {"returncode": 0, "stdout": "", "stderr": ""})()
 
     monkeypatch.setattr("mythos.render.subprocess.run", fake_run)
-    code, output = render_scene_file(
+    result = render_scene_file(
         tmp_path,
         scene_file=scene,
         scene_name="Demo",
         quality="l",
         timeout=5,
     )
-    assert code == 0
-    assert output == ""
+    assert result.exit_code == 0
+    assert result.output == ""
+    assert result.timed_out is False
     assert observed["cwd"] == str(tmp_path.resolve())
     assert observed["shell"] is False
     assert "--media_dir" in observed["command"]

@@ -5,11 +5,8 @@ from __future__ import annotations
 import json
 
 from mythos.harness import MythosHarness
-from mythos.manifest_schema import (
-    CURRENT_SCHEMA_VERSION,
-    migrate_manifest,
-    validation_template,
-)
+from mythos.layout import validation_template
+from mythos.manifest_schema import CURRENT_SCHEMA_VERSION, migrate_manifest
 
 
 def test_validation_template_shape():

@@ -6,8 +6,8 @@ from mythos.charter import (
     CINEMATIC_CHARTER,
     extract_json_object,
     extract_python_block,
-    find_scene_class,
 )
+from mythos.scene_checks import find_scene_class
 
 
 def test_charter_mentions_core_rules():

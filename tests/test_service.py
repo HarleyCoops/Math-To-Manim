@@ -59,3 +59,13 @@ def test_read_artifact_traversal_blocked(service):
 def test_missing_run_raises(service):
     with pytest.raises(FileNotFoundError):
         service.get_run("does-not-exist")
+
+
+def test_list_runs_skips_the_prerequisite_cache_dir(service):
+    from mythos.prereq_cache import PrerequisiteCache
+
+    job = service.run_sync("the wave equation", offline=True)
+    PrerequisiteCache.for_runs_dir(service.runs_dir).put("waves", ["oscillators"])
+    assert (service.runs_dir / "_cache").is_dir()
+    run_ids = [run["run_id"] for run in service.list_runs()]
+    assert run_ids == [job.run_id]

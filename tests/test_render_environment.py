@@ -9,8 +9,9 @@ from unittest.mock import Mock
 
 import pytest
 
+import mythos.harness as harness_mod
 from mythos import cli, doctor, render
-from mythos.harness import MythosHarness
+from mythos.harness import MythosHarness, SceneCheck
 from mythos.service import MythosService
 
 
@@ -23,7 +24,6 @@ class Demo(ThreeDScene):
 
 @pytest.fixture
 def doctor_tools(tmp_path, monkeypatch):
-    monkeypatch.setattr(doctor, "load_env_file", lambda: None)
     monkeypatch.setattr(doctor, "resolve_command", lambda command: command)
     monkeypatch.setattr(doctor, "resolve_manim", lambda: ["mock-manim"])
     monkeypatch.setattr(doctor, "default_runs_dir", lambda: tmp_path / "runs")
@@ -68,13 +68,14 @@ def test_doctor_no_latex_does_not_exclude_ffmpeg(doctor_tools, capsys):
 
 
 def test_doctor_complete_toolchain_passes(doctor_tools, capsys):
-    assert doctor.main(["--command", "backend"]) == 0
+    assert cli.main(["doctor", "--command", "backend"]) == 0
     assert "summary: all checks passed" in capsys.readouterr().out
 
 
 @pytest.fixture
 def harness(tmp_path, monkeypatch):
-    harness = MythosHarness(runs_dir=tmp_path, offline=False)
+    harness = MythosHarness(runs_dir=tmp_path, offline=False,
+                            run_model=Mock(side_effect=AssertionError("model call")))
     monkeypatch.setattr(harness, "_run_stage", lambda *args: ({"mocked": True}, False))
 
     def codegen(run_dir, prompt, scene_spec, manifest):
@@ -83,7 +84,6 @@ def harness(tmp_path, monkeypatch):
         return code_path, "Demo"
 
     monkeypatch.setattr(harness, "_codegen", codegen)
-    monkeypatch.setattr(harness, "_model", Mock(side_effect=AssertionError("model call")))
     monkeypatch.setattr(render, "resolve_manim", lambda: ["mock-manim"])
     # A local optional chktex installation must not consume our fake render replies.
     monkeypatch.setattr("mythos.scene_checks._run_chktex", lambda text: [])
@@ -97,7 +97,7 @@ def test_missing_binary_stops_before_model_repair_and_records_evidence(harness, 
     child = Mock(return_value=SimpleNamespace(returncode=1, stdout="", stderr=output))
     monkeypatch.setattr(render.subprocess, "run", child)
     manifest = harness.run("render missing dependency", render=True, max_repairs=3)
-    harness._model.assert_not_called()
+    harness.run_model.assert_not_called()
     assert child.call_count == 1
     assert manifest["status"]["render"] == "failed"
     assert manifest["static_check"]["passed"] is True
@@ -119,7 +119,7 @@ def test_missing_manim_launcher_stops_before_model_repair(harness, monkeypatch):
     monkeypatch.setattr(render.subprocess, "run", child)
     manifest = harness.run("missing Manim", render=True)
     assert manifest["render_error"]["missing_dependencies"] == ["manim"]
-    harness._model.assert_not_called()
+    harness.run_model.assert_not_called()
     assert child.call_count == 1
 
 
@@ -182,7 +182,7 @@ def test_windows_tex_subprocess_failure_stops_before_repair(harness, monkeypatch
     manifest = harness.run("Windows missing compiler", render=True)
     assert manifest["render_error"]["missing_dependencies"] == ["tex-toolchain"]
     assert "MathTex/Tex cannot render" in manifest["render_error"]["detail"]
-    harness._model.assert_not_called()
+    harness.run_model.assert_not_called()
 
 
 @pytest.mark.parametrize("output", [
@@ -197,28 +197,29 @@ def test_scene_error_still_invokes_model_repair_and_renders(harness, monkeypatch
                SimpleNamespace(returncode=0, stdout="rendered", stderr="")]
     child = Mock(side_effect=replies)
     monkeypatch.setattr(render.subprocess, "run", child)
-    harness._model.side_effect = None
-    harness._model.return_value = f"```python\n{SCENE}```"
+    harness.run_model.side_effect = None
+    harness.run_model.return_value = f"```python\n{SCENE}```"
     manifest = harness.run("repair scene code", render=True)
     assert manifest["status"]["render"] == "complete"
     assert "render_error" not in manifest
     assert [item["exit_code"] for item in manifest["renders"]] == [1, 0]
-    harness._model.assert_called_once()
-    assert "Repair it surgically" in harness._model.call_args.args[0]
-    assert output in harness._model.call_args.args[0]
+    harness.run_model.assert_called_once()
+    assert "Repair it surgically" in harness.run_model.call_args.args[0]
+    assert output in harness.run_model.call_args.args[0]
     assert child.call_count == 2
 
 
 def test_static_scene_failure_still_invokes_model_repair(harness, monkeypatch):
-    verify = Mock(side_effect=[(False, "invalid scene syntax"), (True, None)])
-    monkeypatch.setattr(harness, "_verify", verify)
+    check = Mock(side_effect=[SceneCheck(False, "invalid scene syntax", {}),
+                              SceneCheck(True, None, {})])
+    monkeypatch.setattr(harness_mod, "check_scene", check)
     monkeypatch.setattr(render.subprocess, "run", Mock(return_value=SimpleNamespace(
         returncode=0, stdout="rendered", stderr="")))
-    harness._model.side_effect = None
-    harness._model.return_value = f"```python\n{SCENE}```"
+    harness.run_model.side_effect = None
+    harness.run_model.return_value = f"```python\n{SCENE}```"
     manifest = harness.run("static repair", render=True)
     assert manifest["status"]["render"] == "complete"
-    harness._model.assert_called_once()
+    harness.run_model.assert_called_once()
 
 
 def test_non_latex_render_does_not_require_tex_tools(harness, monkeypatch):
@@ -228,7 +229,7 @@ def test_non_latex_render_does_not_require_tex_tools(harness, monkeypatch):
     manifest = harness.run("geometry only", render=True)
     assert manifest["status"]["render"] == "complete"
     assert "render_error" not in manifest
-    harness._model.assert_not_called()
+    harness.run_model.assert_not_called()
 
 
 def test_timeout_remains_non_repairable(harness, monkeypatch):
@@ -237,7 +238,7 @@ def test_timeout_remains_non_repairable(harness, monkeypatch):
     manifest = harness.run("slow scene", render=True)
     assert manifest["render_timed_out"] is True
     assert "render_error" not in manifest
-    harness._model.assert_not_called()
+    harness.run_model.assert_not_called()
 
 
 def test_cli_environment_failure_returns_nonzero(harness, monkeypatch):
@@ -245,7 +246,7 @@ def test_cli_environment_failure_returns_nonzero(harness, monkeypatch):
     monkeypatch.setattr(render.subprocess, "run", Mock(return_value=SimpleNamespace(
         returncode=1, stdout="", stderr="FileNotFoundError: [Errno 2] No such file or directory: 'latex'")))
     assert cli.main(["run", "missing latex", "--render"]) == 1
-    harness._model.assert_not_called()
+    harness.run_model.assert_not_called()
 
 
 def test_service_environment_failure_is_failed_job(harness, monkeypatch):
@@ -256,7 +257,7 @@ def test_service_environment_failure_is_failed_job(harness, monkeypatch):
     assert job.status == "failed"
     assert job.manifest["render_error"]["type"] == "environment"
     assert "dvisvgm" in job.error
-    harness._model.assert_not_called()
+    harness.run_model.assert_not_called()
 
 
 def test_render_workspace_records_environment_error_and_can_retry_after_install(harness, monkeypatch):
@@ -279,4 +280,4 @@ def test_render_workspace_records_environment_error_and_can_retry_after_install(
     assert old_attempt["error"]["type"] == "environment"
     assert old_attempt["log"] != new_attempt["log"]
     assert "Skipping model scene repair" in (run_dir / old_attempt["log"]).read_text("utf-8")
-    harness._model.assert_not_called()
+    harness.run_model.assert_not_called()

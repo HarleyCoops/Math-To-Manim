@@ -5,7 +5,6 @@ from __future__ import annotations
 import importlib
 
 from mythos.prereq_cache import PrerequisiteCache
-from mythos.service import MythosService
 from mythos.settings import PipelineSettings
 
 
@@ -52,8 +51,8 @@ def test_pipeline_settings_ttl_from_env(monkeypatch):
     assert PipelineSettings.from_env().prereq_cache_ttl_days == 14
 
 
-def test_service_loads_cache_on_start(tmp_path):
-    primed = PrerequisiteCache.for_runs_dir(tmp_path / "runs")
-    primed.put("heat equation", ["Fourier series"])
-    service = MythosService(runs_dir=tmp_path / "runs")
-    assert service.prereq_cache.get("heat equation") == ["Fourier series"]
+def test_cache_ttl_for_runs_dir_comes_from_env(tmp_path, monkeypatch):
+    monkeypatch.setenv("M2M_PREREQ_CACHE_TTL_DAYS", "7")
+    cache = PrerequisiteCache.for_runs_dir(tmp_path / "runs")
+    assert cache.ttl_days == 7
+    assert cache.path == tmp_path / "runs" / "_cache" / "prerequisites.json"

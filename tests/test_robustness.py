@@ -13,12 +13,12 @@ import json
 import pytest
 
 from mythos.backends import BackendAuthError
-from mythos.harness import (
-    DEFAULT_RENDER_TIMEOUT,
-    MythosHarness,
-    StageValidationError,
-    validate_stage_artifact,
-)
+from mythos.harness import MythosHarness, StageValidationError
+from mythos.layout import create_run_dir, write_manifest
+from mythos.settings import DEFAULT_RENDER_TIMEOUT
+from mythos.stages import STAGES_BY_SLUG, validate_stage_artifact
+
+MATH_DIRECTOR = STAGES_BY_SLUG["math-director"]
 
 
 # --------------------------------------------------------------------- #
@@ -37,7 +37,7 @@ def test_thin_shot_list_rejected():
     artifact = {"shots": [{"beat": i} for i in range(5)], "camera_score": "x"}
     problem = validate_stage_artifact("cinematographer", artifact)
     assert problem is not None
-    assert "5 beats" in problem
+    assert "shots" in problem and "5" in problem
 
 
 def test_healthy_artifacts_pass():
@@ -55,40 +55,32 @@ def test_non_dict_artifact_rejected():
     assert validate_stage_artifact("intent", {}) is not None
 
 
-def test_degenerate_stage_retries_then_aborts(tmp_path, monkeypatch):
-    harness = MythosHarness(offline=False, runs_dir=tmp_path)
+def test_degenerate_stage_retries_then_aborts(tmp_path):
     calls = []
 
-    def fake_model(prompt, system_extra=None):
+    def fake_model(prompt, *, system_extra=None, command, model, timeout):
         calls.append(prompt)
         return '{"formulas": [], "color_identity": {}, "numbers": []}'
 
-    monkeypatch.setattr(harness, "_model", fake_model)
-    monkeypatch.setattr(harness, "load_charter", lambda f: "CHARTER")
+    harness = MythosHarness(offline=False, runs_dir=tmp_path, run_model=fake_model)
     with pytest.raises(StageValidationError):
-        harness._run_stage("math-director", "mythos-math-director.md",
-                           {"prior": "artifact"}, tmp_path,
-                           "04_math_dossier.json")
+        harness._run_stage(MATH_DIRECTOR, {"prior": "artifact"}, tmp_path)
     assert len(calls) == 2                       # one retry, then abort
     assert "PREVIOUS ATTEMPT REJECTED" in calls[1]
     assert (tmp_path / "04_math_dossier.retry.raw.txt").exists()
 
 
-def test_degenerate_stage_recovers_on_retry(tmp_path, monkeypatch):
-    harness = MythosHarness(offline=False, runs_dir=tmp_path)
+def test_degenerate_stage_recovers_on_retry(tmp_path):
     healthy = json.dumps({
         "formulas": [{"id": f"f{i}", "latex": "x", "story": "y" * 40}
                      for i in range(10)]})
     responses = iter(['{"formulas": []}', healthy])
 
-    def fake_model(prompt, system_extra=None):
+    def fake_model(prompt, *, system_extra=None, command, model, timeout):
         return next(responses)
 
-    monkeypatch.setattr(harness, "_model", fake_model)
-    monkeypatch.setattr(harness, "load_charter", lambda f: "CHARTER")
-    artifact, retried = harness._run_stage(
-        "math-director", "mythos-math-director.md", {}, tmp_path,
-        "04_math_dossier.json")
+    harness = MythosHarness(offline=False, runs_dir=tmp_path, run_model=fake_model)
+    artifact, retried = harness._run_stage(MATH_DIRECTOR, {}, tmp_path)
     assert retried is True
     assert len(artifact["formulas"]) == 10
 
@@ -99,10 +91,30 @@ def test_degenerate_stage_recovers_on_retry(tmp_path, monkeypatch):
 
 def test_manifest_write_is_atomic_and_clean(tmp_path):
     manifest = {"run_id": "x", "stages": [{"stage": "intent"}]}
-    MythosHarness._write_manifest(tmp_path, manifest)
+    write_manifest(tmp_path, manifest)
     on_disk = json.loads((tmp_path / "manifest.json").read_text("utf-8"))
     assert on_disk == manifest
     assert not (tmp_path / ".manifest.json.tmp").exists()
+
+
+# --------------------------------------------------------------------- #
+# Unique run directories                                                 #
+# --------------------------------------------------------------------- #
+
+def test_run_dirs_created_in_the_same_second_do_not_collide(tmp_path):
+    first = create_run_dir(tmp_path, "The Heat Equation!")
+    second = create_run_dir(tmp_path, "The Heat Equation!")
+    assert first != second
+    assert first.is_dir() and second.is_dir()
+    assert first.name.endswith("-the-heat-equation")
+    assert second.name.startswith(first.name)
+
+
+def test_two_offline_runs_in_one_second_keep_separate_bundles(tmp_path):
+    harness = MythosHarness(offline=True, runs_dir=tmp_path)
+    a = harness.run("same prompt")
+    b = harness.run("same prompt")
+    assert a["run_id"] != b["run_id"]
 
 
 # --------------------------------------------------------------------- #

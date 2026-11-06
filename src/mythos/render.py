@@ -12,19 +12,19 @@ vector, and a wall-clock timeout. It does not give Manim a full OS sandbox.
 from __future__ import annotations
 
 import importlib.util
-import os
 import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import NamedTuple
+
+from mythos.settings import DEFAULT_RENDER_TIMEOUT, MANIM_COMMAND_OVERRIDE
 
 try:
     import resource
 except ImportError:  # pragma: no cover - Windows
     resource = None  # type: ignore[assignment]
-
-DEFAULT_RENDER_TIMEOUT = float(os.getenv("M2M_RENDER_TIMEOUT", "1800"))
 
 _SCENE_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 _QUALITY = re.compile(r"^[lmhpk]$")
@@ -34,9 +34,8 @@ _RENDER_BINARIES = _TEX_BINARIES | {"ffmpeg"}
 
 def resolve_manim() -> list[str]:
     """Find the manim entry point, preferring the active interpreter's env."""
-    override = os.getenv("M2M_MANIM")
-    if override:
-        return [override]
+    if MANIM_COMMAND_OVERRIDE:
+        return [MANIM_COMMAND_OVERRIDE]
     if importlib.util.find_spec("manim") is not None:
         return [sys.executable, "-m", "manim"]
     return [shutil.which("manim") or "manim"]
@@ -185,6 +184,7 @@ def build_manim_command(
 
 
 def find_final_video(run_dir: Path) -> Path | None:
+    """Newest finished MP4 under a run directory (Manim's partials excluded)."""
     candidates = [
         path
         for path in Path(run_dir).glob("**/*.mp4")
@@ -195,6 +195,13 @@ def find_final_video(run_dir: Path) -> Path | None:
     return max(candidates, key=lambda path: path.stat().st_mtime_ns)
 
 
+class RenderResult(NamedTuple):
+    exit_code: int
+    output: str
+    #: The wall-clock budget ran out: a budget problem, not a code problem.
+    timed_out: bool = False
+
+
 def render_scene_file(
     run_dir: Path,
     *,
@@ -202,8 +209,12 @@ def render_scene_file(
     scene_name: str,
     quality: str,
     timeout: float = DEFAULT_RENDER_TIMEOUT,
-) -> tuple[int, str]:
-    """Run Manim with cwd and media pinned to ``run_dir``. Never uses shell=True."""
+) -> RenderResult:
+    """Run Manim with cwd and media pinned to ``run_dir``. Never uses shell=True.
+
+    Raises :class:`RenderEnvironmentError` when the output names a missing
+    render tool; scene-code failures come back as a non-zero exit code.
+    """
     root = Path(run_dir).resolve()
     root.mkdir(parents=True, exist_ok=True)
     (root / "media").mkdir(exist_ok=True)
@@ -232,13 +243,13 @@ def render_scene_file(
         partial = exc.stderr or exc.stdout or b""
         if isinstance(partial, bytes):
             partial = partial.decode("utf-8", errors="replace")
-        return 124, (
+        return RenderResult(124, (
             f"render timed out after {timeout:.0f}s "
             "(raise M2M_RENDER_TIMEOUT or lower the quality)\n" + partial
-        )
+        ), timed_out=True)
     output = (completed.stderr or "") + (completed.stdout or "")
     if completed.returncode != 0:
         missing = missing_render_dependencies(output)
         if missing:
             raise RenderEnvironmentError(missing, output=output, exit_code=completed.returncode)
-    return completed.returncode, output
+    return RenderResult(completed.returncode, output)

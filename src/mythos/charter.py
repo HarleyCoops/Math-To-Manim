@@ -1,4 +1,4 @@
-"""The Mythos Cinematic Charter and shared parsing utilities.
+"""The Mythos Cinematic Charter and model-output parsing.
 
 The charter is the visual contract injected into every Mythos generation:
 camera-as-narrator grammar, headlines before symbols, term zooms, captions,
@@ -10,13 +10,8 @@ one source of truth.
 from __future__ import annotations
 
 import json
-import os
 import re
-import shutil
-from pathlib import Path
 from typing import Any
-
-from mythos.scene_checks import find_scene_class as _find_scene_class_ast
 
 #: The visual contract injected into every Mythos generation.
 CINEMATIC_CHARTER = """\
@@ -58,33 +53,6 @@ JSON_CONTRACT = (
     "no Markdown fences, no prose before or after. Be generous and verbose INSIDE "
     "the JSON fields; the next agent in the chain feeds on detail."
 )
-
-
-def load_env_file(path: Path | None = None) -> None:
-    """Load simple KEY=VALUE lines from a .env file into os.environ (no override)."""
-    env_path = path or Path(".env")
-    if not env_path.exists():
-        return
-    for line in env_path.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        key, _, value = line.partition("=")
-        key, value = key.strip(), value.strip().strip('"').strip("'")
-        if key and key not in os.environ:
-            os.environ[key] = value
-
-
-def resolve_command(command: str) -> str:
-    """Resolve a CLI executable, tolerating Windows .cmd shims."""
-    found = shutil.which(command)
-    if found:
-        return found
-    if os.name == "nt" and not command.lower().endswith(".cmd"):
-        found = shutil.which(command + ".cmd")
-        if found:
-            return found
-    return command
 
 
 _RAW_STRING_JSON = re.compile(r'(?<=[\[\,(:\s])r"((?:[^"\\]|\\.)*)"')
@@ -157,7 +125,3 @@ def extract_python_block(text: str) -> str:
         return stripped + "\n"
     raise RuntimeError(f"No python block found in model output:\n{text[:800]}")
 
-
-def find_scene_class(code: str) -> str:
-    """Return the name of the Scene subclass defined in generated code."""
-    return _find_scene_class_ast(code)

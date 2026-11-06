@@ -6,12 +6,12 @@ The service owns job orchestration around :class:`mythos.harness.MythosHarness`:
 - inspect job status and the on-disk run ledger (``runs/mythos/``)
 - read run artifacts safely (no path traversal)
 
-The API server (:mod:`mythos.api`) and the MCP server
-(:mod:`mythos.mcp_server`) are both thin wrappers over this class.
+The API server (:mod:`mythos.api`) is a thin wrapper over this class.
 """
 
 from __future__ import annotations
 
+import json
 import threading
 import uuid
 from dataclasses import dataclass, field
@@ -19,27 +19,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from mythos.backends import DEFAULT_COMMAND, DEFAULT_MODEL, DEFAULT_TIMEOUT
-from mythos.harness import (
+from mythos.harness import MythosHarness
+from mythos.layout import MANIFEST_FILE, iter_run_dirs, read_manifest
+from mythos.settings import (
+    DEFAULT_COMMAND,
+    DEFAULT_MODEL,
     DEFAULT_RENDER_TIMEOUT,
-    MythosHarness,
+    DEFAULT_TIMEOUT,
     default_runs_dir,
 )
-from mythos.prereq_cache import PrerequisiteCache
-from mythos.settings import PipelineSettings
-
-#: Artifact names a run may contain, in chain order (plus raw traces).
-ARTIFACT_ORDER = [
-    "01_intent.json",
-    "02_knowledge_map.json",
-    "03_curriculum.json",
-    "04_math_dossier.json",
-    "05_shot_list.json",
-    "06_scene_spec.json",
-    "mythos_scene.py",
-    "validation.json",
-    "manifest.json",
-]
 
 HarnessFactory = Callable[..., MythosHarness]
 
@@ -83,34 +71,20 @@ class MythosService:
         self._harness_factory = harness_factory or MythosHarness
         self._jobs: dict[str, Job] = {}
         self._lock = threading.Lock()
-        self.settings = PipelineSettings.from_env()
-        # Load on MCP / API / CLI service start so prerequisite trees survive
-        # process restarts (WAR-1530).
-        self.prereq_cache = PrerequisiteCache.for_runs_dir(
-            self.runs_dir,
-            ttl_days=self.settings.prereq_cache_ttl_days,
-        )
 
     # ------------------------------------------------------------------ #
     # Job lifecycle                                                       #
     # ------------------------------------------------------------------ #
 
     def _build_harness(self, options: dict[str, Any]) -> MythosHarness:
-        kwargs: dict[str, Any] = dict(
+        return self._harness_factory(
             command=options.get("command", DEFAULT_COMMAND),
             model=options.get("model", DEFAULT_MODEL),
             timeout=float(options.get("timeout", DEFAULT_TIMEOUT)),
+            render_timeout=float(options.get("render_timeout", DEFAULT_RENDER_TIMEOUT)),
             offline=bool(options.get("offline", False)),
             runs_dir=self.runs_dir,
         )
-        render_timeout = float(
-            options.get("render_timeout", DEFAULT_RENDER_TIMEOUT))
-        try:
-            return self._harness_factory(render_timeout=render_timeout,
-                                         **kwargs)
-        except TypeError:
-            # Custom harness factories (tests) may not accept render_timeout.
-            return self._harness_factory(**kwargs)
 
     def _execute(self, job: Job) -> None:
         harness = self._build_harness(job.options)
@@ -130,9 +104,9 @@ class MythosService:
             with self._lock:
                 job.manifest = manifest
                 job.run_id = manifest.get("run_id")
-                environment_error = manifest.get("render_error", {})
-                if environment_error.get("type") == "environment":
-                    job.error = environment_error["detail"]
+                render_error = manifest.get("render_error")
+                if render_error:
+                    job.error = render_error["detail"]
                     job.status = "failed"
                 else:
                     job.status = "completed"
@@ -173,8 +147,6 @@ class MythosService:
         return job
 
     def get_job(self, job_id: str) -> Job | None:
-        import json
-
         with self._lock:
             job = self._jobs.get(job_id)
             if job is None:
@@ -183,10 +155,8 @@ class MythosService:
                 # Live progress: surface the on-disk manifest (written
                 # atomically after every stage) instead of waiting for the
                 # chain to finish.
-                manifest_path = self.runs_dir / job.run_id / "manifest.json"
                 try:
-                    job.manifest = json.loads(
-                        manifest_path.read_text(encoding="utf-8"))
+                    job.manifest = read_manifest(self.runs_dir / job.run_id)
                 except (OSError, ValueError):
                     pass
             return job
@@ -202,19 +172,12 @@ class MythosService:
 
     def list_runs(self, limit: int = 50) -> list[dict[str, Any]]:
         """Newest-first summaries of on-disk runs under ``runs/mythos``."""
-        import json
-
-        if not self.runs_dir.exists():
-            return []
         summaries: list[dict[str, Any]] = []
-        for run_dir in sorted(self.runs_dir.iterdir(), reverse=True):
-            if not run_dir.is_dir():
-                continue
-            manifest_path = run_dir / "manifest.json"
+        for run_dir in iter_run_dirs(self.runs_dir):
             summary: dict[str, Any] = {"run_id": run_dir.name}
-            if manifest_path.exists():
+            if (run_dir / MANIFEST_FILE).exists():
                 try:
-                    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                    manifest = read_manifest(run_dir)
                     summary.update({
                         "prompt": manifest.get("prompt"),
                         "model": manifest.get("model"),
@@ -241,14 +204,8 @@ class MythosService:
 
     def get_run(self, run_id: str) -> dict[str, Any]:
         """Full manifest plus artifact listing for one run."""
-        import json
-
         run_dir = self._resolve_run_dir(run_id)
-        manifest_path = run_dir / "manifest.json"
-        manifest = (
-            json.loads(manifest_path.read_text(encoding="utf-8"))
-            if manifest_path.exists() else {}
-        )
+        manifest = read_manifest(run_dir) if (run_dir / MANIFEST_FILE).exists() else {}
         artifacts = sorted(p.name for p in run_dir.iterdir() if p.is_file())
         return {"run_id": run_id, "manifest": manifest, "artifacts": artifacts}
 

@@ -12,12 +12,9 @@ from __future__ import annotations
 import pytest
 
 import mythos.harness as harness_mod
-from mythos.backends import (
-    BackendAuthError,
-    is_claude_cli_command,
-    model_fallbacks_from_env,
-)
-from mythos.harness import MythosHarness
+from mythos.backends import BackendAuthError, is_claude_cli_command
+from mythos.harness import MythosHarness, SceneCheck
+from mythos.settings import model_fallbacks_from_env
 
 
 # --------------------------------------------------------------------- #
@@ -52,16 +49,15 @@ def test_claude_cli_detection():
 # The ladder itself                                                      #
 # --------------------------------------------------------------------- #
 
-def _harness(tmp_path, **kwargs):
+def _harness(tmp_path, run_model, **kwargs):
     return MythosHarness(runs_dir=tmp_path, command="claude",
                          model="claude-fable-5",
                          model_fallbacks=("claude-opus-4-8",
                                           "claude-sonnet-5"),
-                         **kwargs)
+                         run_model=run_model, **kwargs)
 
 
-def test_fallback_walks_ladder_and_sticks(tmp_path, monkeypatch):
-    harness = _harness(tmp_path)
+def test_fallback_walks_ladder_and_sticks(tmp_path):
     calls = []
 
     def fake_run_model(prompt, *, system_extra=None, command, model, timeout):
@@ -70,7 +66,7 @@ def test_fallback_walks_ladder_and_sticks(tmp_path, monkeypatch):
             raise RuntimeError("Mythos model command failed (exit 1)\n529 overloaded")
         return f"answer from {model}"
 
-    monkeypatch.setattr(harness_mod, "run_model", fake_run_model)
+    harness = _harness(tmp_path, fake_run_model)
     out = harness._model("hello")
     assert out == "answer from claude-opus-4-8"
     assert harness.model == "claude-opus-4-8"          # sticky
@@ -82,13 +78,11 @@ def test_fallback_walks_ladder_and_sticks(tmp_path, monkeypatch):
     assert calls == ["claude-fable-5", "claude-opus-4-8", "claude-opus-4-8"]
 
 
-def test_fallback_exhaustion_reports_every_model_tried(tmp_path, monkeypatch):
-    harness = _harness(tmp_path)
-
+def test_fallback_exhaustion_reports_every_model_tried(tmp_path):
     def always_fail(prompt, *, system_extra=None, command, model, timeout):
         raise RuntimeError(f"model {model} unavailable")
 
-    monkeypatch.setattr(harness_mod, "run_model", always_fail)
+    harness = _harness(tmp_path, always_fail)
     with pytest.raises(RuntimeError) as excinfo:
         harness._model("hello")
     message = str(excinfo.value)
@@ -96,54 +90,50 @@ def test_fallback_exhaustion_reports_every_model_tried(tmp_path, monkeypatch):
         assert model in message
 
 
-def test_auth_error_never_falls_back(tmp_path, monkeypatch):
-    harness = _harness(tmp_path)
+def test_auth_error_never_falls_back(tmp_path):
     calls = []
 
     def auth_fail(prompt, *, system_extra=None, command, model, timeout):
         calls.append(model)
         raise BackendAuthError("run `claude /login`")
 
-    monkeypatch.setattr(harness_mod, "run_model", auth_fail)
+    harness = _harness(tmp_path, auth_fail)
     with pytest.raises(BackendAuthError):
         harness._model("hello")
     assert calls == ["claude-fable-5"]                 # exactly one attempt
     assert harness.fallbacks_used == []
 
 
-def test_codex_backend_never_falls_back(tmp_path, monkeypatch):
-    harness = MythosHarness(runs_dir=tmp_path, command="codex",
-                            model="gpt-5.5",
-                            model_fallbacks=("claude-opus-4-8",))
+def test_codex_backend_never_falls_back(tmp_path):
     calls = []
 
     def fail(prompt, *, system_extra=None, command, model, timeout):
         calls.append(model)
         raise RuntimeError("codex exploded")
 
-    monkeypatch.setattr(harness_mod, "run_model", fail)
+    harness = MythosHarness(runs_dir=tmp_path, command="codex",
+                            model="gpt-5.5",
+                            model_fallbacks=("claude-opus-4-8",),
+                            run_model=fail)
     with pytest.raises(RuntimeError, match="codex exploded"):
         harness._model("hello")
     assert calls == ["gpt-5.5"]
 
 
 def test_manifest_records_fallback(tmp_path, monkeypatch):
-    harness = _harness(tmp_path)
-
     def flaky(prompt, *, system_extra=None, command, model, timeout):
         if model == "claude-fable-5":
             raise RuntimeError("529 overloaded")
         return '{"stage": "x", "content": "' + "y" * 400 + '"}'
 
-    monkeypatch.setattr(harness_mod, "run_model", flaky)
-    monkeypatch.setattr(harness, "load_charter", lambda f: "CHARTER")
+    harness = _harness(tmp_path, flaky)
     monkeypatch.setattr(
         harness_mod.MythosHarness, "_codegen",
         lambda self, run_dir, prompt, spec, manifest: (
             run_dir / "mythos_scene.py", "FakeScene"))
     monkeypatch.setattr(
-        harness_mod.MythosHarness, "_verify",
-        staticmethod(lambda code_path, prompt=None: (True, None)))
+        harness_mod, "check_scene",
+        lambda code_path, prompt=None: SceneCheck(True, None, {}))
     # make every stage's artifact pass validation
     monkeypatch.setattr(harness_mod, "validate_stage_artifact",
                         lambda slug, artifact: None)

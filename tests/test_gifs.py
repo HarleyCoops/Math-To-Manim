@@ -7,26 +7,39 @@ import json
 import pytest
 
 from mythos.cli import build_parser
-from mythos.gifs import find_scene_mp4, resolve_source
+from mythos.gifs import resolve_source
 
 
-def test_find_scene_mp4_prefers_newest_and_skips_partials(tmp_path):
-    old = tmp_path / "scene_a" / "480p15"
-    new = tmp_path / "scene_a" / "720p15"
-    partial = tmp_path / "scene_a" / "480p15" / "partial_movie_files" / "MyScene"
+def _run(tmp_path, run_id="20260710-000000-test", scene_name="TestScene"):
+    run_dir = tmp_path / "runs" / run_id
+    run_dir.mkdir(parents=True)
+    (run_dir / "manifest.json").write_text(
+        json.dumps({"scene_name": scene_name}), encoding="utf-8")
+    return run_dir
+
+
+def test_resolve_source_finds_the_fresh_render_inside_the_run(tmp_path):
+    # render.py pins Manim's media dir inside the run directory.
+    run_dir = _run(tmp_path)
+    old = run_dir / "media" / "videos" / "mythos_scene" / "480p15"
+    new = run_dir / "media" / "videos" / "mythos_scene" / "720p15"
+    partial = old / "partial_movie_files" / "TestScene"
     for d in (old, new, partial):
         d.mkdir(parents=True)
-    (old / "MyScene.mp4").write_bytes(b"old")
-    (partial / "MyScene.mp4").write_bytes(b"partial")
-    newest = new / "MyScene.mp4"
+    (old / "TestScene.mp4").write_bytes(b"old")
+    (partial / "TestScene.mp4").write_bytes(b"partial")
+    newest = new / "TestScene.mp4"
     newest.write_bytes(b"new")
 
-    found = find_scene_mp4("MyScene", media_root=tmp_path)
-    assert found == newest
+    src, out = resolve_source("20260710-000000-test", runs_dir=tmp_path / "runs")
+    assert src == newest
+    assert out == run_dir / "TestScene.gif"
 
 
-def test_find_scene_mp4_missing_returns_none(tmp_path):
-    assert find_scene_mp4("NoSuchScene", media_root=tmp_path) is None
+def test_resolve_source_unrendered_run_says_how_to_render(tmp_path):
+    _run(tmp_path)
+    with pytest.raises(FileNotFoundError, match="Render first"):
+        resolve_source("20260710-000000-test", runs_dir=tmp_path / "runs")
 
 
 def test_resolve_source_accepts_mp4_path(tmp_path):
@@ -42,17 +55,10 @@ def test_resolve_source_rejects_unknown_target():
         resolve_source("definitely-not-a-run-id")
 
 
-def test_resolve_source_uses_run_manifest(tmp_path, monkeypatch):
-    import mythos.gifs as gifs_mod
-
-    run_dir = tmp_path / "runs" / "20260710-000000-test"
-    run_dir.mkdir(parents=True)
-    (run_dir / "manifest.json").write_text(
-        json.dumps({"scene_name": "TestScene"}), encoding="utf-8")
+def test_resolve_source_uses_run_manifest(tmp_path):
+    run_dir = _run(tmp_path)
     (run_dir / "TestScene.mp4").write_bytes(b"x")
-    monkeypatch.setattr(gifs_mod, "default_runs_dir",
-                        lambda: tmp_path / "runs")
-    src, out = resolve_source("20260710-000000-test")
+    src, out = resolve_source("20260710-000000-test", runs_dir=tmp_path / "runs")
     assert src == run_dir / "TestScene.mp4"
     assert out == run_dir / "TestScene.gif"
 

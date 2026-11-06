@@ -15,14 +15,10 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from mythos.layout import CACHE_DIR
 from mythos.settings import DEFAULT_PREREQ_CACHE_TTL_DAYS, PipelineSettings
 
-DEFAULT_TTL_DAYS = DEFAULT_PREREQ_CACHE_TTL_DAYS
 CACHE_SCHEMA_VERSION = 1
-
-
-def _ttl_days() -> int:
-    return PipelineSettings.from_env().prereq_cache_ttl_days
 
 
 def _now() -> datetime:
@@ -81,14 +77,15 @@ class PrerequisiteCache:
 
     def __init__(self, path: Path, *, ttl_days: int | None = None):
         self.path = Path(path)
-        self.ttl_days = DEFAULT_TTL_DAYS if ttl_days is None else max(1, ttl_days)
+        self.ttl_days = DEFAULT_PREREQ_CACHE_TTL_DAYS if ttl_days is None else max(1, ttl_days)
         self._entries: dict[str, dict[str, Any]] = {}
         self.load()
 
     @classmethod
-    def for_runs_dir(cls, runs_dir: Path, *, ttl_days: int | None = None) -> "PrerequisiteCache":
-        path = Path(runs_dir) / "_cache" / "prerequisites.json"
-        return cls(path, ttl_days=ttl_days if ttl_days is not None else _ttl_days())
+    def for_runs_dir(cls, runs_dir: Path) -> "PrerequisiteCache":
+        """The cache sidecar of a runs ledger, with the TTL from the environment."""
+        path = Path(runs_dir) / CACHE_DIR / "prerequisites.json"
+        return cls(path, ttl_days=PipelineSettings.from_env().prereq_cache_ttl_days)
 
     def load(self) -> None:
         if not self.path.is_file():
@@ -125,26 +122,19 @@ class PrerequisiteCache:
             return None
         return [str(item) for item in prerequisites]
 
-    def put(self, concept: str, prerequisites: list[str], *, persist: bool = True) -> None:
+    def put(self, concept: str, prerequisites: list[str]) -> None:
         self._prune_stale()
         self._entries[concept] = {
             "prerequisites": list(prerequisites),
             "cached_at": _now().isoformat(),
             "source_concept": concept,
         }
-        if persist:
-            self.save()
+        self.save()
 
-    def ingest_knowledge_map(
-        self,
-        concept: str,
-        knowledge_map: dict[str, Any],
-        *,
-        persist: bool = True,
-    ) -> list[str]:
+    def ingest_knowledge_map(self, concept: str, knowledge_map: dict[str, Any]) -> list[str]:
         prerequisites = extract_prerequisites(knowledge_map, concept)
         if prerequisites:
-            self.put(concept, prerequisites, persist=persist)
+            self.put(concept, prerequisites)
         return prerequisites
 
     def _prune_stale(self) -> None:
