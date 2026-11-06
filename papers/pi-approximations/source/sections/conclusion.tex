@@ -1,0 +1,156 @@
+\section{Choice of parameters and proof of Theorem~\ref{thm:main}}
+\label{sec:parameters}
+
+We now combine the interpolation theorem and the determinant estimates.
+The order of choices is essential: the dimension is fixed before the
+approximation scales, and all these data are fixed before the polynomial
+degree tends to infinity.
+
+\begin{lemma}\label{par:constants}
+For every real \(\nu>2\), there are positive rational numbers
+\(\theta,A,B,C\) such that
+\begin{equation}\label{par:inequalities}
+0<\theta<A<B<1,\qquad
+\nu(A-\theta)>1-\theta,\qquad
+C>1,\quad B<1/C,\quad B<C\theta<1.
+\end{equation}
+One can then choose \(0<\eta<1\) such that
+\begin{equation}\label{par:gap}
+g:=\nu\bigl(A(1-\eta)-\theta\bigr)-(1-\theta)>0.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Choose a rational \(b\) with \(1/2<b<1-1/\nu\).
+For a sufficiently small positive rational \(\delta\), put
+\(\theta=1-\delta\) and \(A=1-b\delta\). Then \(0<\theta<A<1\), and
+\[
+\nu(A-\theta)-(1-\theta)
+=\bigl(\nu(1-b)-1\bigr)\delta>0,
+\]
+whereas
+\[
+\theta-A^2=(2b-1)\delta-b^2\delta^2>0.
+\]
+It follows that the interval \((A/\theta,1/A)\) is nonempty.
+Choose a rational \(C\) in this interval. Since \(A>\theta\), we have
+\(C>1\); since \(\theta<A\), we also have
+\(C\theta<\theta/A<1\).
+Now choose a rational \(B\) between \(A\) and
+\(\min(1/C,C\theta)\). This proves \eqref{par:inequalities}.
+Finally, the strict inequality at \(\eta=0\) allows a sufficiently
+small \(\eta>0\) in \eqref{par:gap}.
+\end{proof}
+
+The two inequalities used in this construction have different roles.
+The inequality \(\nu(A-\theta)>1-\theta\) supplies the
+approximation-error gap. The inequality \(A^2<\theta\) permits
+\(A/\theta<C<1/A\), and hence a choice of \(B\) for which
+\(CB<1\), \(C\theta/B>1\), and \(B/A>1\). With the full-simplex
+counts of Section~\ref{det:section}, these three ratios make the
+dimension-dependent errors tend to zero while the collision saving
+tends to infinity. We now choose one finite dimension realizing
+both requirements; it will remain fixed throughout the degree limit.
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Fix \(\nu>2\). Suppose for a contradiction that there are arbitrarily
+large positive integers \(q\) for which some \(p\in\ZZ\) satisfies
+\begin{equation}\label{par:good}
+\left|\pi-\frac pq\right|\le q^{-\nu}.
+\end{equation}
+Fix \(\theta,A,B,C,\eta,g\) from Lemma~\ref{par:constants}, and put
+\(\varepsilon_0=\min(g/2,1/2)\).
+First choose \(F_0>2/\theta\) so large that
+\(\nu/F_0<\varepsilon_0/3\).
+
+For an integer \(m\), set
+\begin{equation}\label{par:dimension}
+K=\lfloor C^m\rfloor,\qquad
+w_0=B^{-m},\qquad
+v_0=2K\theta^m w_0.
+\end{equation}
+These are admissible rational interpolation data:
+\begin{equation}\label{par:volume}
+K\theta^m\le(C\theta)^m<1,\qquad
+K\frac{w_0}{v_0}\theta^m=\frac12.
+\end{equation}
+The relevant limits as \(m\to\infty\) are
+\begin{equation}\label{par:limits}
+\frac{K}{w_0}\le(CB)^m\longrightarrow0,\qquad
+v_0\sim2\left(\frac{C\theta}{B}\right)^m\longrightarrow\infty,
+\qquad
+\frac{m}{v_0}\longrightarrow0.
+\end{equation}
+With the notation of Proposition~\ref{det:comparison}, these choices give
+\begin{equation}\label{par:collision-growth}
+L=\frac{\eta^2K\theta^m}{(m+1)v_0A^m}
+ =\frac{\eta^2(B/A)^m}{2(m+1)}\longrightarrow\infty.
+\end{equation}
+Thus, with \(\Lambda=4\log2\) and \(c=(\log2)/4\), choose \(m\) large
+enough that
+\begin{equation}\label{par:dimension-margin}
+\frac{\Lambda F_0m+2\log2}{v_0}+\frac{100K}{w_0}
+ <\frac{\varepsilon_0}{3},
+\qquad cL>2.
+\end{equation}
+Fix this \(m\), and hence \(K,w_0,v_0\).
+
+The remaining constants are now fixed. Choose approximations
+\(p_i/q_i\) satisfying \eqref{par:good}, with
+\(w_i=\lceil\log q_i\rceil\), successively sufficiently large for
+Theorem~\ref{geom:interpolation} and, in addition, for
+\begin{equation}\label{par:weight-margin}
+\Lambda\sum_{i=1}^m\frac1{w_i}
++\frac{\theta+\log4+\log(2K)+\nu+\log(200K)}{w_*}
+ <\frac{\varepsilon_0}{3},
+\qquad w_*=\min_{i>0}w_i.
+\end{equation}
+This is possible: first impose a sufficiently large lower bound on
+every \(w_i\), using \(\sum_i1/w_i\le m/w_*\), and then impose the
+successive geometric thresholds. The assumed denominators are
+unbounded, so every finite sequence of such requirements can be met.
+The thresholds for weight separation are independent of the centers.
+For sufficiently large \(q_i\), \(p_i\ne0\), and hence
+\(c_{ji}=jr_i\), \(r_i=2\ii p_i/q_i\), are distinct across \(j\) in
+each coordinate. No independence between different coordinates is
+required.
+
+Using \eqref{det:arith-error}, \eqref{det:translation-bound},
+\eqref{det:hol-error}, and \eqref{det:analytic-error}, the sum of errors
+is exactly
+\[
+\begin{aligned}
+E_{\rm ar}+E_{\rm an}
+&=\frac{\nu}{F_0}
+ +\frac{\Lambda F_0m+2\log2}{v_0}+\frac{100K}{w_0}\\
+&\quad +\Lambda\sum_i\frac1{w_i}
+ +\frac{\theta+\log4+\log(2K)+\nu+\log(200K)}{w_*}.
+\end{aligned}
+\]
+Our three choices make this less than \(\varepsilon_0\).
+In particular it is less than \(g\), while
+\(cL>2>1+E_{\rm ar}+E_{\rm an}\).
+All hypotheses of Proposition~\ref{det:comparison} now hold,
+a contradiction. The degree \(H\) in that Proposition tends to infinity
+only after the dimension, weights, and centers just chosen are fixed.
+
+We have excluded \eqref{par:good} for arbitrarily large \(q\), for
+each fixed \(\nu>2\). This gives the required eventual lower bound,
+in fact with a strict inequality. The contradiction allowed unreduced
+fractions and zero error. If \(\pi\) were rational, exact representations
+with arbitrarily large denominators would contradict it; hence
+\(\pi\) is irrational.
+
+Finally divide the unit interval into \(N\) equal parts and apply
+pigeonhole to \(0,\pi,\ldots,N\pi\) modulo one. There exist \(p\in\ZZ\)
+and \(1\le q\le N\) such that
+\[
+0<\left|\pi-\frac pq\right|\le\frac1{qN}\le\frac1{q^2}.
+\]
+After reduction, the same error is at most the inverse square of the
+reduced denominator. These errors tend to zero as \(N\to\infty\);
+irrationality forces the reduced denominators to be unbounded.
+Every exponent less than two therefore occurs infinitely often in
+the defining inequality. Hence \(\mu(\pi)\ge2\), and the upper bound
+already proved gives \(\mu(\pi)=2\).
+\end{proof}

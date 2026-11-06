@@ -1,0 +1,584 @@
+\section{Interpolation with separated weights}
+\label{geom:section}
+
+We prove the interpolation statement used in the determinant argument. Its
+essential uniformity is that the weights can be chosen before the interpolation
+points: each coordinate weight has a lower threshold depending on the earlier
+weights, but not on the locations of the points. The degree at which
+interpolation becomes surjective is allowed to depend on all the fixed data.
+
+All multi-indices below have nonnegative integer entries. For a positive
+rational vector $W=(w_0,\ldots,w_m)$, the $W$-degree of the
+monomial $Y^hX_1^{\alpha_1}\cdots X_m^{\alpha_m}$ is
+$w_0h+\sum_iw_i\alpha_i$. Write $\mathcal P_W(H)$ for the complex vector
+space of polynomials of $W$-degree at most $H$. For a positive rational vector
+$V=(v_0,\ldots,v_m)$, let $\mathcal J_V(H)$ be the quotient of
+$\CC[[t,u_1,\ldots,u_m]]$ by the ideal of series whose monomials all have
+$V$-weight at least $H$. Thus a vector in $\mathcal J_V(H)$ is a packet of
+coefficients indexed by
+\[
+ v_0s+\sum_{i=1}^m v_i\beta_i<H.
+\]
+The strict inequality in this definition will be used throughout.
+
+\begin{theorem}[Separated-weight interpolation]
+\label{geom:interpolation}
+Fix integers $m,K\ge1$ and positive rational numbers $w_0,v_0,\theta$ such
+that $0<\theta<1$ and
+\begin{equation}
+\label{geom:volume-hypotheses}
+ K\theta^m<1,
+ \qquad K\frac{w_0}{v_0}\theta^m<1.
+\end{equation}
+There are successive lower thresholds for positive rational numbers
+$w_1,\ldots,w_m$, depending only on these fixed data and the previously
+chosen weights, with the following property. Put
+\[
+ W=(w_0,w_1,\ldots,w_m),\qquad
+ V=(v_0,w_1/\theta,\ldots,w_m/\theta).
+\]
+For any points
+\[
+ a_j=(1,c_{j1},\ldots,c_{jm})\in\CC^{m+1},\qquad 0\le j<K,
+\]
+whose coordinates $c_{0i},\ldots,c_{K-1,i}$ are pairwise distinct for each
+$i$, the map
+\begin{equation}
+\label{geom:jet-map}
+ \begin{aligned}
+ \mathcal P_W(H)&\longrightarrow\bigoplus_{j=0}^{K-1}\mathcal J_V(H),\\
+ P&\longmapsto
+ \left(P\bigl(1+t,(c_{ji}+u_i+\log(1+t))_{i=1}^m\bigr)\right)_{j=0}^{K-1}.
+ \end{aligned}
+\end{equation}
+is surjective for all sufficiently large, sufficiently divisible integers $H$.
+The divisibility requirement can be chosen using only the weights. The
+remaining lower threshold for $H$ may depend on the points.
+\end{theorem}
+
+We first establish a numerical inequality on algebraic curves, and then use
+it to obtain all the jets in \eqref{geom:jet-map}. The local estimate driving
+the curve argument is recorded separately.
+
+\subsection{A local multiplicity comparison}
+
+A collection of vector fields is called a \emph{normal basis} to a smooth
+subvariety at a point if its images form a basis of the ambient tangent space
+modulo the tangent space of the subvariety. For an irreducible subvariety,
+this terminology will refer to a general smooth point. There are only
+finitely many possible index sets in the applications below, so all their
+generic rank conditions can be checked on one common open subset.
+
+\begin{lemma}[Weighted transverse multiplicity]
+\label{geom:multiplicity}
+Give the coordinates $x_1,\ldots,x_d$ positive rational degree weights
+$\rho_1,\ldots,\rho_d$. On an open subset of $\CC^d$, let
+$D_1,\ldots,D_d$ be commuting analytic vector fields forming a frame, and
+assign them positive rational costs $\kappa_1,\ldots,\kappa_d$. Fix
+$\varepsilon>0$.
+
+Let $N>0$. Suppose that polynomials $f_1,\ldots,f_r$ have weighted degree at most $N$,
+that $Z$ is an irreducible component of their common zero set of codimension
+$k\ge1$, and that
+\begin{equation}
+\label{geom:persistent-derivatives}
+ D^\gamma f_\ell\big|_Z=0
+ \quad\text{whenever}\quad
+ \sum_b\kappa_b\gamma_b<\varepsilon N.
+\end{equation}
+For any coordinate normal basis $A$ and any $D$-field normal basis $B$,
+each of cardinality $k$, one has
+\begin{equation}
+\label{geom:multiplicity-comparison}
+ \prod_{a\in A}\rho_a
+ \le 2k!\,\varepsilon^{-k}\prod_{b\in B}\kappa_b
+\end{equation}
+The bound is uniform in the equations, the component $Z$, and the
+analytic frame; no lower threshold for $N$ is required.
+\end{lemma}
+
+\begin{proof}
+Choose a smooth point $x$ of $Z$ where both normal-basis conditions hold and
+which lies on no other irreducible component of the common zero set. Flowing
+from $Z$ along the fields indexed by $B$ gives local analytic coordinates
+$(z,b)$, where $z$ parametrizes $Z$ and $b=(b_1,\ldots,b_k)$ consists of
+transverse flow parameters. Commutativity implies that the chosen fields
+are the derivatives in the $b$-directions. Thus
+\eqref{geom:persistent-derivatives} says that in the expansion
+\[
+ f_\ell(z,b)=\sum_{\alpha\in\NN^k} f_{\ell,\alpha}(z)b^\alpha,
+\]
+every coefficient function of $B$-weight less than $\varepsilon N$ vanishes
+identically on the chosen neighborhood in $Z$.
+
+Let $S$ be the affine coordinate slice through $x$ obtained by fixing the
+coordinates outside $A$. It is transverse to $Z$, and the zero set of the
+restricted equations is isolated at $x$. The flow parameters $b$ give
+regular analytic coordinates on $S$; the coordinates $z$ become analytic
+functions $z(b)$. Substitution cannot generate a missing term of smaller
+$B$-weight. Indeed, each surviving summand already contains a monomial
+$b^\alpha$ of weight at least $\varepsilon N$, and its analytic coefficient
+has only nonnegative powers of $b$. Consequently the ideal of the
+restricted equations is contained in the monomial ideal of weight at least
+$\varepsilon N$. Its quotient therefore has length at least
+\begin{equation}
+\label{geom:local-length-lower}
+ \#\left\{\alpha\in\NN^k:
+       \sum_{b\in B}\kappa_b\alpha_b<\varepsilon N\right\}
+ \ge \frac{(\varepsilon N)^k}{2k!\prod_{b\in B}\kappa_b}
+\end{equation}
+In fact the factor $1/2$ can be omitted: the simplex
+$\{x\in\RR_{\ge0}^k:\sum_{b\in B}\kappa_bx_b<\varepsilon N\}$
+is covered by the disjoint half-open unit cubes $\alpha+[0,1)^k$
+indexed by the admissible multi-indices $\alpha=\lfloor x\rfloor$. Its volume is
+$(\varepsilon N)^k/(k!\prod_{b\in B}\kappa_b)$. Thus the displayed
+bound holds for every $N>0$. Analytic local coordinates preserve finite
+length, so no radius or coefficient bound for the flow map is needed.
+
+In the regular local ring of the $k$-dimensional slice, the ideal generated
+by the restricted equations is primary to the maximal ideal. Over the
+infinite field $\CC$, $k$ sufficiently general constant linear
+combinations of these equations still have an isolated common zero at
+$x$: successive generic combinations avoid the finitely many
+positive-dimensional components that remain. Their ideal is contained
+in the original ideal. Their quotient length is therefore an upper bound
+for the length in \eqref{geom:local-length-lower}.
+
+Each of the $k$ combinations has weighted degree at most $N$ in the
+variables indexed by $A$. We claim that their local intersection length
+is at most
+\begin{equation}
+\label{geom:weighted-bezout}
+ \frac{N^k}{\prod_{a\in A}\rho_a}.
+\end{equation}
+Choose an integer $M_0$ clearing the denominators of the $\rho_a$, and
+make the substitutions
+\[
+ x_a=\lambda_a+z_a^{M_0\rho_a}\qquad(a\in A).
+\]
+Choose the constants $\lambda_a$ so that no preimage of the given point
+is ramified. There are $\prod_{a\in A}(M_0\rho_a)$ such preimages, each
+with the same local intersection length. The substituted polynomials
+have ordinary total degree at most $M_0N$. The ordinary B\'ezout bound
+for isolated complete-intersection zeros, with their local
+multiplicities, bounds the sum of these lengths by $(M_0N)^k$;
+see \cite[Corollary~VIII.3, p.~144]{mondal2021}.
+The multiplicities there are local quotient lengths, unchanged by
+completion \cite[Section~IV.4.2]{mondal2021}.
+Dividing gives \eqref{geom:weighted-bezout}.
+This application concerns isolated zeros only and permits other
+components elsewhere.
+
+Combining \eqref{geom:local-length-lower} and
+\eqref{geom:weighted-bezout} proves the result. Neither the
+polynomials nor the possibly varying component enters the constant in
+\eqref{geom:multiplicity-comparison}.
+\end{proof}
+
+\subsection{The curve inequality}
+
+Choose a positive rational number $\sigma$ sufficiently small that
+\begin{equation}
+\label{geom:sigma}
+ \begin{split}
+ (1+3\sigma)^{m+1}K(w_0/v_0)\theta^m&<1,\\
+ (1+3\sigma)^mK\theta^m&<1,\\
+ (1+\sigma)\theta&<1.
+ \end{split}
+\end{equation}
+This choice is possible by \eqref{geom:volume-hypotheses}. Set $v_i=w_i/\theta$
+for $i>0$. Fix $L_0=m+2$ and put
+\begin{equation}
+\label{geom:constant}
+ C_* =\max_{1\le k\le m}2k!(L_0/\sigma)^k.
+\end{equation}
+We choose the positive weights successively so that for every pair of
+subsets $A,B\subseteq\{0,\ldots,m\}$ of the same cardinality between
+$1$ and $m$,
+\begin{equation}
+\label{geom:separation}
+ \prod_{a\in A}w_a>C_*\prod_{b\in B}v_b
+\end{equation}
+whenever the largest positive index in their symmetric difference belongs
+to $A$.
+
+Here and below a condition involving that largest index is imposed only
+when a positive index does differ. The successive choice is possible:
+if this largest index is $i$, the ratio in \eqref{geom:separation} is
+$w_i$ times a positive expression in the already chosen lower weights
+and the fixed zeroth weights. Every higher index occurs in both sets or
+in neither; in the former case its ratio is $w_j/v_j=\theta$. Hence the
+expression is independent of all higher weights. There are finitely many
+pairs of sets. A sufficiently large choice of $w_i$ enforces all
+conditions whose largest differing index is $i$, and subsequent choices
+do not disturb them. This construction involves no interpolation point.
+
+Let $C$ be an irreducible algebraic curve whose generic point lies in the
+affine coordinate chart. Such a curve has a smooth projective model over
+$\CC$; see \cite[Theorem~53.2.6 and Lemma~53.2.8, Tag~0BXX]{stacks}.
+On that model define
+\begin{equation}
+\label{geom:curve-degree}
+ \deg_W C=
+ \sum_P\max\left\{0,-\frac{\operatorname{ord}_P Y}{w_0},
+                  -\frac{\operatorname{ord}_P X_1}{w_1},\ldots,
+                  -\frac{\operatorname{ord}_P X_m}{w_m}\right\}.
+\end{equation}
+The order of an identically zero coordinate is understood as $+\infty$;
+it contributes no pole. At a branch $P$ through $a_j$, set
+\begin{equation}
+\label{geom:branch-contact}
+ h_P=\min\left\{
+ \frac{\operatorname{ord}_P(Y-1)}{v_0},
+ \frac{\operatorname{ord}_P(X_1-c_{j1}-\log Y)}{v_1},\ldots,
+ \frac{\operatorname{ord}_P(X_m-c_{jm}-\log Y)}{v_m}
+ \right\}.
+\end{equation}
+The logarithm here is its formal expansion at $Y=1$. All entries have
+positive order, possibly infinite, and their minimum is finite on a
+nonconstant curve.
+
+\begin{proposition}[Curve inequality]
+\label{geom:curve-inequality}
+With the weights chosen above, every such curve satisfies
+\begin{equation}
+\label{geom:curve-bound}
+ \deg_W C\ge(1+\sigma)\sum_{P\mapsto a_j}h_P,
+\end{equation}
+where the sum includes all branches through the prescribed points.
+\end{proposition}
+
+\begin{proof}
+There is nothing to prove if the curve misses all the points. Suppose
+instead that \eqref{geom:curve-bound} fails. For every sufficiently large
+auxiliary integer $N$, linear algebra gives a nonzero polynomial $F_N$
+of $W$-degree at most $N$ whose expansions at all the points have
+$V$-order at least $(1+3\sigma)N$. Indeed, the number of its coefficients
+has leading term
+\[
+ \frac{N^{m+1}}{(m+1)!\prod_{a=0}^m w_a},
+\]
+whereas the number of conditions has leading term
+\[
+ \frac{K(1+3\sigma)^{m+1}N^{m+1}}
+      {(m+1)!\prod_{a=0}^m v_a}.
+\]
+Their comparison is the first inequality in \eqref{geom:sigma}. This
+argument requires no independence among the conditions.
+
+On the open set $Y\ne0$ consider the commuting frame
+\begin{equation}
+\label{geom:frame}
+ D_0=Y\partial_Y+\sum_{i=1}^m\partial_{X_i},\qquad
+ D_i=\partial_{X_i}\quad(1\le i\le m).
+\end{equation}
+It preserves polynomial degree at most $N$. In the formal coordinates of
+\eqref{geom:jet-map},
+\[
+ D_0=(1+t)\partial_t,\qquad D_i=\partial_{u_i}.
+\]
+Thus differentiation by $D_a$ decreases weighted order by at most $v_a$.
+Every $D^\gamma F_N$ with $\sum_av_a\gamma_a\le\sigma N$ retains
+order at least $(1+2\sigma)N$ at each point. On a branch $P$, its order
+is consequently at least $(1+2\sigma)N h_P$.
+
+A polynomial of $W$-degree at most $N$ restricts to a rational function
+on the complete model of $C$ with total pole degree at most
+$N\deg_W C$. Since we assumed that \eqref{geom:curve-bound} fails, the
+just obtained total zero order exceeds this pole bound. The ordinary
+divisor equality for a nonzero rational function therefore forces
+\begin{equation}
+\label{geom:derivatives-on-curve}
+ D^\gamma F_N\big|_C=0
+ \qquad\left(\sum_av_a\gamma_a\le\sigma N\right).
+\end{equation}
+All the assertions about branch orders hold for formal power series:
+each monomial has order at least its weight times $h_P$, and
+cancellation can only increase the order.
+
+We have converted excess contact into vanishing of many derivatives on
+$C$. We next find a component on which that vanishing persists, as in
+the derivative-ideal method of zero estimates
+\cite[Section~5]{philippon1986}, and compare all its normal bases.
+Put $\delta=\sigma N/L_0$. For $0\le r\le L_0$, let $V_r$ be the common
+zero set in $Y\ne0$ of the derivatives of cost at most $r\delta$.
+Let $C^\circ$ be the part of $C$ in this affine open set. The $V_r$
+form a decreasing chain, and \eqref{geom:derivatives-on-curve} puts
+$C^\circ$ in $V_{L_0}$. Choose an irreducible component of $V_{L_0}$ containing
+$C^\circ$, and extend it backwards to nested irreducible components of the
+earlier $V_r$. Every selected component has dimension between $1$ and
+$m$: it contains a curve, and it lies in the proper zero set of
+$F_N$. Since there are $L_0+1=m+3$ levels, two adjacent selected
+components coincide. Denote this persistent component by $Z$, and
+write $k=\operatorname{codim}Z$.
+
+Take the derivatives of cost at most $r\delta$ as the equations of the
+earlier of these two levels. Any further derivative of cost less than
+$\delta$ vanishes along $Z$, because the fields commute and $Z$ is
+also a component at the next level. Lemma~\ref{geom:multiplicity}, with
+$\varepsilon=\sigma/L_0$, gives
+\begin{equation}
+\label{geom:all-bases}
+ \prod_{a\in A}w_a\le C_*\prod_{b\in B}v_b
+\end{equation}
+for every coordinate normal basis $A$ and every frame normal basis $B$.
+The equations and $Z$ may vary with $N$; the uniformity proved in
+Lemma~\ref{geom:multiplicity} is exactly what permits this use.
+
+We show that $Y$ is constant on $Z$, working on the common smooth open
+subset where all the normal-basis conditions hold. Suppose first that
+some positive coordinate direction is nontangent to $Z$, and choose the
+largest such index $i$. Every larger positive index occurs in neither
+kind of normal basis, since $D_j=\partial_{X_j}$ for $j>0$.
+Some coordinate normal basis $A$ contains $i$. If a frame normal basis
+$B$ omitted $i$, the largest positive index where these sets differ
+would be $i$. Then
+\eqref{geom:separation} would contradict \eqref{geom:all-bases}.
+Thus every frame normal basis contains $D_i$.
+
+The other frame vectors consequently fail to span the normal quotient.
+Their ambient span is the hyperplane
+\[
+ \ker(dX_i-dY/Y).
+\]
+For an ambient hyperplane $Q$ and a tangent space $T$, the image of
+$Q$ in the quotient by $T$ fails to be surjective precisely when
+$T\subseteq Q$. We obtain
+\begin{equation}
+\label{geom:log-differential}
+ dX_i=dY/Y\quad\text{on }Z.
+\end{equation}
+This identity forces $Y$ to be constant on the algebraic variety $Z$.
+Indeed, if $Y$ were nonconstant, choose a smooth point where $dY\ne0$
+and intersect with general algebraic hyperplanes through that point
+until a curve remains on which $Y$ is nonconstant. On the smooth
+complete model of this curve, \eqref{geom:log-differential} is an
+identity of meromorphic differentials. A nonconstant meromorphic
+function $Y$ has a zero or pole, where $dY/Y$ has nonzero residue
+$\operatorname{ord}_P Y$. An exact differential $dX_i$ has zero
+residue at every point. This is a contradiction. It follows also
+that $X_i$ is constant, since $dX_i=0$ in characteristic zero.
+
+If instead every positive coordinate direction is tangent, the $m$
+independent vectors $\partial_{X_i}$ all lie in the tangent space of
+$Z$. Properness forces that tangent space to be their span, and
+$dY=0$ on $Z$ again. We conclude in all cases that $Y$ is constant
+on $Z$. Since $C^\circ\subseteq Z$ meets a prescribed point with
+$Y=1$, we have $Y=1$ on $C^\circ$, and hence on $C$ by density.
+
+It remains to rule out a violating curve in that fiber. We work with
+$C^\circ$ in the affine fiber $Y=1$, while computing orders and degrees
+on the complete model of $C$ as before. In this fiber, the degree weights
+are $w_i$, the order weights are $v_i=w_i/\theta$,
+and $h_P=\min_i\operatorname{ord}_P(X_i-c_{ji})/v_i$.
+Choose a new auxiliary polynomial in these $m$ variables. The ratio of
+the number of vanishing conditions to the number of coefficients now
+tends to $K(1+3\sigma)^m\theta^m<1$, by the second inequality
+in \eqref{geom:sigma}. Thus, for sufficiently large $N$, there is a
+nonzero polynomial $G_N(X_1,\ldots,X_m)$ of weighted degree at most $N$
+and order at least $(1+3\sigma)N$ at every center.
+
+An ordinary partial derivative of cost at most $\sigma N$ still has
+order at least $(1+2\sigma)N$ at every center and degree at most $N$.
+The same zero--pole comparison on $C$ therefore gives
+\[
+ \partial_X^\gamma G_N\big|_C=0
+ \qquad\left(\sum_{i=1}^m v_i\gamma_i\le\sigma N\right).
+\]
+If $m=1$, this is already impossible: a nonzero polynomial on the affine
+line cannot vanish on a curve. Suppose henceforth that $m\ge2$. For
+$0\le r\le L_0$, let $U_r$ be the common zero set in this fiber of the
+partial derivatives of $G_N$ of cost at most $r\delta$, with
+$\delta=\sigma N/L_0$ as before. The curve $C^\circ$ lies in $U_{L_0}$. Choose
+nested irreducible components containing $C^\circ$ backwards through this
+chain. Their dimensions lie between $1$ and $m-1$, since $G_N$ is
+nonzero, so two adjacent components coincide in a component $Z'$.
+Its codimension in the fiber satisfies $1\le k\le m-1$.
+
+For the equations at the earlier of these two levels, every further
+partial derivative of cost less than $\delta$ vanishes on $Z'$.
+Lemma~\ref{geom:multiplicity}, again with $\varepsilon=\sigma/L_0$,
+therefore gives \eqref{geom:all-bases} for $Z'$, with the same $C_*$
+and with normal-basis index sets contained in $\{1,\ldots,m\}$.
+
+Here the coordinate and frame bases are the same. They must have a
+unique index set: two different basis sets could be ordered so that
+the largest differing index belongs to $A$, contradicting
+\eqref{geom:separation}. The codimension is positive, so this unique
+normal basis has some index $i$. The other coordinate directions
+fail to span the normal quotient; hence the tangent space is
+contained in $\ker dX_i$, and $X_i$ is constant on $Z'$.
+Coordinatewise distinctness shows that $Z'$ meets at most one prescribed
+point. Every prescribed point of $C$ belongs to $C^\circ\subseteq Z'$,
+so the same holds for $C$.
+
+Let that point be $a_j$. Choose a coordinate $X_l$ nonconstant on
+$C$. The nonzero rational function $X_l-c_{jl}$ has total pole degree
+at most $w_l\deg_W C$, and at each branch through $a_j$ it has order
+at least $(w_l/\theta)h_P$. Therefore
+\[
+ \deg_W C\ge\theta^{-1}\sum_{P\mapsto a_j}h_P
+             >(1+\sigma)\sum_{P\mapsto a_j}h_P,
+\]
+by the last inequality in \eqref{geom:sigma}. This final contradiction
+proves \eqref{geom:curve-bound}.
+\end{proof}
+
+\subsection{From the curve inequality to all coefficient packets}
+
+We complete the proof of Theorem~\ref{geom:interpolation}. The argument uses
+ordinary projective schemes and the ordinary blow-up; smoothness or
+normality of the compactification will not be needed. Curve positivity
+and asymptotic jet generation are closely related in the Seshadri-constant
+approach of \cite[Section~6]{demailly1992}. Here we supply the passage
+for our weighted ideals at several points, including the eventual
+ordinary-power comparison required on a possibly singular scheme.
+
+Choose an integer $R$ sufficiently large that $R/w_a$ and $R/v_a$ are
+positive integers for every index. Embed affine space by all monomials
+of $W$-degree at most $R$, including the constant monomial, and let
+$X$ be the projective closure of the image. Since these monomials
+include each coordinate, the chart of the constant monomial is
+precisely the original affine space. Let $L=\mathcal O_X(1)$, a very
+ample line bundle.
+
+For any curve meeting this chart,
+\begin{equation}
+\label{geom:projective-degree}
+ \deg(L|_C)=R\deg_W C.
+\end{equation}
+To see this on its smooth complete model, at each point clear the
+largest pole of the homogeneous monomial coordinates. Every monomial
+has pole order at most $R$ times the maximum in
+\eqref{geom:curve-degree}. A pure power of one coordinate attains
+that bound whenever the maximum is positive, and the constant
+monomial attains it when the maximum is zero. The resulting sections
+have no common zero, proving \eqref{geom:projective-degree}.
+
+To make the local data algebraic, replace $\log(1+t)$ in each
+coordinate by a fixed Taylor polynomial $G_i(t)$ whose omitted
+terms have $t$-weight strictly greater than $v_i$. Then
+\[
+ t=Y-1,\qquad u_i'=X_i-c_{ji}-G_i(t)
+\]
+are regular local coordinates at $a_j$. This replacement preserves
+$h_P$. Indeed, if $t$ is not identically zero on a branch, each
+omitted term has order divided by $v_i$ strictly larger than
+$\operatorname{ord}_P(t)/v_0$; if $t$ is identically zero, its tail
+vanishes. It also preserves interpolation surjectivity for every
+threshold: the formal coordinate change fixes $t$ and changes
+$u_i$ only by terms of weight greater than $v_i$. It and its inverse
+preserve the weighted filtration and induce inverse triangular maps
+on each finite coefficient packet.
+
+At $a_j$ form the finite-colength ideal
+\[
+ I_j=\left(t^{R/v_0},(u_1')^{R/v_1},\ldots,(u_m')^{R/v_m}\right).
+\]
+The points are distinct. These local ideals, together with the unit
+ideal away from the points, define a coherent ideal sheaf $I$ on $X$.
+For a branch through a center,
+\begin{equation}
+\label{geom:ideal-valuation}
+ \operatorname{ord}_P I
+ =\min_a\left\{(R/v_a)\operatorname{ord}_P z_a\right\}
+ =Rh_P,
+ \qquad z_0=t,\quad z_i=u_i'.
+\end{equation}
+Let $p:X'\to X$ be the ordinary blow-up of $I$, namely the relative
+Proj of its Rees algebra, and write
+\[
+ I\mathcal O_{X'}=\mathcal O_{X'}(-E).
+\]
+The scheme $X$ is integral and Noetherian, $I$ is a coherent nonzero
+ideal, and $E$ is an effective Cartier divisor. The tautological
+bundle $\mathcal O_{X'}(-E)$ is relatively ample; these are the
+standard blow-up properties in
+\cite[Tags~02OS, 02ND, and~02NS]{stacks}.
+
+Write $A=p^*L$ in additive divisor notation. We claim that
+\begin{equation}
+\label{geom:nef-class}
+ A-(1+\sigma)E\quad\text{is nef}.
+\end{equation}
+For a noncontracted integral curve $\Gamma$ upstairs whose image
+meets the affine chart, the map to its image is birational, since
+$p$ is an isomorphism away from the finite center. On the complete
+normalizations, \eqref{geom:projective-degree} and
+\eqref{geom:ideal-valuation} give
+\[
+ A\cdot\Gamma=R\deg_W p(\Gamma),\qquad
+ E\cdot\Gamma=R\sum_{P\mapsto a_j}h_P.
+\]
+Proposition~\ref{geom:curve-inequality} gives the desired nonnegative
+degree. A curve whose image misses the affine chart avoids the
+exceptional divisor. A contracted curve has $A$-degree zero and
+positive degree for $-E$ by relative ampleness. These cases account
+for every integral curve, proving \eqref{geom:nef-class}.
+
+For sufficiently large $a>1$, the divisor $aA-E$ is ample. One
+can see this directly: choose $b$ so that $I\otimes L^b$ is globally
+generated. The Rees construction embeds $X'$ in a product
+$X\times\mathbb P^r$, with the second hyperplane bundle restricting
+to $bA-E$. Tensoring with the first very ample bundle makes
+$(b+1)A-E$ ample. Now the identity
+\begin{equation}
+\label{geom:ample-combination}
+ A-E=
+ \frac{a-1}{a(1+\sigma)-1}\bigl(A-(1+\sigma)E\bigr)
+ +\frac{\sigma}{a(1+\sigma)-1}(aA-E)
+\end{equation}
+expresses $A-E$ as a positive multiple of a nef class plus a
+positive multiple of an ample class. It is therefore ample;
+see \cite[Corollary~1.4.10]{lazarsfeld}. This theorem applies to
+projective schemes and does not require a smooth blow-up.
+
+For all sufficiently large $n$, the graded-piece and relative
+vanishing theorems for the ordinary Rees algebra give
+\begin{equation}
+\label{geom:rees-pushdown}
+ p_*\mathcal O_{X'}(-nE)=I^n,\qquad
+ R^q p_*\mathcal O_{X'}(-nE)=0\quad(q>0).
+\end{equation}
+Indeed, on any affine open of the Noetherian base the Rees algebra
+is a Noetherian graded algebra generated in degree one. Its
+sufficiently high graded pieces recover the sections of its
+associated sheaf on Proj, and the higher cohomology of those twists
+vanishes. A finite affine cover gives one common threshold;
+see \cite[Tags~0AG6 and~0AG7]{stacks}. In particular,
+\eqref{geom:rees-pushdown} uses ordinary powers $I^n$, not their
+integral closures, and makes no assertion about small $n$.
+
+By the projection formula, Leray, and Serre vanishing for the ample
+line bundle $A-E$,
+\begin{equation}
+\label{geom:serre-vanishing}
+ H^1(X,I^n\otimes L^n)
+ =H^1(X',\mathcal O_{X'}(n(A-E)))=0
+\end{equation}
+for all sufficiently large $n$; see \cite[Tag~0B5U]{stacks}.
+The exact sequence for $I^n$ consequently gives a surjection from
+$H^0(X,L^n)$ onto all its local coefficient data modulo $I^n$.
+The constant projective coordinate trivializes $L$ on the affine
+chart. Finite-colength local quotients are unchanged by completion,
+so these algebraic classes are also the formal coefficient data used
+in the theorem. In these trivializations, every element of $I^n$ has
+weighted order at least $nR$, because every displayed generator
+of $I$ has weight $R$. Thus
+\begin{equation}
+\label{geom:ideal-inclusion}
+ I^n\subseteq\{\text{local series of weight at least }nR\}.
+\end{equation}
+Surjectivity modulo $I^n$ therefore implies surjectivity onto the
+smaller quotient consisting of the desired packets of weight less
+than $nR$. Equality in \eqref{geom:ideal-inclusion} is not needed.
+
+Finally, every section of $L^n$ for sufficiently large $n$ is
+supplied by a homogeneous degree-$n$ polynomial in the projective
+embedding coordinates. This follows from Serre vanishing applied
+to the homogeneous ideal sheaf of $X$ in its projective space.
+Such a polynomial restricts on the affine chart to one of
+$W$-degree at most $nR$. Taking $H=nR$ and undoing the filtered
+Taylor-polynomial coordinate change proves the surjectivity in
+\eqref{geom:jet-map}, and completes the proof of
+Theorem~\ref{geom:interpolation}.

@@ -1,0 +1,87 @@
+{
+  "status": "completed",
+  "run_id": "cloud-38010221716-m",
+  "video_file": "pi-approximations-720p.mp4",
+  "video_sha256": "a02045fd73076d43cab8eba39096b3ea8759d41e13b53960383a798dbe87c564",
+  "source_sha256": "57d2945c18dffa0b83253e075ce7d99f7f05f79d532bef33edd12f0ab5247d0b",
+  "candidate_sha256": "75f805a46cb40e8301a9dc59d3e308d093428bc5553b551a1dddfdc040638423",
+  "duration_seconds": 419.7,
+  "width": 1280,
+  "height": 720,
+  "fps": "30/1",
+  "audio_streams": 0,
+  "full_decode": {
+    "tool": "ffmpeg",
+    "exit_code": 0,
+    "errors": []
+  },
+  "delivery_render_review_status": "not_reviewed",
+  "preview_scope": "Four three-second excerpts from the completed MP4; not the full film.",
+  "motion_samples": [
+    {
+      "time_seconds": 10,
+      "image": "delivery-preview/motion-0-0.png",
+      "sha256": "e90b640b68e452472291c946bb5de6ed964d807816d4e22fe6e76adb4edb73ff"
+    },
+    {
+      "time_seconds": 10.5,
+      "image": "delivery-preview/motion-0-1.png",
+      "sha256": "d2f6dab612adb8f7515ffa947e8dbbfb77793105551c584a24198565727bd027"
+    },
+    {
+      "time_seconds": 11.0,
+      "image": "delivery-preview/motion-0-2.png",
+      "sha256": "cfb707505d252f61009092f3fd9b756961d4135480d673fb4256dfd16ee62dc2"
+    },
+    {
+      "time_seconds": 52,
+      "image": "delivery-preview/motion-1-0.png",
+      "sha256": "0337f6025d12a4cc47aacf01d0bcbc07e8e95f6383b91ce1a349163505383774"
+    },
+    {
+      "time_seconds": 52.5,
+      "image": "delivery-preview/motion-1-1.png",
+      "sha256": "5e54c28373bb2d33645ef526254c93488b6edf5ca6d9a4f15eb1eb119292f300"
+    },
+    {
+      "time_seconds": 53.0,
+      "image": "delivery-preview/motion-1-2.png",
+      "sha256": "3d508172165aab0626e452ee97ac172a280b8d9a3c255db6d056e1f155e23ed8"
+    },
+    {
+      "time_seconds": 160.6,
+      "image": "delivery-preview/motion-2-0.png",
+      "sha256": "6f7748766566391cdfa2da04651ae00dd6cc2ad329e0faae110b507c7532e99c"
+    },
+    {
+      "time_seconds": 161.1,
+      "image": "delivery-preview/motion-2-1.png",
+      "sha256": "8b1f3f34b50a59402987c7d8668a9bd8ba1b47e6507ae512abe080c91cc4fa20"
+    },
+    {
+      "time_seconds": 161.6,
+      "image": "delivery-preview/motion-2-2.png",
+      "sha256": "177532086994b6c34869e1fa322e7e64046f698bb159192a67ea18d26aa4dc81"
+    },
+    {
+      "time_seconds": 291.9,
+      "image": "delivery-preview/motion-3-0.png",
+      "sha256": "a3c249da5464f28204dea8612b5e0b3843804ea93a486cd0160d421149d37c7b"
+    },
+    {
+      "time_seconds": 292.4,
+      "image": "delivery-preview/motion-3-1.png",
+      "sha256": "4bd6704627dc0ccc558f7c3f6e4745998fac6c6eb09bf1a0b29bc208de477b2c"
+    },
+    {
+      "time_seconds": 292.9,
+      "image": "delivery-preview/motion-3-2.png",
+      "sha256": "d22cff30bd6fd7646df0693190e957da8993df7d77c003db4e3bf342c94b9231"
+    }
+  ],
+  "limitations": [
+    "Frames sample composition and selected motion; no complete continuous-playback certification.",
+    "Research theorem is attributed; full manuscript proof and Lean build not independently verified.",
+    "No TypeSafe Jev approval."
+  ]
+}

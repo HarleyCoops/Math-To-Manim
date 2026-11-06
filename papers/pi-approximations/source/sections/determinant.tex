@@ -1,0 +1,432 @@
+\section{The arithmetic and analytic determinant estimates}
+\label{det:section}
+
+Interpolation now supplies the algebraic rank needed for an
+interpolation determinant, in the sense of
+\cite[Section~6]{laurent1991}. We estimate one full-row minor from
+below arithmetically, and then translate its rows to exact logarithmic
+periods to obtain an analytic upper bound.
+
+Throughout this section all parameters except $H$ are fixed.  Write
+\[
+ w\alpha=\sum_{i=1}^m w_i\alpha_i,
+ \qquad w_* =\min_{1\le i\le m}w_i,
+ \qquad \omega=2\pi\ii.
+\]
+Let $\nu>2$, and suppose that integers $p_i$ and $q_i\ge2$ satisfy
+\begin{equation}
+ \left|\pi-\frac{p_i}{q_i}\right|\le q_i^{-\nu},
+ \qquad w_i=\lceil\log q_i\rceil,
+ \qquad r_i=\frac{2\ii p_i}{q_i}
+ \quad(1\le i\le m).
+ \label{det:approximations}
+\end{equation}
+Assume that $p_i\ne0$ and that $m,K,w_0,v_0,\theta,w_1,\ldots,w_m$
+satisfy the hypotheses of Theorem~\ref{geom:interpolation}, with centers
+$c_{ji}=jr_i$, $0\le j<K$.  In particular $w_i$ is a positive integer
+for $i>0$, while $w_0$ and $v_0$ are positive rational numbers.  Fix
+$F_0>2/\theta$, and put
+\begin{equation}
+ T_i=\left\lceil\frac{F_0w_i}{v_0}\right\rceil,
+ \qquad
+ G_i(t)=\sum_{1\le k<T_i}\frac{(-1)^{k+1}t^k}{k}.
+ \label{det:truncations}
+\end{equation}
+Empty sums are zero.  The first omitted term has weight
+$v_0T_i\ge F_0w_i>w_i/\theta$.  Consequently the substitution
+$u_i\mapsto u_i+G_i(t)-\log(1+t)$ is an invertible substitution preserving
+the weighted filtration.  It induces an invertible map on every finite
+space of coefficients of weight less than $H$.  Thus replacing the
+logarithms in Theorem~\ref{geom:interpolation} by these $G_i$ preserves
+surjectivity.
+
+\subsection{A full-row-rank minor and its arithmetic size}
+
+Use the monomials
+\[
+ P(Y,X)=Y^hX^\alpha,
+ \qquad h\in\ZZ_{\ge0},\quad \alpha\in\ZZ_{\ge0}^m,
+ \qquad w_0h+w\alpha\le H
+\]
+as columns, and the triples
+\[
+ \rho=(j,s,\beta),\qquad
+ 0\le j<K,\quad s\in\ZZ_{\ge0},\quad\beta\in\ZZ_{\ge0}^m,
+ \qquad v_0s+\frac{w\beta}{\theta}<H
+\]
+as rows.  The matrix entry is the coefficient of $t^su^\beta$ in
+\begin{equation}
+ P\bigl(1+t,jr_1+G_1(t)+u_1,\ldots,jr_m+G_m(t)+u_m\bigr).
+ \label{det:matrix}
+\end{equation}
+For all sufficiently large, sufficiently divisible $H$, choose a square
+minor $\Delta_H\ne0$ using every row, as permitted by
+Theorem~\ref{geom:interpolation}.  Denote its size by $M=M_H$, and set
+\begin{equation}
+ \bar b=\bar b_H=\frac{1}{MH}\sum_{\rho=(j,s,\beta)}w\beta.
+ \label{det:bbar}
+\end{equation}
+The elementary lattice count for a simplex gives
+\begin{equation}
+ M\sim
+ \frac{K\theta^mH^{m+1}}{(m+1)!\,v_0\prod_{i=1}^m w_i},
+ \qquad 0\le\bar b\le\theta.
+ \label{det:row-count}
+\end{equation}
+Indeed, after scaling by $H$, the lattice boxes of side lengths $H^{-1}$
+are Riemann sums for the fixed simplex.  Its volume is
+$\theta^m/((m+1)!v_0\prod_iw_i)$; its boundary has volume zero, so the
+strict inequality in the row definition does not affect the leading
+term.  We always let $H$ tend to infinity only after all the weights and
+centers have been fixed.
+
+\begin{lemma}[Arithmetic lower bound]\label{det:arithmetic}
+Let $\Lambda=4\log2$, and define
+\begin{equation}
+ E_{\rm ar}
+ =\frac{\Lambda F_0m}{v_0}
+  +\Lambda\sum_{i=1}^m\frac1{w_i}+\frac{\theta}{w_*}.
+ \label{det:arith-error}
+\end{equation}
+Then every minor just chosen satisfies
+\begin{equation}
+ \frac{\log|\Delta_H|}{MH}
+ \ge -(1-\bar b)-E_{\rm ar}.
+ \label{det:lower}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let $L_i=\operatorname{lcm}(1,\ldots,T_i-1)$, interpreted as $1$ if
+$T_i=1$, and put
+\[
+ D_H=\prod_{i=1}^m L_i^{\lfloor H/w_i\rfloor}.
+\]
+Scale a column $Y^hX^\alpha$ by $\prod_iq_i^{\alpha_i}$ and a row
+$(j,s,\beta)$ by $\prod_iq_i^{-\beta_i}$.  The scaled entry is zero
+unless $\alpha\ge\beta$ componentwise; otherwise it is
+\[
+ \prod_i\binom{\alpha_i}{\beta_i}
+ [t^s](1+t)^h
+ \prod_i\bigl(q_i(jr_i+G_i(t))\bigr)^{\alpha_i-\beta_i}.
+\]
+Here $q_ijr_i=2\ii jp_i\in\ZZ[\ii]$.  Since $G_i$ has coefficients in
+$L_i^{-1}\ZZ$, the denominator of this entry divides
+$\prod_iL_i^{\alpha_i-\beta_i}$, which divides $D_H$.  Thus multiplying
+every entry of the scaled matrix by $D_H$ gives a matrix over
+$\ZZ[\ii]$ with nonzero determinant.  A nonzero Gaussian integer has
+modulus at least one, so
+\begin{equation}
+ \begin{aligned}
+ \log|\Delta_H|
+ &\ge -M\log D_H
+      -\sum_{\text{columns }\alpha}\sum_i\alpha_i\log q_i\\
+ &\quad+\sum_{\text{rows }\beta}\sum_i\beta_i\log q_i.
+ \end{aligned}
+ \label{det:clearing}
+\end{equation}
+For each selected column, $\sum_i\alpha_i\log q_i\le w\alpha\le H$.
+Also $0\le w_i-\log q_i<1$, and hence
+\[
+ \sum_{\text{rows }\beta}\sum_i\beta_i\log q_i
+ \ge MH\bar b-\sum_{\text{rows }\beta}\sum_i\beta_i
+ \ge MH\bar b-\frac{MH\theta}{w_*}.
+\]
+
+For completeness, $\log\operatorname{lcm}(1,\ldots,n)\le\Lambda n$.
+To see this, the factorial valuation formula shows that each prime
+power in $(\ell,2\ell]$ contributes its logarithmic prime weight to
+$\log\binom{2\ell}{\ell}$; all the other contributions to the latter
+are nonnegative.  Thus the increase of the log least common multiple
+across this interval is at most $2\ell\log2$.  Summing over dyadic
+intervals up to the smallest power of two above $n$ gives at most
+$4n\log2$.  Therefore
+\[
+ \frac{\log D_H}{H}
+ \le\Lambda\sum_i\frac{T_i}{w_i}
+ \le\frac{\Lambda F_0m}{v_0}+\Lambda\sum_i\frac1{w_i}.
+\]
+Substitution in \eqref{det:clearing} proves \eqref{det:lower}.
+\end{proof}
+
+\subsection{Translation to entire functions}
+
+For every multi-index $a\in\ZZ_{\ge0}^m$ and every selected column $P$,
+define the entire function
+\begin{equation}
+ f_{a,P}(z)=[u^a]P(e^z,z+u_1,\ldots,z+u_m).
+ \label{det:test-functions}
+\end{equation}
+We regard $(f_{a,P})_P$ as a row vector of entire functions, indexed by
+the selected columns.  For $P=Y^hX^\alpha$ it has the explicit entry
+\begin{equation}
+ f_{a,P}(z)=
+ \begin{cases}
+ \displaystyle\binom{\alpha}{a}e^{hz}z^{|\alpha|-|a|},&a\le\alpha,\\
+ 0,&\text{otherwise}.
+ \end{cases}
+ \label{det:test-monomials}
+\end{equation}
+In particular only indices $a$ with $wa\le H$ can contribute.
+
+\begin{lemma}[Exact row translation]\label{det:translation}
+Every row $\rho=(j,s,\beta)$ of \eqref{det:matrix} is a sum of at most
+\begin{equation}
+ Q_H=(\lfloor H\rfloor+1)^{2m}
+          (\lfloor H/v_0\rfloor+1)
+ \label{det:term-count}
+\end{equation}
+scalar multiples of row vectors of the form
+\[
+ \bigl([t^\ell]f_{a,P}(j\omega+\log(1+t))\bigr)_P,
+ \qquad a\ge\beta,\quad wa\le H,\quad0\le\ell\le s.
+\]
+Each scalar $\xi$ occurring with index $a$ satisfies
+\begin{equation}
+ \begin{aligned}
+ |\xi|&\le\exp\{-\nu w(a-\beta)+H E_{\rm tr}\},\\
+ E_{\rm tr}
+ &=\frac{\nu}{F_0}+\frac{\log2}{v_0}
+   +\frac{\log4+\log(2K)+\nu}{w_*}.
+ \end{aligned}
+ \label{det:translation-bound}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Put
+\[
+ \epsilon_i=j(r_i-\omega),\qquad
+ \tau_i(t)=G_i(t)-\log(1+t).
+\]
+Since $e^{j\omega}=1$, the substitutions in \eqref{det:matrix} can be
+written as $Y=e^z$, $X_i=z+u_i+\epsilon_i+\tau_i(t)$, where
+$z=j\omega+\log(1+t)$.  Expanding first in the variables $u_i$, then
+in the constants $\epsilon_i$ and tails $\tau_i$, gives the exact row
+vector identity
+\begin{align}
+ \text{row}_{j,s,\beta}
+ ={}&\sum_{\substack{a\ge\beta\\wa\le H}}
+       \binom a\beta
+       \sum_{0\le d\le a-\beta}\binom{a-\beta}{d}
+       \epsilon^{a-\beta-d}
+       \sum_{k=0}^s
+       \left([t^k]\prod_i\tau_i(t)^{d_i}\right)
+ \nonumber\\[-2pt]
+ &\hspace{35mm}\cdot
+ \bigl([t^{s-k}]f_{a,P}(j\omega+\log(1+t))\bigr)_P.
+ \label{det:row-identity}
+\end{align}
+All scalar factors in this identity are independent of the column
+$P$.  This is therefore an identity to which determinant
+multilinearity applies directly.
+
+The product of tails vanishes to order at least $\sum_i d_iT_i$.
+Consequently a nonzero coefficient in \eqref{det:row-identity}
+satisfies
+\begin{equation}
+ \sum_i d_iw_i\le\frac{v_0}{F_0}\sum_i d_iT_i
+ \le\frac{v_0s}{F_0}<\frac{H}{F_0}.
+ \label{det:tail-budget}
+\end{equation}
+On $|t|=1/2$,
+\[
+ |\tau_i(t)|
+ \le\sum_{k\ge T_i}\frac{2^{-k}}k\le1.
+\]
+Cauchy's coefficient estimate thus bounds the tail coefficient in
+\eqref{det:row-identity} by $2^k\le2^s$.  From
+\eqref{det:approximations},
+\[
+ |\epsilon_i|\le2Kq_i^{-\nu}
+ \le2K e^\nu e^{-\nu w_i}.
+\]
+Moreover
+$\binom a\beta\binom{a-\beta}{d}\le4^{|a|}$ and
+$|a|\le H/w_*$.  Combining these inequalities and using
+\eqref{det:tail-budget} gives
+\[
+ \log|\xi|
+ \le-\nu w(a-\beta)+\frac{\nu H}{F_0}
+       +\frac{H\log2}{v_0}
+       +\frac{H(\log4+\log(2K)+\nu)}{w_*}
+\]
+for each nonzero scalar.  A zero scalar obeys the required bound as
+well.  Finally, each coordinate of $a$ and $d$ is at most $H$ because
+$w_i\ge1$, while $0\le k\le H/v_0$.  This proves the term count and
+the Lemma.
+\end{proof}
+
+\subsection{Repeated Taylor degrees force a quadratic saving}
+
+The Taylor expansion of interpolation determinants eliminates repeated
+degrees \cite[Theorem~1]{laurent2000}. Our rows fall into different
+transverse-index groups, so this cancellation is used only inside a
+fixed group. The next bound is uniform over all row choices.
+
+\begin{lemma}[Collision estimate]\label{det:collision}
+Choose one translated test row from each row expansion in
+Lemma~\ref{det:translation}, and remove its scalar factor.  Let $T$ be
+the resulting square matrix, and let $n_a$ be the number of its rows
+with index $a$.  With
+\begin{equation}
+ c=\frac{\log2}{4},\qquad
+ E_{\rm hol}=\frac{100K}{w_0}+\frac{\log2}{v_0}
+             +\frac{\log(200K)}{w_*},
+ \label{det:hol-error}
+\end{equation}
+there is a quantity $\rho_H\to0$, independent of all these row
+choices and of the selected columns, such that
+\begin{equation}
+ |\det T|
+ \le\exp\left\{-c\sum_a n_a^2+MH(E_{\rm hol}+\rho_H)\right\}.
+ \label{det:collision-bound}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Put $R=100K$.  Equation~\eqref{det:test-monomials} gives, on $|z|\le R$,
+\[
+ |f_{a,P}(z)|\le
+ \exp\left\{H\left(\frac R{w_0}
+                      +\frac{\log(2R)}{w_*}\right)\right\}
+ =:\mathcal D_H.
+\]
+Expand
+\[
+ f_{a,P}(z)=\sum_{d\ge0}c_{a,d,P}(z/R)^d.
+\]
+Cauchy's estimate gives $|c_{a,d,P}|\le\mathcal D_H$.  A row of $T$ is
+a test of order $\ell\le s$ at some center $j$.  Since
+\[
+ |j\omega+\log(1+t)|
+ \le2\pi(K-1)+\log2<50K=R/2
+ \qquad(|t|=1/2),
+\]
+its value on $(z/R)^d$ has modulus at most $2^\ell2^{-d}$.
+
+Expand the determinant in these power-series rows.  The expansion is
+absolutely convergent: a coefficient determinant has modulus at most
+$M!\mathcal D_H^M$, and the sum of the product bounds $2^{-d}$ over
+all degrees is finite.  If two rows have the same pair $(a,d)$, their
+coefficient vectors $(c_{a,d,P})_P$ agree, and that summand vanishes.
+Thus every nonzero summand has distinct degrees within each group
+$a$, and so
+\[
+ \sum_{\text{rows}}d\ge\sum_a\binom{n_a}{2}.
+\]
+Use half of the geometric decay for this lower bound and sum the
+other half freely over all nonnegative degrees.  Since
+$\sum\ell\le MH/v_0$, this gives
+\[
+ |\det T|
+ \le M!\mathcal D_H^M2^{MH/v_0}
+       2^{-\frac12\sum_a\binom{n_a}{2}}
+       (1-2^{-1/2})^{-M}.
+\]
+Because $\sum_a n_a=M$, the asserted inequality follows with, for
+example,
+\[
+ \rho_H=\frac{\log M+\frac14\log2
+                    -\log(1-2^{-1/2})}{H}.
+\]
+Equation~\eqref{det:row-count} shows that $\rho_H\to0$ with the fixed
+parameters stipulated above.
+\end{proof}
+
+\subsection{A comparison with two alternatives}
+
+Put
+\begin{equation}
+ E_{\rm an}=E_{\rm tr}+E_{\rm hol}.
+ \label{det:analytic-error}
+\end{equation}
+
+Let $0<A<1$ set a cutoff $AH$ for transverse weights, and let
+$0<\eta<1$ be a fraction of rows. The main arithmetic cost is
+$1-\bar b$. In each term of the determinant expansion, if at least
+$\eta M$ rows have $wa\le AH$, they give a collision saving;
+otherwise the rows with $wa>AH$ supply approximation-error factors.
+We seek a saving larger than $1-\bar b+E_{\rm ar}+E_{\rm an}$, and
+choose $A$ and $\eta$ in Section~\ref{sec:parameters}.
+
+\begin{proposition}[Determinant comparison]\label{det:comparison}
+Let $0<A<1$ and $0<\eta<1$, and define
+\begin{equation}
+ g=\nu\bigl(A(1-\eta)-\theta\bigr)-(1-\theta),
+ \qquad
+ L=\frac{\eta^2K\theta^m}{(m+1)v_0A^m}.
+ \label{det:budgets}
+\end{equation}
+The approximations \eqref{det:approximations} and the interpolation
+hypotheses cannot hold simultaneously if
+\begin{equation}
+ g>0,\qquad
+ E_{\rm ar}+E_{\rm an}<g,
+ \qquad
+ cL>1+E_{\rm ar}+E_{\rm an}.
+ \label{det:contradiction-conditions}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Let
+\[
+ D_A(H)=\#\{a\in\ZZ_{\ge0}^m:wa\le AH\},
+ \qquad L_H=\frac{\eta^2M}{H D_A(H)}.
+\]
+The simplex count, now in dimension $m$, and
+\eqref{det:row-count} show that
+\[
+ D_A(H)\sim\frac{(AH)^m}{m!\prod_iw_i},
+ \qquad L_H\longrightarrow L.
+\]
+Expand $\Delta_H$ by the row identities in
+Lemma~\ref{det:translation}.  For a choice of terms with indices
+$a_\rho$, the product of their scalar factors has modulus at most
+\[
+ \exp\left\{-\nu\sum_\rho wa_\rho
+             +\nu MH\bar b+MH E_{\rm tr}\right\}.
+\]
+There are at most $Q_H^M$ term choices.  Apply
+Lemma~\ref{det:collision} to each one.
+
+Suppose first that at least $\eta M$ of its indices obey $wa\le AH$.
+There are at most $D_A(H)$ such indices, so Cauchy--Schwarz gives
+\[
+ \sum_a n_a^2\ge\frac{(\eta M)^2}{D_A(H)}=MH L_H.
+\]
+The scalar main exponent $-\nu\sum_\rho w(a_\rho-\beta_\rho)$ is
+nonpositive, because $a_\rho\ge\beta_\rho$.  Discarding it leaves
+an upper bound $-cL_H+E_{\rm an}+\rho_H$ after division by $MH$.
+
+In the other case, more than $(1-\eta)M$ indices have $wa>AH$.
+Hence $\sum_\rho wa_\rho\ge MH A(1-\eta)$.  Discarding the
+nonpositive collision term leaves the upper bound
+$-\nu(A(1-\eta)-\bar b)+E_{\rm an}+\rho_H$.
+Taking absolute values before summing the determinant expansion gives
+\begin{equation}
+ \begin{aligned}
+ \frac{\log|\Delta_H|}{MH}
+ &\le E_{\rm an}+\varepsilon_H+
+       \max\{-cL_H,-\nu(A(1-\eta)-\bar b)\},\\
+ \varepsilon_H&=\rho_H+\frac{\log Q_H}{H}\longrightarrow0.
+ \end{aligned}
+ \label{det:upper}
+\end{equation}
+All bounds here are uniform over the row-term choices.
+
+For the second alternative, the gap between the two main exponents
+is at least $g$, since $\bar b\le\theta$ gives
+\[
+ \nu(A(1-\eta)-\bar b)-(1-\bar b)
+ =\nu A(1-\eta)-1-(\nu-1)\bar b\ge g.
+\]
+Under \eqref{det:contradiction-conditions}, both quantities inside the
+maximum in \eqref{det:upper}, after adding
+$E_{\rm an}+\varepsilon_H$, are strictly less than
+$-(1-\bar b)-E_{\rm ar}$ for all sufficiently large $H$.  For the
+first quantity, use $L_H\to L$ and $1-\bar b\le1$; for the second,
+use the displayed uniform gap.  This contradicts
+Lemma~\ref{det:arithmetic}.
+\end{proof}
