@@ -38,8 +38,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--render", action="store_true")
     parser.add_argument("-q", "--quality", default="l",
                         choices=list("lmhpk"))
-    parser.add_argument("--model", default="grok-4.6",
-                        help="Grok Responses model (default grok-4.6)")
+    parser.add_argument("--model", default=None,
+                        help="Grok Responses model (default: the server's XAI_MODEL, else grok-4.6)")
     parser.add_argument("--image", default=None,
                         help="photographed homework page or diagram")
     parser.add_argument("--offline", action="store_true",
@@ -79,9 +79,10 @@ async def main() -> int:
         "prompt": prompt,
         "render": args.render,
         "quality": args.quality,
-        "model": args.model,
         "offline": args.offline,
     }
+    if args.model:
+        params["model"] = args.model
     if args.image:
         params["image"] = args.image
 

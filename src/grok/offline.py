@@ -5,13 +5,16 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from grok.models import ARTIFACT_NAMES, RunRequest
-from grok.validation import verify_scene_report
+from grok.models import SCENE_FILE, TRACES_DIR, RunRequest
+from grok.stages import STAGES, tool_labels
 
-_OFFLINE_SCENE = '''from manim import *
+OFFLINE_MODEL = "offline"
+OFFLINE_SCENE_NAME = "GrokOfflineStory"
+
+_OFFLINE_SCENE = f'''from manim import *
 
 
-class GrokOfflineStory(ThreeDScene):
+class {OFFLINE_SCENE_NAME}(ThreeDScene):
     """Deterministic rehearsal of the complete Grok artifact contract."""
 
     def construct(self):
@@ -312,7 +315,7 @@ def _shot_list() -> dict:
 def _scene_spec() -> dict:
     return {
         "offline": True,
-        "scene_name": "GrokOfflineStory",
+        "scene_name": OFFLINE_SCENE_NAME,
         "scene_class": "ThreeDScene",
         "palette": {"background": "#0c0c0b", "text": "#faf9f5"},
         "objects": [
@@ -328,57 +331,40 @@ def _scene_spec() -> dict:
     }
 
 
-def _trace(stage: str, tools: list[str]) -> dict:
+def _trace(stage_name: str, tools: list[str]) -> dict:
     return {
-        "stage": stage,
+        "stage": stage_name,
         "offline": True,
-        "model": "offline",
+        "model": OFFLINE_MODEL,
         "tools_requested": tools,
         "tool_calls": [],
         "thinking": ["offline rehearsal; no xAI call"],
     }
 
 
-def write_offline_bundle(run_dir: Path, request: RunRequest) -> dict:
-    tree = reverse_tree_for(request.prompt)
-    artifacts = {
-        "01_intent.json": _intent(request),
-        "02_knowledge_map.json": tree,
-        "03_curriculum.json": _curriculum(tree),
-        "04_math_dossier.json": _math_dossier(request),
-        "05_shot_list.json": _shot_list(),
-        "06_scene_spec.json": _scene_spec(),
-        "review.json": {
-            "offline": True,
-            "checks": ["artifact contract", "reverse tree", "python compilation"],
-            "rendered": False,
-            "limitations": ["deterministic rehearsal; no xAI call"],
-        },
-        "validation.json": verify_scene_report(_OFFLINE_SCENE),
-    }
-    for name, payload in artifacts.items():
-        (run_dir / name).write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    (run_dir / "grok_scene.py").write_text(_OFFLINE_SCENE, encoding="utf-8")
+def write_offline_bundle(run_dir: Path, request: RunRequest) -> None:
+    """Write every stage artifact, the scene and one trace per stage.
 
-    traces = run_dir / "traces"
-    traces.mkdir(exist_ok=True)
-    stage_tools = {
-        "intent": [],
-        "cartographer": ["web_search"],
-        "curriculum": [],
-        "math-director": ["code_interpreter", "web_search"],
-        "cinematographer": ["image_generation", "x_search"],
-        "composer": ["verify_scene"],
+    The harness adds validation.json, review.json and manifest.json, exactly
+    as it does for a live run.
+    """
+    tree = reverse_tree_for(request.prompt)
+    payloads = {
+        "intent": _intent(request),
+        "cartographer": tree,
+        "curriculum": _curriculum(tree),
+        "math-director": _math_dossier(request),
+        "cinematographer": _shot_list(),
+        "composer": _scene_spec(),
     }
-    for stage, tools in stage_tools.items():
-        (traces / f"{stage}.json").write_text(
-            json.dumps(_trace(stage, tools), indent=2),
+    traces = run_dir / TRACES_DIR
+    traces.mkdir(exist_ok=True)
+    for stage in STAGES:
+        (run_dir / stage.artifact).write_text(
+            json.dumps(payloads[stage.name], indent=2), encoding="utf-8"
+        )
+        (traces / f"{stage.name}.json").write_text(
+            json.dumps(_trace(stage.name, tool_labels(stage)), indent=2),
             encoding="utf-8",
         )
-    assert all((run_dir / name).is_file() for name in ARTIFACT_NAMES)
-    return {
-        "status": "completed",
-        "scene_file": "grok_scene.py",
-        "scene_name": "GrokOfflineStory",
-        "artifacts": list(ARTIFACT_NAMES),
-    }
+    (run_dir / SCENE_FILE).write_text(_OFFLINE_SCENE, encoding="utf-8")

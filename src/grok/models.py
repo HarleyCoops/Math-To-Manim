@@ -1,33 +1,37 @@
-"""Typed contracts for the Grok-native film pipeline."""
+"""Typed contracts and file names for the Grok-native film pipeline."""
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, get_args
 
 from pydantic import BaseModel, Field
 
-ARTIFACT_NAMES = (
-    "01_intent.json",
-    "02_knowledge_map.json",
-    "03_curriculum.json",
-    "04_math_dossier.json",
-    "05_shot_list.json",
-    "06_scene_spec.json",
-    "grok_scene.py",
-    "validation.json",
-    "review.json",
-)
+# Files every run bundle contains besides the stage artifacts (see grok.stages).
+SCENE_FILE = "grok_scene.py"
+VALIDATION_FILE = "validation.json"
+REVIEW_FILE = "review.json"
+MANIFEST_FILE = "manifest.json"
+REQUEST_FILE = "request.json"
+TRACES_DIR = "traces"
+STILLS_DIR = "stills"
+MEDIA_DIR = "media"
 
-REASONING_EFFORTS = ("low", "medium", "high", "xhigh")
+Quality = Literal["l", "m", "h", "p", "k"]
+ReasoningEffort = Literal["low", "medium", "high", "xhigh"]
+QUALITIES: tuple[str, ...] = get_args(Quality)
+REASONING_EFFORTS: tuple[str, ...] = get_args(ReasoningEffort)
+MAX_REPAIRS = 5
 
 
 class RunRequest(BaseModel):
     prompt: str = Field(min_length=3, max_length=12_000)
     image: str | None = None
     render: bool = False
-    quality: Literal["l", "m", "h", "p", "k"] = "l"
-    reasoning_effort: Literal["low", "medium", "high", "xhigh"] = "high"
-    max_repairs: int = Field(default=2, ge=0, le=5)
+    quality: Quality = "l"
+    # None means the client's default (XAI_MODEL / XAI_REASONING_EFFORT).
+    model: str | None = None
+    reasoning_effort: ReasoningEffort | None = None
+    max_repairs: int = Field(default=2, ge=0, le=MAX_REPAIRS)
     offline: bool = False
 
 
@@ -55,8 +59,14 @@ class RunManifest(BaseModel):
 
 
 class StageCallResult(BaseModel):
+    """One completed Responses exchange.
+
+    ``payload`` is the JSON object parsed from the final text, or None when the
+    model answered with something that is not a JSON object.
+    """
+
     text: str
-    payload: dict
+    payload: dict | None = None
     tool_calls: list[dict] = Field(default_factory=list)
     thinking: list[str] = Field(default_factory=list)
     images: list[dict] = Field(default_factory=list)

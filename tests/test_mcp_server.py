@@ -1,4 +1,4 @@
-"""MCP server: tool registry and offline Grok tool calls."""
+"""MCP server: tool registry, offline Grok tool calls, and the mythos operator shim."""
 
 import asyncio
 import json
@@ -9,11 +9,13 @@ import pytest
 
 pytest.importorskip("mcp")
 
-from grok.mcp_server import DEFAULT_MCP_MODEL  # noqa: E402
-from grok.models import ARTIFACT_NAMES  # noqa: E402
+from grok import mcp_server  # noqa: E402
+from grok.client import XAIClient  # noqa: E402
+from grok.harness import GrokHarness  # noqa: E402
 from grok.service import GrokService  # noqa: E402
+from grok.stages import ARTIFACT_NAMES  # noqa: E402
 from grok.validation import validate_reverse_tree  # noqa: E402
-from mythos import mcp_server  # noqa: E402
+from mythos import mcp_server as mythos_shim  # noqa: E402
 
 EXPECTED_TOOLS = {
     "m2m_create_animation",
@@ -27,11 +29,21 @@ EXPECTED_TOOLS = {
 
 
 @pytest.fixture(autouse=True)
-def isolated_service(tmp_path, monkeypatch):
-    service = GrokService(runs_dir=tmp_path / "runs")
-    monkeypatch.setattr("grok.mcp_server._service", service)
-    monkeypatch.setattr(mcp_server, "_service", service)
-    return service
+def isolated_service(tmp_path):
+    client = XAIClient(api_key="xai-test-key", model="grok-4.6", reasoning_effort="high")
+    harness = GrokHarness(runs_dir=tmp_path / "runs", client=client, log=lambda _: None)
+    service = GrokService(harness=harness)
+    mcp_server.set_service(service)
+    yield service
+    mcp_server.set_service(None)
+
+
+def test_shim_serves_the_grok_tools():
+    assert mythos_shim.mcp is mcp_server.mcp
+    assert mythos_shim.main is mcp_server.main
+    assert set(mythos_shim.__all__) == {"main", "mcp"}
+    names = {tool.name for tool in asyncio.run(mythos_shim.mcp.list_tools())}
+    assert EXPECTED_TOOLS <= names
 
 
 def test_all_tools_registered():
@@ -88,6 +100,7 @@ def test_mcp2_dependency_and_import_surface():
     assert "mcp.server.fastmcp" not in source
     assert "FastMCP" not in source
     assert "from grok.mcp_server import" in shim
+    assert "_service" not in shim
 
 
 def test_server_launches_supported_mcp2_transports(monkeypatch):
@@ -156,13 +169,37 @@ def test_create_and_inspect_animation_offline(isolated_service):
     assert "self.camera.animate" not in code
 
 
-def test_create_animation_default_model_is_grok():
-    fields = mcp_server.CreateAnimationInput.model_fields
-    assert fields["model"].default == DEFAULT_MCP_MODEL == "grok-4.6"
+def test_create_animation_defaults_to_server_model(isolated_service):
     parsed = mcp_server.CreateAnimationInput(prompt="the heat equation")
-    assert parsed.model == "grok-4.6"
+    assert parsed.model is None
+    assert parsed.reasoning_effort is None
     assert parsed.command is None
     assert parsed.image is None
+    job = json.loads(mcp_server.m2m_create_animation(
+        mcp_server.CreateAnimationInput(prompt="the heat equation", offline=True)))
+    polled = _wait_for_job(job["id"])
+    assert polled["status"] == "completed"
+    assert polled["options"]["model"] is None
+    assert isolated_service.harness.client.model == "grok-4.6"
+
+
+def test_create_animation_model_is_per_job_not_per_client(isolated_service):
+    client = isolated_service.harness.client
+    seen = []
+
+    def fake_complete(**kwargs):
+        seen.append((kwargs["model"], kwargs["reasoning_effort"]))
+        raise RuntimeError("stop here")
+
+    client.complete = fake_complete
+    job = json.loads(mcp_server.m2m_create_animation(
+        mcp_server.CreateAnimationInput(
+            prompt="the heat equation", model="grok-4.6-fast", reasoning_effort="low")))
+    polled = _wait_for_job(job["id"])
+    assert polled["status"] == "failed"
+    assert polled["run_id"]
+    assert seen == [("grok-4.6-fast", "low")]
+    assert (client.model, client.reasoning_effort) == ("grok-4.6", "high")
 
 
 def test_create_animation_accepts_image_and_ignores_command(isolated_service):
@@ -189,27 +226,18 @@ def test_create_animation_accepts_image_and_ignores_command(isolated_service):
     assert intent["image_read"]["path"] == "homework.jpg"
 
 
-def test_scene_code_prefers_grok_then_mythos(isolated_service):
-    run_dir = isolated_service.runs_dir / "legacy-mythos-run"
+def test_scene_code_reads_grok_scene_only(isolated_service):
+    run_dir = isolated_service.runs_dir / "some-run"
     run_dir.mkdir(parents=True)
     (run_dir / "manifest.json").write_text("{}", encoding="utf-8")
-    (run_dir / "mythos_scene.py").write_text(
-        "from manim import *\n\nclass OldStory(ThreeDScene):\n    def construct(self):\n        self.wait()\n",
-        encoding="utf-8",
-    )
-    code = mcp_server.m2m_get_scene_code(
-        mcp_server.RunIdInput(run_id="legacy-mythos-run")
-    )
-    assert "class OldStory" in code
-
+    missing = mcp_server.m2m_get_scene_code(mcp_server.RunIdInput(run_id="some-run"))
+    assert missing.startswith("Error:")
+    assert "grok_scene.py" in missing
     (run_dir / "grok_scene.py").write_text(
         "from manim import *\n\nclass GrokStory(ThreeDScene):\n    def construct(self):\n        self.wait()\n",
         encoding="utf-8",
     )
-    preferred = mcp_server.m2m_get_scene_code(
-        mcp_server.RunIdInput(run_id="legacy-mythos-run")
-    )
-    assert "class GrokStory" in preferred
+    assert "class GrokStory" in mcp_server.m2m_get_scene_code(mcp_server.RunIdInput(run_id="some-run"))
 
 
 def test_charter_tool():

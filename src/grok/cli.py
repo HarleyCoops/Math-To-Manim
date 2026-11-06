@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 
 from grok import __version__
-from grok.client import DEFAULT_MODEL, DEFAULT_REASONING_EFFORT, XAIClient, api_key_status
-from grok.models import REASONING_EFFORTS, RunRequest
+from grok.client import XAIClient, api_key_status
+from grok.models import MAX_REPAIRS, QUALITIES, REASONING_EFFORTS, RunRequest
 from grok.service import GrokService
 
 
@@ -24,13 +23,14 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("prompt")
     run.add_argument("--image", help="Photographed homework page or diagram")
     run.add_argument("--render", action="store_true")
-    run.add_argument("-q", "--quality", default="l", choices=["l", "m", "h", "p", "k"])
+    run.add_argument("-q", "--quality", default="l", choices=list(QUALITIES))
     run.add_argument(
         "--reasoning-effort",
-        default=DEFAULT_REASONING_EFFORT,
+        default=None,
         choices=list(REASONING_EFFORTS),
+        help="Grok reasoning effort (default: XAI_REASONING_EFFORT, else high)",
     )
-    run.add_argument("--max-repairs", default=2, type=int, choices=range(0, 6))
+    run.add_argument("--max-repairs", default=2, type=int, choices=range(0, MAX_REPAIRS + 1))
     run.add_argument("--offline", action="store_true")
 
     runs = sub.add_parser("runs", help="List recent Grok run manifests")
@@ -44,23 +44,18 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _doctor() -> int:
+    """Check the key is set, then live-ping xAI. The key itself is never printed."""
     ok, detail = api_key_status()
-    model = os.getenv("XAI_MODEL", DEFAULT_MODEL)
-    effort = os.getenv("XAI_REASONING_EFFORT", DEFAULT_REASONING_EFFORT)
-    key = os.getenv("XAI_API_KEY", "")
     if not ok:
         print(f"not ready: {detail}")
         return 1
     client = XAIClient()
     ok, detail = client.ping()
-    if key and key in detail:
-        print("not ready: doctor refused to describe the key")
-        return 1
     if not ok:
         print(f"not ready: {detail}")
         print(f"endpoint: {client.base_url}/responses")
         return 1
-    print(f"ready: {detail}; model={model}; reasoning_effort={effort}")
+    print(f"ready: {detail}; model={client.model}; reasoning_effort={client.reasoning_effort}")
     print(f"endpoint: {client.base_url}/responses")
     return 0
 

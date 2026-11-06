@@ -1,14 +1,15 @@
-"""Artifact and reverse-tree checks for Grok runs."""
+"""Reverse-tree and scene-source checks for Grok runs.
+
+Pure functions over payloads and source text. The run-bundle check that ties
+them to the stage table lives in ``grok.stages``.
+"""
 
 from __future__ import annotations
 
 import ast
-import json
-import py_compile
 import re
-from pathlib import Path
 
-from grok.models import ARTIFACT_NAMES
+from grok.models import SCENE_FILE
 
 _BLOCKED_IMPORTS = {"os", "subprocess", "socket", "requests", "urllib", "httpx", "shutil"}
 _BLOCKED_CALLS = {"eval", "exec", "compile", "open", "__import__"}
@@ -178,93 +179,49 @@ def discover_scene_classes(tree: ast.AST) -> list[str]:
 
 
 def validate_scene_source(source: str) -> tuple[list[str], str | None]:
-    failures: list[str] = []
+    """Compile, then AST-check one Manim scene. Returns (failures, scene_name)."""
     try:
+        compile(source, f"<{SCENE_FILE}>", "exec")
         tree = ast.parse(source)
     except SyntaxError as exc:
-        return [f"grok_scene.py: syntax error ({exc})"], None
+        return [f"{SCENE_FILE}: Python compilation failed ({exc})"], None
 
+    failures: list[str] = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 if alias.name.split(".")[0] in _BLOCKED_IMPORTS:
-                    failures.append(f"grok_scene.py: blocked import {alias.name!r}")
+                    failures.append(f"{SCENE_FILE}: blocked import {alias.name!r}")
         elif isinstance(node, ast.ImportFrom):
             if (node.module or "").split(".")[0] in _BLOCKED_IMPORTS:
-                failures.append(f"grok_scene.py: blocked import {node.module!r}")
+                failures.append(f"{SCENE_FILE}: blocked import {node.module!r}")
         elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
             if node.func.id in _BLOCKED_CALLS:
-                failures.append(f"grok_scene.py: blocked call {node.func.id}()")
+                failures.append(f"{SCENE_FILE}: blocked call {node.func.id}()")
 
-    if re_search_camera_animate(source):
+    if _animates_camera(source):
         failures.append(
-            "grok_scene.py: never animate self.camera; "
+            f"{SCENE_FILE}: never animate self.camera; "
             "use move_camera or set_camera_orientation"
         )
 
     scene_classes = discover_scene_classes(tree)
     if len(scene_classes) != 1:
         failures.append(
-            f"grok_scene.py: expected exactly one Scene subclass, found {len(scene_classes)}"
+            f"{SCENE_FILE}: expected exactly one Scene subclass, found {len(scene_classes)}"
         )
     return failures, scene_classes[0] if len(scene_classes) == 1 else None
 
 
-def re_search_camera_animate(source: str) -> bool:
-    return "self.camera.animate" in source or "self.camera.animate" in source.replace(" ", "")
+def _animates_camera(source: str) -> bool:
+    return "self.camera.animate" in source.replace(" ", "")
 
 
 def verify_scene_report(source: str) -> dict:
-    compile_error = None
-    try:
-        compile(source, "<grok_scene>", "exec")
-    except SyntaxError as exc:
-        compile_error = str(exc)
+    """Pass/fail record for one scene source: the shape validation.json uses."""
     failures, scene_name = validate_scene_source(source)
-    if compile_error:
-        failures = [f"grok_scene.py: Python compilation failed ({compile_error})"] + failures
     return {
         "passed": not failures,
         "scene_name": scene_name,
         "errors": failures,
     }
-
-
-def validate_run(run_dir: Path, *, require_video: bool = False) -> tuple[list[str], str | None, str | None]:
-    failures: list[str] = []
-    for name in ARTIFACT_NAMES:
-        path = run_dir / name
-        if not path.is_file():
-            failures.append(f"missing required artifact: {name}")
-            continue
-        if name.endswith(".json"):
-            try:
-                payload = json.loads(path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError) as exc:
-                failures.append(f"{name}: invalid JSON ({exc})")
-                continue
-            if not isinstance(payload, dict) or not payload:
-                failures.append(f"{name}: expected a non-empty JSON object")
-            if name == "02_knowledge_map.json":
-                failures.extend(validate_reverse_tree(normalize_reverse_tree(payload)))
-
-    scene_path = run_dir / "grok_scene.py"
-    scene_name = None
-    if scene_path.is_file():
-        try:
-            py_compile.compile(str(scene_path), doraise=True)
-        except py_compile.PyCompileError as exc:
-            failures.append(f"grok_scene.py: Python compilation failed ({exc})")
-        source = scene_path.read_text(encoding="utf-8")
-        scene_failures, scene_name = validate_scene_source(source)
-        failures.extend(scene_failures)
-
-    video_path = None
-    media = run_dir / "media"
-    if media.is_dir():
-        videos = sorted(media.rglob("*.mp4"))
-        if videos:
-            video_path = str(videos[-1])
-    if require_video and not video_path:
-        failures.append("render requested but no mp4 was found")
-    return failures, scene_name, video_path

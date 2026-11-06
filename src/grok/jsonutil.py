@@ -1,14 +1,15 @@
 """JSON and scene-source extraction for Grok stage replies.
 
-Grok-native; no Mythos imports. Brace-depth scanning is required because
-Grok often wraps nested JSON in fences, and a non-greedy ``{.*?}`` match
-stops at the first closing brace.
+Brace-depth scanning is required because Grok often wraps nested JSON in
+fences, and a non-greedy ``{.*?}`` match stops at the first closing brace.
 """
 
 from __future__ import annotations
 
 import json
 import re
+
+from grok.models import SCENE_FILE
 
 
 def _strip_fence(text: str) -> str:
@@ -80,8 +81,6 @@ def extract_python_block(text: str) -> str:
         return python_fences[-1].strip() + "\n"
 
     stripped = _strip_fence(text) if text.strip().startswith("```") else text.strip()
-    if stripped.lstrip().startswith("{") and '"source"' not in stripped[:80]:
-        raise ValueError("model text did not contain a Python scene")
     if _looks_like_scene(stripped) and not stripped.lstrip().startswith("{"):
         return stripped.strip() + "\n"
     raise ValueError("model text did not contain a Python scene")
@@ -93,32 +92,35 @@ def _looks_like_scene(text: str) -> bool:
     )
 
 
+_SOURCE_KEYS = ("source", SCENE_FILE, "scene_source")
+
+
+def _scene_fields(payload: dict | None) -> list[str]:
+    if not isinstance(payload, dict):
+        return []
+    return [
+        value
+        for value in (payload.get(key) for key in _SOURCE_KEYS)
+        if isinstance(value, str) and _looks_like_scene(value)
+    ]
+
+
 def extract_scene_source(
     payload: dict | None,
     text: str = "",
     tool_calls: list[dict] | None = None,
 ) -> str:
-    """Composer may put grok_scene.py in JSON, a python fence, or verify_scene args."""
-    candidates: list[str] = []
-    if isinstance(payload, dict):
-        for key in ("source", "grok_scene.py", "scene_source"):
-            value = payload.get(key)
-            if isinstance(value, str) and _looks_like_scene(value):
-                candidates.append(value)
+    """Composer may put the scene in a JSON field, a python fence, or verify_scene args.
+
+    The last candidate wins: a verify_scene call made after the JSON answer is
+    the newest version of the file.
+    """
+    candidates = _scene_fields(payload)
     if text:
         try:
             candidates.append(extract_python_block(text))
         except ValueError:
-            if not candidates:
-                try:
-                    parsed = extract_json_object(text)
-                except (ValueError, json.JSONDecodeError):
-                    parsed = None
-                if isinstance(parsed, dict):
-                    for key in ("source", "grok_scene.py", "scene_source"):
-                        value = parsed.get(key)
-                        if isinstance(value, str) and _looks_like_scene(value):
-                            candidates.append(value)
+            pass
     for call in tool_calls or []:
         args = call.get("arguments")
         if isinstance(args, str):
@@ -126,11 +128,8 @@ def extract_scene_source(
                 args = json.loads(args)
             except json.JSONDecodeError:
                 args = None
-        if isinstance(args, dict):
-            value = args.get("source")
-            if isinstance(value, str) and _looks_like_scene(value):
-                candidates.append(value)
+        candidates.extend(_scene_fields(args))
     for source in reversed(candidates):
-        if source and source.strip():
+        if source.strip():
             return source if source.endswith("\n") else source + "\n"
-    raise ValueError("composer did not return grok_scene.py source")
+    raise ValueError(f"composer did not return {SCENE_FILE} source")

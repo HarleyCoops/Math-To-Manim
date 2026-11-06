@@ -1,17 +1,20 @@
 """Grok-native Math-To-Manim MCP server.
 
-``math-to-manim serve-mcp`` is the operator command. Every tool runs the
-Grok 4.6 chain (or inspects a Grok run). Existing tool names are unchanged
-so current MCP clients keep working.
+``math-to-manim-mythos serve-mcp`` is the operator command (it imports this
+module through ``mythos.mcp_server``). Every tool runs the Grok 4.6 chain or
+inspects a Grok run. Tool names and parameters are a stable contract.
 
-    math-to-manim serve-mcp
-    math-to-manim serve-mcp --transport streamable-http --port 8643
+    math-to-manim-mythos serve-mcp
+    math-to-manim-mythos serve-mcp --transport streamable-http --port 8643
+
+The tools talk to one ``GrokService``; ``set_service`` swaps it (tests, embedders).
 """
 
 from __future__ import annotations
 
+import threading
 import json
-from typing import Any, Literal, Optional
+from typing import Any, Optional
 
 try:
     from mcp.server import MCPServer
@@ -23,18 +26,33 @@ except ImportError as exc:  # pragma: no cover
     ) from exc
 
 from grok import __version__
-from grok.charters import cinematic_charter
-from grok.models import RunRequest
+from grok.models import Quality, ReasoningEffort, RunRequest
 from grok.service import GrokService
-
-DEFAULT_MCP_MODEL = "grok-4.6"
+from grok.stages import cinematic_charter
 
 mcp = MCPServer(
     "math_to_manim_mcp",
     description="Turn a mathematics question into an inspectable Grok 4.6 Manim run.",
     version=__version__,
 )
-_service = GrokService()
+
+_service: GrokService | None = None
+_service_lock = threading.Lock()
+
+
+def get_service() -> GrokService:
+    """The service every tool uses; created on first use."""
+    global _service
+    with _service_lock:
+        if _service is None:
+            _service = GrokService()
+        return _service
+
+
+def set_service(service: GrokService | None) -> None:
+    """Replace the shared service (None resets to a fresh default on next use)."""
+    global _service
+    _service = service
 
 
 def _json(payload: Any) -> str:
@@ -63,7 +81,7 @@ class CreateAnimationInput(BaseModel):
             "False returns the storyboard + grok_scene.py only."
         ),
     )
-    quality: Literal["l", "m", "h", "p", "k"] = Field(
+    quality: Quality = Field(
         default="l",
         description="Manim quality: l=480p (fast), m=720p, h=1080p, p=1440p, k=4K.",
     )
@@ -74,9 +92,12 @@ class CreateAnimationInput(BaseModel):
             "Use to test plumbing."
         ),
     )
-    model: str = Field(
-        default=DEFAULT_MCP_MODEL,
-        description="Grok Responses model id. Default grok-4.6. Claude/Codex ids are ignored.",
+    model: Optional[str] = Field(
+        default=None,
+        description=(
+            "Grok Responses model id for this run. Default: the server's XAI_MODEL "
+            "(grok-4.6). Claude/Codex ids are not valid here."
+        ),
     )
     image: Optional[str] = Field(
         default=None,
@@ -84,11 +105,16 @@ class CreateAnimationInput(BaseModel):
     )
     command: Optional[str] = Field(
         default=None,
-        description="Ignored. This server always runs the Grok chain.",
+        description=(
+            "Accepted for older clients and ignored. This server always runs the Grok chain."
+        ),
     )
-    reasoning_effort: Literal["low", "medium", "high", "xhigh"] = Field(
-        default="high",
-        description="Grok reasoning effort for live runs.",
+    reasoning_effort: Optional[ReasoningEffort] = Field(
+        default=None,
+        description=(
+            "Grok reasoning effort for this live run. Default: the server's "
+            "XAI_REASONING_EFFORT (high)."
+        ),
     )
 
 
@@ -158,18 +184,17 @@ def m2m_create_animation(params: CreateAnimationInput) -> str:
     Returns:
         str: JSON job record: {"id", "prompt", "status", "created_utc",
         "options", "run_id", "manifest", "error"}. status is one of
-        queued|running|completed|failed.
+        running|completed|failed.
     """
     try:
-        if params.model and params.model != DEFAULT_MCP_MODEL:
-            _service.harness.client.model = params.model
-        job = _service.submit(
+        job = get_service().submit(
             RunRequest(
                 prompt=params.prompt,
                 image=params.image,
                 render=params.render,
                 quality=params.quality,
                 offline=params.offline,
+                model=params.model,
                 reasoning_effort=params.reasoning_effort,
             )
         )
@@ -192,11 +217,11 @@ def m2m_get_job(job_id: str) -> str:
     """Poll one background animation job by id (from m2m_create_animation).
 
     Returns:
-        str: JSON job record with status queued|running|completed|failed.
-        When completed, 'run_id' names the on-disk run and 'manifest'
-        summarizes every stage. When failed, 'error' explains why.
+        str: JSON job record with status running|completed|failed. 'run_id'
+        names the on-disk run as soon as it starts and 'manifest' tracks the
+        stages finished so far. When failed, 'error' explains why.
     """
-    job = _service.get_job(job_id.strip())
+    job = get_service().get_job(job_id.strip())
     if job is None:
         return (
             f"Error: no job {job_id!r}. Jobs live in server memory; "
@@ -222,7 +247,7 @@ def m2m_list_runs(params: ListRunsInput) -> str:
         str: JSON list of run summaries: {"run_id", "prompt", "model",
         "offline", "created_utc", "completed", "scene_name"}.
     """
-    return _json(_service.list_run_summaries(limit=params.limit or 20))
+    return _json(get_service().list_run_summaries(limit=params.limit or 20))
 
 
 @mcp.tool(
@@ -244,7 +269,7 @@ def m2m_get_run(params: RunIdInput) -> str:
         m2m_get_artifact.
     """
     try:
-        return _json(_service.inspect_run(params.run_id))
+        return _json(get_service().inspect_run(params.run_id))
     except (FileNotFoundError, ValueError) as exc:
         return f"Error: {exc}"
 
@@ -268,7 +293,7 @@ def m2m_get_artifact(params: ArtifactInput) -> str:
         str: The artifact's raw text content (JSON or Python).
     """
     try:
-        return _service.read_artifact(params.run_id, params.artifact_name)
+        return get_service().read_artifact(params.run_id, params.artifact_name)
     except (FileNotFoundError, ValueError) as exc:
         return f"Error: {exc}"
 
@@ -284,15 +309,14 @@ def m2m_get_artifact(params: ArtifactInput) -> str:
     ),
 )
 def m2m_get_scene_code(params: RunIdInput) -> str:
-    """Shortcut: return the generated Manim scene file for a run, ready to
-    render with `manim -qh grok_scene.py <SceneName>`. Prefers grok_scene.py
-    and falls back to mythos_scene.py for older on-disk runs.
+    """Shortcut: return the generated Manim scene file (grok_scene.py) for a
+    run, ready to render with `manim -qh grok_scene.py <SceneName>`.
 
     Returns:
         str: Complete Manim CE Python module.
     """
     try:
-        return _service.read_scene_code(params.run_id)
+        return get_service().read_scene_code(params.run_id)
     except (FileNotFoundError, ValueError) as exc:
         return f"Error: {exc}"
 
@@ -320,7 +344,7 @@ def m2m_cinematic_charter() -> str:
 
 
 def main(transport: str = "stdio", port: int = 8643) -> None:
-    """Entry point used by `math-to-manim serve-mcp`."""
+    """Entry point used by `math-to-manim-mythos serve-mcp`."""
     if transport == "stdio":
         mcp.run()
     else:

@@ -1,13 +1,32 @@
-"""Local function tools Grok may call during composer."""
+"""The local ``verify_scene`` function tool Grok may call during composer.
+
+Schema and handler live together: the Responses API sees the schema, the
+client runs the handler on each ``function_call``.
+"""
 
 from __future__ import annotations
 
-import base64
-import binascii
-import json
-from pathlib import Path
-
+from grok.models import SCENE_FILE
 from grok.validation import verify_scene_report
+
+VERIFY_SCENE_TOOL = {
+    "type": "function",
+    "name": "verify_scene",
+    "description": (
+        "Compile and statically check a complete Manim Community Edition "
+        "scene source string. Returns pass/fail, scene class name, and errors."
+    ),
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "source": {
+                "type": "string",
+                "description": f"Complete Python file contents for {SCENE_FILE}",
+            }
+        },
+        "required": ["source"],
+    },
+}
 
 
 def verify_scene(*, source: str = "", **_unused) -> dict:
@@ -16,31 +35,4 @@ def verify_scene(*, source: str = "", **_unused) -> dict:
     return verify_scene_report(str(source))
 
 
-def write_stills(run_dir: Path, images: list[dict]) -> list[str]:
-    if not images:
-        return []
-    stills_dir = run_dir / "stills"
-    stills_dir.mkdir(exist_ok=True)
-    written: list[str] = []
-    for index, image in enumerate(images, start=1):
-        raw = image.get("result")
-        if not raw or not isinstance(raw, str):
-            continue
-        if raw.startswith("data:") and "," in raw:
-            raw = raw.split(",", 1)[1]
-        path = stills_dir / f"{index:02d}.jpg"
-        try:
-            path.write_bytes(base64.b64decode(raw, validate=False))
-        except (ValueError, binascii.Error):
-            continue
-        meta = {
-            "filename": path.name,
-            "prompt": image.get("prompt"),
-            "id": image.get("id"),
-        }
-        (stills_dir / f"{index:02d}.json").write_text(
-            json.dumps(meta, indent=2),
-            encoding="utf-8",
-        )
-        written.append(str(path.relative_to(run_dir)).replace("\\", "/"))
-    return written
+VERIFY_SCENE_HANDLERS = {"verify_scene": verify_scene}

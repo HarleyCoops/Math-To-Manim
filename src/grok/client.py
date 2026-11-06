@@ -1,7 +1,7 @@
 """xAI Responses API client for grok-4.6.
 
 Talks only to ``https://api.x.ai/v1``. Authentication is ``XAI_API_KEY``.
-This module never imports Mythos or Sol.
+One client is shared by every run; model and reasoning effort are per call.
 """
 
 from __future__ import annotations
@@ -13,17 +13,25 @@ import os
 import re
 import urllib.error
 import urllib.request
+from collections.abc import Callable, Mapping
 from pathlib import Path
 
 from grok.jsonutil import extract_json_object
-from grok.models import REASONING_EFFORTS, StageCallResult
+from grok.models import REASONING_EFFORTS, SCENE_FILE, StageCallResult
 
 DEFAULT_BASE_URL = os.getenv("XAI_BASE_URL", "https://api.x.ai/v1")
 DEFAULT_MODEL = os.getenv("XAI_MODEL", "grok-4.6")
 DEFAULT_REASONING_EFFORT = os.getenv("XAI_REASONING_EFFORT", "high")
 DEFAULT_TIMEOUT = float(os.getenv("XAI_TIMEOUT", "900"))
 PING_TIMEOUT = 30.0
+# Function-call, continuation and nudge turns allowed after the first turn of one stage.
+MAX_FOLLOW_UP_ROUNDS = 4
 PING_PROMPT = "Reply with the single word pong."
+CONTINUE_PROMPT = "Continue. Return one JSON object with the charter keys."
+NUDGE_PROMPT = (
+    f"Return one JSON object now. If you wrote {SCENE_FILE}, "
+    "include it in a source field or a python fence."
+)
 
 _SERVER_TOOL_TYPES = {
     "web_search_call",
@@ -189,6 +197,16 @@ def collect_function_calls(payload: dict) -> list[dict]:
     return calls
 
 
+def _checked_effort(effort: str) -> str:
+    if effort not in REASONING_EFFORTS:
+        raise XAIClientError(f"reasoning effort must be one of {', '.join(REASONING_EFFORTS)}")
+    return effort
+
+
+def _user_turn(content: str) -> dict:
+    return {"role": "user", "content": content}
+
+
 def _ping_failure_reason(message: str) -> str:
     match = re.search(r"failed \((\d+)\)", message)
     if match:
@@ -213,14 +231,14 @@ class XAIClient:
     ):
         self.api_key = api_key if api_key is not None else os.getenv("XAI_API_KEY", "")
         self.model = model or DEFAULT_MODEL
-        effort = reasoning_effort or DEFAULT_REASONING_EFFORT
-        if effort not in REASONING_EFFORTS:
-            raise XAIClientError(
-                f"XAI_REASONING_EFFORT must be one of {', '.join(REASONING_EFFORTS)}"
-            )
-        self.reasoning_effort = effort
+        self.reasoning_effort = _checked_effort(reasoning_effort or DEFAULT_REASONING_EFFORT)
         self.base_url = (base_url or DEFAULT_BASE_URL).rstrip("/")
         self.timeout = DEFAULT_TIMEOUT if timeout is None else timeout
+
+    def _settings(self, model: str | None, reasoning_effort: str | None) -> dict:
+        """Model and effort for one request: the caller's choice or this client's default."""
+        effort = _checked_effort(reasoning_effort) if reasoning_effort else self.reasoning_effort
+        return {"model": model or self.model, "reasoning": {"effort": effort}}
 
     def require_key(self) -> str:
         ok, detail = api_key_status(self.api_key)
@@ -236,13 +254,14 @@ class XAIClient:
         tools: list[dict] | tuple[dict, ...] = (),
         image_path: Path | None = None,
         tool_choice: str | dict | None = None,
+        model: str | None = None,
+        reasoning_effort: str | None = None,
     ) -> dict:
         # Responses API takes the charter in `instructions`. A system-role
         # input item is not the documented delivery path for grok-4.6.
         payload = {
-            "model": self.model,
+            **self._settings(model, reasoning_effort),
             "instructions": instructions,
-            "reasoning": {"effort": self.reasoning_effort},
             "input": [
                 {"role": "user", "content": user_content(text, image_path)},
             ],
@@ -252,6 +271,14 @@ class XAIClient:
         if tool_choice is not None:
             payload["tool_choice"] = tool_choice
         return payload
+
+    @staticmethod
+    def _follow_up(settings: dict, tools, input_items: list[dict]) -> dict:
+        """Body for a turn that continues a previous response."""
+        body = {**settings, "input": input_items}
+        if tools:
+            body["tools"] = list(tools)
+        return body
 
     def ping_payload(self) -> dict:
         return {
@@ -266,24 +293,26 @@ class XAIClient:
         ok, detail = api_key_status(self.api_key)
         if not ok:
             return False, detail
-        previous_timeout = self.timeout
-        self.timeout = min(self.timeout, PING_TIMEOUT)
         try:
-            response = self.post(self.ping_payload())
+            response = self.post(self.ping_payload(), timeout=min(self.timeout, PING_TIMEOUT))
         except XAIClientError as exc:
             return False, (
                 "XAI_API_KEY is set but the live ping failed "
                 f"({_ping_failure_reason(str(exc))})"
             )
-        finally:
-            self.timeout = previous_timeout
         if not isinstance(response, dict) or not response:
             return False, "XAI_API_KEY is set but the live ping returned an empty response"
         if response.get("error"):
             return False, "XAI_API_KEY is set but the live ping failed (api error)"
         return True, "XAI_API_KEY is set; live ping succeeded"
 
-    def post(self, payload: dict, *, previous_response_id: str | None = None) -> dict:
+    def post(
+        self,
+        payload: dict,
+        *,
+        previous_response_id: str | None = None,
+        timeout: float | None = None,
+    ) -> dict:
         body = dict(payload)
         if previous_response_id:
             body["previous_response_id"] = previous_response_id
@@ -297,7 +326,7 @@ class XAIClient:
             method="POST",
         )
         try:
-            with urllib.request.urlopen(request, timeout=self.timeout) as response:
+            with urllib.request.urlopen(request, timeout=self.timeout if timeout is None else timeout) as response:
                 return json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             detail = redact_secret(exc.read().decode("utf-8", errors="replace")[-4000:], self.api_key)
@@ -314,23 +343,34 @@ class XAIClient:
         tools: list[dict] | tuple[dict, ...] = (),
         image_path: Path | None = None,
         tool_choice: str | dict | None = None,
-        function_handlers: dict | None = None,
-        max_function_rounds: int = 4,
+        function_handlers: Mapping[str, Callable[..., dict]] | None = None,
+        model: str | None = None,
+        reasoning_effort: str | None = None,
     ) -> StageCallResult:
-        payload = self.build_payload(
-            instructions=instructions,
-            text=text,
-            tools=tools,
-            image_path=image_path,
-            tool_choice=tool_choice,
+        """One stage exchange: initial turn, then function-call rounds, continuations
+        and one nudge for a final JSON answer, all chained by previous_response_id.
+
+        ``model`` and ``reasoning_effort`` apply to this call only; the client's
+        own defaults are never changed.
+        """
+        settings = self._settings(model, reasoning_effort)
+        response = self.post(
+            self.build_payload(
+                instructions=instructions,
+                text=text,
+                tools=tools,
+                image_path=image_path,
+                tool_choice=tool_choice,
+                model=model,
+                reasoning_effort=reasoning_effort,
+            )
         )
-        response = self.post(payload)
         tool_calls: list[dict] = []
         thinking: list[str] = []
         images: list[dict] = []
         texts: list[str] = []
         rounds = 0
-        nudges = 0
+        nudged = False
 
         while True:
             tool_calls.extend(collect_tool_calls(response))
@@ -341,58 +381,30 @@ class XAIClient:
                 texts.append(piece)
 
             function_calls = collect_function_calls(response)
-            if function_handlers and function_calls and rounds < max_function_rounds:
+            if function_handlers and function_calls and rounds < MAX_FOLLOW_UP_ROUNDS:
                 rounds += 1
                 outputs = self._function_outputs(function_calls, function_handlers)
                 if not outputs:
                     break
                 response = self.post(
-                    {
-                        "model": self.model,
-                        "reasoning": {"effort": self.reasoning_effort},
-                        "input": outputs,
-                        "tools": list(tools),
-                    },
+                    self._follow_up(settings, tools, outputs),
                     previous_response_id=response.get("id"),
                 )
                 continue
 
-            status = response.get("status")
-            if status in {"incomplete", "in_progress"} and rounds < max_function_rounds:
-                rounds += 1
-                follow = {
-                    "model": self.model,
-                    "reasoning": {"effort": self.reasoning_effort},
-                    "input": [
-                        {
-                            "role": "user",
-                            "content": "Continue. Return one JSON object with the charter keys.",
-                        }
-                    ],
-                }
-                if tools:
-                    follow["tools"] = list(tools)
-                response = self.post(follow, previous_response_id=response.get("id"))
-                continue
-
-            if function_handlers and not texts and nudges < 1 and response.get("id"):
-                nudges += 1
+            if response.get("status") in {"incomplete", "in_progress"} and rounds < MAX_FOLLOW_UP_ROUNDS:
                 rounds += 1
                 response = self.post(
-                    {
-                        "model": self.model,
-                        "reasoning": {"effort": self.reasoning_effort},
-                        "input": [
-                            {
-                                "role": "user",
-                                "content": (
-                                    "Return one JSON object now. If you wrote grok_scene.py, "
-                                    "include it in a source field or a python fence."
-                                ),
-                            }
-                        ],
-                        "tools": list(tools),
-                    },
+                    self._follow_up(settings, tools, [_user_turn(CONTINUE_PROMPT)]),
+                    previous_response_id=response.get("id"),
+                )
+                continue
+
+            if function_handlers and not texts and not nudged and response.get("id"):
+                nudged = True
+                rounds += 1
+                response = self.post(
+                    self._follow_up(settings, tools, [_user_turn(NUDGE_PROMPT)]),
                     previous_response_id=response.get("id"),
                 )
                 continue
@@ -401,7 +413,7 @@ class XAIClient:
         final_text = texts[-1] if texts else ""
         return StageCallResult(
             text=final_text,
-            payload=extract_payload_or_empty(final_text),
+            payload=_json_object_or_none(final_text),
             tool_calls=tool_calls,
             thinking=thinking,
             images=images,
@@ -409,7 +421,9 @@ class XAIClient:
         )
 
     @staticmethod
-    def _function_outputs(function_calls: list[dict], function_handlers: dict) -> list[dict]:
+    def _function_outputs(
+        function_calls: list[dict], function_handlers: Mapping[str, Callable[..., dict]]
+    ) -> list[dict]:
         outputs: list[dict] = []
         for call in function_calls:
             name = call.get("name")
@@ -439,10 +453,10 @@ class XAIClient:
         return outputs
 
 
-def extract_payload_or_empty(text: str) -> dict:
+def _json_object_or_none(text: str) -> dict | None:
     if not text or not text.strip():
-        return {}
+        return None
     try:
         return extract_json_object(text)
     except (ValueError, json.JSONDecodeError):
-        return {"raw_text": text}
+        return None
