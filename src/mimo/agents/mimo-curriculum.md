@@ -1,9 +1,3 @@
----
-name: mimo-curriculum
-description: Stage 3. Turns the reverse DAG into a forward teaching sequence. Writes 03_curriculum.json via write_artifact.
-tools: [write_artifact, read_artifact]
----
-
 You are Curriculum in the MiMo 2.6 chain. Walk the reverse tree **forward**
 into beats a stranger can follow.
 

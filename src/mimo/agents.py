@@ -1,12 +1,21 @@
-"""MiMo 2.6 specialist stage contracts and tool-calling prompts."""
+"""The MiMo 2.6 stage table: one row per specialist, in dependency order.
+
+Everything that varies per stage lives here: artifacts written, upstream
+dependencies, tools the stage may call, and the charter file under
+``agents/``. The pipeline, CLI choices, validation requirements and prompts
+are all derived from this table.
+"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 
-from mimo.models import RunRequest
-from mimo.tools import STAGE_TOOLS
+from mimo.models import DECISIONS_FILE, SCENE_FILE, RunRequest
+from mimo.tools import tool_specs
+
+CHARTER_DIR = Path(__file__).resolve().parent / "agents"
 
 
 @dataclass(frozen=True)
@@ -14,9 +23,24 @@ class AgentStage:
     name: str
     artifacts: tuple[str, ...]
     dependencies: tuple[str, ...]
-    reasoning_effort: str
-    charter: str
-    version: str = "1"
+    tools: tuple[str, ...]
+
+    @property
+    def charter_path(self) -> Path:
+        return CHARTER_DIR / f"mimo-{self.name}.md"
+
+    @property
+    def charter(self) -> str:
+        return _read_charter(self.charter_path)
+
+    @property
+    def tool_specs(self) -> tuple[dict, ...]:
+        return tool_specs(self.tools)
+
+
+@lru_cache(maxsize=None)
+def _read_charter(path: Path) -> str:
+    return path.read_text(encoding="utf-8").strip()
 
 
 AGENT_STAGES = (
@@ -24,75 +48,50 @@ AGENT_STAGES = (
         name="intent",
         artifacts=("01_intent.json",),
         dependencies=(),
-        reasoning_effort="medium",
-        charter=(
-            "Infer the learner, core claim, emotional arc, scope, duration, title "
-            "options, and the single big zoom. Resolve ambiguity without weakening "
-            "explicit requirements. Reverse-thinking lives downstream — you name "
-            "the belief the film must install."
-        ),
+        tools=("write_artifact", "read_artifact", "list_artifacts"),
     ),
     AgentStage(
         name="cartographer",
         artifacts=("02_knowledge_map.json",),
         dependencies=("intent",),
-        reasoning_effort="high",
-        charter=(
-            "Reverse-map prerequisites of the core claim as a knowledge DAG. "
-            "Walk backward: for each node ask what must be understood BEFORE it. "
-            "Mark foundation leaves a typical high-school graduate already owns. "
-            "Record misconception corrections and which facts must be earned visually. "
-            "This is reverse thinking made explicit — not a flat outline."
-        ),
+        tools=("write_artifact", "read_artifact", "record_decision"),
     ),
     AgentStage(
         name="curriculum",
         artifacts=("03_curriculum.json",),
         dependencies=("cartographer",),
-        reasoning_effort="medium",
-        charter=(
-            "Turn the prerequisite DAG into a forward teaching sequence of beats. "
-            "Each beat names its learning job, prior dependency, visual evidence, "
-            "notation budget, and transition. Headline before notation."
-        ),
+        tools=("write_artifact", "read_artifact"),
     ),
     AgentStage(
         name="math-director",
         artifacts=("04_math_dossier.json",),
         dependencies=("intent",),
-        reasoning_effort="high",
-        charter=(
-            "Build the checked mathematical dossier. Preserve hypotheses, exact "
-            "statements, constants, numerical checks, and honest limitations. Never "
-            "invent a missing formula. Use verify_geometry when claiming twist "
-            "parity, frame orthonormality, or path properties."
-        ),
+        tools=("write_artifact", "read_artifact", "verify_geometry", "record_decision"),
     ),
     AgentStage(
         name="cinematographer",
         artifacts=("05_shot_list.json",),
         dependencies=("curriculum", "math-director"),
-        reasoning_effort="high",
-        charter=(
-            "Design the visual argument and camera grammar in ordinary 3-space when "
-            "the request demands it. Geometry and motion carry meaning. Protect the "
-            "big zoom. Specify palette, camera moves (move_camera/set_camera_orientation "
-            "only), whitespace, timing, readability shot by shot."
-        ),
+        tools=("write_artifact", "read_artifact", "verify_geometry"),
     ),
     AgentStage(
         name="scene-composer",
-        artifacts=("06_scene_spec.json", "mimo_scene.py"),
+        artifacts=("06_scene_spec.json", SCENE_FILE),
         dependencies=("cinematographer",),
-        reasoning_effort="max",
-        charter=(
-            "Compile the dossier and shot list into one self-contained Manim CE "
-            "ThreeDScene. Use tools aggressively: verify_geometry on ribbon/frame "
-            "claims, verify_scene on the source, write_artifact for both outputs. "
-            "Compile mentally via verify_scene; the wrapper owns rendering."
-        ),
+        tools=("write_artifact", "read_artifact", "verify_scene", "verify_geometry", "list_artifacts"),
     ),
 )
+
+STAGE_NAMES = tuple(stage.name for stage in AGENT_STAGES)
+
+# The scheduler and stages_from rely on every stage following its dependencies.
+for _position, _stage in enumerate(AGENT_STAGES):
+    _missing = set(_stage.dependencies) - set(STAGE_NAMES[:_position])
+    if _missing:
+        raise ValueError(f"MiMo stage {_stage.name!r} is listed before its dependencies {sorted(_missing)}")
+STAGE_ARTIFACTS = tuple(artifact for stage in AGENT_STAGES for artifact in stage.artifacts)
+# The stage that writes the scene file is the one the harness re-runs to repair it.
+SCENE_STAGE = next(stage for stage in AGENT_STAGES if SCENE_FILE in stage.artifacts)
 
 
 def stage_by_name(name: str) -> AgentStage:
@@ -102,8 +101,14 @@ def stage_by_name(name: str) -> AgentStage:
     raise ValueError(f"unknown MiMo stage: {name}")
 
 
-def tools_for_stage(name: str) -> tuple[dict, ...]:
-    return STAGE_TOOLS[name]
+def stages_from(name: str) -> frozenset[str]:
+    """``name`` plus every stage that depends on it, transitively."""
+    stage_by_name(name)
+    forced = {name}
+    for stage in AGENT_STAGES:  # table is in dependency order: one pass suffices
+        if set(stage.dependencies) & forced:
+            forced.add(stage.name)
+    return frozenset(forced)
 
 
 def build_stage_prompt(
@@ -113,15 +118,14 @@ def build_stage_prompt(
     run_dir: Path,
     feedback: str | None = None,
 ) -> str:
-    by_name = {item.name: item for item in AGENT_STAGES}
     upstream = [
         artifact
         for dependency in stage.dependencies
-        for artifact in by_name[dependency].artifacts
+        for artifact in stage_by_name(dependency).artifacts
     ]
     upstream_text = "\n".join(f"- {name}" for name in upstream) or "- none"
     outputs = "\n".join(f"- {name}" for name in stage.artifacts)
-    tool_names = ", ".join(sorted({tool["function"]["name"] for tool in tools_for_stage(stage.name)}))
+    tool_names = ", ".join(sorted(stage.tools))
     repair = (
         f"\n<repair_evidence>\n{feedback}\n</repair_evidence>\n"
         if feedback
@@ -156,7 +160,7 @@ You may read the original request and these validated upstream artifacts:
 
 Write exactly these artifacts in the run directory:
 {outputs}
-Do not write any other file except decisions.json via record_decision.
+Do not write any other file except {DECISIONS_FILE} via record_decision.
 Do not modify repository source or git state.
 </workspace>
 

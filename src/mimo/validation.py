@@ -1,119 +1,146 @@
-"""Final application-side validation for MiMo-produced run bundles."""
+"""The one scene checker and run-bundle validator for the MiMo silo.
+
+``validation_from_scene`` is used both by the model-facing ``verify_scene`` tool
+and by the application-side gate, so the two can never disagree. ``validate_run``
+is read-only: it reports, the harness writes ``validation.json``.
+"""
 
 from __future__ import annotations
 
 import ast
 import json
-import py_compile
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any, Iterable
 
-from mimo.models import ARTIFACT_NAMES
-from mimo.tools import _BLOCKED_CALLS, _BLOCKED_IMPORTS
+from mimo.models import SCENE_FILE
 
-
-def validation_template() -> dict:
-    return {
-        "status": "pending",
-        "scene_name": None,
-        "errors": [],
-        "checks": [],
-    }
+BLOCKED_IMPORTS = frozenset({"os", "subprocess", "socket", "requests", "urllib", "httpx", "shutil"})
+BLOCKED_CALLS = frozenset({"eval", "exec", "compile", "open", "__import__"})
+SCENE_BASES = frozenset({"Scene", "ThreeDScene", "MovingCameraScene"})
 
 
-def validation_from_scene(source: str) -> dict:
+def validation_from_scene(source: str) -> dict[str, Any]:
+    """Statically check one complete Manim CE scene source.
+
+    Returns ``{"status", "scene_name", "errors", "checks"}``. Rules: no blocked
+    imports or calls, exactly one Scene subclass, camera moves only through
+    ``move_camera``/``set_camera_orientation`` (never ``self.camera.animate``),
+    and the module must compile.
+    """
     errors: list[str] = []
     checks: list[str] = []
+    if not source or not source.strip():
+        return _report(["empty source"], None, checks)
     try:
-        tree = ast.parse(source)
+        tree = ast.parse(source, filename=SCENE_FILE)
     except SyntaxError as exc:
-        return {"status": "failed", "scene_name": None, "errors": [str(exc)], "checks": []}
+        return _report([f"syntax error: {exc}"], None, checks)
 
-    scene_names: list[str] = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name.split(".")[0] in _BLOCKED_IMPORTS:
+                if alias.name.split(".")[0] in BLOCKED_IMPORTS:
                     errors.append(f"blocked import {alias.name!r}")
         elif isinstance(node, ast.ImportFrom):
-            if (node.module or "").split(".")[0] in _BLOCKED_IMPORTS:
+            if (node.module or "").split(".")[0] in BLOCKED_IMPORTS:
                 errors.append(f"blocked import {node.module!r}")
         elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-            if node.func.id in _BLOCKED_CALLS:
+            if node.func.id in BLOCKED_CALLS:
                 errors.append(f"blocked call {node.func.id}()")
         elif isinstance(node, ast.Attribute) and node.attr == "animate":
-            value = node.value
-            if isinstance(value, ast.Attribute) and value.attr == "camera":
-                errors.append("forbidden self.camera.animate")
+            if isinstance(node.value, ast.Attribute) and node.value.attr == "camera":
+                errors.append("forbidden camera animation via self.camera.animate")
 
-    for node in tree.body:
-        if isinstance(node, ast.ClassDef):
-            for base in node.bases:
-                name = base.id if isinstance(base, ast.Name) else getattr(base, "attr", "")
-                if name in {"Scene", "ThreeDScene", "MovingCameraScene"}:
-                    scene_names.append(node.name)
-    if len(scene_names) != 1:
-        errors.append(f"expected one Scene subclass, found {scene_names}")
+    scene_names = [
+        node.name
+        for node in tree.body
+        if isinstance(node, ast.ClassDef)
+        and any(_base_name(base) in SCENE_BASES for base in node.bases)
+    ]
+    scene_name = scene_names[0] if len(scene_names) == 1 else None
+    if scene_name is None:
+        errors.append(f"expected exactly one Scene subclass, found {scene_names}")
     else:
-        checks.append(f"scene_class:{scene_names[0]}")
+        checks.append(f"scene_class:{scene_name}")
+
+    try:
+        compile(tree, SCENE_FILE, "exec")
+    except (SyntaxError, ValueError, TypeError) as exc:
+        errors.append(f"compilation failed: {exc}")
+    else:
+        checks.append("compiles")
 
     if "set_camera_orientation" in source or "move_camera" in source:
         checks.append("camera_helpers_used")
-    if ".animate" in source and "camera" in source:
-        # soft signal already covered by AST rule
-        checks.append("camera_rule_checked")
+    return _report(errors, scene_name, checks)
 
+
+def _base_name(base: ast.expr) -> str:
+    if isinstance(base, ast.Name):
+        return base.id
+    return getattr(base, "attr", "")
+
+
+def _report(errors: list[str], scene_name: str | None, checks: list[str]) -> dict[str, Any]:
     return {
         "status": "failed" if errors else "passed",
-        "scene_name": scene_names[0] if len(scene_names) == 1 else None,
+        "scene_name": scene_name,
         "errors": errors,
         "checks": checks,
     }
 
 
-def validate_run(run_dir: Path, *, require_video: bool) -> tuple[list[str], str | None, str | None]:
-    failures: list[str] = []
-    scene_path = run_dir / "mimo_scene.py"
-    validation_path = run_dir / "validation.json"
-    if scene_path.is_file():
-        report = validation_from_scene(scene_path.read_text(encoding="utf-8"))
-        validation_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
-        failures.extend(f"mimo_scene.py: {error}" for error in report["errors"])
-        scene_name = report["scene_name"]
-        try:
-            py_compile.compile(str(scene_path), doraise=True)
-        except py_compile.PyCompileError as exc:
-            failures.append(f"mimo_scene.py: compilation failed ({exc})")
-            scene_name = None
-    elif not validation_path.is_file():
-        validation_path.write_text(json.dumps(validation_template(), indent=2), encoding="utf-8")
-        failures.append("missing required artifact: mimo_scene.py")
-        scene_name = None
-    else:
-        scene_name = None
+@dataclass
+class RunValidation:
+    """Outcome of checking a run directory. ``report`` is the validation.json payload."""
 
-    for name in ARTIFACT_NAMES:
-        path = run_dir / name
+    failures: list[str] = field(default_factory=list)
+    scene_name: str | None = None
+    checks: list[str] = field(default_factory=list)
+
+    @property
+    def ok(self) -> bool:
+        return not self.failures
+
+    @property
+    def report(self) -> dict[str, Any]:
+        return _report(list(self.failures), self.scene_name, list(self.checks))
+
+
+def artifact_failures(run_dir: Path, names: Iterable[str]) -> list[str]:
+    """Presence and shape of artifacts: each file exists and is non-empty; JSON ones hold an object."""
+    failures: list[str] = []
+    for name in dict.fromkeys(names):
+        path = Path(run_dir) / name
         if not path.is_file():
-            if name == "review.json":
-                path.write_text(json.dumps({"status": "skipped"}, indent=2), encoding="utf-8")
-                continue
             failures.append(f"missing required artifact: {name}")
-            continue
-        if name.endswith(".json"):
+        elif path.stat().st_size == 0:
+            failures.append(f"{name}: empty artifact")
+        elif name.endswith(".json"):
             try:
                 payload = json.loads(path.read_text(encoding="utf-8"))
             except json.JSONDecodeError as exc:
                 failures.append(f"{name}: invalid JSON ({exc})")
                 continue
-            if name != "review.json" and (not isinstance(payload, dict) or not payload):
+            if not isinstance(payload, dict) or not payload:
                 failures.append(f"{name}: expected a non-empty JSON object")
+    return failures
 
-    video_path = None
-    if require_video:
-        media = run_dir / "media"
-        videos = list(media.rglob("*.mp4")) if media.is_dir() else []
-        if not videos:
-            failures.append("render required but no mp4 found under media/")
-        else:
-            video_path = str(videos[0])
-    return failures, scene_name, video_path
+
+def validate_run(run_dir: Path, required_artifacts: Iterable[str]) -> RunValidation:
+    """Check the stage artifacts of a run bundle without writing anything.
+
+    Every required artifact must exist and be well-formed (``artifact_failures``);
+    the scene file must pass ``validation_from_scene``.
+    """
+    run_dir = Path(run_dir)
+    required = tuple(dict.fromkeys(required_artifacts))
+    result = RunValidation(failures=artifact_failures(run_dir, required))
+    scene_path = run_dir / SCENE_FILE
+    if SCENE_FILE in required and scene_path.is_file():
+        report = validation_from_scene(scene_path.read_text(encoding="utf-8"))
+        result.failures.extend(f"{SCENE_FILE}: {error}" for error in report["errors"])
+        result.checks.extend(report["checks"])
+        result.scene_name = report["scene_name"]
+    return result

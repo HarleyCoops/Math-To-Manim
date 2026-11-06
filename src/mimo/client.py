@@ -3,28 +3,25 @@
 Endpoint defaults to the MiMoCode OpenAI-compatible /v1 surface. The API key
 is resolved from MIMO_API_KEY / MIMO_CODE_API_KEY and is never printed.
 This module never imports Mythos, Sol, Grok, or GLM.
+
+Environment is read once, in ``MimoClient.__init__``: MIMO_BASE_URL, MIMO_MODEL,
+MIMO_TIMEOUT (seconds), MIMO_MAX_TOOL_ROUNDS. Reasoning effort is per run and
+is passed to every ``run_stage`` call; the client holds no per-run state.
 """
 
 from __future__ import annotations
 
 import json
 import os
-import time
 import urllib.error
 import urllib.request
-from pathlib import Path
 from typing import Any
 
-from mimo.jsonutil import extract_json_object
 from mimo.models import StageRunResult, ToolCallRecord
 from mimo.tools import ToolContext, dispatch_tool
 
-DEFAULT_BASE_URL = os.getenv("MIMO_BASE_URL", "http://127.0.0.1:8642/v1")
-DEFAULT_MODEL = os.getenv("MIMO_MODEL", "mimo-2.6")
-DEFAULT_REASONING_EFFORT = os.getenv("MIMO_REASONING_EFFORT", "high")
-DEFAULT_TIMEOUT = float(os.getenv("MIMO_TIMEOUT", "600"))
 PING_TIMEOUT = 20.0
-MAX_TOOL_ROUNDS = int(os.getenv("MIMO_MAX_TOOL_ROUNDS", "8"))
+SUMMARY_KEYS = ("summary", "artifacts", "checks", "notes")
 
 _EFFORT_TOKENS = {
     "low": 2_000,
@@ -63,27 +60,60 @@ def api_key_status(env: dict | None = None) -> tuple[bool, str]:
     return True, f"a MiMo key is set (source: {origin})"
 
 
+def extract_json_object(text: str) -> dict[str, Any]:
+    """Return the first JSON object in a model reply.
+
+    A fenced block (```json or bare ```) wins when present; otherwise the first
+    ``{`` that starts a complete object. Nested objects and prose after the
+    object are fine: decoding stops where the object ends.
+    """
+    if not text or not text.strip():
+        raise ValueError("empty model reply")
+    decoder = json.JSONDecoder()
+    candidates = []
+    for fence in ("```json", "```"):
+        start = text.find(fence)
+        if start >= 0:
+            candidates.append(text[start + len(fence):])
+    candidates.append(text)
+    for candidate in candidates:
+        position = candidate.find("{")
+        while position >= 0:
+            try:
+                value, _ = decoder.raw_decode(candidate, position)
+            except json.JSONDecodeError:
+                position = candidate.find("{", position + 1)
+                continue
+            if isinstance(value, dict):
+                return value
+            position = candidate.find("{", position + 1)
+    raise ValueError("no JSON object in model reply")
+
+
 class MimoClient:
     """Sync OpenAI-compatible chat/completions client with a tool loop."""
 
     def __init__(
         self,
         *,
-        model: str = DEFAULT_MODEL,
-        base_url: str = DEFAULT_BASE_URL,
-        reasoning_effort: str = DEFAULT_REASONING_EFFORT,
-        timeout: float = DEFAULT_TIMEOUT,
+        model: str | None = None,
+        base_url: str | None = None,
+        timeout: float | None = None,
+        max_tool_rounds: int | None = None,
         api_key: str | None = None,
+        env: dict | None = None,
     ):
-        self.model = model
-        self.base_url = base_url.rstrip("/")
-        self.reasoning_effort = reasoning_effort
-        self.timeout = timeout
-        resolved, origin = resolve_api_key()
+        source = env if env is not None else os.environ
+        self.model = model or source.get("MIMO_MODEL") or "mimo-2.6"
+        self.base_url = (base_url or source.get("MIMO_BASE_URL") or "http://127.0.0.1:8642/v1").rstrip("/")
+        self.timeout = float(timeout if timeout is not None else source.get("MIMO_TIMEOUT") or 600)
+        self.max_tool_rounds = int(
+            max_tool_rounds if max_tool_rounds is not None else source.get("MIMO_MAX_TOOL_ROUNDS") or 8
+        )
         if api_key is not None and api_key.strip():
-            resolved, origin = api_key.strip(), "explicit"
-        self.api_key = resolved
-        self.key_source = origin
+            self.api_key, self.key_source = api_key.strip(), "explicit"
+        else:
+            self.api_key, self.key_source = resolve_api_key(source)
 
     @property
     def endpoint(self) -> str:
@@ -140,7 +170,7 @@ class MimoClient:
         prompt: str,
         tools: tuple[dict, ...],
         ctx: ToolContext,
-        expected_summary_keys: tuple[str, ...],
+        reasoning_effort: str,
     ) -> StageRunResult:
         """Drive one specialist with a bounded tool-calling loop."""
         messages: list[dict[str, Any]] = [
@@ -149,24 +179,24 @@ class MimoClient:
                 "content": (
                     f"MiMo 2.6 Math-To-Manim specialist: {stage_name}. "
                     "Use tools to write artifacts. Finish with one JSON object "
-                    f"containing keys: {', '.join(expected_summary_keys)}."
+                    f"containing keys: {', '.join(SUMMARY_KEYS)}."
                 ),
             },
             {"role": "user", "content": prompt},
         ]
         tool_records: list[ToolCallRecord] = []
-        body_base: dict[str, Any] = {
+        body: dict[str, Any] = {
             "model": self.model,
             "messages": messages,
             "temperature": 0.4,
-            "max_tokens": _EFFORT_TOKENS.get(self.reasoning_effort, 8_000),
+            "max_tokens": _EFFORT_TOKENS.get(reasoning_effort, _EFFORT_TOKENS["high"]),
             "tools": list(tools),
             "tool_choice": "auto",
         }
 
         final_text = ""
-        for round_index in range(MAX_TOOL_ROUNDS + 1):
-            payload = self._post(dict(body_base))
+        for round_index in range(self.max_tool_rounds + 1):
+            payload = self._post(body)
             try:
                 message = payload["choices"][0]["message"]
             except (KeyError, IndexError, TypeError) as exc:
@@ -215,11 +245,8 @@ class MimoClient:
         except ValueError:
             summary = {"summary": final_text[:500] or "no final text"}
 
-        artifacts = []
-        for key in expected_summary_keys:
-            if key == "artifacts" and isinstance(summary.get("artifacts"), list):
-                artifacts = [str(item) for item in summary["artifacts"]]
-        if not artifacts:
+        artifacts = summary.get("artifacts")
+        if not isinstance(artifacts, list) or not artifacts:
             artifacts = [
                 str(path.relative_to(ctx.run_dir)).replace("\\", "/")
                 for path in sorted(ctx.run_dir.glob("*"))
@@ -232,9 +259,9 @@ class MimoClient:
         if not isinstance(checks, list):
             checks = []
         return StageRunResult(
-            status="completed" if all(r.ok for r in tool_records) or not tool_records else "completed",
+            status="completed",
             role=stage_name,
-            artifacts=artifacts,
+            artifacts=[str(item) for item in artifacts],
             summary=str(summary.get("summary") or "stage complete"),
             checks=[str(item) for item in checks],
             notes=[str(item) for item in notes],

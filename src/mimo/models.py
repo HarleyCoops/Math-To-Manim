@@ -1,4 +1,4 @@
-"""Typed contracts for the MiMo 2.6 tool-calling film pipeline."""
+"""Typed contracts and run-bundle file names for the MiMo 2.6 tool-calling film pipeline."""
 
 from __future__ import annotations
 
@@ -6,32 +6,26 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-ARTIFACT_NAMES = (
-    "01_intent.json",
-    "02_knowledge_map.json",
-    "03_curriculum.json",
-    "04_math_dossier.json",
-    "05_shot_list.json",
-    "06_scene_spec.json",
-    "mimo_scene.py",
-    "validation.json",
-    "review.json",
-)
+# Run-bundle file names. Stage artifacts are declared on the stage table (mimo.agents).
+SCENE_FILE = "mimo_scene.py"
+MANIFEST_FILE = "manifest.json"
+REQUEST_FILE = "request.json"
+VALIDATION_FILE = "validation.json"
+REVIEW_FILE = "review.json"
+DECISIONS_FILE = "decisions.json"
+RENDER_LOG_FILE = "render.log"
+MEDIA_DIR = "media"
+STAGES_DIR = "stages"
 
-TOOL_NAMES = (
-    "write_artifact",
-    "read_artifact",
-    "list_artifacts",
-    "record_decision",
-    "verify_geometry",
-    "verify_scene",
-)
+ReasoningEffort = Literal["low", "medium", "high", "xhigh", "max"]
+RenderQuality = Literal["l", "m", "h", "p", "k"]
+
 
 class RunRequest(BaseModel):
     prompt: str = Field(min_length=3, max_length=12_000)
     render: bool = False
-    quality: Literal["l", "m", "h", "p", "k"] = "l"
-    reasoning_effort: Literal["low", "medium", "high", "xhigh", "max"] = "high"
+    quality: RenderQuality = "l"
+    reasoning_effort: ReasoningEffort = "high"
     max_repairs: int = Field(default=2, ge=0, le=5)
     offline: bool = False
 
@@ -45,21 +39,9 @@ class ToolCallRecord(BaseModel):
     round_index: int
 
 
-class MimoRunResult(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    status: Literal["completed", "failed"]
-    scene_file: str
-    scene_name: str
-    artifacts: list[str]
-    rendered: bool
-    video_path: str | None
-    checks: list[str]
-    notes: list[str]
-    tool_calls: list[ToolCallRecord] = Field(default_factory=list)
-
-
 class StageRunResult(BaseModel):
+    """What one specialist reported after its tool loop."""
+
     model_config = ConfigDict(extra="forbid")
 
     status: Literal["completed", "failed"]
@@ -69,6 +51,18 @@ class StageRunResult(BaseModel):
     checks: list[str]
     notes: list[str]
     tool_calls: list[ToolCallRecord] = Field(default_factory=list)
+
+
+class PipelineResult(BaseModel):
+    """What producing the stage artifacts (live chain or offline bundle) yielded."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    artifacts: list[str]
+    checks: list[str]
+    notes: list[str]
+    tool_calls: list[ToolCallRecord] = Field(default_factory=list)
+    stage_records: list[str] = Field(default_factory=list)
 
 
 class StageRecord(BaseModel):

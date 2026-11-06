@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import argparse
 import json
+from typing import get_args
 
 from mimo import __version__
+from mimo.agents import STAGE_NAMES
 from mimo.client import MimoClient, MimoClientError, api_key_status
-from mimo.models import RunRequest
-from mimo.service import MimoService
+from mimo.harness import MimoHarness
+from mimo.models import ReasoningEffort, RenderQuality, RunRequest
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -22,32 +24,17 @@ def build_parser() -> argparse.ArgumentParser:
     run = sub.add_parser("run", help="Create one complete film-production run bundle")
     run.add_argument("prompt")
     run.add_argument("--render", action="store_true")
-    run.add_argument("-q", "--quality", default="l", choices=["l", "m", "h", "p", "k"])
-    run.add_argument(
-        "--reasoning-effort",
-        default="high",
-        choices=["low", "medium", "high", "xhigh", "max"],
-    )
+    run.add_argument("-q", "--quality", default="l", choices=get_args(RenderQuality))
+    run.add_argument("--reasoning-effort", default="high", choices=get_args(ReasoningEffort))
     run.add_argument("--max-repairs", default=2, type=int, choices=range(0, 6))
     run.add_argument("--offline", action="store_true")
 
     runs = sub.add_parser("runs", help="List recent MiMo run manifests")
     runs.add_argument("--limit", type=int, default=20)
 
-    resume = sub.add_parser("resume", help="Resume a tool-calling MiMo run")
+    resume = sub.add_parser("resume", help="Resume a MiMo run (cached stages are kept)")
     resume.add_argument("run_id")
-    resume.add_argument(
-        "--from",
-        dest="from_stage",
-        choices=[
-            "intent",
-            "cartographer",
-            "curriculum",
-            "math-director",
-            "cinematographer",
-            "scene-composer",
-        ],
-    )
+    resume.add_argument("--from", dest="from_stage", choices=STAGE_NAMES)
 
     status = sub.add_parser("status", help="Show one MiMo run manifest")
     status.add_argument("run_id")
@@ -56,10 +43,9 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _doctor() -> int:
+def _doctor(client: MimoClient) -> int:
     ready, message = api_key_status()
     print(message)
-    client = MimoClient()
     try:
         reply = client.ping()
         print(f"endpoint: {client.endpoint}")
@@ -75,9 +61,9 @@ def _doctor() -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    service = MimoService()
+    harness = MimoHarness()
     if args.command == "run":
-        response = service.run(
+        response = harness.run(
             RunRequest(
                 prompt=args.prompt,
                 reasoning_effort=args.reasoning_effort,
@@ -90,16 +76,16 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(response, indent=2))
         return 0
     if args.command == "runs":
-        for manifest in service.list_runs(limit=max(1, args.limit)):
+        for manifest in harness.list_runs(limit=max(1, args.limit)):
             print(f"{manifest.run_id}\t{manifest.status}\t{manifest.prompt}")
         return 0
     if args.command == "resume":
-        print(json.dumps(service.resume(args.run_id, from_stage=args.from_stage), indent=2))
+        print(json.dumps(harness.resume(args.run_id, from_stage=args.from_stage), indent=2))
         return 0
     if args.command == "status":
-        print(service.get_run(args.run_id).model_dump_json(indent=2))
+        print(harness.get_run(args.run_id).model_dump_json(indent=2))
         return 0
-    return _doctor()
+    return _doctor(harness.client)
 
 
 if __name__ == "__main__":
