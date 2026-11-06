@@ -45,7 +45,7 @@ grok = [
   "httpx>=0.27",
 ]
 argon = [
-  "google-adk>=2.0",
+  "google-adk>=2.4",
   "google-genai>=2.0",
   "numpy>=1.26",
 ]

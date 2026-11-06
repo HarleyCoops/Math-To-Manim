@@ -40,9 +40,9 @@ $$
 
 ### How the Argon Google Agent SDK (`google-adk`) pipeline built this film
 
-The [`argon/`](src/argon/) package ports the six-stage Math-To-Manim reasoning chain to the **Google Agent Development Kit (`google-adk`)** and **`google-genai` SDK** (`gemini-4-argon` / `ArgonGoogleADKClient`):
+The [`argon/`](src/argon/) package ports the six-stage Math-To-Manim reasoning chain to the **Google Agent Development Kit (`google-adk`)** and **`google-genai` SDK** (`gemini-4-argon` / `ArgonClient`):
 
-1. **Six `LlmAgent` specialists** (`argon_intent`, `argon_cartographer`, `argon_curriculum`, `argon_math_director`, `argon_cinematographer`, `argon_composer`) orchestrated via `google.adk.agents.SequentialAgent` and `InMemoryRunner`.
+1. **Six `LlmAgent` specialists** (`argon_intent`, `argon_cartographer`, `argon_curriculum`, `argon_math_director`, `argon_cinematographer`, `argon_composer`) each run as its own `LlmAgent` through an `InMemoryRunner`, one stage at a time.
 2. **ADK FunctionTools**: `execute_math_check` verifies algebraic identities, bifurcation thresholds, and skip-connection boundary conditions in a sandboxed AST NumPy evaluator during stage 4; `verify_scene` checks AST syntax, banned imports, and `ThreeDScene` camera discipline (`set_camera_orientation` / `move_camera`) during stage 6.
 3. **Strict contract validation & reproducible operator harness**: [`scripts/operate_argon_chain.py`](scripts/operate_argon_chain.py) validates all six JSON artifacts (`01_intent.json` through `06_scene_spec.json`), runs the ADK tools, renders the 3D scene via Manim, and writes a versioned `manifest.json` under `runs/argon/`.
 
