@@ -8,14 +8,14 @@ code and keep their own CLIs.
 
 | Silo | Native runtime | Entry point |
 |---|---|---|
-| `src/grok/` | xAI Responses API, model `grok-4.6` | `math-to-manim-grok`; MCP via `math-to-manim-mythos serve-mcp` |
-| `src/mythos/` | Anthropic charter chain | `math-to-manim-mythos` |
+| `src/grok/` | xAI Responses API, model `grok-4.6` | `math-to-manim-grok`; MCP via `math-to-manim-grok serve-mcp` |
+| `src/mythos/` | Anthropic charter chain | `math-to-manim-mythos`; MCP via `math-to-manim-mythos serve-mcp` |
 | `src/sol/` | Codex CLI + GPT-5.6 Sol | `math-to-manim-sol` |
 
 The Grok silo imports no Mythos prompt, backend, or harness, and no Sol
-client. It is not routed through `src/mythos/harness.py`. The only edge in
-the other direction is `src/mythos/mcp_server.py`, a shim that re-exports
-`grok.mcp_server` so `math-to-manim-mythos serve-mcp` serves the Grok tools.
+client. It is not routed through `src/mythos/harness.py`. No silo imports
+another: `src/mythos/mcp_server.py` serves the Mythos chain, and
+`src/grok/mcp_server.py` serves the Grok chain.
 
 ## Why the stages are cut this way
 
@@ -82,10 +82,10 @@ math-to-manim-grok doctor
 math-to-manim-grok run "the heat equation"
 math-to-manim-grok run "A 3 kg cart at 4 m/s hits a spring k=200. How far does it compress?"
 math-to-manim-grok run "solve this worksheet" --image homework.jpg
-math-to-manim-mythos serve-mcp
+math-to-manim-grok serve-mcp
 ```
 
-`math-to-manim-mythos serve-mcp` is the MCP operator command. Its tools
+`math-to-manim-grok serve-mcp` is the MCP operator command. Its tools
 (`m2m_create_animation`, `m2m_get_job`, `m2m_list_runs`, `m2m_get_run`,
 `m2m_get_artifact`, `m2m_get_scene_code`, `m2m_cinematic_charter`) run this
 Grok chain, not Mythos. `m2m_create_animation` takes `model` and

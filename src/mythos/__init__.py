@@ -14,7 +14,8 @@ The Mythos engine turns one sentence into a cinematic Manim film through a
 - ``mythos.settings``: every environment variable the silo reads
 - ``mythos.service``: job orchestration shared by every front door
 - ``mythos.api``: the REST API (FastAPI)
-- ``mythos.mcp_server``: the ``serve-mcp`` entry (serves the Grok MCP tools)
+- ``mythos.lifecycle``: job and run states, and the legal moves between them
+- ``mythos.mcp_server``: the MCP server (``serve-mcp``) over the Mythos service
 - ``mythos.cli``: the ``math-to-manim-mythos`` command
 """
 

@@ -1,11 +1,11 @@
 """Grok-native Math-To-Manim MCP server.
 
-``math-to-manim-mythos serve-mcp`` is the operator command (it imports this
-module through ``mythos.mcp_server``). Every tool runs the Grok 4.6 chain or
-inspects a Grok run. Tool names and parameters are a stable contract.
+``math-to-manim-grok serve-mcp`` is the operator command. Every tool runs
+the Grok 4.6 chain or inspects a Grok run. Tool names and parameters are a
+stable contract. (``math-to-manim-mythos serve-mcp`` serves the Mythos chain.)
 
-    math-to-manim-mythos serve-mcp
-    math-to-manim-mythos serve-mcp --transport streamable-http --port 8643
+    math-to-manim-grok serve-mcp
+    math-to-manim-grok serve-mcp --transport streamable-http --port 8645
 
 The tools talk to one ``GrokService``; ``set_service`` swaps it (tests, embedders).
 """
@@ -344,7 +344,7 @@ def m2m_cinematic_charter() -> str:
 
 
 def main(transport: str = "stdio", port: int = 8643) -> None:
-    """Entry point used by `math-to-manim-mythos serve-mcp`."""
+    """Entry point used by `math-to-manim-grok serve-mcp`."""
     if transport == "stdio":
         mcp.run()
     else:

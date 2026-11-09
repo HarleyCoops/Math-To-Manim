@@ -40,6 +40,10 @@ def build_parser() -> argparse.ArgumentParser:
     status.add_argument("run_id")
 
     sub.add_parser("doctor", help="Live-ping xAI when XAI_API_KEY is set, without printing it")
+
+    mcp = sub.add_parser("serve-mcp", help="Serve the Grok MCP server (grok-4.6 chain on every tool)")
+    mcp.add_argument("--transport", default="stdio", choices=["stdio", "streamable-http"])
+    mcp.add_argument("--port", type=int, default=8645)
     return parser
 
 
@@ -62,6 +66,11 @@ def _doctor() -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "serve-mcp":
+        from grok.mcp_server import main as mcp_main
+
+        mcp_main(transport=args.transport, port=args.port)
+        return 0
     service = GrokService()
     if args.command == "run":
         response = service.run(

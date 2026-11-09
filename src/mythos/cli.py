@@ -6,7 +6,7 @@
     math-to-manim-mythos doctor --ping       # preflight: config, auth, toolchain
     math-to-manim-mythos gif <run id>        # showcase GIF from a rendered run
     math-to-manim-mythos serve-api           # REST API on :8642
-    math-to-manim-mythos serve-mcp           # Grok MCP server on stdio
+    math-to-manim-mythos serve-mcp           # Mythos MCP server on stdio
 
 Configuration comes from the environment (or a local, gitignored .env); see
 :mod:`mythos.settings` for every variable.
@@ -143,7 +143,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     mcp = sub.add_parser(
         "serve-mcp",
-        help="Serve the Grok MCP server (grok-4.6 chain on every tool)",
+        help="Serve the Mythos MCP server (Mythos chain on every tool)",
     )
     mcp.add_argument("--transport", default="stdio",
                      choices=["stdio", "streamable-http"])

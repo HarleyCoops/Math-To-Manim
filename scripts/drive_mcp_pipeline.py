@@ -5,8 +5,9 @@ This is the reference client for headless / scripted use: it spawns
 m2m_get_job (which reports live per-stage progress), and logs everything as
 JSONL so another process can tail the run.
 
-The server is the Grok 4.6 chain. ``m2m_create_animation`` defaults to
-model grok-4.6. Claude/Codex ``--command`` values are ignored.
+The server is the Mythos chain by default (``--chain mythos``); its job
+record reports ``stage`` and ``outcome``. ``--chain grok`` drives the Grok
+4.6 server instead, which also accepts ``--image``.
 
 Usage:
     python scripts/drive_mcp_pipeline.py "why does a spinning T-handle flip?" \
@@ -38,12 +39,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--render", action="store_true")
     parser.add_argument("-q", "--quality", default="l",
                         choices=list("lmhpk"))
+    parser.add_argument("--chain", default="mythos", choices=["mythos", "grok"],
+                        help="which MCP server to drive (default: mythos)")
     parser.add_argument("--model", default=None,
-                        help="Grok Responses model (default: the server's XAI_MODEL, else grok-4.6)")
+                        help="model id for this run (default: the server's configured model)")
     parser.add_argument("--image", default=None,
-                        help="photographed homework page or diagram")
+                        help="photographed homework page or diagram (--chain grok only)")
     parser.add_argument("--offline", action="store_true",
-                        help="deterministic Grok rehearsal; no xAI calls")
+                        help="deterministic rehearsal; no model calls")
     parser.add_argument("--log", default=None,
                         help="JSONL progress log (default: stdout only)")
     return parser.parse_args()
@@ -69,6 +72,9 @@ def text_of(result) -> str:
 
 async def main() -> int:
     args = parse_args()
+    if args.image and args.chain != "grok":
+        print("--image requires --chain grok", file=sys.stderr)
+        return 1
     prompt = args.prompt
     if prompt.startswith("@"):
         prompt = Path(prompt[1:]).read_text(encoding="utf-8-sig").strip()
@@ -88,7 +94,7 @@ async def main() -> int:
 
     server = StdioServerParameters(
         command=sys.executable,
-        args=["-m", "mythos.cli", "serve-mcp"],
+        args=["-m", f"{args.chain}.cli", "serve-mcp"],
         cwd=str(REPO),
     )
     async with stdio_client(server) as (read, write):
@@ -115,12 +121,14 @@ async def main() -> int:
                 stages = (state.get("manifest") or {}).get("stages", [])
                 if state["status"] in ("completed", "failed"):
                     log("job_done", status=state["status"],
+                        outcome=state.get("outcome"), stage=state.get("stage"),
                         run_id=state.get("run_id"), error=state.get("error"),
                         manifest=state.get("manifest"))
                     return 0 if state["status"] == "completed" else 2
                 if len(stages) != last_stage_count:
                     last_stage_count = len(stages)
                     log("progress", status=state["status"],
+                        stage=state.get("stage"),
                         run_id=state.get("run_id"), stages_done=len(stages),
                         latest=stages[-1]["stage"] if stages else None)
             log("timeout", waited_seconds=int(time.time() - started))

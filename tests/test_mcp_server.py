@@ -1,4 +1,7 @@
-"""MCP server: tool registry, offline Grok tool calls, and the mythos operator shim."""
+"""Grok MCP server: tool registry and offline Grok tool calls.
+
+The Mythos MCP server has its own tests in test_mythos_mcp_server.py.
+"""
 
 import asyncio
 import json
@@ -15,7 +18,6 @@ from grok.harness import GrokHarness  # noqa: E402
 from grok.service import GrokService  # noqa: E402
 from grok.stages import ARTIFACT_NAMES  # noqa: E402
 from grok.validation import validate_reverse_tree  # noqa: E402
-from mythos import mcp_server as mythos_shim  # noqa: E402
 
 EXPECTED_TOOLS = {
     "m2m_create_animation",
@@ -36,14 +38,6 @@ def isolated_service(tmp_path):
     mcp_server.set_service(service)
     yield service
     mcp_server.set_service(None)
-
-
-def test_shim_serves_the_grok_tools():
-    assert mythos_shim.mcp is mcp_server.mcp
-    assert mythos_shim.main is mcp_server.main
-    assert set(mythos_shim.__all__) == {"main", "mcp"}
-    names = {tool.name for tool in asyncio.run(mythos_shim.mcp.list_tools())}
-    assert EXPECTED_TOOLS <= names
 
 
 def test_all_tools_registered():
@@ -85,7 +79,6 @@ def test_mcp2_dependency_and_import_surface():
     root = Path(__file__).resolve().parents[1]
     project = (root / "pyproject.toml").read_text(encoding="utf-8")
     source = (root / "src/grok/mcp_server.py").read_text(encoding="utf-8")
-    shim = (root / "src/mythos/mcp_server.py").read_text(encoding="utf-8")
 
     try:
         import tomllib
@@ -99,8 +92,6 @@ def test_mcp2_dependency_and_import_surface():
     assert "MythosService" not in source
     assert "mcp.server.fastmcp" not in source
     assert "FastMCP" not in source
-    assert "from grok.mcp_server import" in shim
-    assert "_service" not in shim
 
 
 def test_server_launches_supported_mcp2_transports(monkeypatch):
@@ -255,7 +246,7 @@ def test_error_paths_return_actionable_messages():
 
 
 def test_cli_serve_mcp_help_names_grok():
-    from mythos.cli import build_parser
+    from grok.cli import build_parser
 
     help_text = build_parser().format_help()
     assert "serve-mcp" in help_text

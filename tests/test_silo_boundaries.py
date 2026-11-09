@@ -1,8 +1,7 @@
 """Each provider silo in src/ is an independent implementation.
 
-See docs/*_SILO.md. A silo may not import another silo. The one documented
-exception is the operator entry ``mythos.mcp_server``, which serves the
-Grok-native MCP tools.
+See docs/*_SILO.md. A silo may not import another silo. There are no
+exceptions: each silo that serves MCP has its own ``mcp_server`` module.
 """
 
 from __future__ import annotations
@@ -12,7 +11,7 @@ from pathlib import Path
 
 SRC = Path(__file__).resolve().parents[1] / "src"
 SILOS = sorted(p.name for p in SRC.iterdir() if (p / "__init__.py").is_file())
-ALLOWED = {("mythos/mcp_server.py", "grok")}
+ALLOWED: set[tuple[str, str]] = set()
 
 
 def _imported_tops(tree: ast.AST) -> set[str]:
