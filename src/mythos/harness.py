@@ -42,6 +42,7 @@ from mythos.layout import (
     write_json,
     write_manifest,
 )
+from mythos.lifecycle import enter_stage, mark_run_completed, mark_run_failed, refresh_outcome
 from mythos.manifest_schema import manifest_template, migrate_manifest
 from mythos.prereq_cache import PrerequisiteCache
 from mythos.render import RenderEnvironmentError, render_scene_file
@@ -296,10 +297,27 @@ class MythosHarness:
             run_dir_callback(run_dir.name)
         manifest = new_manifest(run_dir, prompt=prompt, model=self.model,
                                 command=self.command, offline=self.offline)
+        enter_stage(manifest, STAGES[0].slug)
+        self._save(run_dir, manifest)
+        try:
+            return self._run_chain(prompt, run_dir, manifest, render=render,
+                                   quality=quality, max_repairs=max_repairs)
+        except BaseException as exc:
+            # Without this record a crashed run is the same on disk as a run
+            # in progress. status.stage keeps the step that failed.
+            mark_run_failed(manifest, exc)
+            try:
+                self._save(run_dir, manifest)
+            except Exception:  # noqa: BLE001 - never mask the original error
+                pass
+            raise
+
+    def _run_chain(self, prompt: str, run_dir: Path, manifest: dict, *,
+                   render: bool, quality: str, max_repairs: int) -> dict:
         prereq_cache = PrerequisiteCache.for_runs_dir(self.runs_dir)
 
         artifact: dict = {"user_prompt": prompt}
-        for stage in STAGES:
+        for index, stage in enumerate(STAGES):
             started = time.time()
             retried = False
             if self.offline:
@@ -315,6 +333,8 @@ class MythosHarness:
             if retried:
                 stage_record["retried"] = True
             manifest["stages"].append(stage_record)
+            enter_stage(manifest, STAGES[index + 1].slug
+                        if index + 1 < len(STAGES) else "codegen")
             self._save(run_dir, manifest)
             self.log(f"{stage.slug:<16} -> {stage.artifact}")
 
@@ -327,6 +347,8 @@ class MythosHarness:
             while True:
                 failure = check.failure
                 if check.ok:
+                    enter_stage(manifest, "render")
+                    self._save(run_dir, manifest)
                     outcome = self._render_and_record(
                         run_dir, manifest, code_path, scene_name, quality,
                         log_name=f"render_{attempt}.log", attempt=attempt)
@@ -338,6 +360,8 @@ class MythosHarness:
                     break
                 attempt += 1
                 self.log(f"repair attempt {attempt}")
+                enter_stage(manifest, "repair")
+                self._save(run_dir, manifest)
                 code_path, scene_name = self._repair(
                     run_dir, code_path, failure or "unknown failure", attempt, manifest)
                 check = check_scene(code_path, prompt=prompt)
@@ -346,6 +370,7 @@ class MythosHarness:
         manifest["scene_file"] = str(code_path)
         manifest["scene_name"] = scene_name
         manifest["completed_utc"] = datetime.now(timezone.utc).isoformat()
+        mark_run_completed(manifest)
         self._save(run_dir, manifest)
         outcome = "render blocked" if manifest.get("render_error") else "run complete"
         self.log(f"{outcome} -> {run_dir}")
@@ -363,6 +388,7 @@ class MythosHarness:
         outcome = self._render_and_record(
             run_dir, manifest, run_dir / SCENE_FILE, scene_name, quality,
             log_name=f"render_workspace_{len(manifest.get('renders', []))}.log")
+        refresh_outcome(manifest)
         write_manifest(run_dir, manifest)
         return {"exit_code": outcome.exit_code, "output": outcome.output,
                 "manifest": manifest}
@@ -414,6 +440,7 @@ class MythosHarness:
         manifest["stages"].append(
             {"stage": "codegen", "artifact": SCENE_FILE,
              "seconds": round(time.time() - started, 2)})
+        enter_stage(manifest, "verify")
         self._save(run_dir, manifest)
         self.log(f"{'codegen':<16} -> {SCENE_FILE} ({scene_name})")
         return code_path, scene_name
@@ -462,6 +489,7 @@ class MythosHarness:
         code_path.write_text(code, encoding="utf-8")
         manifest["stages"].append({"stage": f"repair_{attempt}",
                                    "artifact": code_path.name})
+        enter_stage(manifest, "verify")
         self._save(run_dir, manifest)
         return code_path, find_scene_class(code)
 

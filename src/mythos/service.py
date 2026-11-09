@@ -21,6 +21,13 @@ from typing import Any, Callable
 
 from mythos.harness import MythosHarness
 from mythos.layout import MANIFEST_FILE, iter_run_dirs, read_manifest
+from mythos.lifecycle import (
+    JobStatus,
+    next_job_status,
+    run_outcome,
+    run_stage,
+    run_status,
+)
 from mythos.settings import (
     DEFAULT_COMMAND,
     DEFAULT_MODEL,
@@ -34,11 +41,17 @@ HarnessFactory = Callable[..., MythosHarness]
 
 @dataclass
 class Job:
-    """One animation request moving through the chain."""
+    """One animation request moving through the chain.
+
+    ``status`` is a :class:`mythos.lifecycle.JobStatus` value. Change it only
+    through :meth:`MythosService._advance`, which enforces the legal
+    transitions. ``stage`` and ``outcome`` in :meth:`to_dict` come from the
+    run manifest: the step running now, and how a finished run ended.
+    """
 
     id: str
     prompt: str
-    status: str = "queued"  # queued | running | completed | failed
+    status: str = JobStatus.QUEUED.value
     created_utc: str = ""
     options: dict[str, Any] = field(default_factory=dict)
     run_id: str | None = None
@@ -50,6 +63,8 @@ class Job:
             "id": self.id,
             "prompt": self.prompt,
             "status": self.status,
+            "stage": run_stage(self.manifest),
+            "outcome": run_outcome(self.manifest),
             "created_utc": self.created_utc,
             "options": self.options,
             "run_id": self.run_id,
@@ -86,14 +101,24 @@ class MythosService:
             runs_dir=self.runs_dir,
         )
 
-    def _execute(self, job: Job) -> None:
-        harness = self._build_harness(job.options)
+    def _advance(self, job: Job, target: JobStatus) -> None:
+        """Move ``job`` to ``target``. Caller must hold ``self._lock``."""
+        job.status = next_job_status(job.status, target.value)
 
+    def _refresh_manifest(self, job: Job) -> None:
+        """Load the on-disk manifest into ``job``. Caller must hold the lock."""
+        try:
+            job.manifest = read_manifest(self.runs_dir / job.run_id)
+        except (OSError, ValueError):
+            pass
+
+    def _execute(self, job: Job) -> None:
         def _record_run_dir(run_id: str) -> None:
             with self._lock:
                 job.run_id = run_id
 
         try:
+            harness = self._build_harness(job.options)
             manifest = harness.run(
                 job.prompt,
                 render=bool(job.options.get("render", False)),
@@ -107,13 +132,16 @@ class MythosService:
                 render_error = manifest.get("render_error")
                 if render_error:
                     job.error = render_error["detail"]
-                    job.status = "failed"
+                    self._advance(job, JobStatus.FAILED)
                 else:
-                    job.status = "completed"
+                    self._advance(job, JobStatus.COMPLETED)
         except Exception as exc:  # noqa: BLE001 — job boundary
             with self._lock:
                 job.error = f"{type(exc).__name__}: {exc}"
-                job.status = "failed"
+                if job.run_id:
+                    # The harness recorded the crash; keep the step it failed at.
+                    self._refresh_manifest(job)
+                self._advance(job, JobStatus.FAILED)
 
     def _new_job(self, prompt: str, **options: Any) -> Job:
         if not prompt or not prompt.strip():
@@ -131,14 +159,16 @@ class MythosService:
     def run_sync(self, prompt: str, **options: Any) -> Job:
         """Run the full chain in the calling thread and return the finished job."""
         job = self._new_job(prompt, **options)
-        job.status = "running"
+        with self._lock:
+            self._advance(job, JobStatus.RUNNING)
         self._execute(job)
         return job
 
     def submit(self, prompt: str, **options: Any) -> Job:
         """Start the chain in a background thread and return immediately."""
         job = self._new_job(prompt, **options)
-        job.status = "running"
+        with self._lock:
+            self._advance(job, JobStatus.RUNNING)
         thread = threading.Thread(
             target=self._execute, args=(job,),
             name=f"mythos-job-{job.id}", daemon=True,
@@ -151,14 +181,11 @@ class MythosService:
             job = self._jobs.get(job_id)
             if job is None:
                 return None
-            if job.status == "running" and job.run_id:
+            if job.status == JobStatus.RUNNING.value and job.run_id:
                 # Live progress: surface the on-disk manifest (written
                 # atomically after every stage) instead of waiting for the
                 # chain to finish.
-                try:
-                    job.manifest = read_manifest(self.runs_dir / job.run_id)
-                except (OSError, ValueError):
-                    pass
+                self._refresh_manifest(job)
             return job
 
     def list_jobs(self) -> list[Job]:
@@ -184,6 +211,8 @@ class MythosService:
                         "offline": manifest.get("offline"),
                         "created_utc": manifest.get("created_utc"),
                         "completed": "completed_utc" in manifest,
+                        "status": run_status(manifest),
+                        "outcome": run_outcome(manifest),
                         "scene_name": manifest.get("scene_name"),
                     })
                 except (json.JSONDecodeError, OSError):
