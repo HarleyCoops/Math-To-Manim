@@ -30,6 +30,10 @@ artifacts/
 !docs/showcase/assets/*.mp4
 !docs/assets/*.gif
 !docs/showcase/assets/*.gif
+# Pinned tools that studio doctor uses (Blender portable build, ant CLI)
+tools/
+# Written by `ant apply`: holds account, workspace and resource ids
+environments/studio/claude-lock.json
 *.png
 !docs/assets/*.png
 !docs/assets/fable-5-2/*.png

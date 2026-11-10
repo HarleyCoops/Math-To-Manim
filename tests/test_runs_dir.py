@@ -15,6 +15,7 @@ LOCATIONS = {
     "mimo": "mimo.harness",
     "mythos": "mythos.settings",
     "sol": "sol.harness",
+    "studio": "studio.settings",
 }
 
 
