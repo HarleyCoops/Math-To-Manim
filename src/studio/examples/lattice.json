@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "title": "Two sublattices with opposite spins",
+  "world": {"units": "m", "up": "z", "fps": 30, "width": 1920, "height": 1080},
+  "palette": {
+    "paper": "#0c0c0b",
+    "ink": "#faf9f5",
+    "coral": "#d97757",
+    "blue": "#6a9bcc"
+  },
+  "equations": [
+    {"id": "split", "latex": "E_{\\uparrow}(\\mathbf{k}) \\neq E_{\\downarrow}(\\mathbf{k})"}
+  ],
+  "objects": [
+    {
+      "type": "lattice",
+      "id": "crystal",
+      "counts": [3, 3, 2],
+      "spacing": [1.6, 1.6, 2.4],
+      "atom_radius": 0.3,
+      "spin_length": 0.55,
+      "colors": ["coral", "blue"]
+    }
+  ],
+  "cameras": [
+    {"id": "three_quarter", "position": [9.0, -7.5, 5.0], "target": [0.0, 0.0, 0.0], "fov_y_deg": 32.0}
+  ],
+  "shots": [
+    {"id": "lattice", "engine": "blender", "fallback": "three", "camera": "three_quarter", "objects": ["crystal"], "equations": ["split"]}
+  ]
+}

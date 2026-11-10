@@ -1,7 +1,7 @@
 <!--
-DRAFT. Proposed README section. Not yet in README.md.
-Image paths are relative to the repo root, so they work when this section is
-pasted into README.md. They do not resolve when this file is viewed in docs/.
+Source of the "Fable 5.2 Learns Manim" section of README.md. Edit both together.
+Image paths are relative to the repo root, so they work in README.md.
+They do not resolve when this file is viewed in docs/.
 Images and the scripts that make them: docs/assets/fable-5-2/
 -->
 
@@ -72,18 +72,30 @@ math-to-manim-mythos serve-mcp --transport streamable-http --port 8643
 
 Runs are written to `runs/mythos/<timestamp>-<slug>/`. The stage table is in `src/mythos/stages.py` and the runner is in `src/mythos/harness.py`.
 
-### What comes next (planned)
+### What comes next: Studio
 
-Studio is a planned redesign. The design is approved in outline. It is not built: no code named Studio is in `src/` yet.
+Studio is the next pipeline. One run will produce an MP4 film (Manim and Blender shots) and an interactive three.js page. The first parts are built in `src/studio/`. The full run is not built.
 
-The plan:
+Built and tested now:
 
-- One run produces an MP4 film (Manim and Blender shots) and an interactive three.js page.
-- One typed scene description, `SceneSpec`, drives Manim, Blender and three.js.
-- The run is a state machine in code, with one state per shot.
+- `math-to-manim-studio doctor` checks each tool, renders a test shot in Blender and in Manim, and writes the measured seconds per frame to `runs/studio/env.lock.json`.
+- `math-to-manim-studio agent-check` runs one agent through the Claude Agent SDK and checks its structured output.
+- `SceneSpec` is one typed scene description. `src/studio/spec/convert.py` holds the conversions between engine conventions: colour, axes and cameras.
+- `math-to-manim-studio compare src/studio/examples/lattice.json --shot lattice` renders one shot with Manim and with Blender EEVEE from the same camera.
+
+![One SceneSpec shot rendered twice from the same camera. Left: Manim. Right: Blender EEVEE. Both show the same 18 atoms in two colours, coral with spin arrows up and blue with spin arrows down, at the same positions in the frame.](docs/assets/fable-5-2/studio-engines.png)
+
+The two engines shade the atoms differently. The positions agree, because both draw the same compiled shot and the camera values come from one function.
+
+Still planned:
+
+- three.js as the third engine, and the interactive page.
+- The run as a state machine in code, with one state per shot.
 - Nine agents each write one typed file: Story Scout, Physics Verifier, Director, Spec Author, Manim Builder, Blender Builder, Web Builder, Visual Critic, Fact Checker.
 - Each shot is rendered, measured by code, then reviewed by a critic that looks at a contact sheet. A shot gets at most 3 repair rounds.
-- The agents run on Claude Managed Agents. Blender EEVEE runs on the user's PC.
-- A viewer shows a run while it runs.
+- The assembler that joins the shots into one film with narration and captions.
+- A viewer that shows a run while it runs.
 
-![Diagram marked "Planned, not built", drawn with dashed outlines. Nine agents each write one typed file. One SceneSpec feeds three engines: Manim, Blender and three.js. Manim and Blender shots become an MP4 film; three.js becomes an interactive web page. For each shot: build, measure, review, then shot done, with a repair path from review back to build of at most 3 rounds.](docs/assets/fable-5-2/studio-planned.png)
+The agents run on the Claude Agent SDK on the user's PC. Blender EEVEE also runs there.
+
+![Diagram marked "Planned", drawn with dashed outlines. Nine agents each write one typed file. One SceneSpec feeds three engines: Manim, Blender and three.js. Manim and Blender shots become an MP4 film; three.js becomes an interactive web page. For each shot: build, measure, review, then shot done, with a repair path from review back to build of at most 3 rounds.](docs/assets/fable-5-2/studio-planned.png)

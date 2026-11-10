@@ -3,6 +3,8 @@
     math-to-manim-studio doctor              # check tools, render test shots, write env.lock.json
     math-to-manim-studio doctor --no-render  # check tools only
     math-to-manim-studio agent-check         # run one real agent through the runtime
+    math-to-manim-studio render-shot SPEC --shot ID [--engine manim|blender]
+    math-to-manim-studio compare SPEC --shot ID   # same shot in Manim and Blender
 
 More commands (run, resume, runs, serve-mcp, train) arrive with later milestones.
 """
@@ -32,6 +34,26 @@ def _cmd_agent_check(args: argparse.Namespace) -> int:
     return run_agent_check(runtime=runtime)
 
 
+def _cmd_render_shot(args: argparse.Namespace) -> int:
+    import json
+
+    from studio.render import render_shot
+
+    result = render_shot(args.spec, args.shot, engine=args.engine, samples=args.samples)
+    print(json.dumps(result, indent=2))
+    return 0 if result["ok"] else 1
+
+
+def _cmd_compare(args: argparse.Namespace) -> int:
+    import json
+
+    from studio.render import compare_engines
+
+    report = compare_engines(args.spec, args.shot, args.engines)
+    print(json.dumps(report, indent=2))
+    return 0 if report["ok"] else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="math-to-manim-studio",
@@ -54,6 +76,22 @@ def build_parser() -> argparse.ArgumentParser:
                        choices=["local-sdk", "managed-agents"],
                        help="default: STUDIO_RUNTIME, else local-sdk")
     check.set_defaults(func=_cmd_agent_check)
+
+    shot = sub.add_parser("render-shot", help="Render one shot of a SceneSpec file")
+    shot.add_argument("spec", help="path of the SceneSpec JSON file")
+    shot.add_argument("--shot", required=True, help="shot id")
+    shot.add_argument("--engine", default=None, choices=["manim", "blender"],
+                      help="default: the engine named in the shot")
+    shot.add_argument("--samples", type=int, default=64, help="EEVEE samples")
+    shot.set_defaults(func=_cmd_render_shot)
+
+    compare = sub.add_parser(
+        "compare", help="Render one shot with several engines and write comparison images")
+    compare.add_argument("spec", help="path of the SceneSpec JSON file")
+    compare.add_argument("--shot", required=True, help="shot id")
+    compare.add_argument("--engines", nargs=2, default=["manim", "blender"],
+                         choices=["manim", "blender"])
+    compare.set_defaults(func=_cmd_compare)
     return parser
 
 

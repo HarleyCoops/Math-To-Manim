@@ -10,6 +10,11 @@ This silo is being built in milestones. What exists now:
 - ``studio.doctor``: checks each tool and version, renders one test shot per
   engine, and writes ``env.lock.json`` with the measured seconds per frame
 - ``studio.smoke``: the test scenes the doctor renders
+- ``studio.runtime``: where agents run (the local Claude Agent SDK for now)
+- ``studio.spec``: SceneSpec, the conversions between engine conventions,
+  and the compiler from a shot to plain geometry
+- ``studio.engines``: the Manim and Blender builders for a compiled shot
+- ``studio.render``: render one shot, and compare engines on the same shot
 - ``studio.cli``: the ``math-to-manim-studio`` command
 
 No other silo is imported here, and no other silo imports this one.

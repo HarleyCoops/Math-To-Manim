@@ -24,9 +24,9 @@ def main() -> None:
     c = Canvas(height=1112)
     top = c.header(
         "What comes next: Studio",
-        "A design approved in outline. None of this is in src/ yet. "
+        "The plan. The first parts are in src/studio/; the full run is not built. "
         "Dashed outlines mean planned.",
-        "PLANNED, NOT BUILT", S.GOLD, tag_dashed=True)
+        "PLANNED", S.GOLD, tag_dashed=True)
 
     def card(x, y, w, h, name, notes=(), outline=S.FOG, mono=False):
         c.box(x, y, w, h, fill=S.PANEL_HI, outline=outline, dashed=True)
@@ -109,7 +109,7 @@ def main() -> None:
     ny = ly + lh + 24
     nh = 124
     third = (c.width - 2 * S.MARGIN - 24) / 2
-    notes = [("Where the agents run", ["Claude Managed Agents"]),
+    notes = [("Where the agents run", ["Claude Agent SDK, on the user's PC"]),
              ("Run viewer", ["shows a run while it runs"])]
     for i, (name, lines) in enumerate(notes):
         x = S.MARGIN + i * (third + 24)
