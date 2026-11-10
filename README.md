@@ -75,11 +75,43 @@ math-to-manim-mythos serve-mcp --transport streamable-http --port 8643
 
 Runs are written to `runs/mythos/<timestamp>-<slug>/`. The stage table is in `src/mythos/stages.py` and the runner is in `src/mythos/harness.py`.
 
-### What comes next: Studio
+### Studio: from a question to an MP4
 
-Studio is the next pipeline. One run will produce an MP4 film (Manim and Blender shots) and an interactive three.js page. The first parts are built in `src/studio/`. The full run is not built.
+Studio is the next pipeline, in `src/studio/`. One command now takes a question and writes a film:
 
-Built and tested now:
+```bash
+math-to-manim-studio run "What is altermagnetism? How can a magnet have zero net magnetization and still split electron bands by spin?"
+math-to-manim-studio run "offline rehearsal" --offline   # no model: renders a fixed 4-shot spec
+math-to-manim-studio runs
+math-to-manim-studio status <run-id>
+```
+
+The run has three stages, recorded in `runs/studio/<run-id>/manifest.json` under `status.run`, `status.stage` and `status.outcome`:
+
+1. **directing.** The Director agent writes `brief.json`: the answer, the equations and the beats.
+2. **speccing.** The Spec Author agent writes `scenespec.json`. Code validates it and checks a budget (at most 1280x720, 30 fps, 60 s, four 3D shots). A rejected answer goes back to the agent with the list of problems, at most 3 attempts. Every attempt is recorded in `trace.jsonl`.
+3. **rendering.** Each shot has its own state: `queued`, `rendering`, `measuring`, `accepted` or `failed`. Blender EEVEE renders the 3D shots. Manim renders the cards, and the caption and equation overlay for each 3D shot. Code checks the frames. ffmpeg joins the segments into `film.mp4` and makes `contact_sheet.png`.
+
+Surfaces and curves in a SceneSpec are expressions such as `0.3 * (x**2 - y**2)`. `src/studio/spec/expr.py` evaluates them through an allow-list of arithmetic and named functions, so a spec cannot run code.
+
+Two films made this way, with no manual step between the question and the MP4:
+
+**Altermagnetism** (37 s, 7 shots). [Watch the film](docs/showcase/assets/studio-altermagnetism.mp4).
+
+![Contact sheet of the altermagnetism film, seven shots. A title card; a crystal of coral atoms with spin arrows up and blue atoms with spin arrows down, under the equation M = m_A + m_B = 0; a text card on the ordinary antiferromagnet; a top view where gold neighbour atoms lie along x around coral atoms and along y around blue atoms; two crossing bowl-shaped energy surfaces under E_up(k) = E_down(Rk); a saddle surface with two coral lobes, two blue lobes and white diagonal zero lines under E_up(k) - E_down(k) proportional to k_x^2 - k_y^2; a closing card.](docs/assets/fable-5-2/studio-altermagnetism-contact-sheet.png)
+
+**The unit distance conjecture is false** (39 s, 8 shots). [Watch the film](docs/showcase/assets/studio-unit-distance.mp4). The subject is the [disproof that OpenAI announced on May 20, 2026](https://openai.com/index/model-disproves-discrete-geometry-conjecture/). The facts were given to the pipeline inside the question.
+
+![Contact sheet of the unit distance film, eight shots. A card that defines u(n); a tilted square grid of blue points with a circle and twelve white arrows from the centre to grid points at distance one; a card with the grid lower bound and the conjecture; a card with the upper bound O(n^(4/3)); the grid again with one coral arrow under |(a+bi)-(c+di)| = 1; a schematic with many more arrows from one centre; a card on why the number fields exist; a closing card with u(n) >= n^(1+delta).](docs/assets/fable-5-2/studio-unit-distance-contact-sheet.png)
+
+Known limits of these two films:
+
+- No critic reviewed them. In the altermagnetism film, spin arrows of adjacent atoms touch in shot 2, and objects enter the caption band in shots 2, 4 and 5. Layout rules were then added to the Spec Author prompt, and the second film has no such overlap.
+- The sixth shot of the unit distance film is a schematic. It is not the point set from the proof.
+- No agent checked the facts against sources. The films have no narration and no audio.
+- A SceneSpec cannot move objects yet. Only the camera moves.
+
+Also built and tested:
 
 - `math-to-manim-studio doctor` checks each tool, renders a test shot in Blender and in Manim, and writes the measured seconds per frame to `runs/studio/env.lock.json`.
 - `math-to-manim-studio agent-check` runs one agent through the Claude Agent SDK and checks its structured output.
@@ -93,10 +125,9 @@ The two engines shade the atoms differently. The positions agree, because both d
 Still planned:
 
 - three.js as the third engine, and the interactive page.
-- The run as a state machine in code, with one state per shot.
-- Nine agents each write one typed file: Story Scout, Physics Verifier, Director, Spec Author, Manim Builder, Blender Builder, Web Builder, Visual Critic, Fact Checker.
-- Each shot is rendered, measured by code, then reviewed by a critic that looks at a contact sheet. A shot gets at most 3 repair rounds.
-- The assembler that joins the shots into one film with narration and captions.
+- The other agents. The Director and the Spec Author are built. Story Scout, Physics Verifier, Visual Critic and Fact Checker are not.
+- A critic that looks at each shot's contact sheet, with at most 3 repair rounds for a shot.
+- Objects that move, narration and audio.
 - A viewer that shows a run while it runs.
 
 The agents run on the Claude Agent SDK on the user's PC. Blender EEVEE also runs there.

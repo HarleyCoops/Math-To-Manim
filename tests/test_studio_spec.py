@@ -121,7 +121,9 @@ def test_blender_render_command_and_outputs(tmp_path, monkeypatch):
 
     def runner(command, timeout):
         seen["command"] = command
-        Path(command[command.index("--") + 2]).write_bytes(b"png")
+        frames = Path(command[command.index("--") + 2])
+        frames.mkdir(parents=True)
+        (frames / "frame_0001.png").write_bytes(b"png")
         return 0, "STUDIO_SHOT_OK"
 
     result = render.render_shot(EXAMPLE, "lattice", out_root=tmp_path / "shots",
@@ -131,7 +133,7 @@ def test_blender_render_command_and_outputs(tmp_path, monkeypatch):
     assert command[command.index("--python") + 1].endswith("blender_shot.py")
     compiled = json.loads(Path(result["compiled"]).read_text(encoding="utf-8"))
     assert result["ok"] and result["engine"] == "blender"
-    assert compiled["shot"] == "lattice"
+    assert compiled["shot"] == "lattice" and compiled["frames"] == 1
     assert Path(result["image"]).is_file()
 
 

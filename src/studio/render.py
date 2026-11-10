@@ -1,4 +1,4 @@
-"""Render one shot of a SceneSpec with one engine, and compare engines.
+"""Render one still of a SceneSpec shot with one engine, and compare engines.
 
     render_shot(spec_path, "lattice", engine="blender")
     compare_engines(spec_path, "lattice", ["manim", "blender"])
@@ -46,7 +46,9 @@ def render_shot(spec_path: Path | str, shot_id: str, *, engine: str | None = Non
     if engine not in RENDERABLE:
         raise ValueError(f"engine {engine!r} cannot be rendered yet; "
                          f"choose one of: {', '.join(RENDERABLE)}")
-    compiled = compile_shot(spec, shot_id)
+    compiled = compile_shot(spec, shot_id, still=True)
+    if compiled["kind"] != "scene3d":
+        raise ValueError(f"shot {shot_id!r} is a card; only scene3d shots have stills")
     out_dir = (out_root or default_runs_dir() / "shots") / shot_id / engine
     out_dir.mkdir(parents=True, exist_ok=True)
     compiled_path = out_dir / "compiled.json"
@@ -63,7 +65,10 @@ def render_shot(spec_path: Path | str, shot_id: str, *, engine: str | None = Non
             str(blender), "--background", "--factory-startup",
             "--gpu-backend", BLENDER_GPU_BACKEND,
             "--python", str(ENGINES_DIR / "blender_shot.py"),
-            "--", str(compiled_path), str(image), str(samples)], 1800.0)
+            "--", str(compiled_path), str(out_dir / "frames"), str(samples)], 1800.0)
+        frame = out_dir / "frames" / "frame_0001.png"
+        if code == 0 and frame.is_file():
+            image.write_bytes(frame.read_bytes())
     else:
         scene_file = out_dir / "shot_scene.py"
         scene_file.write_text(_manim_scene_file(compiled_path), encoding="utf-8")
