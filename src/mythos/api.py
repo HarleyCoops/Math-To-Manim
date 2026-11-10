@@ -55,7 +55,7 @@ def create_app(service: MythosService | None = None) -> "FastAPI":
         title="Math-To-Manim API",
         version=__version__,
         description="One sentence in, a cinematic Manim film out — "
-                    "driven by the Mythos 6-agent chain on Claude Fable 5.",
+                    "driven by the Mythos 6-agent chain on Claude Fable 5.2.",
     )
 
     @app.get("/health")

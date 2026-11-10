@@ -1,4 +1,4 @@
-"""Mythos harness: the 6-agent reasoning chain, driven through Claude Fable 5.
+"""Mythos harness: the 6-agent reasoning chain, driven through Claude Fable 5.2.
 
 The agent charters ship with the package in ``src/mythos/agents/*.md``. This
 harness reads them and drives them headlessly through the configured model

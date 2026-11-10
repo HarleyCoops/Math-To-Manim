@@ -2,7 +2,7 @@
 
 Three ways to reach a reasoning model, one call signature:
 
-- ``claude`` (default): the Claude CLI, ``claude -p --model claude-fable-5``
+- ``claude`` (default): the Claude CLI, ``claude -p --model claude-fable-5-2``
 - ``codex``: the Codex CLI, ``codex exec --model <model> -``
 - ``fugu-api``: any OpenAI-compatible chat endpoint (Sakana Fugu Ultra)
 

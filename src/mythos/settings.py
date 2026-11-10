@@ -5,7 +5,7 @@ Values come from the process environment or from a local (gitignored)
 imported (existing environment variables win). Nothing else in the silo
 calls ``os.getenv``.
 
-    M2M_MODEL                 baseline model id            default claude-fable-5
+    M2M_MODEL                 baseline model id            default claude-fable-5-2
     M2M_COMMAND               backend: claude | codex | fugu-api | <cli path>
                                                            default claude
     M2M_TIMEOUT               seconds per model call       default 900
@@ -53,7 +53,7 @@ def load_env_file(path: Path | None = None) -> None:
 
 load_env_file()
 
-DEFAULT_MODEL = os.getenv("M2M_MODEL") or "claude-fable-5"
+DEFAULT_MODEL = os.getenv("M2M_MODEL") or "claude-fable-5-2"
 DEFAULT_COMMAND = os.getenv("M2M_COMMAND", "claude")
 #: Where the defaults above came from, for ``doctor``'s configuration report.
 SETTING_SOURCES = {

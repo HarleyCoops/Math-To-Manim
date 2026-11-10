@@ -32,5 +32,6 @@ artifacts/
 !docs/showcase/assets/*.gif
 *.png
 !docs/assets/*.png
+!docs/assets/fable-5-2/*.png
 !docs/showcase/assets/*.png
 *.log

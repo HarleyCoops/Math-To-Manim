@@ -1,7 +1,7 @@
 """Math-To-Manim: ask a question -> get a freakin' movie.
 
 The Mythos engine turns one sentence into a cinematic Manim film through a
-6-agent reasoning chain driven by Claude Fable 5:
+6-agent reasoning chain driven by Claude Fable 5.2:
 
 - ``mythos.stages``: the stage table (charters, artifacts, reply checks)
 - ``mythos.harness``: the chain runner (intent -> ... -> scene-composer ->
