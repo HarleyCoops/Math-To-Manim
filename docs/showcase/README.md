@@ -133,7 +133,7 @@ and [Manim scene](../../examples/mythos/olin_off_white_3d_space.py).
 ## The v1.1 house-style films
 
 Two new studies rendered by the engine's own cinematography grammar
-([`mythos/cinematography.py`](../../mythos/cinematography.py)) for the v1.1
+([`src/mythos/cinematography.py`](../../src/mythos/cinematography.py)) for the v1.1
 release — the scenes live in [`examples/mythos/`](../../examples/mythos/).
 
 <table>

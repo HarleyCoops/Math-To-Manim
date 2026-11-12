@@ -15,7 +15,7 @@ lesson was added. This is a new teaching treatment of a familiar theorem.
 
 ## Production chain
 
-The `sol/` package keeps its existing CLI name for compatibility. Its default
+The `src/sol/` package keeps its existing CLI name for compatibility. Its default
 model is now `gpt-6-astra`, with six roles: intent, cartographer, curriculum,
 math director, cinematographer, and scene composer. The wrapper validates and
 renders the scene. With `--evaluator astra_review`, a fresh Astra session independently
@@ -55,7 +55,7 @@ The merged Base44 onboarding PR provided a Docker Compose recipe, not a
 hosted Base44 application. The updated recipe now serves this lesson:
 
 ```bash
-docker compose -f docker-compose.base44.yml up --build
+docker compose -f deployment/docker-compose.base44.yml up --build
 # http://localhost:3000/ and http://localhost:3000/health
 ```
 

@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://platform.claude.com/schemas/ant/beta/environment.json
+# The Linux cloud sandbox for Studio agents: Manim, LaTeX and web capture run here.
+# Apply with: ant apply environment.yaml   (from environments/studio/)
+name: studio-env
+config:
+  type: cloud
+  networking:
+    type: limited
+    allow_package_managers: true

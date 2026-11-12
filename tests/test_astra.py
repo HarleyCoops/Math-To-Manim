@@ -5,7 +5,7 @@ import pytest
 from astra.models import Artifact, Assessment, Request
 from astra.pipeline import Pipeline
 from astra.rendering import validate_source
-from astra.client import clean_environment
+from astra.environment import clean_environment
 from astra.jev import GateDecision
 
 SOURCE='from manim import *\nclass AstraFilm(ThreeDScene):\n    def construct(self):\n        self.wait(30)\n'
@@ -16,12 +16,26 @@ def verdict(evidence, reject=False, target='scene'):
                       feedback='repair the named defect',evidence=evidence,
                       limitations=['model judgment'],repair_stage=target)
 
+def fake_answer(question, choice=None):
+    """A confident, well-formed Jev answer of the question's type; choices default to the last option."""
+    if question['type']=='score':
+        return {'type':'score','score':4.,'confidence':.9,'probabilities':{'0':0.,'1':0.,'2':0.,'3':0.,'4':1.}}
+    if question['type']=='noul':
+        return {'type':'noul','noul':.99}
+    options=list(question['criteria']);pick=choice if choice in options else options[-1]
+    return {'type':'choice','choice':pick,'confidence':.9,'probabilities':{o:float(o==pick) for o in options}}
+
 class FakeJev:
+    """The reviewer protocol: a gate verdict mirroring the Astra audit, plus typed answers to raw questions."""
+    def __init__(self, choice=None):
+        self.choice=choice
     def review(self, *, state, stage, audit, output):
         assert state['astra_evidence_audit'] == audit.model_dump()
         return GateDecision(approved=audit.verified and not audit.defects,
             repair_stage=audit.repair_stage, feedback=audit.feedback,
             defects=audit.defects, model='jev-test-fake', answers={})
+    def ask(self, *, state, questions, output):
+        return {'model':'jev-test-fake','answers':{k:fake_answer(q,self.choice) for k,q in questions.items()}}
 
 class FakeSDK:
     def __init__(self, rejected_stage=None):
@@ -37,16 +51,17 @@ class FakeSDK:
         self.rejected_stage=None if reject else self.rejected_stage
         return verdict(evidence,reject=bool(reject),target='mathematics')
 
-def fake_probe(folder,source,attempt):
+def fake_probe(folder,source,attempt,quality):
     p=folder/f'probes/{attempt:03d}';p.mkdir(parents=True)
     record=p/'execution.json';record.write_text('{}')
     frame=p/'frame.png';frame.write_bytes(b'test')
     return record,frame
 
-def fake_render(folder,source,quality,attempt):
+def fake_render(folder,source,quality,attempt,**options):
     p=folder/f'renders/{attempt:03d}';p.mkdir(parents=True)
     paths=[p/n for n in ('film.mp4','frame.png','sheet.png')]
     for path in paths:path.write_bytes(b'test')
+    (p/'metadata.json').write_text(json.dumps({'format':{'duration':'90.0'}}))
     return paths[0],[paths[1]],paths[2]
 
 def test_all_stages_and_render_require_jev(tmp_path):
@@ -93,17 +108,20 @@ def test_advisory_api_failure_is_recorded_without_retry(tmp_path):
 
 
 def test_local_render_never_constructs_model_clients(tmp_path,monkeypatch):
+    import ast
     import astra.local_render as local
+    # The render-only path does not even import the model or Jev client modules.
+    imported={node.module for node in ast.walk(ast.parse(Path(local.__file__).read_text(encoding='utf-8')))
+              if isinstance(node,ast.ImportFrom)}
+    assert not imported & {'astra.pipeline','astra.client','astra.jev'}
     folder=tmp_path/'run';folder.mkdir()
     (folder/'manifest.json').write_text('{"events":[]}')
     scene=folder/'saved.py';scene.write_text(SOURCE)
     monkeypatch.setattr(local,'render',fake_render)
-    monkeypatch.setattr('astra.pipeline.CodexSDK',lambda:pytest.fail('No model clients permitted'))
-    monkeypatch.setattr('astra.pipeline.JevClient',lambda:pytest.fail('No Jev clients permitted'))
     result=local.render_existing(folder,scene)
     assert result['status']=='completed' and result['review_status']=='not_reviewed'
     assert result['review_mode']=='disabled_for_local_render'
-    assert result['video_sha256']
+    assert result['video_sha256'] and result['duration_seconds']==90.0
 
 def test_rejection_invalidates_downstream_and_repairs_upstream(tmp_path):
     client=FakeSDK('storyboard');result=Pipeline(client,tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(review_mode='gated',prompt='Explain topology'))
@@ -163,33 +181,32 @@ def test_invalid_citations_and_mutations_fail_closed(tmp_path):
         Pipeline(BadSDK(),tmp_path,fake_render,jev=FakeJev(),prober=fake_probe).run(Request(review_mode='gated',prompt='Explain topology'))
 
 
-def test_one_reevaluation_requires_new_investigation_evidence(tmp_path,monkeypatch):
-    import astra.pipeline as module
-    from astra.actions import ActionDecision
+def test_one_reevaluation_requires_new_investigation_evidence(tmp_path):
     folder=tmp_path/'run';(folder/'attempts').mkdir(parents=True)
     candidate=folder/'attempts/001-brief-candidate.json'
     candidate.write_text('{}')
     states=[]
-    class FakeLiveJev:
+    class InvestigatingJev(FakeJev):
         def review(self,*,state,stage,audit,output):
             states.append(state)
             return GateDecision(approved='additional_astra_investigation' in state,
                 repair_stage='brief',feedback='Need evidence',defects=[],model='jev-test-fake',answers={})
-    def design(jev,state,stage,output):
-        result={'policy':'test','advisory_only':True,'priority':[],'findings':[]}
-        Path(output).write_text(json.dumps(result));return result
-    def investigate(client,decision,**kw):
-        report=verdict(['attempts/001-brief-candidate.json'])
-        report.feedback='New independent evidence'
-        Path(kw['output']).write_text(report.model_dump_json());return report
-    monkeypatch.setattr(module,'JevClient',FakeLiveJev)
-    monkeypatch.setattr('astra.design.review_design',design)
-    monkeypatch.setattr('astra.actions.select_action',lambda *a:ActionDecision(
-        action='clarify_definitions',confidence=.9,execute=True,model='jev-test-fake',probabilities={}))
-    monkeypatch.setattr('astra.actions.execute_action',investigate)
-    result=Pipeline(FakeSDK(),jev=FakeLiveJev())._judge(folder,Request(review_mode='gated',prompt='Explain topology'),
-        'brief',[candidate],[],1)
+    client=FakeSDK()
+    result=Pipeline(client,tmp_path)._judge(InvestigatingJev(choice='clarify_definitions'),folder,
+        Request(review_mode='gated',prompt='Explain topology'),'brief',[candidate],[],1)
     assert result.approved and len(states)==2
     assert 'additional_astra_investigation' not in states[0]
-    assert states[1]['additional_astra_investigation']['feedback']=='New independent evidence'
-    assert (folder/'attempts/001-brief-final-decision.json').is_file()
+    assert states[1]['additional_astra_investigation']['feedback']=='repair the named defect'
+    assert client.calls==['001-brief-astra-audit.json','001-brief-investigation.json']
+    for kind in ('design','action','investigation','final-decision'):
+        assert (folder/f'attempts/001-brief-{kind}.json').is_file()
+
+
+def test_wrong_delivery_profile_fails_without_spending_scene_repairs(tmp_path):
+    from astra.rendering import DeliveryError
+    def wrong_profile(folder,source,quality,attempt,**options):
+        raise DeliveryError('Wrong frame rate')
+    client=FakeSDK()
+    with pytest.raises(DeliveryError):
+        Pipeline(client,tmp_path,wrong_profile,prober=fake_probe).run(Request(prompt='Explain topology',review_mode='off'))
+    assert sum('scene-candidate' in c for c in client.calls)==1

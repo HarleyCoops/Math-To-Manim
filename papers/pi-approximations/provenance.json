@@ -1,0 +1,59 @@
+{
+  "upstream": "https://github.com/openai/math",
+  "revision": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+  "manuscript": "preprints/The-irrationality-exponent-of-pi-is-2-September-24-2026",
+  "date": "2026-09-24",
+  "family": "017",
+  "files": {
+    "source/lean-scope.md": {
+      "sha256": "a738f64b79494db1ed2deacb26a8c0a2c0babe85c8153f75bcba388bc46a534c",
+      "bytes": 893,
+      "lines": 17
+    },
+    "source/LICENSE": {
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357,
+      "lines": 201
+    },
+    "source/main.tex": {
+      "sha256": "1479652f0081d4326911800cd2f8f68045f06d27861f7d1feb275db90cad7d8d",
+      "bytes": 12659,
+      "lines": 264
+    },
+    "source/paper.pdf": {
+      "sha256": "26eec5de7ac9dc49d28183fdea458e0858bc3323b5ba93c3d41bb105d8e3eab6",
+      "bytes": 494460
+    },
+    "source/README.md": {
+      "sha256": "91a4f24b4576c3fb2f13341ea946947c9f16ba613d57ebb09b0ea14bec068c1e",
+      "bytes": 550,
+      "lines": 18
+    },
+    "source/references.bib": {
+      "sha256": "3e69ec5b724bfe02c733fc33fce71d74613bfb985d3643bf389fd525f20fb2e5",
+      "bytes": 8718,
+      "lines": 269
+    },
+    "source/sections/conclusion.tex": {
+      "sha256": "093fd2bf799aebf49892a634f1f06a63384964c70cc072f8bf078c8998029bea",
+      "bytes": 6177,
+      "lines": 156
+    },
+    "source/sections/determinant.tex": {
+      "sha256": "719338e64a9554552f643a3ddf8463a85ab0f98684480f537d71872e4281fd89",
+      "bytes": 14595,
+      "lines": 432
+    },
+    "source/sections/interpolation.tex": {
+      "sha256": "44cfa0481fce5da64a64b83347513db707257a33cd9cb4af8e5fde84b05a3fc2",
+      "bytes": 26655,
+      "lines": 584
+    },
+    "source/sections/series.tex": {
+      "sha256": "328a9fc51a7b8aac00d8341e8d70e9a6b2708d92631407b4e97f4e386b13420a",
+      "bytes": 5720,
+      "lines": 155
+    }
+  },
+  "scope": "Pinned source snapshot and finite arithmetic checks. Lean not executed."
+}

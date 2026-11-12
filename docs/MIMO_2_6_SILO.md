@@ -4,11 +4,11 @@
 
 | Silo | Native runtime | Entry point |
 |---|---|---|
-| `mythos/` | Anthropic charter chain | `math-to-manim` |
-| `sol/` | Codex CLI / GPT-5.6 Sol | `math-to-manim-sol` |
-| `grok/` | xAI Responses API | `math-to-manim-grok` |
-| `glm/` | Z.ai chat/completions | `math-to-manim-glm` |
-| `mimo/` | **MiMo 2.6 tool calling** | `math-to-manim-mimo` |
+| `src/mythos/` | Anthropic charter chain | `math-to-manim` |
+| `src/sol/` | Codex CLI / GPT-5.6 Sol | `math-to-manim-sol` |
+| `src/grok/` | xAI Responses API | `math-to-manim-grok` |
+| `src/glm/` | Z.ai chat/completions | `math-to-manim-glm` |
+| `src/mimo/` | **MiMo 2.6 tool calling** | `math-to-manim-mimo` |
 
 The MiMo silo is an independent implementation of the complete Math-To-Manim
 outcome. It imports no Mythos prompt, backend, or orchestrator and does not
@@ -24,17 +24,33 @@ contract for the cartographer stage (reverse knowledge tree).
 
 ```text
 math-to-manim-mimo run <request>
-  -> create isolated runs/mimo/<timestamp>-<slug>/ ledger
+  -> create isolated runs/mimo/<timestamp>-<slug>/ ledger (under the cwd)
   -> for each stage: OpenAI-compatible chat/completions with tools
      intent -> cartographer (reverse tree) -> curriculum
                  \\-> math-director -/
                       cinematographer -> scene-composer
+     stages are scheduled from the stage table's dependencies; independent
+     lanes run in parallel threads
      each stage: tool loop (write_artifact / read_artifact / verify_*)
-  -> application-side artifact + AST validation
+  -> application-side artifact + AST validation (the same checker verify_scene runs)
   -> bounded scene-composer repair when validation fails
   -> optional wrapper-owned manim render
   -> final manifest
 ```
+
+`src/mimo/agents.py` holds the stage table (artifacts, dependencies, tools,
+charter file under `src/mimo/agents/`). Pipeline order, CLI `--from` choices,
+required artifacts and prompts all derive from it.
+
+### Resume and stage caching
+
+Every stage writes a record under `stages/` with a hash of its inputs (prompt
+plus upstream artifacts) and of the artifacts it wrote. `math-to-manim-mimo
+resume <run_id> [--from <stage>]` re-reads `request.json`, skips every stage
+whose record and artifacts are unchanged (status `cached`), re-runs the stage
+given to `--from` and everything downstream of it, then validates, repairs and
+renders exactly like `run`. The repair loop uses the same mechanism: only the
+scene-composer is re-run; upstream stages are served from cache.
 
 ## Tool surface (MiMo 2.6 capability multiplier)
 
@@ -55,8 +71,13 @@ Handlers never use the network. Path writes are confined to the run directory.
 export MIMO_API_KEY=...          # or MIMO_CODE_API_KEY
 export MIMO_BASE_URL=http://127.0.0.1:8642/v1   # MiMoCode OpenAI-compatible
 export MIMO_MODEL=mimo-2.6
+export MIMO_TIMEOUT=600          # optional, seconds per request
+export MIMO_MAX_TOOL_ROUNDS=8    # optional, tool rounds per stage
 math-to-manim-mimo doctor
 ```
+
+Reasoning effort is per run (`--reasoning-effort`, stored in `request.json`);
+it is passed to every stage call, never set on a shared client.
 
 Keys are never printed. Offline mode needs no key:
 
@@ -93,5 +114,7 @@ math-to-manim-mimo runs
 ## Artifact contract
 
 Every run contains `01_intent.json` … `06_scene_spec.json`, `mimo_scene.py`,
-`validation.json`, `manifest.json`, and stage traces under `stages/` including
-tool-call logs.
+`validation.json`, `review.json`, `request.json`, `manifest.json`, `decisions.json`
+(when a stage recorded decisions) and, for live runs, stage records, results and
+tool-call traces under `stages/`. Only the harness writes `validation.json`,
+`review.json` and `manifest.json`.

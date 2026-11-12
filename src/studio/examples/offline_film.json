@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "title": "Offline rehearsal: two sublattices and a spin-split band",
+  "world": {"units": "m", "up": "z", "fps": 24, "width": 1280, "height": 720},
+  "palette": {
+    "paper": "#0c0c0b",
+    "ink": "#faf9f5",
+    "muted": "#a8a69d",
+    "accent": "#d97757",
+    "coral": "#d97757",
+    "blue": "#6a9bcc",
+    "gold": "#d4a27f"
+  },
+  "equations": [
+    {"id": "split", "latex": "E_{\\uparrow}(\\mathbf{k}) \\neq E_{\\downarrow}(\\mathbf{k})"},
+    {"id": "dwave", "latex": "\\Delta E(\\mathbf{k}) \\propto k_x k_y"}
+  ],
+  "objects": [
+    {"type": "lattice", "id": "crystal", "counts": [3, 3, 2], "spacing": [1.6, 1.6, 2.4],
+     "atom_radius": 0.3, "spin_length": 0.55, "colors": ["coral", "blue"]},
+    {"type": "surface", "id": "band_up", "z": "0.35 * x * y", "x_range": [-2.5, 2.5],
+     "y_range": [-2.5, 2.5], "resolution": 36, "color": "coral", "opacity": 0.9},
+    {"type": "surface", "id": "band_down", "z": "-0.35 * x * y", "x_range": [-2.5, 2.5],
+     "y_range": [-2.5, 2.5], "resolution": 36, "color": "blue", "opacity": 0.9},
+    {"type": "curve", "id": "ring", "x": "2.5 * cos(t)", "y": "2.5 * sin(t)", "z": "0",
+     "t_range": [0, 6.2832], "samples": 96, "radius": 0.03, "color": "gold"}
+  ],
+  "cameras": [
+    {"id": "crystal_view", "position": [9.0, -7.5, 5.0], "target": [0.0, 0.0, 0.0], "fov_y_deg": 32.0},
+    {"id": "band_view", "position": [7.5, -7.5, 5.5], "target": [0.0, 0.0, 0.0], "fov_y_deg": 34.0}
+  ],
+  "shots": [
+    {"id": "s1_title", "kind": "card", "headline": "Studio offline rehearsal",
+     "body": "No model wrote this film. It tests the render and assembly path.",
+     "equations": ["split"], "duration_s": 2.5},
+    {"id": "s2_crystal", "kind": "scene3d", "camera": "crystal_view", "objects": ["crystal"],
+     "orbit_deg": 40, "caption": "Two sublattices with opposite spins", "duration_s": 2.0},
+    {"id": "s3_bands", "kind": "scene3d", "camera": "band_view",
+     "objects": ["band_up", "band_down", "ring"], "orbit_deg": -40,
+     "caption": "The two spin bands cross along the axes", "equations": ["dwave"],
+     "duration_s": 2.0},
+    {"id": "s4_end", "kind": "card", "headline": "Four shots, one film",
+     "body": "Cards come from Manim. The 3D shots come from Blender EEVEE.",
+     "duration_s": 2.0}
+  ]
+}

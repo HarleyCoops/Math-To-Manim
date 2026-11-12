@@ -1,0 +1,250 @@
+"""Wrapper-owned Manim rendering and frame-evidence utilities."""
+
+from __future__ import annotations
+
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+from sol.layout import REVIEW_FRAMES_DIR, SCENE_FILE
+from sol.models import QUALITY_CHOICES
+
+try:
+    import resource
+except ImportError:  # pragma: no cover - Windows
+    resource = None  # type: ignore[assignment]
+
+_SCENE_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+RENDER_TIMEOUT_SECONDS = 1200
+REVIEW_FRAME_COUNT = 12
+MIN_VIDEO_BYTES = 1024
+
+
+class RenderError(RuntimeError):
+    pass
+
+
+def resolve_inside(run_dir: Path, path: Path | str) -> Path:
+    root = Path(run_dir).resolve()
+    candidate = Path(path)
+    resolved = candidate.resolve() if candidate.is_absolute() else (root / candidate).resolve()
+    if resolved != root and root not in resolved.parents:
+        raise RenderError(f"path escapes run directory: {path}")
+    return resolved
+
+
+def apply_resource_limits() -> None:
+    """Best-effort CPU/address-space caps. See docs/security.md for residual risk."""
+    if resource is None:
+        return
+    try:
+        resource.setrlimit(resource.RLIMIT_CPU, (600, 600))
+    except (ValueError, OSError):
+        pass
+    try:
+        resource.setrlimit(resource.RLIMIT_AS, (4 * 1024 ** 3, 4 * 1024 ** 3))
+    except (ValueError, OSError):
+        pass
+
+
+def build_manim_command(
+    run_dir: Path,
+    *,
+    scene_name: str,
+    quality: str,
+) -> list[str]:
+    if quality not in QUALITY_CHOICES:
+        raise RenderError(f"invalid Manim quality flag: {quality!r}")
+    if not _SCENE_NAME.fullmatch(scene_name):
+        raise RenderError(f"invalid scene class name: {scene_name!r}")
+    root = Path(run_dir).resolve()
+    media_dir = resolve_inside(root, root / "media")
+    resolve_inside(root, root / SCENE_FILE)
+    return [
+        sys.executable,
+        "-m",
+        "manim",
+        f"-q{quality}",
+        "--media_dir",
+        str(media_dir),
+        "--progress_bar",
+        "none",
+        SCENE_FILE,
+        scene_name,
+    ]
+
+
+def render_environment(
+    run_dir: Path,
+    base: dict[str, str] | None = None,
+) -> dict[str, str]:
+    run_dir = Path(run_dir)
+    env = dict(os.environ if base is None else base)
+    miktex = run_dir / ".miktex"
+    paths = {
+        "MIKTEX_USERCONFIG": miktex / "config",
+        "MIKTEX_USERDATA": miktex / "data",
+        "MIKTEX_USERINSTALL": miktex / "install",
+    }
+    for key, path in paths.items():
+        path.mkdir(parents=True, exist_ok=True)
+        env[key] = str(path)
+    return env
+
+
+def find_final_video(run_dir: Path) -> Path | None:
+    candidates = [
+        path
+        for path in Path(run_dir).glob("**/*.mp4")
+        if "partial_movie_files" not in {
+            part.lower() for part in path.parts
+        }
+    ]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda path: path.stat().st_mtime_ns)
+
+
+def preflight_render() -> list[str]:
+    checks = (
+        ([sys.executable, "-c", "import manim; print(manim.__version__)"], "Manim"),
+        (["ffmpeg", "-version"], "FFmpeg"),
+        (["latex", "--version"], "LaTeX"),
+    )
+    versions: list[str] = []
+    for command, label in checks:
+        completed = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=30,
+            check=False,
+        )
+        if completed.returncode:
+            detail = (completed.stderr or completed.stdout).strip()[-1000:]
+            raise RenderError(f"{label} preflight failed: {detail}")
+        first_line = (completed.stdout or completed.stderr).strip().splitlines()
+        versions.append(f"{label}: {first_line[0] if first_line else 'ready'}")
+    return versions
+
+
+def render_scene(run_dir: Path, *, scene_name: str, quality: str) -> list[Path]:
+    """Render the scene and return the frame evidence (sampled frames, contact sheet).
+
+    Raises RenderError when Manim fails, produces no fresh video, or no frame
+    evidence could be extracted from it.
+    """
+    run_dir = Path(run_dir)
+    stdout_path = run_dir / "render_stdout.log"
+    stderr_path = run_dir / "render_stderr.log"
+    previous_videos = {
+        path.resolve(): (path.stat().st_mtime_ns, path.stat().st_size)
+        for path in run_dir.glob("**/*.mp4")
+    }
+    completed = subprocess.run(
+        build_manim_command(run_dir, scene_name=scene_name, quality=quality),
+        cwd=run_dir,
+        env=render_environment(run_dir),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=RENDER_TIMEOUT_SECONDS,
+        check=False,
+        preexec_fn=apply_resource_limits if resource is not None else None,
+    )
+    stdout_path.write_text(completed.stdout, encoding="utf-8")
+    stderr_path.write_text(completed.stderr, encoding="utf-8")
+    if completed.returncode:
+        detail = "\n".join(
+            part.strip()
+            for part in (completed.stderr, completed.stdout)
+            if part.strip()
+        )[-6000:]
+        raise RenderError(f"Manim failed with exit {completed.returncode}:\n{detail}")
+    video = find_final_video(run_dir)
+    if video is None or video.stat().st_size < MIN_VIDEO_BYTES:
+        raise RenderError("Manim completed without a valid final MP4")
+    if previous_videos.get(video.resolve()) == (video.stat().st_mtime_ns, video.stat().st_size):
+        raise RenderError("Manim did not produce fresh video evidence")
+    frames, contact_sheet = extract_review_frames(run_dir, video)
+    evidence = [*frames, *([contact_sheet] if contact_sheet else [])]
+    if not evidence:
+        raise RenderError("render completed without representative frame evidence")
+    return evidence
+
+
+def extract_review_frames(run_dir: Path, video_path: Path) -> tuple[list[Path], Path | None]:
+    review_dir = Path(run_dir) / REVIEW_FRAMES_DIR
+    review_dir.mkdir(exist_ok=True)
+    names = [*(f"frame_{index:02d}.png" for index in range(1, REVIEW_FRAME_COUNT + 1)),
+             "contact_sheet.png"]
+    for name in names:
+        (review_dir / name).unlink(missing_ok=True)
+    duration_result = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration",
+            "-of",
+            "default=noprint_wrappers=1:nokey=1",
+            str(video_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    try:
+        duration = float(duration_result.stdout.strip())
+    except ValueError:
+        return [], None
+    timestamps = [duration * (index + 0.5) / REVIEW_FRAME_COUNT for index in range(REVIEW_FRAME_COUNT)]
+    frames: list[Path] = []
+    for index, timestamp in enumerate(timestamps, start=1):
+        frame = review_dir / f"frame_{index:02d}.png"
+        completed = subprocess.run(
+            [
+                "ffmpeg",
+                "-y",
+                "-ss",
+                f"{timestamp:.3f}",
+                "-i",
+                str(video_path),
+                "-frames:v",
+                "1",
+                str(frame),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if completed.returncode == 0 and frame.is_file():
+            frames.append(frame)
+    if not frames:
+        return [], None
+    contact_sheet = review_dir / "contact_sheet.png"
+    completed = subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-i",
+            str(video_path),
+            "-vf",
+            f"fps={REVIEW_FRAME_COUNT}/{duration},scale=480:-1,tile=4x3:padding=8:margin=8",
+            "-frames:v",
+            "1",
+            str(contact_sheet),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0 or not contact_sheet.is_file():
+        contact_sheet = None
+    return frames, contact_sheet

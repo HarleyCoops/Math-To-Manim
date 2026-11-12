@@ -28,9 +28,9 @@ arrays, ENTIRE external-agent protocol v1, pytest, GitHub Actions, upstream
 
 - Begin only after the ENTIRE foundation plan has passed its milestone-one
   acceptance audit.
-- Preserve the established `mythos/` and `sol/` provider-native boundaries.
-- `sol/` must not import Mythos prompts, backends, or orchestration;
-  `mythos/` must not import the Sol client.
+- Preserve the established `src/mythos/` and `src/sol/` provider-native boundaries.
+- `src/sol/` must not import Mythos prompts, backends, or orchestration;
+  `src/mythos/` must not import the Sol client.
 - The standalone `environments/m2m2_visual_improvement` package must not import
   the root `mythos`, `sol`, or `m2m_entire` packages.
 - Local `entire_session.jsonl` is written before any ENTIRE hook call.
@@ -833,7 +833,7 @@ git commit -m "feat: backfill historical M2M sessions"
 
 **Files:**
 
-- Modify: `mythos/harness.py`
+- Modify: `src/mythos/harness.py`
 - Create: `tests/test_mythos_entire_session.py`
 
 **Interfaces:**
@@ -914,8 +914,8 @@ git commit -m "feat: capture Mythos product sessions"
 
 **Files:**
 
-- Modify: `sol/harness.py`
-- Modify: `sol/staged.py`
+- Modify: `src/sol/harness.py`
+- Modify: `src/sol/staged.py`
 - Create: `tests/test_sol_entire_session.py`
 
 **Interfaces:**
@@ -945,7 +945,7 @@ offline token reason, and one stable parent session ID. A resume test must keep
 the same session ID, create a new segment ID, and link the segment to the prior
 one without replacing earlier JSONL lines.
 
-Add an AST/import assertion proving no module under `sol/` imports a module
+Add an AST/import assertion proving no module under `src/sol/` imports a module
 whose root is `mythos`.
 
 - [ ] **Step 2: Prove failure**

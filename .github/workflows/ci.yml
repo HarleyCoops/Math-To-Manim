@@ -77,7 +77,7 @@ jobs:
         run: python -m pytest -q tests/integration
 
       - name: Compile package
-        run: python -m compileall -q astra mythos
+        run: python -m compileall -q src
 
       - name: Check CLI help
         run: |

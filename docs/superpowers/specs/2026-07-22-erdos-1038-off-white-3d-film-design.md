@@ -15,7 +15,7 @@ The film source is:
 
 ## Provider Boundary
 
-This production uses only the Codex-native `sol/` silo:
+This production uses only the Codex-native `src/sol/` silo:
 
 ```text
 math-to-manim-sol run <prompt>

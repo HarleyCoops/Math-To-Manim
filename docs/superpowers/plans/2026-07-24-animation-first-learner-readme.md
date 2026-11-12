@@ -667,7 +667,7 @@ Link to `docs/showcase/README.md`, `docs/PRIME_INTELLECT_RL.md`,
 
 ## Repository Layout
 
-Retain and update the existing layout so both `mythos/` and `sol/` appear.
+Retain and update the existing layout so both `src/mythos/` and `src/sol/` appear.
 
 ## License
 

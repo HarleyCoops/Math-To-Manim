@@ -8,6 +8,152 @@
   </picture>
 </a>
 
+## Every Dial Has a Loose Switch
+
+![Highlights from the film: the n-bit cube, the polynomial 0.1 + 0.55x1 + 0.2x2x4 + 0.1x3, a quantum look as a fan over many bits, influence bars for the four bits, the decision tree whose depth stays polynomial, and the constant c = 8√15/(125π⁴) ≈ 0.002545.](docs/assets/loose-switch/loose-switch-journey.gif)
+
+A 10-minute film about the proof of the Aaronson–Ambainis conjecture, made by the Mythos chain in this repo.
+The conjecture asked whether a quantum computer can be exponentially faster than an ordinary one on random inputs.
+The proof shows it cannot: every bounded polynomial of degree d has a bit whose influence is at least c·v^{5/2}/d^6, with c = 8√15/(125π⁴) ≈ 0.0025.
+([announcement and Lean proof](https://github.com/physical-superintelligence/aaronson-ambainis))
+
+How it was made:
+
+- The input was a written film brief: the intent, the prerequisites, the exact formulas and a worked example with checked numbers, a palette, and nine scenes.
+- The six Mythos stages (intent, cartographer, curriculum, math director, cinematographer, scene composer) and codegen ran on Claude Opus 5.5.
+- The chain wrote one Manim `ThreeDScene`, `LooseSwitchJourney` (964 lines). One repair pass restored the paper background that the brief asked for.
+- Manim rendered 586 animations into the film. The GIF above is 31 seconds of it.
+
+Twelve frames, one every 50 seconds:
+
+![Contact sheet of twelve frames: the headline "We will count only one thing: how many times you look", the 4-cube with 32 edges, the dial reading 0.2 at one corner, deg p ≤ 2T, Var(p) ≥ ε, flipping bit 2 on the cube, influence as the squared jump (0.55)², the pair term g(x2, x4) = 0.2x2x4, the influence bound, "The guarantee now exists, with an explicit floor", the comparison with c ≈ 0.00254, and the closing line.](docs/assets/loose-switch/contact-sheet.png)
+
+## Fable 5.2 Learns Manim
+
+![Title image "Fable 5.2 Learns Manim". On the right, a 3D drawing of the Hopf fibration: linked circles in coral, blue and gold wrap a coral torus, with a vertical axis through the middle. Below the title, the formula h(z1, z2) = (2 z1 conj(z2), |z1|^2 - |z2|^2), h: S^3 -> S^2.](docs/assets/fable-5-2/hero.png)
+
+Claude Fable 5.2 wrote this week's changes to the Mythos chain, and the images in this section.
+The title image is a still from a Manim `ThreeDScene` that the model wrote: [`docs/assets/fable-5-2/src/hero.py`](docs/assets/fable-5-2/src/hero.py).
+The chain itself calls the model set in `M2M_MODEL` (default `claude-fable-5-2`).
+
+### What changed in the chain
+
+Two commits changed how a run reports its state.
+
+**`a49352e`: explicit job and run lifecycles.**
+A job's status now moves only through a transition table: `queued` to `running`, then `completed` or `failed`.
+The run manifest records three fields under `status`:
+
+- `run`: `running`, `completed` or `failed`.
+- `stage`: the step that is running now. On a failed run, the step that failed.
+- `outcome`: how a finished run ended. One of `film_ready`, `scene_ready`, `validation_failed`, `render_failed`, `render_timed_out`, `render_blocked`, `chain_failed`.
+
+Before this commit, a crashed run looked the same on disk as a run in progress.
+Now it is recorded as failed, with the step that failed.
+
+![Diagram of the lifecycles in src/mythos/lifecycle.py. Job status: queued to running, running to completed or failed, queued to failed. Run stage: the ten step names from intent to repair. Run outcome: the seven values and what each means. Before and after: a crashed run's manifest.json, first without and then with the fields run, stage, outcome, error and failed_utc.](docs/assets/fable-5-2/lifecycle.png)
+
+**`9e154fd`: `serve-mcp` runs the Mythos chain and returns the Mythos job.**
+`src/mythos/mcp_server.py` is now an MCP server over the Mythos service.
+It has seven tools: `m2m_create_animation`, `m2m_get_job`, `m2m_list_runs`, `m2m_get_run`, `m2m_get_artifact`, `m2m_get_scene_code`, `m2m_cinematic_charter`.
+An agent that polls a job gets `status`, `stage` and `outcome` in the job record.
+A `completed` job can still have the outcome `render_failed`, so read `outcome` to know if a film exists.
+The Grok chain has its own server: `math-to-manim-grok serve-mcp`.
+No silo imports another silo (`tests/test_silo_boundaries.py`).
+
+![Diagram of the Mythos MCP server. Left: the seven tool names, each with one line on what it does. Right: the order of calls (m2m_create_animation, then m2m_get_job until done, then m2m_get_scene_code), one real job record with status "running", stage "math-director" and outcome null, and a table of status, stage and outcome for a running job, a finished offline run and a failed run.](docs/assets/fable-5-2/mcp.png)
+
+The job records in both diagrams are real output.
+[`capture_job_records.py`](docs/assets/fable-5-2/src/capture_job_records.py) calls the MCP tool functions with a stub model backend that stops at the fourth stage.
+
+### How it works now
+
+The chain has six reasoning stages. Each stage writes one JSON file into the run directory.
+Then `codegen` writes the Manim scene, `verify` checks it, and `render` runs Manim.
+If a check or a render fails, `repair` asks the model to rewrite the scene file. The default limit is 3 repairs.
+
+![Diagram of the Mythos chain. Left: the six reasoning stages and the file each writes: intent (01_intent.json), cartographer (02_knowledge_map.json), curriculum (03_curriculum.json), math-director (04_math_dossier.json), cinematographer (05_shot_list.json), scene-composer (06_scene_spec.json). Right: codegen writes mythos_scene.py, verify writes validation.json, render writes a log; a failed check or render goes to repair, which sends a new file back to verify, at most 3 rounds by default; the run ends and manifest.json records status.run and status.outcome.](docs/assets/fable-5-2/chain.png)
+
+Run the chain without a model, to test the setup:
+
+```bash
+math-to-manim-mythos run "Why does a top precess?" --offline
+```
+
+Run the chain with the model and render the film:
+
+```bash
+math-to-manim-mythos run "Why does a top precess?" --render -q m
+```
+
+Serve the chain to agents over MCP (needs the `mcp` extra: `pip install -e ".[mcp]"`):
+
+```bash
+math-to-manim-mythos serve-mcp
+math-to-manim-mythos serve-mcp --transport streamable-http --port 8643
+```
+
+Runs are written to `runs/mythos/<timestamp>-<slug>/`. The stage table is in `src/mythos/stages.py` and the runner is in `src/mythos/harness.py`.
+
+### Studio: from a question to an MP4
+
+Studio is the next pipeline, in `src/studio/`. One command now takes a question and writes a film:
+
+```bash
+math-to-manim-studio run "What is altermagnetism? How can a magnet have zero net magnetization and still split electron bands by spin?"
+math-to-manim-studio run "offline rehearsal" --offline   # no model: renders a fixed 4-shot spec
+math-to-manim-studio runs
+math-to-manim-studio status <run-id>
+```
+
+The run has three stages, recorded in `runs/studio/<run-id>/manifest.json` under `status.run`, `status.stage` and `status.outcome`:
+
+1. **directing.** The Director agent writes `brief.json`: the answer, the equations and the beats.
+2. **speccing.** The Spec Author agent writes `scenespec.json`. Code validates it and checks a budget (at most 1280x720, 30 fps, 60 s, four 3D shots). A rejected answer goes back to the agent with the list of problems, at most 3 attempts. Every attempt is recorded in `trace.jsonl`.
+3. **rendering.** Each shot has its own state: `queued`, `rendering`, `measuring`, `accepted` or `failed`. Blender EEVEE renders the 3D shots. Manim renders the cards, and the caption and equation overlay for each 3D shot. Code checks the frames. ffmpeg joins the segments into `film.mp4` and makes `contact_sheet.png`.
+
+Surfaces and curves in a SceneSpec are expressions such as `0.3 * (x**2 - y**2)`. `src/studio/spec/expr.py` evaluates them through an allow-list of arithmetic and named functions, so a spec cannot run code.
+
+Two films made this way, with no manual step between the question and the MP4:
+
+**Altermagnetism** (37 s, 7 shots). [Watch the film](docs/showcase/assets/studio-altermagnetism.mp4).
+
+![Contact sheet of the altermagnetism film, seven shots. A title card; a crystal of coral atoms with spin arrows up and blue atoms with spin arrows down, under the equation M = m_A + m_B = 0; a text card on the ordinary antiferromagnet; a top view where gold neighbour atoms lie along x around coral atoms and along y around blue atoms; two crossing bowl-shaped energy surfaces under E_up(k) = E_down(Rk); a saddle surface with two coral lobes, two blue lobes and white diagonal zero lines under E_up(k) - E_down(k) proportional to k_x^2 - k_y^2; a closing card.](docs/assets/fable-5-2/studio-altermagnetism-contact-sheet.png)
+
+**The unit distance conjecture is false** (39 s, 8 shots). [Watch the film](docs/showcase/assets/studio-unit-distance.mp4). The subject is the [disproof that OpenAI announced on May 20, 2026](https://openai.com/index/model-disproves-discrete-geometry-conjecture/). The facts were given to the pipeline inside the question.
+
+![Contact sheet of the unit distance film, eight shots. A card that defines u(n); a tilted square grid of blue points with a circle and twelve white arrows from the centre to grid points at distance one; a card with the grid lower bound and the conjecture; a card with the upper bound O(n^(4/3)); the grid again with one coral arrow under |(a+bi)-(c+di)| = 1; a schematic with many more arrows from one centre; a card on why the number fields exist; a closing card with u(n) >= n^(1+delta).](docs/assets/fable-5-2/studio-unit-distance-contact-sheet.png)
+
+Known limits of these two films:
+
+- No critic reviewed them. In the altermagnetism film, spin arrows of adjacent atoms touch in shot 2, and objects enter the caption band in shots 2, 4 and 5. Layout rules were then added to the Spec Author prompt, and the second film has no such overlap.
+- The sixth shot of the unit distance film is a schematic. It is not the point set from the proof.
+- No agent checked the facts against sources. The films have no narration and no audio.
+- A SceneSpec cannot move objects yet. Only the camera moves.
+
+Also built and tested:
+
+- `math-to-manim-studio doctor` checks each tool, renders a test shot in Blender and in Manim, and writes the measured seconds per frame to `runs/studio/env.lock.json`.
+- `math-to-manim-studio agent-check` runs one agent through the Claude Agent SDK and checks its structured output.
+- `SceneSpec` is one typed scene description. `src/studio/spec/convert.py` holds the conversions between engine conventions: colour, axes and cameras.
+- `math-to-manim-studio compare src/studio/examples/lattice.json --shot lattice` renders one shot with Manim and with Blender EEVEE from the same camera.
+
+![One SceneSpec shot rendered twice from the same camera. Left: Manim. Right: Blender EEVEE. Both show the same 18 atoms in two colours, coral with spin arrows up and blue with spin arrows down, at the same positions in the frame.](docs/assets/fable-5-2/studio-engines.png)
+
+The two engines shade the atoms differently. The positions agree, because both draw the same compiled shot and the camera values come from one function.
+
+Still planned:
+
+- three.js as the third engine, and the interactive page.
+- The other agents. The Director and the Spec Author are built. Story Scout, Physics Verifier, Visual Critic and Fact Checker are not.
+- A critic that looks at each shot's contact sheet, with at most 3 repair rounds for a shot.
+- Objects that move, narration and audio.
+- A viewer that shows a run while it runs.
+
+The agents run on the Claude Agent SDK on the user's PC. Blender EEVEE also runs there.
+
+![Diagram marked "Planned", drawn with dashed outlines. Nine agents each write one typed file. One SceneSpec feeds three engines: Manim, Blender and three.js. Manim and Blender shots become an MP4 film; three.js becomes an interactive web page. For each shot: build, measure, review, then shot done, with a repair path from review back to build of at most 3 rounds.](docs/assets/fable-5-2/studio-planned.png)
+
 ## Chapters in production
 
 1. **Local smoothing and the Kakeya conjecture**
@@ -40,9 +186,9 @@ $$
 
 ### How the Argon Google Agent SDK (`google-adk`) pipeline built this film
 
-The [`argon/`](argon/) package ports the six-stage Math-To-Manim reasoning chain to the **Google Agent Development Kit (`google-adk`)** and **`google-genai` SDK** (`gemini-4-argon` / `ArgonGoogleADKClient`):
+The [`argon/`](src/argon/) package ports the six-stage Math-To-Manim reasoning chain to the **Google Agent Development Kit (`google-adk`)** and **`google-genai` SDK** (`gemini-4-argon` / `ArgonClient`):
 
-1. **Six `LlmAgent` specialists** (`argon_intent`, `argon_cartographer`, `argon_curriculum`, `argon_math_director`, `argon_cinematographer`, `argon_composer`) orchestrated via `google.adk.agents.SequentialAgent` and `InMemoryRunner`.
+1. **Six `LlmAgent` specialists** (`argon_intent`, `argon_cartographer`, `argon_curriculum`, `argon_math_director`, `argon_cinematographer`, `argon_composer`) each run as its own `LlmAgent` through an `InMemoryRunner`, one stage at a time.
 2. **ADK FunctionTools**: `execute_math_check` verifies algebraic identities, bifurcation thresholds, and skip-connection boundary conditions in a sandboxed AST NumPy evaluator during stage 4; `verify_scene` checks AST syntax, banned imports, and `ThreeDScene` camera discipline (`set_camera_orientation` / `move_camera`) during stage 6.
 3. **Strict contract validation & reproducible operator harness**: [`scripts/operate_argon_chain.py`](scripts/operate_argon_chain.py) validates all six JSON artifacts (`01_intent.json` through `06_scene_spec.json`), runs the ADK tools, renders the 3D scene via Manim, and writes a versioned `manifest.json` under `runs/argon/`.
 
@@ -461,7 +607,7 @@ TeX Live and TinyTeX are alternatives; TinyTeX normally installs beneath
 The [Manim guide](https://docs.manim.community/en/stable/installation/uv.html)
 documents full TeX Live packages for Debian/Ubuntu and Fedora. For this
 repository's smaller Debian/Ubuntu setup, the existing
-[`requirements-system.txt`](requirements-system.txt) lists Cairo/Pango build
+[`requirements-system.txt`](requirements/requirements-system.txt) lists Cairo/Pango build
 dependencies, FFmpeg, `dvisvgm`, and the LaTeX/font packages;
 [`scripts/bootstrap-render.sh`](scripts/bootstrap-render.sh) installs that list
 and creates a render venv. Review it before running it. Other distributions

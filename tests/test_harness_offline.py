@@ -3,7 +3,8 @@
 import json
 import py_compile
 
-from mythos.harness import STAGES, MythosHarness
+from mythos.harness import MythosHarness, check_scene, load_charter
+from mythos.stages import STAGES
 
 
 def test_offline_chain_writes_all_artifacts(tmp_path):
@@ -13,9 +14,9 @@ def test_offline_chain_writes_all_artifacts(tmp_path):
     run_dir = tmp_path / manifest["run_id"]
     assert run_dir.is_dir()
 
-    for _, _, artifact_name in STAGES:
-        artifact_path = run_dir / artifact_name
-        assert artifact_path.exists(), artifact_name
+    for stage in STAGES:
+        artifact_path = run_dir / stage.artifact
+        assert artifact_path.exists(), stage.artifact
         payload = json.loads(artifact_path.read_text(encoding="utf-8"))
         assert payload["offline"] is True
 
@@ -41,9 +42,9 @@ def test_stage_artifacts_chain_prior_keys(tmp_path):
 
 
 def test_charters_ship_with_repo():
-    for _, agent_file, _ in STAGES:
-        text = MythosHarness.load_charter(agent_file)
-        assert len(text) > 100, agent_file
+    for stage in STAGES:
+        text = load_charter(stage)
+        assert len(text) > 100, stage.charter_file
 
 
 def test_offwhite_prompt_rejects_default_dark_background(tmp_path):
@@ -57,10 +58,8 @@ def test_offwhite_prompt_rejects_default_dark_background(tmp_path):
         encoding="utf-8",
     )
 
-    ok, failure = MythosHarness._verify(
-        code_path,
-        prompt="Use archival off-white paper, never black.",
-    )
+    check = check_scene(code_path, prompt="Use archival off-white paper, never black.")
 
-    assert ok is False
-    assert "archival/off-white" in failure
+    assert check.ok is False
+    assert "archival/off-white" in check.failure
+    assert check.validation["manim_code"]["valid"] is False

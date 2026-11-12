@@ -1,0 +1,223 @@
+{
+  "completed": {
+    "id": "400ac907395b",
+    "prompt": "Why does a top precess?",
+    "status": "completed",
+    "stage": null,
+    "outcome": "scene_ready",
+    "created_utc": "2026-11-09T23:57:52.164407+00:00",
+    "options": {
+      "render": false,
+      "quality": "l",
+      "offline": true,
+      "max_repairs": 3
+    },
+    "run_id": "20261109-235752-why-does-a-top-precess",
+    "manifest": {
+      "run_id": "20261109-235752-why-does-a-top-precess",
+      "prompt": "Why does a top precess?",
+      "model": "claude-fable-5",
+      "command": "claude",
+      "offline": true,
+      "created_utc": "2026-11-09T23:57:52.167270+00:00",
+      "stages": [
+        {
+          "stage": "intent",
+          "artifact": "01_intent.json",
+          "seconds": 0.0
+        },
+        {
+          "stage": "cartographer",
+          "artifact": "02_knowledge_map.json",
+          "seconds": 0.0
+        },
+        {
+          "stage": "curriculum",
+          "artifact": "03_curriculum.json",
+          "seconds": 0.0
+        },
+        {
+          "stage": "math-director",
+          "artifact": "04_math_dossier.json",
+          "seconds": 0.0
+        },
+        {
+          "stage": "cinematographer",
+          "artifact": "05_shot_list.json",
+          "seconds": 0.0
+        },
+        {
+          "stage": "scene-composer",
+          "artifact": "06_scene_spec.json",
+          "seconds": 0.0
+        },
+        {
+          "stage": "codegen",
+          "artifact": "mythos_scene.py",
+          "seconds": 0.0
+        }
+      ],
+      "schema_version": 2,
+      "artifacts": {
+        "intent": "01_intent.json",
+        "knowledge_map": "02_knowledge_map.json",
+        "curriculum": "03_curriculum.json",
+        "math_dossier": "04_math_dossier.json",
+        "shot_list": "05_shot_list.json",
+        "scene_spec": "06_scene_spec.json",
+        "scene": "mythos_scene.py",
+        "manifest": "manifest.json",
+        "validation": "validation.json"
+      },
+      "status": {
+        "validation": "complete",
+        "run": "completed",
+        "outcome": "scene_ready"
+      },
+      "static_check": {
+        "passed": true,
+        "detail": null
+      },
+      "scene_file": "C:\\Users\\chris\\AppData\\Local\\Temp\\tmpt24wdg21\\mythos\\20261109-235752-why-does-a-top-precess\\mythos_scene.py",
+      "scene_name": "MythosOfflineScene",
+      "completed_utc": "2026-11-09T23:57:52.557004+00:00"
+    },
+    "error": null
+  },
+  "created": {
+    "id": "ac52cc83a062",
+    "prompt": "Why does a top precess?",
+    "status": "running",
+    "stage": null,
+    "outcome": null,
+    "created_utc": "2026-11-09T23:57:53.683972+00:00",
+    "options": {
+      "render": false,
+      "quality": "l",
+      "offline": false,
+      "max_repairs": 3
+    },
+    "run_id": null,
+    "manifest": null,
+    "error": null
+  },
+  "running": {
+    "id": "ac52cc83a062",
+    "prompt": "Why does a top precess?",
+    "status": "running",
+    "stage": "math-director",
+    "outcome": null,
+    "created_utc": "2026-11-09T23:57:53.683972+00:00",
+    "options": {
+      "render": false,
+      "quality": "l",
+      "offline": false,
+      "max_repairs": 3
+    },
+    "run_id": "20261109-235753-why-does-a-top-precess",
+    "manifest": {
+      "run_id": "20261109-235753-why-does-a-top-precess",
+      "prompt": "Why does a top precess?",
+      "model": "claude-fable-5",
+      "command": "claude",
+      "offline": false,
+      "created_utc": "2026-11-09T23:57:53.686503+00:00",
+      "stages": [
+        {
+          "stage": "intent",
+          "artifact": "01_intent.json",
+          "seconds": 0.0
+        },
+        {
+          "stage": "cartographer",
+          "artifact": "02_knowledge_map.json",
+          "seconds": 0.0
+        },
+        {
+          "stage": "curriculum",
+          "artifact": "03_curriculum.json",
+          "seconds": 0.0
+        }
+      ],
+      "schema_version": 2,
+      "artifacts": {
+        "intent": "01_intent.json",
+        "knowledge_map": "02_knowledge_map.json",
+        "curriculum": "03_curriculum.json",
+        "math_dossier": "04_math_dossier.json",
+        "shot_list": "05_shot_list.json",
+        "scene_spec": "06_scene_spec.json",
+        "scene": "mythos_scene.py",
+        "manifest": "manifest.json",
+        "validation": "validation.json"
+      },
+      "status": {
+        "validation": "pending",
+        "run": "running",
+        "stage": "math-director"
+      }
+    },
+    "error": null
+  },
+  "failed": {
+    "id": "ac52cc83a062",
+    "prompt": "Why does a top precess?",
+    "status": "failed",
+    "stage": "math-director",
+    "outcome": "chain_failed",
+    "created_utc": "2026-11-09T23:57:53.683972+00:00",
+    "options": {
+      "render": false,
+      "quality": "l",
+      "offline": false,
+      "max_repairs": 3
+    },
+    "run_id": "20261109-235753-why-does-a-top-precess",
+    "manifest": {
+      "run_id": "20261109-235753-why-does-a-top-precess",
+      "prompt": "Why does a top precess?",
+      "model": "claude-fable-5",
+      "command": "claude",
+      "offline": false,
+      "created_utc": "2026-11-09T23:57:53.686503+00:00",
+      "stages": [
+        {
+          "stage": "intent",
+          "artifact": "01_intent.json",
+          "seconds": 0.0
+        },
+        {
+          "stage": "cartographer",
+          "artifact": "02_knowledge_map.json",
+          "seconds": 0.0
+        },
+        {
+          "stage": "curriculum",
+          "artifact": "03_curriculum.json",
+          "seconds": 0.0
+        }
+      ],
+      "schema_version": 2,
+      "artifacts": {
+        "intent": "01_intent.json",
+        "knowledge_map": "02_knowledge_map.json",
+        "curriculum": "03_curriculum.json",
+        "math_dossier": "04_math_dossier.json",
+        "shot_list": "05_shot_list.json",
+        "scene_spec": "06_scene_spec.json",
+        "scene": "mythos_scene.py",
+        "manifest": "manifest.json",
+        "validation": "validation.json"
+      },
+      "status": {
+        "validation": "pending",
+        "run": "failed",
+        "stage": "math-director",
+        "outcome": "chain_failed"
+      },
+      "error": "RuntimeError: stub model backend stopped",
+      "failed_utc": "2026-11-09T23:57:53.741280+00:00"
+    },
+    "error": "RuntimeError: stub model backend stopped"
+  }
+}

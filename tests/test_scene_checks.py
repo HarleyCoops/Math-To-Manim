@@ -4,11 +4,20 @@ from __future__ import annotations
 
 import pytest
 
-from mythos.charter import find_scene_class
 from mythos.scene_checks import (
-    iter_known_scene_bases,
+    find_scene_class,
     validate_latex_report,
     validate_manim_code_report,
+)
+
+KNOWN_SCENE_BASES = (
+    "Scene",
+    "ThreeDScene",
+    "MovingCameraScene",
+    "ZoomedScene",
+    "LinearTransformationScene",
+    "VectorScene",
+    "GraphScene",
 )
 
 GOOD_LATEX = [
@@ -69,7 +78,7 @@ def test_latex_report_keeps_legacy_json_shape():
     assert report["errors"] == []
 
 
-@pytest.mark.parametrize("base", list(iter_known_scene_bases()))
+@pytest.mark.parametrize("base", KNOWN_SCENE_BASES)
 def test_scene_base_is_accepted(base: str):
     source = _scene("        self.wait(0.1)\n", base=base)
     report = validate_manim_code_report(source)

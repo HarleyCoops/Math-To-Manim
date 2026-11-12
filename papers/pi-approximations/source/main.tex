@@ -1,0 +1,264 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1.08in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\hypersetup{pdftitle={The irrationality exponent of pi is 2},pdfauthor={OpenAI},
+  pdfsubject={Rational approximation to pi and convergence of the Flint-Hills series}}
+\setlist{topsep=4pt,itemsep=3pt}
+\setlength{\emergencystretch}{2em}
+\newcommand{\CC}{\mathbb C}
+\newcommand{\RR}{\mathbb R}
+\newcommand{\QQ}{\mathbb Q}
+\newcommand{\ZZ}{\mathbb Z}
+\newcommand{\NN}{\mathbb Z_{\ge0}}
+\newcommand{\ii}{\mathrm i}
+\DeclareMathOperator{\ord}{ord}
+\DeclareMathOperator{\lcm}{lcm}
+\DeclareMathOperator{\codim}{codim}
+\DeclareMathOperator{\Spec}{Spec}
+\DeclareMathOperator{\Proj}{Proj}
+\DeclareMathOperator{\Supp}{Supp}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\numberwithin{equation}{section}
+\title{The irrationality exponent of \(\pi\) is \(2\)}
+\author{OpenAI}
+\date{September 24, 2026}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We prove the conjecture that the irrationality exponent of \(\pi\) is \(2\).
+As a consequence, the classical Flint--Hills series
+\(\sum_{n\ge1}1/(n^3\sin^2 n)\) converges, with angles in radians.
+\end{abstract}
+
+\section{Introduction}\label{sec:introduction}
+
+For an irrational real number \(x\), its \emph{irrationality exponent}
+(also called its irrationality measure) is
+\[
+\mu(x)=\sup\left\{\nu>0:
+0<\left|x-\frac pq\right|<q^{-\nu}
+\text{ for infinitely many coprime }p,q\in\ZZ,\ q\ge2\right\}.
+\]
+The pigeonhole principle gives \(\mu(x)\ge2\). An upper bound limits
+how frequently rational numbers can approximate \(x\) exceptionally
+closely; irrationality alone supplies no finite upper bound. The expected
+value for the usual positive circle constant is \(2\). Waldschmidt
+records the corresponding epsilon-dependent approximation conjecture
+in \cite[p.~265]{waldschmidt}. Our main result proves it.
+
+\begin{theorem}\label{thm:main}
+The irrationality exponent of \(\pi\) is \(2\). More precisely, for every
+real \(\nu>2\), there is an integer \(Q(\nu)\) such that
+\[
+\left|\pi-\frac pq\right|\ge q^{-\nu}
+\qquad(p\in\ZZ,\ q\in\ZZ,\ q\ge Q(\nu)).
+\]
+\end{theorem}
+
+The inequality applies to all integer numerators and denominators,
+whether or not the fraction is reduced. The threshold may depend on
+\(\nu\), and the argument does not give it effectively. In particular,
+an exponent of \(2\) is different from a uniform positive lower bound
+of the form \(c/q^2\), or equivalently from bounded continued-fraction
+partial quotients.
+
+The related Flint--Hills problem, popularized by Pickover and discussed
+by Alekseyev \cite{alekseyev}, asks whether
+\[
+\sum_{n\ge1}\frac{1}{n^3\sin^2 n}
+\]
+converges, with angles in radians. Integers very close to multiples of
+\(\pi\) make individual denominators small. A rational-approximation
+bound controls how often such small values can occur, not just their
+individual size.
+
+\begin{corollary}\label{thm:flinthills}
+The classical Flint--Hills series converges.
+\end{corollary}
+
+Alekseyev showed that convergence requires
+\(\mu(\pi)\le5/2\) \cite[Corollary~4]{alekseyev};
+Meiburg proved the sufficient strict condition \(\mu(\pi)<5/2\)
+\cite[Theorem~2.5]{meiburg}. Theorem~\ref{thm:main} supplies this
+condition. Section~\ref{sec:series} includes a short dyadic proof of the
+implication needed here. Neither cited criterion settles its equality
+boundary at \(5/2\).
+
+More generally, for fixed real numbers \(a,b>0\), consider the family
+\[
+\sum_{n=1}^{\infty}\frac{1}{n^a|\sin n|^b}.
+\]
+Theorem~\ref{thm:main} and the spacing argument in
+Section~\ref{sec:series} show that, with angles in radians, this series
+converges if and only if \(a>\max\{1,b\}\); see
+Corollary~\ref{series:generalized}.
+
+\subsection{Quantitative approximation and related work}
+
+Mahler's 1953 paper \cite{mahler1953} established a finite irrationality
+exponent for \(\pi\) by constructing polynomial-coefficient combinations
+of powers of logarithms and proving determinant nonvanishing. It gave the explicit
+exponent \(42\) for all denominators at least two and also stated an
+eventual improvement to \(30\). Mignotte refined that construction,
+obtaining exponent \(21\) for all such denominators and \(20\)
+eventually \cite[Theorem~1]{mignotte1974}. Chudnovsky developed
+Hermite--Pad\'e approximation to exponential functions with precise
+asymptotic estimates \cite{chudnovsky1982}.
+
+Hata's integral constructions led to the bound
+\(\mu(\pi)\le8.01604539\ldots\) \cite{hata1993}; Zudilin gives
+an account of the simultaneous logarithmic approximation and denominator
+arithmetic behind this value \cite[Theorem~2]{zudilin2004}.
+Salikhov's symmetric-integral method improved it to
+\(7.606308\ldots\) \cite{salikhov,salikhov2010}.
+Zeilberger and Zudilin combined parameter experiments with a rigorous
+arithmetic and asymptotic analysis to obtain
+\(7.103205334137\ldots\) \cite{zeilbergerzudilin}.
+Bai's September 2026 preprint claims the further bound
+\(\mu(\pi)<7.101862832357\) by a two-exponent variation of the latter
+integral \cite{Bai2026}. These quantitative bounds are context, not
+inputs to our proof.
+
+The connection with trigonometric series also has a longer history:
+Mahler applied approximation estimates to sine-denominator Dirichlet
+series in \cite[Section~16]{mahler1953}. For the classical Flint--Hills
+question, recent work of Dan on generalized series \cite{Dan2026}
+and L\'opez Zapata's continued-fraction criterion
+\cite{LopezZapata2026} leaves convergence undecided. The earlier
+convergence claim of Mantzakouras and L\'opez Zapata was withdrawn
+in September 2026 because its proof did not establish convergence
+or the asserted irrationality bound \cite{MantzakourasLopezZapata2025}.
+Carella claims both exponent two and the stronger bounded-partial-quotient
+property \cite{Carella2022}. Neither claim is used here. The displayed
+proof of the stronger assertion contains a sign obstruction.\footnote{In the notation of
+\cite[Theorem~8.1, Equations~(52) and~(55)]{Carella2022}, let
+\(C=p_{n+1}-\pi q_{n+1}-1/q_n\). The convergent estimate
+\(\lvert p_{n+1}-\pi q_{n+1}\rvert<1/q_{n+2}<1/q_n\)
+gives \(-2/q_n<C<0\). Thus \(\sin C<0\) for large \(n\), contrary
+to the positive lower bound in that argument. This objection concerns
+the displayed proof of the stronger assertion; it does not decide the
+exponent-two claim or the truth of the stronger conclusion.}
+
+\subsection{The proof in outline}
+
+The proof uses a multivariable interpolation theorem to construct a
+nonzero determinant, then compares two incompatible estimates for its
+absolute value. This organization is related to the interpolation-determinant
+method discussed by Laurent \cite[Section~6]{laurent1991}.
+Successively separated approximation denominators already play a central
+role in Roth's many-variable method \cite[Sections~2--3]{roth1960}.
+Our application requires a different interpolation statement, adapted to
+logarithmic curves and with thresholds independent of their centers.
+
+\paragraph{Prescribing coefficients.}
+A jet here means a finite packet of Taylor coefficients. Give the
+coordinates \(Y,X_1,\ldots,X_m\) positive weights and retain polynomial
+monomials satisfying one weighted degree inequality. Their exponent
+vectors fill a simplex. At each point \((1,c_{j1},\ldots,c_{jm})\),
+expand after the substitution
+\[
+ Y=1+t,\qquad X_i=c_{ji}+u_i+\log(1+t).
+\]
+The variable \(t\) follows the logarithmic curve; the variables \(u_i\)
+are transverse displacements. Theorem~\ref{geom:interpolation} states
+that every packet below the prescribed weighted cutoff can be realized,
+at finitely many centers whose \(X_i\)-coordinates are pairwise distinct
+for each \(i\), simultaneously. The weights of \(X_1,\ldots,X_m\)
+are chosen successively before the center locations are known.
+The weights leave more polynomial coefficients than prescribed Taylor
+coefficients, but that dimension count alone does not prove full rank
+at these special centers.
+
+The proof in Section~\ref{geom:section} starts from a local multiplicity
+comparison between coordinate directions and commuting differential
+directions. Derivative persistence and separated scales restrict any
+algebraic obstruction; logarithmic residues then force coordinate
+constancy. This stage is related to the zero-estimate methods of
+Philippon \cite{philippon1986} and the separated multidegrees in
+Farhi's Roth lemma \cite[Section~5.2]{farhi2006}. The resulting curve
+inequality bounds total weighted contact at the centers by the weighted
+degree of the curve. It gives positivity on an ordinary blowup, and vanishing yields
+all the requested coefficients. The relation between curvewise positivity
+and asymptotic jet generation is familiar from Demailly's work
+\cite[Section~6]{demailly1992}; the weighted, multiple-center statement
+on the possibly singular schemes used here is proved explicitly.
+
+\paragraph{Two ways to make the determinant small.}
+Suppose that a fixed exponent \(\nu>2\) permits exceptionally close
+approximations with unbounded denominators. Choose finitely many of these
+successively and set \(c_{ji}=2\ii j p_i/q_i\). They approximate
+the common logarithmic periods \(2\pi\ii j\). After truncating the
+logarithms by a filtration-preserving change, interpolation gives a
+matrix over \(\QQ(\ii)\) with independent rows. A square minor using
+all rows is nonzero. Clearing its denominators gives an arithmetic
+lower bound.
+
+For the analytic bound, translate each row to the exact periods and
+expand in the transverse variables. The index \(a\) denotes the chosen
+transverse coefficient. For a polynomial column \(P\),
+\[
+ [u^a]P(e^z,z+u_1,\ldots,z+u_m)
+\]
+is an entire function of \(z\). Rows test its Taylor coefficients after
+\(z=2\pi\ii j+\log(1+t)\). Rows with the same \(a\) therefore test
+the same entire functions. On expanding those functions in \(z\),
+repeated Taylor degrees within that group annihilate a
+determinant term. Distinct degrees then force a quadratic saving in the
+group size. This uses the Taylor-expansion mechanism also appearing in
+\cite[Theorem~1]{laurent2000}. If many rows have small weighted
+transverse index, there are too few groups to avoid this saving. If
+few do, the many large indices instead supply powers of the small
+rational-approximation errors. Section~\ref{det:section} proves uniform
+bounds for both alternatives before summing the expansion.
+
+\paragraph{Why full simplices and separated choices matter.}
+The polynomial degree of \(Y\) and those of the \(X_i\) share one
+budget. Both the interpolation volume and the arithmetic column cost
+therefore come from full simplices. Comparing the row count in dimension
+\(m+1\) with the transverse-index count in dimension \(m\) produces
+a collision saving that can grow with \(m\), while the other errors
+decrease. Section~\ref{sec:parameters} arranges this for each fixed
+\(\nu>2\), then chooses approximation denominators meeting all the
+interpolation thresholds. Their independence from centers prevents a
+circular choice. Only after dimension, weights, and centers have been
+fixed does the polynomial degree tend to infinity. The final section
+proves Corollary~\ref{thm:flinthills} using a fixed exponent between
+\(2\) and \(5/2\), and establishes the exact convergence criterion in
+Corollary~\ref{series:generalized}.
+
+\paragraph{Conventions and inputs.}
+All logarithms are natural; \(\log(1+t)\) denotes its power series at
+zero. Write \(\ii^2=-1\), and let multi-indices have nonnegative
+integer entries. For them, \(\alpha!=\prod_i\alpha_i!\) and
+\(\binom\alpha\beta=\prod_i\binom{\alpha_i}{\beta_i}\), with the
+latter zero unless \(\beta\le\alpha\) coordinatewise. Geometry is
+over \(\CC\), and a curve means an integral algebraic curve. We use
+polynomial B\'ezout with isolated local multiplicities, ordinary blowups,
+nef-plus-ample, eventual Proj recovery, Serre vanishing, and smooth
+projective models of curves. Their exact hypotheses are checked at use;
+no prior irrationality bound for \(\pi\) is assumed.
+
+\input{sections/interpolation}
+\input{sections/determinant}
+\input{sections/conclusion}
+\input{sections/series}
+
+\renewcommand{\bibfont}{\raggedright}
+\bibliographystyle{plainnat}
+\bibliography{references}
+\end{document}

@@ -22,7 +22,7 @@ Every identity and number shown on screen is verified in [`tests/test_score_sde_
 
 ## How it was made
 
-This film was produced by the **Argon Google Agent SDK (`google-adk` + `google-genai`) six-agent reasoning chain** ([`argon/`](../../../argon/)) operated with **Gemini 4 Argon** via [`scripts/operate_argon_chain.py`](../../../scripts/operate_argon_chain.py):
+This film was produced by the **Argon Google Agent SDK (`google-adk` + `google-genai`) six-agent reasoning chain** ([`src/argon/`](../../../src/argon/)) operated with **Gemini 4 Argon** via [`scripts/operate_argon_chain.py`](../../../scripts/operate_argon_chain.py):
 
 | Stage | ADK Agent | Artifact |
 |---|---|---|

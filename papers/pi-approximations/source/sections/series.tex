@@ -1,0 +1,155 @@
+\section{Flint--Hills series and its generalization}\label{sec:series}
+
+We first prove Corollary~\ref{thm:flinthills}. Alekseyev showed
+that convergence of the classical Flint--Hills series requires
+\(\mu(\pi)\le5/2\) \cite[Corollary~4]{alekseyev}; Meiburg proved
+that \(\mu(\pi)<5/2\) is sufficient \cite[Theorem~2.5]{meiburg}.
+We include the short spacing argument needed for the consequence of
+Theorem~\ref{thm:main}. Write
+\(\|x\|=\min_{p\in\ZZ}|x-p|\) for distance to the nearest integer.
+
+\begin{lemma}[Dyadic spacing estimate]\label{series:dyadic}
+Let \(\alpha>0\) be irrational. Suppose that, for some \(c>0\) and
+\(1<\nu<5/2\),
+\[
+ \|q\alpha\|\ge c q^{1-\nu}\qquad(q\in\ZZ,\ q\ge1).
+\]
+Then
+\[
+ \sum_{q=1}^{\infty}\frac{1}{q^3\|q\alpha\|^2}<\infty.
+\]
+\end{lemma}
+
+\begin{proof}
+Fix a positive integer \(K\), and put
+\(d=c(2K)^{1-\nu}\). For \(K\le q<2K\), the points
+\(q\alpha\) on the circle \(\RR/\ZZ\) have distance at least
+\(d\) from zero. Two distinct such points also have circle distance
+at least \(d\): apply the hypothesis to their nonzero integer
+difference, whose absolute value is less than \(2K\), and use
+\(1-\nu<0\).
+
+On either half-circle starting at zero, arrange the distances in
+increasing order. Their first distance is at least \(d\), and each
+successive distance increases by at least \(d\). Thus these distances
+are at least \(d,2d,3d,\ldots\). No positive integer multiple of
+\(\alpha\) lies at either endpoint of a half-circle. Consequently
+\[
+ \sum_{K\le q<2K}\frac{1}{q^3\|q\alpha\|^2}
+ \le \frac{2}{K^3d^2}\sum_{j=1}^{\infty}\frac{1}{j^2}
+ =O\bigl(K^{2\nu-5}\bigr).
+\]
+The implied constant depends only on \(c\) and \(\nu\).
+Since \(2\nu-5<0\), summing over \(K=1,2,4,\ldots\) proves
+the assertion.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{thm:flinthills}]
+Fix a real number \(\nu\) with \(2<\nu<5/2\), and choose a
+positive integer \(Q\) as in Theorem~\ref{thm:main}. Taking a nearest
+integer numerator in that theorem gives
+\[
+ \|q\pi\|\ge q^{1-\nu}\qquad(q\ge Q).
+\]
+The same theorem has established irrationality of \(\pi\). Hence
+\[
+ c=\min\left(\{1\}\cup
+       \left\{q^{\nu-1}\|q\pi\|:q\in\ZZ,\ 1\le q<Q\right\}\right)>0.
+\]
+It follows that \(\|q\pi\|\ge c q^{1-\nu}\) for every positive
+integer \(q\), including the finitely many exceptions below \(Q\).
+Lemma~\ref{series:dyadic} therefore gives
+\begin{equation}\label{series:distance-sum}
+ \sum_{q=1}^{\infty}\frac{1}{q^3\|q\pi\|^2}<\infty.
+\end{equation}
+
+For each positive integer \(n\), choose a nearest nonnegative integer
+\(q\) to \(n/\pi\), and group the integers \(n\) by \(q\).
+Then \(|n-q\pi|\le\pi/2\). The group with
+\(q=0\) is finite, and its terms in the Flint--Hills series are finite
+because irrationality of \(\pi\) excludes \(\sin n=0\) for a
+positive integer \(n\). For each \(q\ge1\), its group lies in an
+interval of length \(\pi<4\), so contains at most four integers.
+Every integer in that group satisfies
+\[
+ n\ge\pi(q-1/2)\ge\frac{\pi q}{2}.
+\]
+Concavity of sine on \([0,\pi/2]\) also gives
+\[
+ |\sin n|=|\sin(n-q\pi)|
+ \ge\frac{2}{\pi}|n-q\pi|
+ \ge\frac{2}{\pi}\|q\pi\|.
+\]
+The contribution of the group indexed by \(q\ge1\) is consequently
+at most
+\[
+ \frac{8}{\pi}\frac{1}{q^3\|q\pi\|^2}.
+\]
+Summing this bound and using \eqref{series:distance-sum} proves
+convergence of \(\sum_{n\ge1}n^{-3}\sin^{-2}n\), with angles in
+radians.
+\end{proof}
+
+
+The same spacing argument gives the convergence criterion for the
+two-parameter family.
+
+\begin{corollary}[Generalized Flint--Hills series]\label{series:generalized}
+For fixed real numbers \(a,b>0\), the series
+\[
+ \sum_{n=1}^{\infty}\frac{1}{n^a|\sin n|^b}
+\]
+with angles in radians converges if and only if
+\(a>\max\{1,b\}\).
+\end{corollary}
+
+\begin{proof}
+Suppose first that \(a>\max\{1,b\}\), and choose \(\varepsilon>0\)
+so that \(a>\max\{1,b\}+b\varepsilon\).
+Theorem~\ref{thm:main}, with the finitely many exceptional denominators
+absorbed into a positive constant as above, gives
+\(\|q\pi\|\ge c_\varepsilon q^{-1-\varepsilon}\) for all \(q\ge1\).
+For an integer \(K\ge1\), put \(d=c_\varepsilon(2K)^{-1-\varepsilon}\).
+As in the proof of Lemma~\ref{series:dyadic}, the points \(q\pi\)
+on \(\RR/\ZZ\) with \(K\le q<2K\) are mutually \(d\)-separated
+and at least \(d\) from zero. There are at most \(K\) points, so the half-circle ordering gives
+\[
+ \sum_{K\le q<2K}\frac{1}{q^a\|q\pi\|^b}
+ \le 2K^{-a}d^{-b}\sum_{j=1}^{K}j^{-b}
+ \ll_{a,b,\varepsilon}
+ \begin{cases}
+ K^{1-a+b\varepsilon},&0<b<1,\\
+ K^{1-a+\varepsilon}\log(2K),&b=1,\\
+ K^{b-a+b\varepsilon},&b>1.
+ \end{cases}
+\]
+Each power of \(K\) is negative by the choice of \(\varepsilon\);
+summing over \(K=1,2,4,\ldots\), including the logarithmic factor
+when \(b=1\), proves convergence of
+\(\sum_{q\ge1}q^{-a}\|q\pi\|^{-b}\).
+Use the same nearest-multiple groups as in the preceding proof. The
+\(q=0\) group is finite, while the group indexed by \(q\ge1\)
+contributes at most
+\[
+ 4(2/\pi)^a(\pi/2)^b q^{-a}\|q\pi\|^{-b}.
+\]
+This proves the required convergence.
+
+If \(a\le1\), including the boundary \(a=1\), then
+\(|\sin n|\le1\) compares the series from below with the divergent
+series \(\sum n^{-a}\). It remains to consider \(1<a\le b\).
+Let \(p_j/q_j\) be the continued-fraction convergents to \(\pi\),
+whose positive integer numerators tend to infinity. They satisfy
+\[
+ |\sin p_j|=|\sin(p_j-\pi q_j)|
+ \le|p_j-\pi q_j|<q_j^{-1}.
+\]
+Since \(p_j/q_j\to\pi\), eventually \(p_j\le(\pi+1)q_j\), and hence
+\[
+ \frac{1}{p_j^a|\sin p_j|^b}
+ >p_j^{-a}q_j^b\ge(\pi+1)^{-b}p_j^{b-a}.
+\]
+These summands are bounded away from zero when \(a=b\), and tend
+to infinity when \(a<b\). Thus the series also diverges throughout
+\(1<a\le b\), including its boundary \(a=b>1\).
+\end{proof}

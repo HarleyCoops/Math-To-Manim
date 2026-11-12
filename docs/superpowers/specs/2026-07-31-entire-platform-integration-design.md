@@ -46,7 +46,7 @@ rewards with stable identifiers.
 7. Preserve enough normalized session context to build supervised examples,
    preference pairs, failure corpora, reward-analysis datasets, and harness
    replay inputs later.
-8. Keep `mythos/` and `sol/` provider-native and independently operable.
+8. Keep `src/mythos/` and `src/sol/` provider-native and independently operable.
 9. Make all ENTIRE capture fail open: generation, rendering, evaluation, and
    training must continue when ENTIRE is absent or unhealthy.
 
@@ -210,7 +210,7 @@ is committed separately by exact path.
 
 #### Provider-neutral session recorder
 
-A top-level `m2m_entire/` package outside `mythos/` and `sol/` owns the
+A top-level `m2m_entire/` package outside `src/mythos/` and `src/sol/` owns the
 normalized M2M session schema and lifecycle emitter. Mythos and Sol may each
 call this neutral interface, but neither imports the other provider's
 implementation. Packaging exposes `entire-agent-m2m` for ENTIRE protocol calls
@@ -383,8 +383,8 @@ a Mythos, Sol, rendering, evaluation, or training operation.
 - simulated hook timeout does not alter pipeline output or exit status;
 - a backfill after simulated hook failure yields one session with no duplicate
   events;
-- provider-boundary import checks confirm `sol/` imports no Mythos module and
-  `mythos/` imports no Sol client.
+- provider-boundary import checks confirm `src/sol/` imports no Mythos module and
+  `src/mythos/` imports no Sol client.
 
 The repository's standard offline test suite and both offline film commands
 must continue to pass. Render-marked tests run only where Manim, FFmpeg, TeX,

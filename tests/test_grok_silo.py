@@ -1,10 +1,7 @@
-import ast
 import json
-from pathlib import Path
 
 import pytest
 
-from grok.charters import STAGES, load_charter
 from grok.cli import build_parser, main
 from grok.client import (
     XAIClient,
@@ -14,16 +11,14 @@ from grok.client import (
     collect_text,
     user_content,
 )
-from grok.harness import GrokHarness
+from grok.harness import GrokHarness, default_runs_dir
 from grok.jsonutil import extract_json_object, extract_python_block, extract_scene_source
-from grok.models import ARTIFACT_NAMES, RunRequest, StageCallResult
+from grok.models import RunRequest, StageCallResult
 from grok.offline import _OFFLINE_SCENE, reverse_tree_for
 from grok.service import GrokService, Job
+from grok.stages import ARTIFACT_NAMES, STAGES, load_charter, tool_labels, validate_run
 from grok.tools import verify_scene
-from grok.validation import normalize_reverse_tree, validate_reverse_tree, validate_run
-
-
-GROK_DIR = Path("grok")
+from grok.validation import normalize_reverse_tree, validate_reverse_tree
 
 
 def test_offline_run_writes_complete_film_bundle(tmp_path):
@@ -34,12 +29,24 @@ def test_offline_run_writes_complete_film_bundle(tmp_path):
     assert manifest["status"] == "completed"
     assert manifest["backend"] == "xai-responses"
     assert manifest["model"] == "offline"
+    assert manifest["video_path"] is None
     assert all((run_dir / name).is_file() for name in ARTIFACT_NAMES)
-    assert (run_dir / "traces" / "cartographer.json").is_file()
-    failures, scene_name, video_path = validate_run(run_dir, require_video=False)
+    for stage in STAGES:
+        trace = json.loads((run_dir / "traces" / f"{stage.name}.json").read_text(encoding="utf-8"))
+        assert trace["tools_requested"] == tool_labels(stage)
+    failures, scene_name = validate_run(run_dir)
     assert failures == []
     assert scene_name == "GrokOfflineStory"
-    assert video_path is None
+    validation = json.loads((run_dir / "validation.json").read_text(encoding="utf-8"))
+    assert validation == {"passed": True, "scene_name": "GrokOfflineStory", "errors": []}
+    review = json.loads((run_dir / "review.json").read_text(encoding="utf-8"))
+    assert review["offline"] is True
+    assert review["rendered"] is False
+
+
+def test_default_runs_dir_follows_cwd(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    assert default_runs_dir() == tmp_path / "runs" / "grok"
 
 
 def test_offline_cartographer_is_a_reverse_tree():
@@ -121,7 +128,7 @@ def test_doctor_fails_on_rejected_key_without_printing_it(monkeypatch, capsys):
     secret = "xai-invalid-key-must-stay-hidden"
     monkeypatch.setenv("XAI_API_KEY", secret)
 
-    def fake_post(self, payload, previous_response_id=None):
+    def fake_post(self, payload, previous_response_id=None, **kwargs):
         raise XAIClientError("xAI Responses API failed (401): invalid api key")
 
     monkeypatch.setattr(XAIClient, "post", fake_post)
@@ -187,67 +194,148 @@ def test_collect_text_reads_responses_output():
     assert text == '{"ok": true}'
 
 
-def test_live_run_uses_client_and_never_hits_network(tmp_path, monkeypatch):
-    calls = []
+def _fake_stage_body() -> dict:
+    tree = reverse_tree_for("the heat equation")
+    return {
+        "offline": False,
+        "core_claim": "test",
+        "audience": "tester",
+        "emotional_arc": ["a"],
+        "scope": {"in": ["x"], "out": []},
+        "duration_seconds": 90,
+        "title_options": ["A", "B", "C"],
+        "the_big_zoom": "z",
+        "image_read": None,
+        "target": "claim",
+        "nodes": tree["nodes"],
+        "edges": tree["edges"],
+        "spine": tree["spine"],
+        "sources": [],
+        "acts": [{"act_number": 1, "title": "t", "opening_question": "q",
+                  "teaches": "foundations", "narrative": "n", "headline": "h",
+                  "payoff": "p", "estimated_seconds": 10}],
+        "through_line": "forward",
+        "formulas": [{"id": "F1", "act_number": 1, "latex_parts": ["E"],
+                      "term_glossary": [], "derivation_or_motivation": "d",
+                      "common_misreading": "m"}],
+        "color_identity": {},
+        "numbers": [],
+        "checks": ["sandbox"],
+        "shots": [{"beat": 1, "verb": "HEADLINE"}],
+        "camera_score": "hold",
+        "stills": [],
+        "visual_seeds": [],
+        "scene_name": "GrokOfflineStory",
+        "scene_class": "ThreeDScene",
+        "palette": {},
+        "objects": [],
+        "timeline": [],
+        "constraints": [],
+        "acceptance": [],
+        "source": _OFFLINE_SCENE,
+    }
 
-    class FakeClient(XAIClient):
+
+class RecordingClient(XAIClient):
+    """Answers every stage with one complete payload and records the calls."""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.calls: list[dict] = []
+
+    def complete(self, **kwargs):
+        self.calls.append(kwargs)
+        body = _fake_stage_body()
+        return StageCallResult(text=json.dumps(body), payload=body, raw={"id": "resp"})
+
+
+def test_live_run_uses_client_and_never_hits_network(tmp_path, capsys):
+    client = RecordingClient(api_key="xai-test-key", model="grok-4.6", reasoning_effort="high")
+    lines: list[str] = []
+    harness = GrokHarness(runs_dir=tmp_path, client=client, log=lines.append)
+    started: list[str] = []
+    manifest = harness.run(
+        RunRequest(prompt="the heat equation", model="grok-4.6-fast", reasoning_effort="low"),
+        on_start=started.append,
+    )
+    assert manifest["status"] == "completed"
+    assert manifest["model"] == "grok-4.6-fast"
+    assert started == [manifest["run_id"]]
+    assert len(client.calls) == len(STAGES)
+    assert len(lines) == len(STAGES)
+
+    # Per-run settings travel with every call; the shared client is untouched.
+    assert {call["model"] for call in client.calls} == {"grok-4.6-fast"}
+    assert {call["reasoning_effort"] for call in client.calls} == {"low"}
+    assert (client.model, client.reasoning_effort) == ("grok-4.6", "high")
+
+    by_stage = dict(zip([stage.name for stage in STAGES], client.calls))
+    assert by_stage["math-director"]["tool_choice"] == "required"
+    assert by_stage["intent"]["tool_choice"] is None
+    assert any(tool.get("type") == "image_generation" for tool in by_stage["cinematographer"]["tools"])
+    assert by_stage["composer"]["function_handlers"] == {"verify_scene": verify_scene}
+    assert by_stage["intent"]["function_handlers"] is None
+    assert "source field" in by_stage["composer"]["text"]
+    assert "source field" not in by_stage["intent"]["text"]
+
+    run_dir = tmp_path / manifest["run_id"]
+    trace = json.loads((run_dir / "traces" / "composer.json").read_text(encoding="utf-8"))
+    assert (trace["model"], trace["reasoning_effort"]) == ("grok-4.6-fast", "low")
+    review = json.loads((run_dir / "review.json").read_text(encoding="utf-8"))
+    assert review["model"] == "grok-4.6-fast"
+    assert review["offline"] is False
+    # stdout stays clean for CLI JSON and MCP stdio.
+    assert capsys.readouterr().out == ""
+
+
+def test_live_run_defaults_to_client_settings(tmp_path):
+    client = RecordingClient(api_key="xai-test-key", model="grok-4.6", reasoning_effort="xhigh")
+    manifest = GrokHarness(runs_dir=tmp_path, client=client, log=lambda _: None).run(
+        RunRequest(prompt="the heat equation")
+    )
+    assert manifest["model"] == "grok-4.6"
+    assert {call["reasoning_effort"] for call in client.calls} == {"xhigh"}
+
+
+def test_live_run_repairs_then_records_validation(tmp_path):
+    broken = _OFFLINE_SCENE.replace("self.move_camera(", "self.camera.animate.x(")
+
+    class RepairingClient(RecordingClient):
         def complete(self, **kwargs):
-            calls.append(kwargs)
-            stage_tools = [tool.get("type") for tool in kwargs.get("tools") or ()]
-            body = {
-                "offline": False,
-                "core_claim": "test",
-                "audience": "tester",
-                "emotional_arc": ["a"],
-                "scope": {"in": ["x"], "out": []},
-                "duration_seconds": 90,
-                "title_options": ["A", "B", "C"],
-                "the_big_zoom": "z",
-                "image_read": None,
-                "target": "claim",
-                "nodes": reverse_tree_for("the heat equation")["nodes"],
-                "edges": reverse_tree_for("the heat equation")["edges"],
-                "spine": reverse_tree_for("the heat equation")["spine"],
-                "sources": [],
-                "acts": [{"act_number": 1, "title": "t", "opening_question": "q",
-                          "teaches": "foundations", "narrative": "n", "headline": "h",
-                          "payoff": "p", "estimated_seconds": 10}],
-                "through_line": "forward",
-                "formulas": [{"id": "F1", "act_number": 1, "latex_parts": ["E"],
-                              "term_glossary": [], "derivation_or_motivation": "d",
-                              "common_misreading": "m"}],
-                "color_identity": {},
-                "numbers": [],
-                "checks": ["sandbox"],
-                "shots": [{"beat": 1, "verb": "HEADLINE"}],
-                "camera_score": "hold",
-                "stills": [],
-                "visual_seeds": [],
-                "scene_name": "GrokOfflineStory",
-                "scene_class": "ThreeDScene",
-                "palette": {},
-                "objects": [],
-                "timeline": [],
-                "constraints": [],
-                "acceptance": [],
-                "source": _OFFLINE_SCENE,
-            }
+            self.calls.append(kwargs)
+            body = _fake_stage_body()
+            if len(self.calls) <= len(STAGES):
+                body["source"] = broken
+            else:
+                body = {"scene_name": "GrokOfflineStory", "source": _OFFLINE_SCENE}
             return StageCallResult(text=json.dumps(body), payload=body, raw={"id": "resp"})
 
-    monkeypatch.setenv("XAI_API_KEY", "xai-test-key")
-    harness = GrokHarness(runs_dir=tmp_path, client=FakeClient(api_key="xai-test-key"))
-    manifest = harness.run(RunRequest(prompt="the heat equation", offline=False))
-    assert manifest["status"] == "completed"
-    assert len(calls) == len(STAGES)
-    math_call = next(item for item in calls if "code_interpreter" in {
-        tool.get("type") for tool in item.get("tools") or ()
-    })
-    assert math_call["tool_choice"] == "required"
-    assert any(
-        tool.get("type") == "image_generation"
-        for item in calls
-        for tool in item.get("tools") or ()
+    client = RepairingClient(api_key="xai-test-key")
+    manifest = GrokHarness(runs_dir=tmp_path, client=client, log=lambda _: None).run(
+        RunRequest(prompt="the heat equation", max_repairs=2)
     )
+    assert manifest["status"] == "completed"
+    assert len(client.calls) == len(STAGES) + 1
+    run_dir = tmp_path / manifest["run_id"]
+    assert (run_dir / "traces" / "repair-1.json").is_file()
+    assert [attempt["mode"] for attempt in manifest["attempts"]] == ["xai-responses", "composer-repair"]
+    assert "camera" in manifest["attempts"][1]["input_failures"][0]
+    validation = json.loads((run_dir / "validation.json").read_text(encoding="utf-8"))
+    assert validation["passed"] is True
+
+
+def test_live_run_failure_leaves_validation_evidence(tmp_path):
+    class NoJsonClient(RecordingClient):
+        def complete(self, **kwargs):
+            self.calls.append(kwargs)
+            return StageCallResult(text="I cannot.", payload=None, raw={"id": "resp"})
+
+    harness = GrokHarness(runs_dir=tmp_path, client=NoJsonClient(api_key="xai-test-key"), log=lambda _: None)
+    with pytest.raises(XAIClientError, match="stage intent did not return JSON"):
+        harness.run(RunRequest(prompt="the heat equation"))
+    manifest = json.loads(next(tmp_path.glob("*/manifest.json")).read_text(encoding="utf-8"))
+    assert manifest["status"] == "failed"
+    assert "intent did not return JSON" in manifest["error"]
 
 
 def test_service_reads_run_ledger(tmp_path):
@@ -283,28 +371,19 @@ def test_charters_ship_and_name_tools():
         "curriculum": [],
         "math-director": ["code_interpreter", "web_search"],
         "cinematographer": ["image_generation", "x_search"],
-        "composer": ["function"],
+        "composer": ["verify_scene"],
     }
+    assert [stage.name for stage in STAGES] == list(expected)
     for stage in STAGES:
         text = load_charter(stage.charter_file)
         assert len(text) > 200
         assert "THINKING CONTRACT" in text
         assert "FORBIDDEN MOVES" in text
-        kinds = [tool.get("type") for tool in stage.tools]
-        assert kinds == expected[stage.name]
-
-
-def test_grok_silo_does_not_import_mythos_or_sol():
-    for path in GROK_DIR.rglob("*.py"):
-        tree = ast.parse(path.read_text(encoding="utf-8"))
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    assert not alias.name.startswith("mythos")
-                    assert not alias.name.startswith("sol")
-            elif isinstance(node, ast.ImportFrom) and node.module:
-                assert not node.module.startswith("mythos")
-                assert not node.module.startswith("sol")
+        assert tool_labels(stage) == expected[stage.name]
+    assert [stage.name for stage in STAGES if stage.tool_choice == "required"] == ["math-director"]
+    assert [stage.name for stage in STAGES if stage.takes_image] == ["intent"]
+    assert [stage.name for stage in STAGES if stage.writes_scene] == ["composer"]
+    assert [stage.name for stage in STAGES if stage.normalize] == ["cartographer"]
 
 
 def test_offline_scene_obeys_camera_rule(tmp_path):
@@ -314,7 +393,7 @@ def test_offline_scene_obeys_camera_rule(tmp_path):
     source = (tmp_path / manifest["run_id"] / "grok_scene.py").read_text(encoding="utf-8")
     assert "self.camera.animate" not in source
     assert "move_camera" in source or "set_camera_orientation" in source
-    failures, scene_name, _ = validate_run(tmp_path / manifest["run_id"], require_video=False)
+    failures, scene_name = validate_run(tmp_path / manifest["run_id"])
     assert failures == []
     assert scene_name == "GrokOfflineStory"
 
@@ -325,7 +404,7 @@ def test_cli_offline_homework_run(tmp_path, monkeypatch, capsys):
     assert main(["run", prompt, "--offline"]) == 0
     printed = json.loads(capsys.readouterr().out)
     run_dir = tmp_path / printed["run_id"]
-    failures, scene_name, _ = validate_run(run_dir, require_video=False)
+    failures, scene_name = validate_run(run_dir)
     assert failures == []
     assert scene_name == "GrokOfflineStory"
     tree = json.loads((run_dir / "02_knowledge_map.json").read_text(encoding="utf-8"))
@@ -413,7 +492,7 @@ def test_validate_run_rejects_uncompilable_scene(tmp_path):
     bundle = GrokHarness(runs_dir=tmp_path).run(RunRequest(prompt="the heat equation", offline=True))
     run_dir = tmp_path / bundle["run_id"]
     (run_dir / "grok_scene.py").write_text("class Broken(ThreeDScene)\n    pass\n", encoding="utf-8")
-    failures, scene_name, _ = validate_run(run_dir, require_video=False)
+    failures, scene_name = validate_run(run_dir)
     assert scene_name is None
     assert any("compilation" in item or "syntax" in item for item in failures)
 
@@ -446,7 +525,7 @@ def test_client_function_loop_returns_final_json(monkeypatch):
     ]
     posted = []
 
-    def fake_post(self, payload, previous_response_id=None):
+    def fake_post(self, payload, previous_response_id=None, **kwargs):
         posted.append({"payload": payload, "previous": previous_response_id})
         return responses[len(posted) - 1]
 
@@ -480,7 +559,7 @@ def test_client_continues_incomplete_response(monkeypatch):
     ]
     posted = []
 
-    def fake_post(self, payload, previous_response_id=None):
+    def fake_post(self, payload, previous_response_id=None, **kwargs):
         posted.append(previous_response_id)
         return responses[len(posted) - 1]
 

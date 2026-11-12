@@ -30,7 +30,7 @@ See [the paper-film pilot](../papers/README.md) and
 zero model/API calls. Manim joins its animation segments into one MP4. This
 path records `review_status: not_reviewed` and preserves earlier verdicts.
 
-`astra/bridge.mjs` uses the official pinned Codex SDK and CLI 0.156.1, with
+`src/astra/bridge.mjs` uses the official pinned Codex SDK and CLI 0.156.1, with
 `gpt-6-astra`, structured outputs and cached ChatGPT login. Specialist sessions
 can inspect files and execute permitted read-only tools; mathematical sessions
 also have web search. Tool events, model output and session IDs are recorded.

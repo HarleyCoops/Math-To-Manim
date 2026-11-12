@@ -24,8 +24,8 @@
 ### Task 1: Stream Codex JSONL and Support Session Resume
 
 **Files:**
-- Modify: `sol/client.py`
-- Modify: `sol/models.py`
+- Modify: `src/sol/client.py`
+- Modify: `src/sol/models.py`
 - Test: `tests/test_sol_staged_pipeline.py`
 
 **Interfaces:**
@@ -41,8 +41,8 @@
 ### Task 2: Define the Six Sol-Native Agent Contracts
 
 **Files:**
-- Create: `sol/agents.py`
-- Modify: `sol/models.py`
+- Create: `src/sol/agents.py`
+- Modify: `src/sol/models.py`
 - Test: `tests/test_sol_staged_pipeline.py`
 
 **Interfaces:**
@@ -58,11 +58,11 @@
 ### Task 3: Add Staged Orchestration, Cache, and Resume
 
 **Files:**
-- Create: `sol/staged.py`
-- Modify: `sol/harness.py`
-- Modify: `sol/service.py`
-- Modify: `sol/cli.py`
-- Modify: `sol/offline.py`
+- Create: `src/sol/staged.py`
+- Modify: `src/sol/harness.py`
+- Modify: `src/sol/service.py`
+- Modify: `src/sol/cli.py`
+- Modify: `src/sol/offline.py`
 - Test: `tests/test_sol_staged_pipeline.py`
 - Test: `tests/test_sol_silo.py`
 
@@ -80,9 +80,9 @@
 ### Task 4: Move Rendering and Review Routing into the Wrapper
 
 **Files:**
-- Create: `sol/rendering.py`
-- Modify: `sol/staged.py`
-- Modify: `sol/validation.py`
+- Create: `src/sol/rendering.py`
+- Modify: `src/sol/staged.py`
+- Modify: `src/sol/validation.py`
 - Test: `tests/test_sol_staged_pipeline.py`
 
 **Interfaces:**

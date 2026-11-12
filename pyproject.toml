@@ -29,6 +29,7 @@ dev = [
   "fastapi>=0.110",
   "uvicorn>=0.29",
   "mcp>=2.0,<3",
+  "math-to-manim[argon]",
 ]
 api = [
   "fastapi>=0.110",
@@ -40,12 +41,17 @@ mcp = [
 render = [
   "manim>=0.19",
 ]
+studio = [
+  "manim>=0.22,<0.23",
+  "claude-agent-sdk>=0.2.180",
+]
 grok = [
   "httpx>=0.27",
 ]
 argon = [
-  "google-adk>=2.0",
+  "google-adk>=2.4",
   "google-genai>=2.0",
+  "numpy>=1.26",
 ]
 
 [project.scripts]
@@ -63,17 +69,20 @@ math-to-manim-mimo = "mimo.cli:main"
 m2m-mimo = "mimo.cli:main"
 math-to-manim-argon = "argon.cli:main"
 m2m-argon = "argon.cli:main"
+math-to-manim-studio = "studio.cli:main"
+m2m-studio = "studio.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/HarleyCoops/Math-To-Manim"
 Repository = "https://github.com/HarleyCoops/Math-To-Manim"
 
 [tool.setuptools.packages.find]
-include = ["astra*", "mythos*", "sol*", "grok*", "glm*", "mimo*", "argon*"]
+where = ["src"]
 
 [tool.setuptools.package-data]
 astra = ["*.mjs", "node/*.json"]
 mythos = ["agents/*.md"]
+studio = ["agents/*.md", "examples/*.json"]
 grok = ["agents/*.md"]
 glm = ["agents/*.md"]
 mimo = ["agents/*.md"]
@@ -81,5 +90,5 @@ argon = ["agents/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
+pythonpath = ["src", "."]
 addopts = "-q"

@@ -32,39 +32,35 @@ import argparse
 import json
 import sys
 import time
-from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+if str(REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from mythos.charter import CINEMATIC_CHARTER, JSON_CONTRACT, find_scene_class  # noqa: E402
-from mythos.harness import STAGES, MythosHarness, validate_stage_artifact  # noqa: E402
-from mythos.manifest_schema import manifest_template, validation_template  # noqa: E402
-from mythos.scene_checks import write_json  # noqa: E402
+from mythos.charter import CINEMATIC_CHARTER  # noqa: E402
+from mythos.harness import (  # noqa: E402
+    MythosHarness,
+    check_scene,
+    codegen_prompt,
+    new_manifest,
+    record_check,
+    stage_prompt,
+)
+from mythos.layout import SCENE_FILE, create_run_dir, write_manifest  # noqa: E402
+from mythos.scene_checks import find_scene_class  # noqa: E402
+from mythos.settings import default_runs_dir  # noqa: E402
+from mythos.stages import STAGES, validate_stage_artifact  # noqa: E402
 
 NEEDS_REPLY = 2
 
 
-def codegen_prompt(dossier: dict) -> str:
-    """The prompt the harness sends for codegen (see MythosHarness._codegen)."""
-    return (
-        "You are the Mythos scene composer's hands: write the film.\n"
-        "Using the full dossier below (intent through scene spec), write ONE\n"
-        "complete, runnable Manim Community Edition Python file that\n"
-        "implements the shot list with the full Cinematic Charter — headlines\n"
-        "before symbols, camera zooms into terms, plain-language captions,\n"
-        "Mythos palette. The file must be self-contained (inline any helpers),\n"
-        "import `from manim import *`, and define exactly one ThreeDScene\n"
-        "subclass. Respond with exactly one fenced python block and nothing\n"
-        "else.\n\nDOSSIER JSON:\n" + json.dumps(dossier, indent=2)
-    )
+def _with_system_extra(prompt: str) -> str:
+    return "SYSTEM EXTRA:\n" + CINEMATIC_CHARTER + "\n\nPROMPT:\n" + prompt
 
 
 def _ask(stages: Path, filename: str, prompt: str) -> int:
-    (stages / "NEXT_PROMPT.txt").write_text(
-        "SYSTEM EXTRA:\n" + CINEMATIC_CHARTER + "\n\nPROMPT:\n" + prompt, encoding="utf-8")
+    (stages / "NEXT_PROMPT.txt").write_text(_with_system_extra(prompt), encoding="utf-8")
     print(f"  [operator] reply needed: save it as {stages / filename}")
     print(f"  [operator] prompt written to {stages / 'NEXT_PROMPT.txt'}")
     return NEEDS_REPLY
@@ -77,67 +73,62 @@ def operate(stages: Path, *, runs_dir: Path | None = None, model: str = "operato
     if not prompt_file.is_file():
         raise SystemExit(f"missing production prompt: {prompt_file}")
     prompt = prompt_file.read_text(encoding="utf-8").replace(chr(0xFEFF), "").strip()
-    harness = MythosHarness(command="operator", model=model,
-                            runs_dir=runs_dir or REPO_ROOT / "runs" / "mythos")
+    runs_dir = Path(runs_dir) if runs_dir else default_runs_dir()
 
     # Replay the chain up to the first missing reply before creating a run.
     artifact: dict = {"user_prompt": prompt}
     plan = []
-    for slug, agent_file, artifact_name in STAGES:
-        charter = harness.load_charter(agent_file)
-        stage_prompt = (f"{charter}\n\nINPUT ARTIFACT JSON:\n{json.dumps(artifact, indent=2)}"
-                        f"{JSON_CONTRACT}")
-        reply_path = stages / artifact_name
+    for stage in STAGES:
+        prompt_text = stage_prompt(stage, artifact)
+        reply_path = stages / stage.artifact
         if not reply_path.is_file():
-            return _ask(stages, artifact_name, stage_prompt), None
+            return _ask(stages, stage.artifact, prompt_text), None
         reply = json.loads(reply_path.read_text(encoding="utf-8"))
-        problem = validate_stage_artifact(slug, reply)
+        problem = validate_stage_artifact(stage.slug, reply)
         if problem:
-            raise SystemExit(f"stage {slug!r} rejected by the harness: {problem}")
-        plan.append((slug, artifact_name, stage_prompt, reply))
+            raise SystemExit(f"stage {stage.slug!r} rejected by the harness: {problem}")
+        plan.append((stage, prompt_text, reply))
         artifact = reply
-    dossier = {name: reply for _, name, _, reply in plan}
-    scene_path = stages / "mythos_scene.py"
+    dossier = {stage.artifact: reply for stage, _, reply in plan}
+    scene_path = stages / SCENE_FILE
     if not scene_path.is_file():
-        return _ask(stages, "mythos_scene.py", codegen_prompt(dossier)), None
+        return _ask(stages, SCENE_FILE, codegen_prompt(dossier)), None
     (stages / "NEXT_PROMPT.txt").unlink(missing_ok=True)
 
-    run_dir = harness._create_run_dir(prompt)
-    manifest = manifest_template(run_id=run_dir.name, prompt=prompt, model=harness.model,
-                                 command="operator", offline=False,
-                                 created_utc=datetime.now(timezone.utc).isoformat())
+    run_dir = create_run_dir(runs_dir, prompt)
+    manifest = new_manifest(run_dir, prompt=prompt, model=model, command="operator",
+                            offline=False)
     manifest["operator_note"] = (
         "Stages answered by an operator acting as the model backend "
         "(scripts/operate_mythos_chain.py); every reply was checked by the harness.")
-    write_json(run_dir / "validation.json", validation_template())
-    for slug, artifact_name, stage_prompt, reply in plan:
-        stem = artifact_name.split(".")[0]
-        (run_dir / f"{stem}.prompt.txt").write_text(
-            "SYSTEM EXTRA:\n" + CINEMATIC_CHARTER + "\n\nPROMPT:\n" + stage_prompt, encoding="utf-8")
-        (run_dir / artifact_name).write_text(json.dumps(reply, indent=2), encoding="utf-8")
-        manifest["stages"].append({"stage": slug, "artifact": artifact_name,
+    for stage, prompt_text, reply in plan:
+        (run_dir / f"{stage.stem}.prompt.txt").write_text(
+            _with_system_extra(prompt_text), encoding="utf-8")
+        (run_dir / stage.artifact).write_text(json.dumps(reply, indent=2), encoding="utf-8")
+        manifest["stages"].append({"stage": stage.slug, "artifact": stage.artifact,
                                    "bytes": len(json.dumps(reply))})
-        print(f"  [mythos] {slug:<16} -> {artifact_name} (valid)")
+        print(f"  [mythos] {stage.slug:<16} -> {stage.artifact} (valid)")
     (run_dir / "07_codegen.prompt.txt").write_text(codegen_prompt(dossier), encoding="utf-8")
     code = scene_path.read_text(encoding="utf-8")
-    code_path = run_dir / "mythos_scene.py"
+    code_path = run_dir / SCENE_FILE
     code_path.write_text(code, encoding="utf-8")
     scene_name = find_scene_class(code)
-    manifest["stages"].append({"stage": "codegen", "artifact": "mythos_scene.py"})
-    ok, failure = harness._verify(code_path, prompt=prompt)
-    harness._record_validation(run_dir, manifest, code_path, ok, failure)
-    harness._write_manifest(run_dir, manifest)
-    print(f"  [mythos] codegen          -> mythos_scene.py ({scene_name}); static check "
-          f"{'passed' if ok else 'FAILED: ' + str(failure)}")
-    if not ok:
+    manifest["stages"].append({"stage": "codegen", "artifact": SCENE_FILE})
+    check = check_scene(code_path, prompt=prompt)
+    record_check(run_dir, manifest, check)
+    write_manifest(run_dir, manifest)
+    print(f"  [mythos] codegen          -> {SCENE_FILE} ({scene_name}); static check "
+          f"{'passed' if check.ok else 'FAILED: ' + str(check.failure)}")
+    if not check.ok:
         return 1, run_dir
     if render:
+        harness = MythosHarness(command="operator", model=model, runs_dir=runs_dir)
         started = time.time()
         result = harness.render_workspace(run_dir, scene_name, quality)
         rc, out, manifest = result["exit_code"], result["output"], result["manifest"]
         manifest["renders"][-1].update(
             {"quality": quality, "seconds": round(time.time() - started, 1)})
-        harness._write_manifest(run_dir, manifest)
+        write_manifest(run_dir, manifest)
         print(out[-2000:])
         if rc != 0:
             return rc, run_dir
@@ -148,7 +139,8 @@ def operate(stages: Path, *, runs_dir: Path | None = None, model: str = "operato
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("stages", type=Path, help="directory holding prompt.txt and the replies")
-    parser.add_argument("--runs-dir", type=Path, default=None)
+    parser.add_argument("--runs-dir", type=Path, default=None,
+                        help="run ledger (default: M2M_RUNS_DIR or ./runs, under mythos/)")
     parser.add_argument("--model", default="operator session",
                         help="recorded in the manifest, e.g. the model the session runs on")
     parser.add_argument("--render", action="store_true")

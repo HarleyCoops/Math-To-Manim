@@ -10,7 +10,7 @@ from mythos.harness import MythosHarness
 from mythos.scene_checks import validate_manim_code_report
 
 REPO = Path(__file__).resolve().parents[1]
-CINEMATOGRAPHY = REPO / "mythos" / "cinematography.py"
+CINEMATOGRAPHY = REPO / "src" / "mythos" / "cinematography.py"
 GOLDEN = REPO / "tests" / "fixtures" / "cinematic_geodesic.scene.py"
 CHARTER_BG = "#0c0c0b"
 RETIRED_HERMES_BG = "#050510"

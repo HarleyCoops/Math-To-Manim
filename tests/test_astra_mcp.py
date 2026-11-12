@@ -19,7 +19,7 @@ def test_mcp_registry_uses_astra_and_typed_request():
 
 def test_worker_keeps_request_and_separates_credentials(tmp_path, monkeypatch):
     calls = []
-    monkeypatch.setattr(server, 'RUNS', tmp_path)
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(server, 'load_api_key', lambda: 'fake-jev-credential')
     monkeypatch.setenv('OPENAI_API_KEY', 'must-not-be-inherited')
     class Process:
@@ -40,7 +40,7 @@ def test_worker_keeps_request_and_separates_credentials(tmp_path, monkeypatch):
 
 
 def test_missing_jev_credential_consumes_no_model_calls(tmp_path, monkeypatch):
-    monkeypatch.setattr(server, 'RUNS', tmp_path)
+    monkeypatch.chdir(tmp_path)
     def missing():
         raise RuntimeError('missing credential')
     monkeypatch.setattr(server, 'load_api_key', missing)
@@ -50,7 +50,7 @@ def test_missing_jev_credential_consumes_no_model_calls(tmp_path, monkeypatch):
 
 
 def test_explicit_jev_off_needs_no_credential(tmp_path, monkeypatch):
-    monkeypatch.setattr(server, 'RUNS', tmp_path)
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(server, 'load_api_key', lambda: pytest.fail('No Jev credential needed'))
     options = []
     class Process:

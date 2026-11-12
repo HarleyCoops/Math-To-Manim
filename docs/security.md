@@ -3,8 +3,8 @@
 This note is the WAR-1533 audit of how generated Manim is executed. There
 is no `renderer.py` in the current tree. The live render wrappers are:
 
-- `mythos/render.py` for Mythos
-- `sol/rendering.py` for Sol
+- `src/mythos/render.py` for Mythos
+- `src/sol/rendering.py` for Sol
 
 ## What was wrong
 

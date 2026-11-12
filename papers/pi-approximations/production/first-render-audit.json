@@ -1,0 +1,41 @@
+{
+  "mathematics": 0.97,
+  "pedagogy": 0.76,
+  "visual_design": 0.5,
+  "implementation": 0.6,
+  "verified": true,
+  "defects": [
+    "Exponent-section curves and leader lines persist into unrelated scenes, visibly contaminating renders/001/frame_04.png through renders/001/frame_11.png.",
+    "The simplex annotation intersects its sculpture in renders/001/frame_05.png instead of occupying a clean, readable area."
+  ],
+  "feedback": "Scene repair is required. In frame_03.png, the teal, gold and coral exponent sections have appropriate attached labels. Their curves and leaders then survive after those labels disappear: frame_04.png shows unexplained rails among denominator markers; frame_05.png shows them behind the simplex; frame_06.png has a gold rail crossing 'Exact periods'; frame_07.png has unrelated rails across the summand plot; frames_08.png and frame_09.png have rails cutting through the circle and explanatory labels; frame_10.png has rails across the block bars; frame_11.png has a gold rail crossing 355/113. motion_samples.png confirms this contamination persists across neighboring samples. In scene.py, manage sections created with Create(sections) as explicit scene objects and remove their complete families when leaving the exponent landscape; adding them afterward to self.world does not achieve reliable cleanup in this render. Also move 'Illustrative weights; low-dimensional slice' outside the simplex's projected footprint: frame_05.png places the sentence directly across its faces and edges.\n\nOtherwise, frame_00.png clearly shows E=0, the rescaled error coordinate and correctly positioned 22/7. Frames_01.png and frame_02.png show the log-error ribbon and exponent surface during camera setup before teaching cards appear; these transitional samples are not evidence of missing explanations. Frame_03.png identifies U and nu and explains height. The toy determinant in frame_05.png is correct and prominently labeled. Frame_07.png displays correct finite summands and the exceptional 355 spike on linear scales. Frames_08.png–frame_10.png contain correct fractional-part positions, spacing formulas and schematic geometric block bounds. Sampled principal formulas and bottom captions are readable and unclipped.\n\nIndependent calculations matched all seven log-error samples, both opening errors, four summands, eight fractional parts and the 8/pi group coefficient. The theorem qualifications and series deduction agree with the supplied manuscript passages. The rendered UTF-8 source matches scene.json; source and MP4 hashes match delivery records. Recorded duration is 419.7 seconds, within the revised budget, with 1280×720 video at 30 fps and no audio. Preserve these mathematical and delivery properties while repairing object cleanup and annotation placement.",
+  "evidence": [
+    "mathematics.json",
+    "scene.json",
+    "operator-delivery-brief.json",
+    "host-delivery-verification.json",
+    "render-completion.json",
+    "renders/001/scene.py",
+    "renders/001/metadata.json",
+    "renders/001/frame_00.png",
+    "renders/001/frame_01.png",
+    "renders/001/frame_02.png",
+    "renders/001/frame_03.png",
+    "renders/001/frame_04.png",
+    "renders/001/frame_05.png",
+    "renders/001/frame_06.png",
+    "renders/001/frame_07.png",
+    "renders/001/frame_08.png",
+    "renders/001/frame_09.png",
+    "renders/001/frame_10.png",
+    "renders/001/frame_11.png",
+    "renders/001/contact_sheet.png",
+    "motion_samples.png"
+  ],
+  "limitations": [
+    "Verification covers the supplied render evidence and source checks; it does not indicate acceptance despite the listed blockers.",
+    "Stills and neighboring samples cannot establish flawless continuous motion or readability throughout every hold. Full-decode success is reported by the host.",
+    "The complete research proof and Lean comparator were not independently verified or executed. This is an Astra evidence audit, not TypeSafe Jev approval."
+  ],
+  "repair_stage": "scene"
+}

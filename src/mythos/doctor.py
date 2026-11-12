@@ -1,0 +1,168 @@
+"""`math-to-manim-mythos doctor`: preflight checks before you spend 30 minutes.
+
+Verifies, without touching any model unless asked:
+
+- configuration: which backend/model the chain will use and where it came from
+- the backend CLI resolves on PATH
+- render toolchain: manim, ffmpeg, latex, dvisvgm
+- the runs directory is writable
+- (with ``--ping``) one tiny model call to prove the backend is logged in
+
+Exit code 0 when every required check passes.
+TeX tools are required by default; ``--no-latex`` scopes doctor to non-LaTeX scenes.
+"""
+
+from __future__ import annotations
+
+import shutil
+import subprocess
+from pathlib import Path
+
+from mythos.backends import (
+    FUGU_API_COMMANDS,
+    BackendAuthError,
+    is_claude_cli_command,
+    resolve_command,
+    run_model,
+)
+from mythos.render import render_dependency_guidance, resolve_manim
+from mythos.settings import (
+    DEFAULT_COMMAND,
+    DEFAULT_MODEL,
+    DEFAULT_RENDER_TIMEOUT,
+    DEFAULT_TIMEOUT,
+    ENV_FILE,
+    SETTING_SOURCES,
+    default_runs_dir,
+    fugu_api_key_from_env,
+    ignored_legacy_vars,
+    model_fallbacks_from_env,
+)
+
+_OK = "  [ok]  "
+_BAD = "  [FAIL]"
+_INFO = "  [--]  "
+
+
+def _which(name: str) -> str | None:
+    return shutil.which(name)
+
+
+def run_doctor(command: str = DEFAULT_COMMAND, model: str = DEFAULT_MODEL,
+               ping: bool = False, no_latex: bool = False) -> int:
+    failures = 0
+
+    print("math-to-manim-mythos doctor")
+    print("configuration:")
+    print(f"{_INFO}model:          {model}  (from {SETTING_SOURCES['model']})")
+    fallbacks = model_fallbacks_from_env()
+    if is_claude_cli_command(command):
+        chain = " -> ".join([model, *[m for m in fallbacks if m != model]])
+        print(f"{_INFO}fallbacks:      {chain}  "
+              "(same CLI subscription login, no API key)")
+    for name in ignored_legacy_vars():
+        print(f"{_INFO}note: {name} is set but ignored "
+              "(archived-pipeline setting); use M2M_MODEL")
+    print(f"{_INFO}command:        {command}  (from {SETTING_SOURCES['command']})")
+    print(f"{_INFO}timeout:        {DEFAULT_TIMEOUT:.0f}s model / "
+          f"{DEFAULT_RENDER_TIMEOUT:.0f}s render")
+    print(f"{_INFO}.env:           "
+          f"{'present (gitignored)' if ENV_FILE.exists() else 'none'}")
+
+    print("backend:")
+    if command in FUGU_API_COMMANDS:
+        key, env_name = fugu_api_key_from_env()
+        if key:
+            print(f"{_OK}HTTP backend key found in {env_name}")
+        else:
+            failures += 1
+            print(f"{_BAD}no API key: set FUGU_API_KEY (or SAKANA_API_KEY)")
+    else:
+        resolved = resolve_command(command)
+        if _which(resolved) or Path(resolved).exists():
+            print(f"{_OK}{command!r} resolves to {resolved}")
+        else:
+            failures += 1
+            print(f"{_BAD}{command!r} not found on PATH")
+        if ping:
+            chain = [model]
+            if is_claude_cli_command(command):
+                chain += [m for m in model_fallbacks_from_env() if m != model]
+            reachable = 0
+            for candidate in chain:
+                try:
+                    run_model("Reply with exactly: OK", command=command,
+                              model=candidate, timeout=120)
+                    reachable += 1
+                    print(f"{_OK}ping {candidate}: responding")
+                except BackendAuthError as exc:
+                    failures += 1
+                    print(f"{_BAD}ping {candidate}: "
+                          f"{str(exc).splitlines()[0]}")
+                    break  # a broken login is broken for every model
+                except Exception as exc:  # noqa: BLE001 — diagnostic surface
+                    print(f"{_INFO}ping {candidate}: unavailable "
+                          f"({type(exc).__name__}: {str(exc).splitlines()[0][:120]})")
+            if reachable == 0 and not failures:
+                failures += 1
+                print(f"{_BAD}no model in the chain responded")
+        else:
+            print(f"{_INFO}auth not verified (rerun with --ping to walk the "
+                  "model chain with 1-line calls)")
+
+    print("render toolchain:")
+    manim_cmd = resolve_manim()
+    label = " ".join(manim_cmd)
+    try:
+        completed = subprocess.run(manim_cmd + ["--version"], text=True,
+                                   capture_output=True, timeout=60)
+        version = (completed.stdout or completed.stderr).strip().splitlines()
+        if completed.returncode == 0 and version:
+            print(f"{_OK}manim: {version[0]}  ({label})")
+        else:
+            failures += 1
+            print(f"{_BAD}manim --version failed via {label}")
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        failures += 1
+        print(f"{_BAD}manim not runnable via {label}: {exc}")
+    missing_tex = []
+    for tool, required in (("ffmpeg", True), ("latex", not no_latex),
+                           ("dvisvgm", not no_latex)):
+        found = _which(tool)
+        if found:
+            print(f"{_OK}{tool}: {found}")
+        else:
+            if tool != "ffmpeg":
+                missing_tex.append(tool)
+            if required:
+                failures += 1
+            scope = "rendering" if tool == "ffmpeg" else "MathTex/Tex rendering"
+            print(f"{_BAD if required else _INFO}{tool} not found on PATH "
+                  f"(required for {scope})")
+            if tool == "ffmpeg":
+                print(render_dependency_guidance((tool,)))
+    if missing_tex:
+        print(f"{_BAD if not no_latex else _INFO}MathTex/Tex cannot render: "
+              f"missing {', '.join(missing_tex)}")
+        print(render_dependency_guidance(tuple(missing_tex)))
+
+    print("runs ledger:")
+    runs = default_runs_dir()
+    try:
+        runs.mkdir(parents=True, exist_ok=True)
+        probe = runs / ".doctor-probe"
+        probe.write_text("ok", encoding="utf-8")
+        probe.unlink()
+        print(f"{_OK}writable: {runs}")
+    except OSError as exc:
+        failures += 1
+        print(f"{_BAD}runs dir not writable ({runs}): {exc}")
+
+    summary = "all checks passed" if failures == 0 else f"{failures} check(s) failed"
+    if no_latex and failures == 0:
+        summary = "non-LaTeX checks passed (LaTeX checks excluded)"
+    if missing_tex:
+        summary += "; MathTex/Tex cannot render"
+    print("summary:", summary)
+    return 0 if failures == 0 else 1
+

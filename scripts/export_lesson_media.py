@@ -1,4 +1,4 @@
-"""Export a completed, Jev-approved run to the curated lesson showcase."""
+"""Export a completed Sol run approved by the independent Astra review to the showcase."""
 from __future__ import annotations
 
 import argparse
@@ -8,15 +8,25 @@ from pathlib import Path
 import shutil
 import subprocess
 
+from sol.astra_reviewer import EVALUATOR
+from sol.layout import (
+    ASTRA_REVIEW_DIR,
+    MANIFEST_FILE,
+    RECORD_FILE,
+    REVIEW_FILE,
+    REVIEW_FRAMES_DIR,
+    SCENE_FILE,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def export(run_dir: Path):
     run_dir = run_dir.resolve()
-    manifest = json.loads((run_dir / 'manifest.json').read_text(encoding='utf-8'))
-    review = json.loads((run_dir / 'review.json').read_text(encoding='utf-8'))
-    if manifest['status'] != 'completed' or review.get('evaluator') != 'jev' or review['status'] != 'approved':
-        raise ValueError('Export requires a completed run with an approved Jev review')
+    manifest = json.loads((run_dir / MANIFEST_FILE).read_text(encoding='utf-8'))
+    review = json.loads((run_dir / REVIEW_FILE).read_text(encoding='utf-8'))
+    if manifest['status'] != 'completed' or review.get('evaluator') != EVALUATOR or review['status'] != 'approved':
+        raise ValueError(f'Export requires a completed run with an approved {EVALUATOR} review')
     video = (run_dir / manifest['video_path']).resolve()
     video.relative_to(run_dir)
     record = json.loads((run_dir / review['record']).read_text(encoding='utf-8'))
@@ -37,11 +47,11 @@ def export(run_dir: Path):
     subprocess.run(['ffmpeg','-y','-ss',str(max(0,duration-2)),'-i',str(target),'-frames:v','1',str(assets / 'the-third-side-poster.png')], check=True, capture_output=True)
     scene_dir = ROOT / 'examples/sol'
     scene_dir.mkdir(parents=True,exist_ok=True)
-    shutil.copyfile(run_dir / 'sol_scene.py', scene_dir / 'the_third_side.py')
+    shutil.copyfile(run_dir / SCENE_FILE, scene_dir / 'the_third_side.py')
     evidence_dir = ROOT / 'docs/showcase/the-third-side'
     evidence_dir.mkdir(exist_ok=True)
     shutil.copyfile(run_dir / '04_math_dossier.json', evidence_dir / 'math-dossier.json')
-    shutil.copyfile(run_dir / 'review_frames/contact_sheet.png', evidence_dir / 'review-contact-sheet.png')
+    shutil.copyfile(run_dir / REVIEW_FRAMES_DIR / 'contact_sheet.png', evidence_dir / 'review-contact-sheet.png')
     stream = next(s for s in probe['streams'] if s['codec_type']=='video')
     summary = {
         'title':'The Third Side', 'run_id':manifest['run_id'],
@@ -55,8 +65,8 @@ def export(run_dir: Path):
         'supervision_notes':json.loads((run_dir / 'supervision_notes.json').read_text(encoding='utf-8')) if (run_dir / 'supervision_notes.json').is_file() else [],
         'review_attempts':[
             {'attempt':r['attempt'], 'status':r['status'], 'error':r.get('error'),
-             'verdict':json.loads(p.with_name('review.json').read_text(encoding='utf-8'))['status'] if p.with_name('review.json').is_file() else None}
-            for p in sorted((run_dir / 'jev').glob('*/record.json'))
+             'verdict':json.loads(p.with_name(REVIEW_FILE).read_text(encoding='utf-8'))['status'] if p.with_name(REVIEW_FILE).is_file() else None}
+            for p in sorted((run_dir / ASTRA_REVIEW_DIR).glob(f'*/{RECORD_FILE}'))
             for r in [json.loads(p.read_text(encoding='utf-8'))]
         ],
         'note':'Assessment citations refer to local run artifacts; sampled stills do not certify continuous motion.'

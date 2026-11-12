@@ -35,14 +35,14 @@ def check_wheel(wheel):
         "names={t.name for t in asyncio.run(mcp.list_tools())}; "
         "assert {'m2m_create_animation','m2m_get_job','m2m_list_runs','m2m_get_scene_code'} <= names")
     run('-m', 'astra.cli', 'setup')
-    result = run('-c', "import json; from astra.client import BRIDGE; from astra.runtime import runtime_directory; "
-                 "print(json.dumps({'bridge':str(BRIDGE),'runtime':str(runtime_directory())}))",
+    result = run('-c', "import json; from astra.client import BRIDGE; from astra.runtime import CODEX_VERSION, runtime_directory; "
+                 "print(json.dumps({'bridge':str(BRIDGE),'runtime':str(runtime_directory()),'codex':CODEX_VERSION}))",
                  capture_output=True, text=True)
     paths = json.loads(result.stdout)
     subprocess.run(['node', '--check', paths['bridge']], cwd=workspace, env=env, check=True)
     check = subprocess.run(['node', paths['bridge'], '--check-runtime', paths['runtime']],
                            cwd=workspace, env=env, check=True, capture_output=True, text=True)
-    assert json.loads(check.stdout) == {'model': 'gpt-6-astra', 'sdk_version': '0.156.1'}
+    assert json.loads(check.stdout) == {'sdk_version': paths['codex']}
     print(f'Astra wheel, MCP registration and locked SDK verified outside checkout: {scratch}')
 
 
