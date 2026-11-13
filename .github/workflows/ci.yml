@@ -72,6 +72,9 @@ jobs:
 
       - name: Run unit tests
         run: python -m pytest -q
+        env:
+          # Unit tests fake Blender with FakeTools; find_blender() only needs a path.
+          STUDIO_BLENDER: /usr/bin/true
 
       - name: Integration smoke (skips without manim and ffmpeg)
         run: python -m pytest -q tests/integration

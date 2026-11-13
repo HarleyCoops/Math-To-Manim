@@ -29,6 +29,7 @@ dev = [
   "fastapi>=0.110",
   "uvicorn>=0.29",
   "mcp>=2.0,<3",
+  "pillow>=10",
   "math-to-manim[argon]",
 ]
 api = [
