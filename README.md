@@ -8,6 +8,26 @@
   </picture>
 </a>
 
+## Every Dial Has a Loose Switch
+
+![Highlights from the film: the n-bit cube, the polynomial 0.1 + 0.55x1 + 0.2x2x4 + 0.1x3, a quantum look as a fan over many bits, influence bars for the four bits, the decision tree whose depth stays polynomial, and the constant c = 8√15/(125π⁴) ≈ 0.002545.](docs/assets/loose-switch/loose-switch-journey.gif)
+
+A 10-minute film about the proof of the Aaronson–Ambainis conjecture, made by the Mythos chain in this repo.
+The conjecture asked whether a quantum computer can be exponentially faster than an ordinary one on random inputs.
+The proof shows it cannot: every bounded polynomial of degree d has a bit whose influence is at least c·v^{5/2}/d^6, with c = 8√15/(125π⁴) ≈ 0.0025.
+([announcement and Lean proof](https://github.com/physical-superintelligence/aaronson-ambainis))
+
+How it was made:
+
+- The input was a written film brief: the intent, the prerequisites, the exact formulas and a worked example with checked numbers, a palette, and nine scenes.
+- The six Mythos stages (intent, cartographer, curriculum, math director, cinematographer, scene composer) and codegen ran on Claude Opus 5.5.
+- The chain wrote one Manim `ThreeDScene`, `LooseSwitchJourney` (964 lines). One repair pass restored the paper background that the brief asked for.
+- Manim rendered 586 animations into the film. The GIF above is 31 seconds of it.
+
+Twelve frames, one every 50 seconds:
+
+![Contact sheet of twelve frames: the headline "We will count only one thing: how many times you look", the 4-cube with 32 edges, the dial reading 0.2 at one corner, deg p ≤ 2T, Var(p) ≥ ε, flipping bit 2 on the cube, influence as the squared jump (0.55)², the pair term g(x2, x4) = 0.2x2x4, the influence bound, "The guarantee now exists, with an explicit floor", the comparison with c ≈ 0.00254, and the closing line.](docs/assets/loose-switch/contact-sheet.png)
+
 ## Fable 5.2 Learns Manim
 
 ![Title image "Fable 5.2 Learns Manim". On the right, a 3D drawing of the Hopf fibration: linked circles in coral, blue and gold wrap a coral torus, with a vertical axis through the middle. Below the title, the formula h(z1, z2) = (2 z1 conj(z2), |z1|^2 - |z2|^2), h: S^3 -> S^2.](docs/assets/fable-5-2/hero.png)
