@@ -1,3 +1,7 @@
 
 [features]
 hooks = true
+
+[mcp_servers.math-to-manim-astra]
+command = "python"
+args = ["-m", "astra.cli", "serve-mcp"]
