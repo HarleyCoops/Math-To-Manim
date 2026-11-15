@@ -8,6 +8,30 @@
   </picture>
 </a>
 
+## Base 12 Computer: From a Notebook Sketch
+
+[![Highlights from the film: twelve labelled modules on a circle, all 66 wires and the count C(12,2) = 66, a camera zoom into the 66, the graph folding onto the twelve corners of an icosahedron, the split 66 = 30 + 30 + 6 in three colours, a pulse counting 0 to B in base twelve, and the flat sketch again with 144 in base ten = 100 in base twelve.](docs/assets/base12-computer/base12-computer-journey.gif)](docs/assets/base12-computer/base12-computer-journey.mp4)
+
+[Watch the complete film (104 s, 720p30)](docs/assets/base12-computer/base12-computer-journey.mp4) ·
+[Read the generated scene](docs/assets/base12-computer/src/base12_computer_journey.py)
+
+A 104-second film made from one photograph of a pencil drawing.
+The drawing is a page of a notebook with the title "Base 12 Computer": twelve modules on a circle, and a line from each module to every other module.
+
+<img src="docs/assets/base12-computer/sketch.jpg" alt="Photograph of a notebook page with the title Base 12 Computer. A pencil circle has twelve points with the labels clock, clock, counter, input, input, Decoder, Decoder, 12V amp, Display, counter, output, output. Straight lines join every point to every other point." width="520" />
+
+**The only input was the drawing.**
+No person wrote a film brief, a list of formulas or a scene description.
+The request that came with the photograph was one sentence: animate it as a rotating 3D version with LaTeX formulas on screen.
+
+How it was made:
+
+- Claude Fable 5.2 read the photograph. It read the twelve labels in their clockwise order and saw that the lines make the complete graph on twelve points.
+- `m2m_create_animation` accepts text only. The model wrote a text description of the drawing and sent it to the Mythos MCP server (`math-to-manim serve-mcp`). The server did not receive the image.
+- The six Mythos stages and codegen ran on Claude Fable 5.2. The session that read the drawing answered each stage prompt through `M2M_COMMAND`, because the `claude` CLI had no login in that sandbox.
+- The mathematics came from the chain, not from the page. The drawing has no formulas. The chain added the count C(12,2) = 66, the icosahedron (the regular solid with twelve corners), the split 66 = 30 edges + 30 second neighbours + 6 antipodal pairs, and the base-twelve counter.
+- The chain wrote one Manim `ThreeDScene`, `Base12ComputerJourney` (316 lines). It passed validation and rendered on the first attempt, with no repair pass. The run outcome was `film_ready`.
+
 ## Every Dial Has a Loose Switch
 
 ![Highlights from the film: the n-bit cube, the polynomial 0.1 + 0.55x1 + 0.2x2x4 + 0.1x3, a quantum look as a fan over many bits, influence bars for the four bits, the decision tree whose depth stays polynomial, and the constant c = 8√15/(125π⁴) ≈ 0.002545.](docs/assets/loose-switch/loose-switch-journey.gif)
