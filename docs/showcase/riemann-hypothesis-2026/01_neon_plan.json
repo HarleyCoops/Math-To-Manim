@@ -1,0 +1,133 @@
+{
+  "title": "Chaining Theta Lifts to the Critical Line",
+  "slug": "riemann-hypothesis-2026",
+  "subtitle": "The November 20, 2026 Riemann Hypothesis Proof Announcements",
+  "core_thesis": "On November 20, 2026, two claimed proofs of the Generalized Riemann Hypothesis were announced on the same day: Levent Alpöge and Claude (Anthropic) bypassed the missing integer derivative in Stepanov's method by chaining roughly sqrt(X) automorphic theta lifts in 175,000+ Lean 4 files, while Stanford postdoc Alessandro Masullo released a 12-year, 940-page human-written manuscript. Both now face independent mathematical and formal verification.",
+  "verification_status": "Newly announced on November 20, 2026; neither claim has yet completed independent peer review or full community Lean-kernel audit.",
+  "prerequisites": [
+    {
+      "concept": "Riemann Zeta Function & Critical Strip",
+      "why_needed": "Defines the non-trivial zeros in 0 < Re(s) < 1 and the critical line Re(s) = 1/2.",
+      "depends_on": []
+    },
+    {
+      "concept": "von Mangoldt Prime-Power Sum psi(X)",
+      "why_needed": "Links prime distribution directly to the locations of zeta and Dirichlet L-function zeros.",
+      "depends_on": [
+        "Riemann Zeta Function & Critical Strip"
+      ]
+    },
+    {
+      "concept": "Stepanov's Method over Function Fields",
+      "why_needed": "Uses differentiation and high-order vanishing to prove RH over F_q[t], highlighting the missing derivative over Z.",
+      "depends_on": [
+        "Riemann Zeta Function & Critical Strip"
+      ]
+    },
+    {
+      "concept": "Fourier Analysis & Chaining Theta Lifts",
+      "why_needed": "Replaces naive differentiation over integers with a tower of ~sqrt(X) automorphic theta lifts for a von Mangoldt sum of length X.",
+      "depends_on": [
+        "von Mangoldt Prime-Power Sum psi(X)",
+        "Stepanov's Method over Function Fields"
+      ]
+    },
+    {
+      "concept": "Generalized Riemann Hypothesis & Formal Verification",
+      "why_needed": "Extends the framework to all Dirichlet L-functions L(s, chi) and frames the twin Nov 20, 2026 claims (Lean 4 vs. human manuscript).",
+      "depends_on": [
+        "Fourier Analysis & Chaining Theta Lifts"
+      ]
+    }
+  ],
+  "key_formulas": [
+    "\\zeta(s) = \\sum_{n=1}^{\\infty} n^{-s},\\quad \\operatorname{Re}(s) = \\tfrac{1}{2}",
+    "\\psi(X) = \\sum_{n \\le X} \\Lambda(n) = X + O\\bigl(X^{1/2}\\log^2 X\\bigr)",
+    "L_{\\text{theta}}(X) \\asymp \\sqrt{X}",
+    "L(s, \\chi) = 0 \\implies \\operatorname{Re}(s) = \\tfrac{1}{2}"
+  ],
+  "math_checks": [
+    {
+      "label": "first_zero_modulus",
+      "expression": "round(abs(complex(0.5, 14.1347251417)), 6)",
+      "expected_note": "|1/2 + i*t_1| approx 14.143566"
+    },
+    {
+      "label": "theta_chain_length_X100",
+      "expression": "sqrt(100)",
+      "expected_note": "10 chained theta lifts for X = 100"
+    },
+    {
+      "label": "theta_chain_length_X10000",
+      "expression": "sqrt(10000)",
+      "expected_note": "100 chained theta lifts for X = 10000"
+    },
+    {
+      "label": "psi_30_von_mangoldt",
+      "expression": "round(4*log(2) + 3*log(3) + 2*log(5) + log(7) + log(11) + log(13) + log(17) + log(19) + log(23) + log(29), 4)",
+      "expected_note": "psi(30) approx 31.1422"
+    },
+    {
+      "label": "zeta_eta_at_first_zero",
+      "expression": "round(abs(np.sum(((-1.0) ** np.arange(0, 40)) * (np.arange(1, 41) ** (-complex(0.5, 14.1347251417))))), 4)",
+      "expected_note": "40-term Dirichlet eta magnitude at s = 1/2 + 14.1347i approaches 0"
+    }
+  ],
+  "palette": {
+    "background": "#0b0e14",
+    "ink": "#faf9f5",
+    "cyan": "#38bdf8",
+    "coral": "#d97757",
+    "gold": "#eab308",
+    "emerald": "#34d399",
+    "slate": "#94a3b8"
+  },
+  "acts": [
+    {
+      "act": 1,
+      "title": "The Critical Strip and the Five First Zeros",
+      "duration_seconds": 22.0,
+      "camera_move": "Tilt from top-down title into 64-degree 3D sweep across the zeta surface",
+      "geometry": "3D surface log(1 + |zeta(sigma + it)|) over critical strip with glowing Re(s)=1/2 ridge and 5 zero wells",
+      "equations": [
+        "\\zeta(s) = 0 \\implies \\operatorname{Re}(s) = \\tfrac{1}{2}"
+      ],
+      "caption": "Every non-trivial zero of zeta(s) is conjectured to lie on Re(s) = 1/2."
+    },
+    {
+      "act": 2,
+      "title": "Stepanov's Multiplicity vs. the Discrete Primes",
+      "duration_seconds": 18.0,
+      "camera_move": "Smooth lateral pan from function-field curve to discrete prime-power pillars",
+      "geometry": "Smooth algebraic curve with tangent rings over F_q[t] contrasted against discrete Lambda(n) prime pillars over Z",
+      "equations": [
+        "\\mathbb{F}_q[t]:\\; \\tfrac{d}{dt} \\quad \\text{vs.} \\quad \\mathbb{Z}:\\; \\Lambda(n) = \\log p"
+      ],
+      "caption": "Over F_q[t], differentiation gives multiplicity; over Z, primes have no derivative."
+    },
+    {
+      "act": 3,
+      "title": "Chaining Theta Lifts (Alpoege & Claude)",
+      "duration_seconds": 22.0,
+      "camera_move": "Ascending helical orbit climbing the 10-layer automorphic theta-lift tower",
+      "geometry": "10 interlocked 3D automorphic rings (L = sqrt(X) for X = 100) connected by Fourier-analytic lift filaments",
+      "equations": [
+        "\\psi(X) = \\sum_{n \\le X} \\Lambda(n),\\quad L \\asymp \\sqrt{X}"
+      ],
+      "caption": "A chain of ~sqrt(X) theta lifts carries Fourier cancellation up higher-rank groups."
+    },
+    {
+      "act": 4,
+      "title": "Twin Announcements and the Verification Frontier",
+      "duration_seconds": 16.0,
+      "camera_move": "Wide monumental framing of two 3D pillars representing the Nov 20, 2026 claims",
+      "geometry": "Two luminous 3D data monuments: 175,000+ Lean 4 files (Alpoege + Claude) and 940 human pages (Masullo)",
+      "equations": [
+        "L(s, \\chi) = 0 \\implies \\operatorname{Re}(s) = \\tfrac{1}{2}"
+      ],
+      "caption": "Both Nov 20, 2026 GRH claims are unverified; the critical line awaits the verdict."
+    }
+  ],
+  "scene_class": "RiemannThetaLiftJourney",
+  "target_duration_seconds": 78.0
+}

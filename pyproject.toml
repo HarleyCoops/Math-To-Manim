@@ -72,6 +72,8 @@ math-to-manim-argon = "argon.cli:main"
 m2m-argon = "argon.cli:main"
 math-to-manim-studio = "studio.cli:main"
 m2m-studio = "studio.cli:main"
+math-to-manim-neon = "neon.cli:main"
+m2m-neon = "neon.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/HarleyCoops/Math-To-Manim"

@@ -8,6 +8,33 @@
   </picture>
 </a>
 
+## Chaining Theta Lifts to the Critical Line (Gemini 4 Neon)
+
+[![Highlights from the film: 3D zeta surface over the critical strip with the first five zero wells, Stepanov's multiplicity rings over function fields contrasted with discrete von Mangoldt prime pillars over the integers, a 10-layer automorphic theta-lift tower for X = 100, and the twin November 20, 2026 GRH announcements.](docs/assets/riemann-hypothesis-2026/riemann-hypothesis-2026.gif)](docs/assets/riemann-hypothesis-2026/riemann-hypothesis-2026.mp4)
+
+[Watch the complete film (52.4 s, 720p30)](docs/assets/riemann-hypothesis-2026/riemann-hypothesis-2026.mp4) ·
+[View the 12-frame contact sheet](docs/assets/riemann-hypothesis-2026/contact-sheet.png) ·
+[Read the generated scene](docs/assets/riemann-hypothesis-2026/src/riemann_hypothesis_2026.py) ·
+[Production record & tool log](docs/showcase/riemann-hypothesis-2026/README.md)
+
+A 52.4-second 3D film about the **November 20, 2026 Generalized Riemann Hypothesis proof announcements**, produced by the new **Gemini 4 Neon-first CLI silo** (`src/neon/`, `math-to-manim-neon`).
+On November 20, 2026, two separate GRH claims arrived on the same day: **Levent Alpöge & Claude (Anthropic)** released a 4-page overview and 175,000+ Lean 4 files (~250,000 pages equivalent) bypassing the missing integer derivative in Stepanov's method by chaining roughly $\sqrt{X}$ automorphic theta lifts for a von Mangoldt sum of length $X$; hours later, Stanford's Ravi Vakil announced postdoc **Alessandro Masullo's** 12-year, ~940-page all-human manuscript. Both claims await independent peer and formal-kernel verification.
+
+### How the Gemini 4 Neon-first CLI (`src/neon/`) works
+
+Instead of splitting reasoning across six sequential JSON-handoff stages, `math-to-manim-neon` unifies planning, numerical verification, codegen, static scene validation, Manim rendering, and showcase publishing into **one CLI call**:
+
+```bash
+math-to-manim-neon doctor
+math-to-manim-neon run "Explain the Nov 2026 Riemann Hypothesis proofs" --render -q m --publish --slug riemann-hypothesis-2026
+```
+
+- **Pluggable Neon backends:** native `google-genai` SDK (`gemini-4-neon` with `ThinkingConfig` + live function calling), official `gemini-api` CLI, or session-driven `operator` mode.
+- **First-class toolbelt (`src/neon/tools.py`):** `verify_math` (sandboxed real & complex NumPy/AST evaluator), `check_scene` (AST, `ThreeDScene`, camera-discipline, and banned-import guard), `render_scene` (secret-scrubbed Manim + `ffprobe` + 12-frame contact sheet & highlights GIF), and `publish_film`.
+- **This film:** `RiemannThetaLiftJourney` (421 lines) passed all 5 `verify_math` checks and `check_scene` with zero repairs (`outcome: film_published`).
+
+![12-frame contact sheet of Chaining Theta Lifts to the Critical Line](docs/assets/riemann-hypothesis-2026/contact-sheet.png)
+
 ## Base 12 Computer: From a Notebook Sketch
 
 [![Highlights from the film: twelve labelled modules on a circle, all 66 wires and the count C(12,2) = 66, a camera zoom into the 66, the graph folding onto the twelve corners of an icosahedron, the split 66 = 30 + 30 + 6 in three colours, a pulse counting 0 to B in base twelve, and the flat sketch again with 144 in base ten = 100 in base twelve.](docs/assets/base12-computer/base12-computer-journey.gif)](docs/assets/base12-computer/base12-computer-journey.mp4)
