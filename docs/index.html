@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math-To-Manim — Playable 3D Mathematical Film Gallery</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --card: #121826;
+      --border: #1e293b;
+      --ink: #faf9f5;
+      --muted: #94a3b8;
+      --cyan: #38bdf8;
+      --coral: #d97757;
+      --gold: #eab308;
+      --emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    header {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 48px 24px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .eyebrow {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+    h1 {
+      margin: 8px 0 12px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.15;
+    }
+    .lead {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 17px;
+      margin: 0 0 22px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      color: var(--ink);
+      background: var(--card);
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .btn:hover { border-color: var(--cyan); transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      border-color: transparent;
+      color: #fff;
+    }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 24px 72px;
+    }
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 36px;
+    }
+    .hero video {
+      width: 100%;
+      display: block;
+      background: #000;
+      aspect-ratio: 16 / 9;
+    }
+    .hero-body {
+      padding: 24px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    .b-gemini { background: rgba(56, 189, 248, 0.16); color: var(--cyan); }
+    .b-claude { background: rgba(217, 119, 87, 0.18); color: var(--coral); }
+    .b-gpt { background: rgba(52, 211, 153, 0.16); color: var(--emerald); }
+    .b-meta { background: rgba(148, 163, 184, 0.14); color: var(--muted); }
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .pill {
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .pill.active {
+      border-color: var(--cyan);
+      color: var(--ink);
+      background: rgba(56, 189, 248, 0.15);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card video, .card img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+      background: #000;
+    }
+    .card-body {
+      padding: 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card h3 {
+      margin: 6px 0 8px;
+      font-size: 18px;
+    }
+    .card p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+      flex: 1;
+    }
+    .card-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+    }
+    .card-links a {
+      color: var(--cyan);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .card-links a:hover { text-decoration: underline; }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 28px 24px 48px;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--cyan); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">HarleyCoops / Math-To-Manim</div>
+    <h1>Frontier Math to 3D Manim Films</h1>
+    <p class="lead">
+      Playable showcase of 3D mathematical animations generated end-to-end by frontier AI models
+      (Gemini 4 Neon, Gemini 4 Argon, Claude Fable 5.2, Claude Opus 5.5, and GPT-6 Astra)
+      using isolated provider silos and verified Manim Community Edition scenes.
+    </p>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://github.com/HarleyCoops/Math-To-Manim">★ Star on GitHub</a>
+      <a class="btn" href="https://colab.research.google.com/github/HarleyCoops/Math-To-Manim/blob/main/notebooks/math_to_manim_neon_colab.ipynb">▶ Open in Google Colab</a>
+      <a class="btn" href="https://github.com/HarleyCoops/Math-To-Manim/blob/main/docs/SHOWCASE.md">Full Film Archive</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <video controls playsinline preload="metadata" poster="assets/riemann-hypothesis-2026/contact-sheet.png">
+        <source src="https://github.com/HarleyCoops/Math-To-Manim/releases/download/riemann-hypothesis-film-2026-11-20/riemann-hypothesis-2026.mp4" type="video/mp4" />
+      </video>
+      <div class="hero-body">
+        <span class="badge b-gemini">Gemini 4 Neon</span>
+        <span class="badge b-meta">52.4s · 720p30 · 0 repairs</span>
+        <h2 style="margin: 6px 0 10px;">Chaining Theta Lifts to the Critical Line (Nov 20, 2026 GRH Announcements)</h2>
+        <p style="color: var(--muted); margin: 0 0 14px;">
+          Built by the new single-CLI Gemini 4 Neon silo (<code>math-to-manim-neon</code>). Visualizes the 3D zeta landscape and first five zero wells, Stepanov's multiplicity obstruction over the integers, Levent Alpöge &amp; Claude's chain of √X automorphic theta lifts across 175,000+ Lean 4 files, and Alessandro Masullo's 12-year 940-page human manuscript — noting both await independent verification.
+        </p>
+        <div class="card-links">
+          <a href="https://github.com/HarleyCoops/Math-To-Manim/releases/download/riemann-hypothesis-film-2026-11-20/riemann-hypothesis-2026.mp4">Download MP4</a>
+          <a href="assets/riemann-hypothesis-2026/contact-sheet.png">12-Frame Contact Sheet</a>
+          <a href="https://github.com/HarleyCoops/Math-To-Manim/blob/main/docs/assets/riemann-hypothesis-2026/src/riemann_hypothesis_2026.py">Manim Source (421 lines)</a>
+          <a href="https://github.com/HarleyCoops/Math-To-Manim/blob/main/docs/showcase/riemann-hypothesis-2026/README.md">Production Dossier</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="filters" id="filters">
+      <button class="pill active" data-filter="all">All Models</button>
+      <button class="pill" data-filter="gemini">Gemini 4 (Neon / Argon)</button>
+      <button class="pill" data-filter="claude">Claude (Fable 5.2 / Opus 5.5)</button>
+      <button class="pill" data-filter="gpt">GPT-6 Astra</button>
+    </div>
+
+    <section class="grid" id="gallery">
+      <article class="card" data-family="claude">
+        <video controls playsinline preload="metadata" poster="assets/base12-computer/sketch.jpg">
+          <source src="assets/base12-computer/base12-computer-journey.mp4" type="video/mp4" />
+        </video>
+        <div class="card-body">
+          <div><span class="badge b-claude">Claude Fable 5.2</span><span class="badge b-meta">104s · 720p30</span></div>
+          <h3>Base 12 Computer: From a Notebook Sketch</h3>
+          <p>Made from a single photograph of a pencil drawing: folds K₁₂ onto an icosahedron (66 = 30 + 30 + 6) and animates a base-12 counter.</p>
+          <div class="card-links">
+            <a href="https://github.com/HarleyCoops/Math-To-Manim/blob/main/docs/assets/base12-computer/src/base12_computer_journey.py">Source</a>
+            <a href="assets/base12-computer/sketch.jpg">Original Sketch</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-family="gemini">
+        <video controls playsinline preload="metadata" poster="showcase/assets/score-sde-consistency-contact-sheet.png">
+          <source src="showcase/assets/score-sde-consistency.mp4" type="video/mp4" />
+        </video>
+        <div class="card-body">
+          <div><span class="badge b-gemini">Gemini 4 Argon (ADK)</span><span class="badge b-meta">70.4s · 720p30</span></div>
+          <h3>From Score SDEs to One-Step Consistency</h3>
+          <p>Bimodal data distribution melting under Itô forward SDE, Tweedie's MMSE score field, Probability Flow ODE, and 1-NFE Consistency Models.</p>
+          <div class="card-links">
+            <a href="https://github.com/HarleyCoops/Math-To-Manim/blob/main/examples/argon/score_sde_consistency.py">Source</a>
+            <a href="https://github.com/HarleyCoops/Math-To-Manim/blob/main/docs/showcase/score-sde-consistency/README.md">Dossier</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-family="claude">
+        <video controls playsinline preload="metadata" poster="assets/fable-5-2/studio-altermagnetism-contact-sheet.png">
+          <source src="showcase/assets/studio-altermagnetism.mp4" type="video/mp4" />
+        </video>
+        <div class="card-body">
+          <div><span class="badge b-claude">Claude Fable 5.2 · Studio</span><span class="badge b-meta">37s · Blender + Manim</span></div>
+          <h3>Altermagnetism</h3>
+          <p>Zero net magnetization with spin-split electron bands rendered through the multi-engine SceneSpec Studio pipeline.</p>
+          <div class="card-links">
+            <a href="assets/fable-5-2/studio-altermagnetism-contact-sheet.png">Contact Sheet</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-family="claude">
+        <video controls playsinline preload="metadata" poster="assets/fable-5-2/studio-unit-distance-contact-sheet.png">
+          <source src="showcase/assets/studio-unit-distance.mp4" type="video/mp4" />
+        </video>
+        <div class="card-body">
+          <div><span class="badge b-claude">Claude Fable 5.2 · Studio</span><span class="badge b-meta">39s · 8 shots</span></div>
+          <h3>The Unit Distance Conjecture Is False</h3>
+          <p>Visualizing the May 2026 disproof of the discrete geometry unit-distance conjecture from one prompt to MP4.</p>
+          <div class="card-links">
+            <a href="assets/fable-5-2/studio-unit-distance-contact-sheet.png">Contact Sheet</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-family="claude">
+        <img src="assets/loose-switch/loose-switch-journey.gif" alt="Every Dial Has a Loose Switch highlights GIF" />
+        <div class="card-body">
+          <div><span class="badge b-claude">Claude Opus 5.5</span><span class="badge b-meta">10 min · 586 animations</span></div>
+          <h3>Every Dial Has a Loose Switch (Aaronson–Ambainis)</h3>
+          <p>10-minute film on the proof of the Aaronson–Ambainis conjecture and its explicit influence floor c·v^(5/2)/d^6.</p>
+          <div class="card-links">
+            <a href="assets/loose-switch/contact-sheet.png">12-Frame Sheet</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-family="gpt">
+        <video controls playsinline preload="metadata">
+          <source src="https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4" type="video/mp4" />
+        </video>
+        <div class="card-body">
+          <div><span class="badge b-gpt">GPT-6 Astra + Jev</span><span class="badge b-meta">221s · 720p30</span></div>
+          <h3>A Frontier for the Zeros (Quasi-Riemann)</h3>
+          <p>Sculptural zeta landscapes and phase-winding closeups exploring the zero-free frontier Re(s) &gt; 7/8.</p>
+          <div class="card-links">
+            <a href="https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4">Download MP4</a>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    MIT License · <a href="https://github.com/HarleyCoops/Math-To-Manim">HarleyCoops/Math-To-Manim</a>
+  </footer>
+
+  <script>
+    const buttons = document.querySelectorAll('#filters .pill');
+    const cards = document.querySelectorAll('#gallery .card');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        cards.forEach(card => {
+          card.style.display = (filter === 'all' || card.dataset.family === filter) ? 'flex' : 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
