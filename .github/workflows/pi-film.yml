@@ -29,7 +29,7 @@ jobs:
             --quality m
       - name: Preserve the movie, source, frames, metadata and logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pi-film-720p-${{ github.run_id }}
           path: runs/astra/pi-cloud-${{ github.run_id }}/
