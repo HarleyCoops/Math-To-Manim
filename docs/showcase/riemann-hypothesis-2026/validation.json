@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "scene_class": "RiemannThetaLiftJourney",
+  "scene_class": "RiemannThetaLiftCinema",
   "errors": [],
   "warnings": [],
-  "line_count": 421
+  "line_count": 455
 }
