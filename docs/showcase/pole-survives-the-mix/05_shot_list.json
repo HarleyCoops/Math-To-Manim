@@ -1,0 +1,651 @@
+{
+  "shots": [
+    {
+      "beat": 1,
+      "act_number": 1,
+      "verb": "TILT_3D",
+      "target": "station 1 deck; base curve g draws itself",
+      "params": {
+        "phi": 64,
+        "theta": -106,
+        "zoom": 0.84
+      },
+      "seconds": 4
+    },
+    {
+      "beat": 2,
+      "act_number": 1,
+      "verb": "HEADLINE",
+      "target": "The Mix That Cannot Kill a Pole",
+      "params": {
+        "font_size": 66,
+        "sub": "three copies of one curve, weights -1, 3, -2"
+      },
+      "seconds": 4
+    },
+    {
+      "beat": 3,
+      "act_number": 1,
+      "verb": "CAPTION",
+      "target": "base curve",
+      "params": {},
+      "seconds": 2,
+      "caption_text": "Start with one curve, g. Its height changes as u moves to the right."
+    },
+    {
+      "beat": 4,
+      "act_number": 1,
+      "verb": "TRANSFORM",
+      "target": "base curve -> three lane copies (coral, gold, blue)",
+      "params": {},
+      "seconds": 3,
+      "caption_text": "Make three copies of it."
+    },
+    {
+      "beat": 5,
+      "act_number": 1,
+      "verb": "TRANSFORM",
+      "target": "gold and blue copies slide by log 2 and log 4; floor brackets",
+      "params": {},
+      "seconds": 4,
+      "caption_text": "Delay the second copy by log 2, and the third by log 4."
+    },
+    {
+      "beat": 6,
+      "act_number": 1,
+      "verb": "TRANSFORM",
+      "target": "heights stretch to -1, 3, -2",
+      "params": {},
+      "seconds": 4,
+      "caption_text": "Now weight the copies: minus one, three, and minus two."
+    },
+    {
+      "beat": 7,
+      "act_number": 1,
+      "verb": "SHOW",
+      "target": "card: mix formula",
+      "params": {
+        "position": "card, top"
+      },
+      "seconds": 1,
+      "formula_id": "mix"
+    },
+    {
+      "beat": 8,
+      "act_number": 1,
+      "verb": "TRANSFORM",
+      "target": "three lanes merge into the ivory sum D",
+      "params": {},
+      "seconds": 4,
+      "caption_text": "Add the three heights at every u. The sum D is the mix.",
+      "formula_id": "mix"
+    },
+    {
+      "beat": 9,
+      "act_number": 1,
+      "verb": "ORBIT",
+      "target": "theta sweep -106 -> -82",
+      "params": {
+        "zoom": 0.95
+      },
+      "seconds": 3
+    },
+    {
+      "beat": 10,
+      "act_number": 1,
+      "verb": "HEADLINE",
+      "target": "The transform of g has poles. Does any pole survive the mix?",
+      "params": {
+        "font_size": 64
+      },
+      "seconds": 4
+    },
+    {
+      "beat": 11,
+      "act_number": 2,
+      "verb": "TILT_3D",
+      "target": "fly to station 2",
+      "params": {
+        "phi": 72,
+        "theta": -42,
+        "zoom": 0.95
+      },
+      "seconds": 3
+    },
+    {
+      "beat": 12,
+      "act_number": 2,
+      "verb": "HEADLINE",
+      "target": "A pole is one pure tone.",
+      "params": {},
+      "seconds": 3
+    },
+    {
+      "beat": 13,
+      "act_number": 2,
+      "verb": "SHOW",
+      "target": "coral spiral e^{rho u} grows along the axis",
+      "params": {},
+      "seconds": 4,
+      "caption_text": "A pure tone is a spiral along u. It turns, and it grows."
+    },
+    {
+      "beat": 14,
+      "act_number": 2,
+      "verb": "SHOW",
+      "target": "card: rho of the first zeta zero",
+      "params": {},
+      "seconds": 2,
+      "caption_text": "This one is the tone of the first zero of the zeta function."
+    },
+    {
+      "beat": 15,
+      "act_number": 2,
+      "verb": "ORBIT",
+      "target": "theta -42 -> -78; floor shadow and drop lines",
+      "params": {},
+      "seconds": 3,
+      "caption_text": "Its shadow on the floor is a growing wave."
+    },
+    {
+      "beat": 16,
+      "act_number": 2,
+      "verb": "CAPTION",
+      "target": "shadow",
+      "params": {},
+      "seconds": 2,
+      "caption_text": "The curve g is a chord of such waves, one for each pole."
+    },
+    {
+      "beat": 17,
+      "act_number": 2,
+      "verb": "SHOW",
+      "target": "card: tone formula",
+      "params": {},
+      "seconds": 3,
+      "caption_text": "In the transform, this single tone is a pole at s = rho.",
+      "formula_id": "tone"
+    },
+    {
+      "beat": 18,
+      "act_number": 2,
+      "verb": "TRANSFORM",
+      "target": "gold copy slides by log 2; theta -78 -> -40",
+      "params": {},
+      "seconds": 3,
+      "caption_text": "Delay the tone by log 2. The spiral slides along its axis."
+    },
+    {
+      "beat": 19,
+      "act_number": 2,
+      "verb": "SHOW",
+      "target": "card: shift formula",
+      "params": {},
+      "seconds": 2,
+      "caption_text": "A slid spiral is the old spiral times one number, q.",
+      "formula_id": "shift"
+    },
+    {
+      "beat": 20,
+      "act_number": 2,
+      "verb": "ZOOM_IN",
+      "target": "phasor plane at u0, seen along the axis",
+      "params": {
+        "phi": 86,
+        "theta": -7,
+        "zoom": 3.0
+      },
+      "seconds": 6,
+      "caption_text": "Along the axis: q turns the tone 159 degrees and shrinks it to 0.707."
+    },
+    {
+      "beat": 21,
+      "act_number": 2,
+      "verb": "SHOW",
+      "target": "three arrows head to tail; card: arrows formula",
+      "params": {},
+      "seconds": 5,
+      "caption_text": "Now the mix. Three arrows, head to tail.",
+      "formula_id": "arrows"
+    },
+    {
+      "beat": 22,
+      "act_number": 2,
+      "verb": "CAPTION",
+      "target": "arrows",
+      "params": {},
+      "seconds": 2,
+      "caption_text": "Minus one, then three q, then minus two q squared.",
+      "formula_id": "arrows"
+    },
+    {
+      "beat": 23,
+      "act_number": 2,
+      "verb": "SHOW",
+      "target": "ivory resultant m(rho)",
+      "params": {},
+      "seconds": 4,
+      "caption_text": "They do not close up. The gap is the number m(rho), 3.98 units long.",
+      "formula_id": "arrows",
+      "part_index": 6
+    },
+    {
+      "beat": 24,
+      "act_number": 2,
+      "verb": "PULL_BACK",
+      "target": "station 2, oblique; ivory spiral m(rho) e^{rho u} grows",
+      "params": {
+        "phi": 70,
+        "theta": -50,
+        "zoom": 0.72
+      },
+      "seconds": 8,
+      "caption_text": "So the mix gives back the same tone, 3.98 times larger.",
+      "formula_id": "eigen"
+    },
+    {
+      "beat": 25,
+      "act_number": 2,
+      "verb": "BEAT",
+      "target": "hold",
+      "params": {},
+      "seconds": 3,
+      "caption_text": "A tone dies only if its own number m(rho) is zero."
+    },
+    {
+      "beat": 26,
+      "act_number": 3,
+      "verb": "RETURN_2D",
+      "target": "fly to station 3, resting tilt 24 degrees",
+      "params": {
+        "phi": 24,
+        "theta": -90,
+        "zoom": 1.0
+      },
+      "seconds": 3
+    },
+    {
+      "beat": 27,
+      "act_number": 3,
+      "verb": "HEADLINE",
+      "target": "A delay becomes a multiplication.",
+      "params": {},
+      "seconds": 3
+    },
+    {
+      "beat": 28,
+      "act_number": 3,
+      "verb": "SHOW",
+      "target": "symbol formula on the floor",
+      "params": {
+        "position": "floor, upper"
+      },
+      "seconds": 4,
+      "caption_text": "On the transform side, the whole mix is multiplication by one function, m.",
+      "formula_id": "symbol"
+    },
+    {
+      "beat": 29,
+      "act_number": 3,
+      "verb": "TERM_TOUR",
+      "target": "symbol parts 2, 4, 6",
+      "params": {
+        "zoom": 2.3,
+        "stops": [
+          2,
+          4,
+          6
+        ]
+      },
+      "seconds": 14,
+      "caption_text": "Copy one: no delay, weight minus one. / Copy two: the delay log 2 becomes the factor 2 to the minus s. / Copy three: the delay log 4 becomes 4 to the minus s.",
+      "formula_id": "symbol",
+      "part_index": 2
+    },
+    {
+      "beat": 30,
+      "act_number": 3,
+      "verb": "TRANSFORM",
+      "target": "symbol terms -> quadratic in q, then its factors",
+      "params": {},
+      "seconds": 5,
+      "caption_text": "Write q for 2 to the minus s. The quadratic in q factors.",
+      "formula_id": "factor"
+    },
+    {
+      "beat": 31,
+      "act_number": 3,
+      "verb": "ZOOM_IN",
+      "target": "factor (1 - q)",
+      "params": {
+        "zoom": 2.4
+      },
+      "seconds": 4,
+      "caption_text": "This factor is zero only when q is 1.",
+      "formula_id": "factor",
+      "part_index": 2
+    },
+    {
+      "beat": 32,
+      "act_number": 3,
+      "verb": "PULL_BACK",
+      "target": "board",
+      "params": {},
+      "seconds": 1,
+      "formula_id": "factor"
+    },
+    {
+      "beat": 33,
+      "act_number": 3,
+      "verb": "ZOOM_IN",
+      "target": "factor (2q - 1)",
+      "params": {
+        "zoom": 2.4
+      },
+      "seconds": 4,
+      "caption_text": "This factor is zero only when q is one half.",
+      "formula_id": "factor",
+      "part_index": 3
+    },
+    {
+      "beat": 34,
+      "act_number": 3,
+      "verb": "PULL_BACK",
+      "target": "board",
+      "params": {},
+      "seconds": 3,
+      "caption_text": "The mix can kill a tone only when q is 1 or 1/2.",
+      "formula_id": "factor"
+    },
+    {
+      "beat": 35,
+      "act_number": 4,
+      "verb": "RETURN_2D",
+      "target": "fly to station 4, top-down",
+      "params": {
+        "phi": 0,
+        "theta": -90
+      },
+      "seconds": 3
+    },
+    {
+      "beat": 36,
+      "act_number": 4,
+      "verb": "HEADLINE",
+      "target": "Where can q be?",
+      "params": {},
+      "seconds": 3
+    },
+    {
+      "beat": 37,
+      "act_number": 4,
+      "verb": "SHOW",
+      "target": "two circles on the floor; radius formula",
+      "params": {},
+      "seconds": 2,
+      "caption_text": "The size of q depends on one thing only: the real part of s.",
+      "formula_id": "radius"
+    },
+    {
+      "beat": 38,
+      "act_number": 4,
+      "verb": "TRANSFORM",
+      "target": "gold circle shrinks as Re s runs 0 -> 1 -> 1/2, live readout",
+      "params": {},
+      "seconds": 6,
+      "caption_text": "As the real part goes from 0 to 1, the circle shrinks to 1/2.",
+      "formula_id": "radius"
+    },
+    {
+      "beat": 39,
+      "act_number": 4,
+      "verb": "SHOW",
+      "target": "strip implication",
+      "params": {},
+      "seconds": 2,
+      "caption_text": "Inside the critical strip, the real part is strictly between 0 and 1.",
+      "formula_id": "strip"
+    },
+    {
+      "beat": 40,
+      "act_number": 4,
+      "verb": "ZOOM_IN",
+      "target": "THE BIG ZOOM: 1/2 < |q| < 1",
+      "params": {
+        "zoom": 3.0,
+        "run_time": 2.4,
+        "hold": 2.6
+      },
+      "seconds": 5,
+      "caption_text": "So q is strictly between the two circles. It is never on them.",
+      "formula_id": "strip",
+      "part_index": 4
+    },
+    {
+      "beat": 41,
+      "act_number": 4,
+      "verb": "PULL_BACK",
+      "target": "q-plane",
+      "params": {},
+      "seconds": 2,
+      "formula_id": "strip"
+    },
+    {
+      "beat": 42,
+      "act_number": 4,
+      "verb": "SHOW",
+      "target": "kill points q = 1 and q = 1/2 flash",
+      "params": {},
+      "seconds": 4,
+      "caption_text": "And the two kill points? They sit exactly on the circles."
+    },
+    {
+      "beat": 43,
+      "act_number": 4,
+      "verb": "TILT_3D",
+      "target": "annulus becomes a flat three-turn surface",
+      "params": {
+        "phi": 64,
+        "theta": -56,
+        "zoom": 0.88
+      },
+      "seconds": 3
+    },
+    {
+      "beat": 44,
+      "act_number": 4,
+      "verb": "TRANSFORM",
+      "target": "flat annulus -> ribbon (height = Im s)",
+      "params": {},
+      "seconds": 4,
+      "caption_text": "Let the imaginary part of s be height. The strip winds into a ribbon."
+    },
+    {
+      "beat": 45,
+      "act_number": 4,
+      "verb": "SHOW",
+      "target": "two ember rods and their eight touch points",
+      "params": {},
+      "seconds": 3,
+      "caption_text": "Each kill point becomes a rod. It meets the ribbon only at an edge."
+    },
+    {
+      "beat": 46,
+      "act_number": 4,
+      "verb": "ORBIT",
+      "target": "ambient rotation; card: one turn",
+      "params": {
+        "rate": 0.16
+      },
+      "seconds": 8,
+      "caption_text": "One turn of the ribbon is 9.06 units of height in the strip.",
+      "formula_id": "turn"
+    },
+    {
+      "beat": 47,
+      "act_number": 4,
+      "verb": "ZOOM_IN",
+      "target": "the bead rho_1 on the ribbon, with a radial ruler",
+      "params": {
+        "zoom": 1.7
+      },
+      "seconds": 5,
+      "caption_text": "The first zeta zero rides here, in the middle of the ribbon."
+    },
+    {
+      "beat": 48,
+      "act_number": 4,
+      "verb": "BEAT",
+      "target": "hold",
+      "params": {},
+      "seconds": 3,
+      "caption_text": "Every pole in the strip rides between the edges. No rod can reach it."
+    },
+    {
+      "beat": 49,
+      "act_number": 5,
+      "verb": "TILT_3D",
+      "target": "fly to station 5",
+      "params": {
+        "phi": 62,
+        "theta": -128,
+        "zoom": 0.86
+      },
+      "seconds": 4
+    },
+    {
+      "beat": 50,
+      "act_number": 5,
+      "verb": "HEADLINE",
+      "target": "How much of the tone gets through?",
+      "params": {},
+      "seconds": 3
+    },
+    {
+      "beat": 51,
+      "act_number": 5,
+      "verb": "SHOW",
+      "target": "strip floor with its two walls",
+      "params": {},
+      "seconds": 3,
+      "caption_text": "This floor is the strip. Its walls are real part 0 and 1."
+    },
+    {
+      "beat": 52,
+      "act_number": 5,
+      "verb": "TRANSFORM",
+      "target": "flat strip -> landscape |m(s)|",
+      "params": {},
+      "seconds": 4,
+      "caption_text": "Raise each point to the height |m(s)|: how much of that tone passes."
+    },
+    {
+      "beat": 53,
+      "act_number": 5,
+      "verb": "ORBIT",
+      "target": "theta -128 -> -70",
+      "params": {},
+      "seconds": 4
+    },
+    {
+      "beat": 54,
+      "act_number": 5,
+      "verb": "SHOW",
+      "target": "six ember zeros on the walls",
+      "params": {},
+      "seconds": 3,
+      "caption_text": "It touches the floor only on the walls, once every 9.06."
+    },
+    {
+      "beat": 55,
+      "act_number": 5,
+      "verb": "SHOW",
+      "target": "card: floor inequality; inset graph of the floor",
+      "params": {},
+      "seconds": 4,
+      "caption_text": "Inside, the valleys are low but never zero. Their height has a positive floor.",
+      "formula_id": "floor"
+    },
+    {
+      "beat": 56,
+      "act_number": 5,
+      "verb": "SHOW",
+      "target": "white pillar at rho_1; card: value",
+      "params": {
+        "zoom": 1.15
+      },
+      "seconds": 5,
+      "caption_text": "The first zeta zero stands on a ridge. Its tone passes 3.98 times larger.",
+      "formula_id": "value"
+    },
+    {
+      "beat": 57,
+      "act_number": 5,
+      "verb": "RETURN_2D",
+      "target": "rise above the floor; residue formula beside the strip",
+      "params": {},
+      "seconds": 6,
+      "caption_text": "Near a pole the transform is r over s minus rho, plus smooth terms.",
+      "formula_id": "residue"
+    },
+    {
+      "beat": 58,
+      "act_number": 5,
+      "verb": "ZOOM_IN",
+      "target": "m(rho) r / (s - rho)",
+      "params": {
+        "zoom": 2.5
+      },
+      "seconds": 5,
+      "caption_text": "The pole stays. Its residue becomes m(rho) times r, and m(rho) is not zero.",
+      "formula_id": "residue",
+      "part_index": 2
+    },
+    {
+      "beat": 59,
+      "act_number": 5,
+      "verb": "PULL_BACK",
+      "target": "station 5 from above",
+      "params": {},
+      "seconds": 1,
+      "formula_id": "residue"
+    },
+    {
+      "beat": 60,
+      "act_number": 6,
+      "verb": "HEADLINE",
+      "target": "The mix is blind only on the walls.",
+      "params": {},
+      "seconds": 3
+    },
+    {
+      "beat": 61,
+      "act_number": 6,
+      "verb": "PULL_BACK",
+      "target": "all five stations in one row",
+      "params": {
+        "phi": 56,
+        "theta": -90,
+        "zoom": 0.152
+      },
+      "seconds": 5
+    },
+    {
+      "beat": 62,
+      "act_number": 6,
+      "verb": "SHOW",
+      "target": "end card: s = 0 removed; s = 1 removed; strip: every pole survives; credit and limit",
+      "params": {},
+      "seconds": 7
+    },
+    {
+      "beat": 63,
+      "act_number": 6,
+      "verb": "BEAT",
+      "target": "fade to ink",
+      "params": {},
+      "seconds": 2
+    }
+  ],
+  "camera_score": "The camera never cuts. It is one flight through five stations, 18 units apart, with a breath of sky between them. In the 3D set pieces (lanes, spiral, ribbon, landscape) it always moves: a slow sideways drift, an orbit, a push toward a bead. Over formulas it goes still and vertical, and it takes each term with the same three steps: whole, part, whole. The slowest move of the film is the dive into 1/2 < |q| < 1; the widest is the last pull-back, where the whole argument stands in one row."
+}

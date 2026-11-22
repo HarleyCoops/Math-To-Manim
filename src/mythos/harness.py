@@ -7,6 +7,7 @@ backend (see :mod:`mythos.backends`).
 Chain (:data:`mythos.stages.STAGES`):
     intent -> cartographer -> curriculum -> math-director
            -> cinematographer -> scene-composer -> [codegen -> verify -> render]
+           -> [paper] -> [lean]            (companions, :mod:`mythos.companions`)
 
 Each reasoning stage receives the prior artifact JSON and must return one
 JSON object. Codegen returns a complete Manim CE file inside one fenced
@@ -32,7 +33,9 @@ from typing import Any, Callable
 
 from mythos import backends
 from mythos.backends import BackendAuthError, is_claude_cli_command
+from mythos import companions as companions_mod
 from mythos.charter import CINEMATIC_CHARTER, JSON_CONTRACT, extract_json_object, extract_python_block
+from mythos.companions import Companion
 from mythos.layout import (
     SCENE_FILE,
     VALIDATION_FILE,
@@ -52,7 +55,9 @@ from mythos.settings import (
     DEFAULT_MODEL,
     DEFAULT_RENDER_TIMEOUT,
     DEFAULT_TIMEOUT,
+    companion_build_timeout,
     default_runs_dir,
+    lean_project_dir,
     model_fallbacks_from_env,
 )
 from mythos.stages import OFFLINE_SCENE, STAGES, Stage, offline_artifact, validate_stage_artifact
@@ -290,7 +295,10 @@ class MythosHarness:
         quality: str = "l",
         max_repairs: int = 3,
         run_dir_callback: Callable[[str], None] | None = None,
+        companions: tuple[Companion, ...] = (),
     ) -> dict:
+        """Run the chain. ``companions`` adds the paper and/or the Lean file
+        (:func:`mythos.companions.parse_companions`) after the film."""
         prompt = prompt.replace(chr(0xFEFF), "").strip()
         run_dir = create_run_dir(self.runs_dir, prompt)
         if run_dir_callback is not None:
@@ -301,7 +309,8 @@ class MythosHarness:
         self._save(run_dir, manifest)
         try:
             return self._run_chain(prompt, run_dir, manifest, render=render,
-                                   quality=quality, max_repairs=max_repairs)
+                                   quality=quality, max_repairs=max_repairs,
+                                   companions=tuple(companions))
         except BaseException as exc:
             # Without this record a crashed run is the same on disk as a run
             # in progress. status.stage keeps the step that failed.
@@ -313,7 +322,8 @@ class MythosHarness:
             raise
 
     def _run_chain(self, prompt: str, run_dir: Path, manifest: dict, *,
-                   render: bool, quality: str, max_repairs: int) -> dict:
+                   render: bool, quality: str, max_repairs: int,
+                   companions: tuple[Companion, ...] = ()) -> dict:
         prereq_cache = PrerequisiteCache.for_runs_dir(self.runs_dir)
 
         artifact: dict = {"user_prompt": prompt}
@@ -366,6 +376,11 @@ class MythosHarness:
                     run_dir, code_path, failure or "unknown failure", attempt, manifest)
                 check = check_scene(code_path, prompt=prompt)
                 record_check(run_dir, manifest, check)
+
+        for companion in companions:
+            enter_stage(manifest, companion.slug)
+            self._save(run_dir, manifest)
+            self._companion(run_dir, prompt, companion, manifest)
 
         manifest["scene_file"] = str(code_path)
         manifest["scene_name"] = scene_name
@@ -492,6 +507,51 @@ class MythosHarness:
         enter_stage(manifest, "verify")
         self._save(run_dir, manifest)
         return code_path, find_scene_class(code)
+
+    # ------------------------------------------------------------------ #
+    # Companions: the paper and the Lean file                             #
+    # ------------------------------------------------------------------ #
+
+    def _companion(self, run_dir: Path, prompt: str, companion: Companion,
+                   manifest: dict) -> dict:
+        """Write one companion, check it, and allow one repair.
+
+        A companion that still fails is recorded as failed in
+        ``manifest["companions"]``; it does not fail the run or the film.
+        """
+        started = time.time()
+        path = run_dir / companion.artifact
+        if self.offline:
+            path.write_text(companion.offline_text, encoding="utf-8")
+        else:
+            raw = self._model(companions_mod.companion_prompt(
+                companion, read_dossier(run_dir), prompt=prompt))
+            (run_dir / f"{companion.slug}.raw.txt").write_text(raw, encoding="utf-8")
+            path.write_text(companions_mod.extract_fenced_block(raw, companion.fences),
+                            encoding="utf-8")
+        options = dict(lean_project=lean_project_dir(), timeout=companion_build_timeout())
+        record = companions_mod.check_and_record(companion, run_dir, manifest, **options)
+        repaired = False
+        if not companions_mod.companion_ok(record) and not self.offline:
+            problems = "\n".join(record["static"]["errors"]) or str(record["build"].get("detail"))
+            self.log(f"{companion.slug}: rejected; one repair")
+            raw = self._model(companions_mod.companion_repair_prompt(
+                companion, path.read_text(encoding="utf-8"), problems))
+            (run_dir / f"{companion.slug}.repair.raw.txt").write_text(raw, encoding="utf-8")
+            path.write_text(companions_mod.extract_fenced_block(raw, companion.fences),
+                            encoding="utf-8")
+            record = companions_mod.check_and_record(companion, run_dir, manifest, **options)
+            repaired = True
+        stage_record = {"stage": companion.slug, "artifact": companion.artifact,
+                        "seconds": round(time.time() - started, 2)}
+        if repaired:
+            stage_record["repaired"] = True
+        manifest["stages"].append(stage_record)
+        self._save(run_dir, manifest)
+        self.log(f"{companion.slug:<16} -> {companion.artifact} "
+                 f"(static {'passed' if record['static']['passed'] else 'FAILED'}, "
+                 f"build {record['build']['status']})")
+        return record
 
     # ------------------------------------------------------------------ #
     # Bookkeeping                                                         #

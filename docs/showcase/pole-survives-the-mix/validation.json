@@ -1,0 +1,40 @@
+{
+  "latex": {
+    "valid": true,
+    "errors": [],
+    "warnings": [],
+    "issues": []
+  },
+  "manim_code": {
+    "valid": true,
+    "scene_names": [
+      "PoleSurvivesTheMixJourney"
+    ],
+    "errors": [],
+    "warnings": [],
+    "suggestions": [
+      "L411: Prefer raw strings for MathTex content.",
+      "L524: Prefer raw strings for MathTex content.",
+      "L566: Prefer raw strings for MathTex content.",
+      "L582: Prefer raw strings for MathTex content.",
+      "L766: Prefer raw strings for MathTex content.",
+      "L500: Prefer raw strings for MathTex content.",
+      "L501: Prefer raw strings for MathTex content.",
+      "L520: Prefer raw strings for MathTex content.",
+      "L521: Prefer raw strings for MathTex content.",
+      "L522: Prefer raw strings for MathTex content.",
+      "L586: Prefer raw strings for MathTex content.",
+      "L614: Prefer raw strings for MathTex content.",
+      "L652: Prefer raw strings for MathTex content.",
+      "L356: Prefer raw strings for MathTex content.",
+      "L357: Prefer raw strings for MathTex content."
+    ]
+  },
+  "complexity": {
+    "scene_classes": 1,
+    "tex_calls": 40,
+    "wait_calls": 22
+  },
+  "ran_at": "2026-11-22T18:31:42.343976+00:00",
+  "source_sha256": "63aab713218a8d21f34397a2489e82037d859d1e7daba5d40f01fbeee611166d"
+}

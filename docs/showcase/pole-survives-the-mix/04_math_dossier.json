@@ -1,0 +1,419 @@
+{
+  "formulas": [
+    {
+      "id": "mix",
+      "act_number": 1,
+      "latex_parts": [
+        "D(u)",
+        "=",
+        "-g(u)",
+        "+",
+        "3\\,g(u-\\log 2)",
+        "-",
+        "2\\,g(u-\\log 4)"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 2,
+          "plain_words": "Copy one, not delayed, weight minus one.",
+          "identity": "matter",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 4,
+          "plain_words": "Copy two, delayed by log 2, weight three.",
+          "identity": "interaction",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 6,
+          "plain_words": "Copy three, delayed by log 4, weight minus two.",
+          "identity": "light",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "This is compactDifference (log 2) g in the source file. A delayed copy is zero before it starts: delay a g u = g(u - a) for u > a and 0 otherwise.",
+      "common_misreading": "That the delayed copies are defined for all u by the same formula. They are zero-extended, which is what makes the one-sided Laplace rule exact."
+    },
+    {
+      "id": "tone",
+      "act_number": 2,
+      "latex_parts": [
+        "\\int_0^\\infty",
+        "e^{\\rho u}",
+        "e^{-su}\\,du",
+        "=",
+        "\\frac{1}{s-\\rho}"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 1,
+          "plain_words": "One pure tone of the curve.",
+          "identity": "matter",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 4,
+          "plain_words": "The same tone, seen in the transform: a pole at rho.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "For Re s > Re rho the integral of e^{(rho - s)u} over u > 0 is 1/(s - rho). The right-hand side continues to all s != rho.",
+      "common_misreading": "That a pole is a defect. It is the transform's record of one tone in the curve."
+    },
+    {
+      "id": "shift",
+      "act_number": 2,
+      "latex_parts": [
+        "e^{\\rho(u-\\log 2)}",
+        "=",
+        "2^{-\\rho}",
+        "\\,e^{\\rho u}"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 2,
+          "plain_words": "The number q for this tone: a turn and a shrink.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "e^{rho(u - a)} = e^{-rho a} e^{rho u}, and e^{-rho log 2} = 2^{-rho}.",
+      "common_misreading": "That a delayed spiral is a different spiral. It is the same spiral times one complex number."
+    },
+    {
+      "id": "arrows",
+      "act_number": 2,
+      "latex_parts": [
+        "-1",
+        "+",
+        "3q",
+        "-",
+        "2q^{2}",
+        "=",
+        "m(\\rho)"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "First arrow.",
+          "identity": "matter",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 2,
+          "plain_words": "Second arrow.",
+          "identity": "interaction",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 4,
+          "plain_words": "Third arrow.",
+          "identity": "light",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 6,
+          "plain_words": "The gap that is left.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "The three weighted, delayed tones at one fixed u are the complex numbers -1, 3q, -2q^2 times the tone.",
+      "common_misreading": "That weights summing to zero force the arrows to close. They close only when q = 1 (or q = 1/2)."
+    },
+    {
+      "id": "eigen",
+      "act_number": 2,
+      "latex_parts": [
+        "-e^{\\rho u}",
+        "+",
+        "3e^{\\rho(u-\\log 2)}",
+        "-",
+        "2e^{\\rho(u-\\log 4)}",
+        "=",
+        "m(\\rho)",
+        "\\,e^{\\rho u}"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 6,
+          "plain_words": "The one number the mix multiplies this tone by.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "A translation-invariant operation has the exponentials as eigenfunctions. Valid for u > log 4, after all three copies have started.",
+      "common_misreading": "That the mix changes the shape of a tone. It changes only its size and phase."
+    },
+    {
+      "id": "symbol",
+      "act_number": 3,
+      "latex_parts": [
+        "m(s)",
+        "=",
+        "-1",
+        "+",
+        "3\\cdot 2^{-s}",
+        "-",
+        "2\\cdot 4^{-s}"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 2,
+          "plain_words": "Copy one: no delay, weight minus one.",
+          "identity": "matter",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 4,
+          "plain_words": "Copy two: the delay log 2 becomes the factor 2 to the minus s.",
+          "identity": "interaction",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 6,
+          "plain_words": "Copy three: the delay log 4 becomes 4 to the minus s.",
+          "identity": "light",
+          "zoom_worthy": true
+        }
+      ],
+      "derivation_or_motivation": "Laplace transform of the mix: each delay a contributes e^{-sa} (laplace_delay in the source), with a = 0, log 2, log 4.",
+      "common_misreading": "That m depends on the curve g. It does not: it is the same function for every g."
+    },
+    {
+      "id": "factor",
+      "act_number": 3,
+      "latex_parts": [
+        "-1+3q-2q^{2}",
+        "=",
+        "(1-q)",
+        "(2q-1)"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 2,
+          "plain_words": "Zero only when q is 1.",
+          "identity": "structure",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 3,
+          "plain_words": "Zero only when q is one half.",
+          "identity": "structure",
+          "zoom_worthy": true
+        }
+      ],
+      "derivation_or_motivation": "Expand (1 - q)(2q - 1) = 2q - 1 - 2q^2 + q. This is `symbol` in the source file.",
+      "common_misreading": "That a quadratic in q with real roots says nothing about complex s. It says everything, through q = 2^{-s}."
+    },
+    {
+      "id": "qdef",
+      "act_number": 3,
+      "latex_parts": [
+        "q",
+        "=",
+        "2^{-s}"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "The single variable of the mix.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "With c = log 2, e^{-sc} = 2^{-s} and e^{-2sc} = 4^{-s} = q^2.",
+      "common_misreading": "None."
+    },
+    {
+      "id": "radius",
+      "act_number": 4,
+      "latex_parts": [
+        "|q|",
+        "=",
+        "2^{-\\mathrm{Re}\\,s}"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 0,
+          "plain_words": "The distance of q from the origin.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "|e^{-s log 2}| = e^{-Re(s) log 2}: the imaginary part of s only turns q.",
+      "common_misreading": "That the imaginary part of s changes the size of q."
+    },
+    {
+      "id": "strip",
+      "act_number": 4,
+      "latex_parts": [
+        "0<\\mathrm{Re}\\,s<1",
+        "\\Longrightarrow",
+        "\\tfrac{1}{2}",
+        "<",
+        "|q|",
+        "<",
+        "1"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 2,
+          "plain_words": "The inner circle: the kill point q = 1/2 is on it.",
+          "identity": "structure",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 4,
+          "plain_words": "q, trapped strictly between.",
+          "identity": "structure",
+          "zoom_worthy": true
+        },
+        {
+          "part_index": 6,
+          "plain_words": "The outer circle: the kill point q = 1 is on it.",
+          "identity": "structure",
+          "zoom_worthy": true
+        }
+      ],
+      "derivation_or_motivation": "2^{-sigma} is strictly decreasing, equal to 1 at sigma = 0 and to 1/2 at sigma = 1. This is the pair `upper`, `lower` in symbol_strip.",
+      "common_misreading": "That the inequalities could be weak. They are strict, and strictness is the proof."
+    },
+    {
+      "id": "turn",
+      "act_number": 4,
+      "latex_parts": [
+        "\\text{one turn}",
+        "=",
+        "\\frac{2\\pi}{\\log 2}",
+        "\\approx",
+        "9.06"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 2,
+          "plain_words": "The change of Im s that turns q once around.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "arg q = -Im(s) log 2, so q returns after Im s grows by 2 pi / log 2 = 9.0647.",
+      "common_misreading": "None."
+    },
+    {
+      "id": "floor",
+      "act_number": 5,
+      "latex_parts": [
+        "|m(s)|",
+        "\\ge",
+        "(1-2^{-\\sigma})",
+        "(2^{1-\\sigma}-1)",
+        ">",
+        "0"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 2,
+          "plain_words": "The least distance of q from the kill point 1.",
+          "identity": "structure",
+          "zoom_worthy": false
+        },
+        {
+          "part_index": 3,
+          "plain_words": "Twice the least distance of q from the kill point 1/2.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "|1 - q| >= 1 - |q| and |2q - 1| >= 2|q| - 1, with |q| = 2^{-sigma}. Equality when q is real and positive, that is at Im s = 2 pi k / log 2.",
+      "common_misreading": "That the landscape touches the floor in its valleys. The valleys are low (at most 1/8) and never zero."
+    },
+    {
+      "id": "value",
+      "act_number": 5,
+      "latex_parts": [
+        "|m(\\rho)|",
+        "=",
+        "3.984",
+        "\\qquad",
+        "\\rho=\\tfrac{1}{2}+14.1347\\,i"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 2,
+          "plain_words": "How much louder the first zeta zero's tone comes out.",
+          "identity": "structure",
+          "zoom_worthy": false
+        }
+      ],
+      "derivation_or_motivation": "q = 2^{-rho} = -0.6586 + 0.2575 i, m = (1 - q)(2q - 1) = -3.7106 + 1.4506 i.",
+      "common_misreading": "None."
+    },
+    {
+      "id": "residue",
+      "act_number": 5,
+      "latex_parts": [
+        "\\frac{r}{s-\\rho}",
+        "\\longmapsto",
+        "\\frac{m(\\rho)\\,r}{s-\\rho}"
+      ],
+      "term_glossary": [
+        {
+          "part_index": 2,
+          "plain_words": "The same pole, with residue m(rho) times r.",
+          "identity": "structure",
+          "zoom_worthy": true
+        }
+      ],
+      "derivation_or_motivation": "m(s) r/(s - rho) = m(rho) r/(s - rho) + r (m(s) - m(rho))/(s - rho), and the last quotient is analytic at rho (dslope in the source).",
+      "common_misreading": "That multiplying by a function can move or split a pole. An analytic nonvanishing factor only rescales the residue."
+    }
+  ],
+  "color_identity": {
+    "copy one, weight -1, -g(u), the base tone": "matter: coral #d97757",
+    "copy two, delay log 2, weight 3": "interaction: gold #d4a27f",
+    "copy three, delay log 4, weight -2": "light: blue #6a9bcc",
+    "q, the strip, the annulus, the ribbon": "mass/structure: olive #788c5d (text #a3b58a)",
+    "the sum D, the pole rho, m(rho)": "ivory #faf9f5",
+    "the kill points q = 1 and q = 1/2, the zeros of m, the floor": "ember #e8623c (an added accent: the only things that can kill)"
+  },
+  "numbers": [
+    {
+      "name": "log 2",
+      "value": "0.693147",
+      "why": "the first delay; log 4 = 1.386294 is the second"
+    },
+    {
+      "name": "rho_1",
+      "value": "1/2 + 14.134725 i",
+      "why": "first zero of the Riemann zeta function; four decimals of the imaginary part are shown"
+    },
+    {
+      "name": "q(rho_1)",
+      "value": "-0.658571 + 0.257458 i, |q| = 0.707107, arg q = 158.65 degrees",
+      "why": "the film says 'turns by 159 degrees and shrinks to 0.707'"
+    },
+    {
+      "name": "m(rho_1)",
+      "value": "-3.710574 + 1.450591 i, |m| = 3.984040",
+      "why": "shown as 3.98 in captions and 3.984 on the card"
+    },
+    {
+      "name": "2 pi / log 2",
+      "value": "9.064720",
+      "why": "spacing of the zeros of m on each wall, and one turn of the ribbon"
+    },
+    {
+      "name": "floor at sigma = 1/2",
+      "value": "3/sqrt(2) - 2 = 0.121320",
+      "why": "least value of |m| on the critical line; shown as 0.121"
+    },
+    {
+      "name": "largest floor",
+      "value": "1/8 at sigma = log2(4/3) = 0.415037",
+      "why": "stated in the paper; the inset graph peaks there"
+    }
+  ]
+}

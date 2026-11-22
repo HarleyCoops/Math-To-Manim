@@ -39,3 +39,7 @@ environments/studio/claude-lock.json
 !docs/assets/fable-5-2/*.png
 !docs/showcase/assets/*.png
 *.log
+
+# Code2Video public split (Kaggle download: briefs, golden videos, grader code)
+data/code2video-public/
+data/c2v_download.*

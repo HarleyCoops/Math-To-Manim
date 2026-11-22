@@ -47,6 +47,10 @@ class RunRequest(BaseModel):
     command: str = Field(default=DEFAULT_COMMAND,
                          description="Backend: claude, codex, or fugu-api")
     max_repairs: int = Field(default=3, ge=0, le=10)
+    profile: Literal["math", "motion"] = Field(
+        default="math",
+        description="Prompt profile: math (explain an idea) or motion "
+                    "(meet a motion-design brief; repairs capped at 4)")
 
 
 def create_app(service: MythosService | None = None) -> "FastAPI":
@@ -72,6 +76,7 @@ def create_app(service: MythosService | None = None) -> "FastAPI":
             model=request.model,
             command=request.command,
             max_repairs=request.max_repairs,
+            profile=request.profile,
         )
         return job.to_dict()
 

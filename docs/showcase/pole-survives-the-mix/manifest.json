@@ -1,0 +1,122 @@
+{
+  "run_id": "20261122-183142-use-the-fable-pipeline-build-3-copies-of-a-curve",
+  "prompt": "Use the Fable pipeline.\n\nBuild 3 copies of a curve, shift 2 of them by log 2 and log 4, then add them with weights -1, 3 and -2. Explain and visualize within a gorgeous 3D space why a pole inside the critical strip survives that mix.\n\nOriginal context: https://github.com/leecrossley/prime-window-rh-criterion/blob/main/results/dirichlet-window-transfer/DelayedPole.lean (Lean 4: delay, compactDifference, symbol, compactDifference_poleData). The mix is D(u) = -g(u) + 3 g(u - log 2) - 2 g(u - log 4) with zero-extended delays. On the Laplace side it multiplies the transform by m(s) = (1 - 2^(-s)) (2*2^(-s) - 1). For 0 < Re s < 1 we have 1/2 < |2^(-s)| < 1, so m has no zero there and every simple pole keeps a nonzero residue m(rho) r.\n\nArt direction: maximize art, explanation, space and zooming into formulas. One continuous 3D world on the dark Mythos stage; the camera flies between stations; every formula gets a zoom.\n\nBeyond the film, the run also produces a PhD-level LaTeX explanation of the mathematics for publication and a computational Lean file (companions: paper, lean).",
+  "model": "claude-fable-5-2 (operator session)",
+  "command": "operator",
+  "offline": false,
+  "created_utc": "2026-11-22T18:31:42.254057+00:00",
+  "stages": [
+    {
+      "stage": "intent",
+      "artifact": "01_intent.json",
+      "bytes": 2676
+    },
+    {
+      "stage": "cartographer",
+      "artifact": "02_knowledge_map.json",
+      "bytes": 3662
+    },
+    {
+      "stage": "curriculum",
+      "artifact": "03_curriculum.json",
+      "bytes": 4505
+    },
+    {
+      "stage": "math-director",
+      "artifact": "04_math_dossier.json",
+      "bytes": 9805
+    },
+    {
+      "stage": "cinematographer",
+      "artifact": "05_shot_list.json",
+      "bytes": 12829
+    },
+    {
+      "stage": "scene-composer",
+      "artifact": "06_scene_spec.json",
+      "bytes": 18892
+    },
+    {
+      "stage": "codegen",
+      "artifact": "mythos_scene.py"
+    },
+    {
+      "stage": "paper",
+      "artifact": "paper.tex"
+    },
+    {
+      "stage": "lean",
+      "artifact": "Companion.lean"
+    }
+  ],
+  "schema_version": 2,
+  "artifacts": {
+    "intent": "01_intent.json",
+    "knowledge_map": "02_knowledge_map.json",
+    "curriculum": "03_curriculum.json",
+    "math_dossier": "04_math_dossier.json",
+    "shot_list": "05_shot_list.json",
+    "scene_spec": "06_scene_spec.json",
+    "scene": "mythos_scene.py",
+    "manifest": "manifest.json",
+    "validation": "validation.json",
+    "paper": "paper.tex",
+    "lean": "Companion.lean"
+  },
+  "status": {
+    "validation": "complete",
+    "render": "complete",
+    "run": "completed",
+    "outcome": "film_ready"
+  },
+  "operator_note": "Stages answered by an operator acting as the model backend (scripts/operate_mythos_chain.py); every reply was checked by the harness.",
+  "static_check": {
+    "passed": true,
+    "detail": null
+  },
+  "renders": [
+    {
+      "exit_code": 0,
+      "log": "render_workspace_0.log",
+      "quality": "h",
+      "seconds": 890.6
+    }
+  ],
+  "companions": {
+    "paper": {
+      "artifact": "paper.tex",
+      "static": {
+        "passed": true,
+        "errors": []
+      },
+      "build": {
+        "tool": "pdflatex",
+        "log": "paper_build.log",
+        "status": "built",
+        "pdf": "paper.pdf",
+        "pages": 11,
+        "undefined_references": false
+      }
+    },
+    "lean": {
+      "artifact": "Companion.lean",
+      "static": {
+        "passed": true,
+        "errors": []
+      },
+      "build": {
+        "tool": "lake env lean",
+        "toolchain": "leanprover/lean4:v4.33.1",
+        "log": "lean_build.log",
+        "status": "built",
+        "warnings": 0,
+        "axioms": [
+          "propext, Classical.choice, Quot.sound"
+        ]
+      }
+    }
+  },
+  "scene_file": "/home/claude/out/final/runs/mythos/20261122-183142-use-the-fable-pipeline-build-3-copies-of-a-curve/mythos_scene.py",
+  "scene_name": "PoleSurvivesTheMixJourney",
+  "completed_utc": "2026-11-22T18:46:55.297523+00:00"
+}

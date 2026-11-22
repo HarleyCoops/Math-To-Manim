@@ -19,8 +19,14 @@ as the named artifact (``01_intent.json`` ... ``06_scene_spec.json``, then
 ``mythos_scene.py`` for codegen) and run it again. When every reply is present
 and valid it records the run and exits 0.
 
+``--companions paper,lean`` adds the companion deliverables
+(:mod:`mythos.companions`): the script then also asks for ``paper.tex`` and
+``Companion.lean``, runs their static checks, and builds them when the tools
+are present (pdflatex; ``M2M_LEAN_PROJECT`` and lake).
+
     python scripts/operate_mythos_chain.py path/to/stages
     python scripts/operate_mythos_chain.py path/to/stages --render -q l
+    python scripts/operate_mythos_chain.py path/to/stages --companions paper,lean
 
 "Every Orbit Is a Great Circle" (docs/showcase/every-orbit-great-circle/) was
 made this way.
@@ -32,12 +38,14 @@ import argparse
 import json
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
+from mythos import companions as companions_mod  # noqa: E402
 from mythos.charter import CINEMATIC_CHARTER  # noqa: E402
 from mythos.harness import (  # noqa: E402
     MythosHarness,
@@ -48,8 +56,9 @@ from mythos.harness import (  # noqa: E402
     stage_prompt,
 )
 from mythos.layout import SCENE_FILE, create_run_dir, write_manifest  # noqa: E402
+from mythos.lifecycle import mark_run_completed  # noqa: E402
 from mythos.scene_checks import find_scene_class  # noqa: E402
-from mythos.settings import default_runs_dir  # noqa: E402
+from mythos.settings import companion_build_timeout, default_runs_dir, lean_project_dir  # noqa: E402
 from mythos.stages import STAGES, validate_stage_artifact  # noqa: E402
 
 NEEDS_REPLY = 2
@@ -67,7 +76,8 @@ def _ask(stages: Path, filename: str, prompt: str) -> int:
 
 
 def operate(stages: Path, *, runs_dir: Path | None = None, model: str = "operator session",
-            render: bool = False, quality: str = "l") -> tuple[int, Path | None]:
+            render: bool = False, quality: str = "l",
+            companions: tuple = ()) -> tuple[int, Path | None]:
     stages = Path(stages).resolve()
     prompt_file = stages / "prompt.txt"
     if not prompt_file.is_file():
@@ -93,6 +103,12 @@ def operate(stages: Path, *, runs_dir: Path | None = None, model: str = "operato
     scene_path = stages / SCENE_FILE
     if not scene_path.is_file():
         return _ask(stages, SCENE_FILE, codegen_prompt(dossier)), None
+    for companion in companions:
+        if not (stages / companion.artifact).is_file():
+            ask = companions_mod.companion_prompt(companion, dossier, prompt=prompt)
+            (stages / "NEXT_PROMPT.txt").write_text(ask, encoding="utf-8")
+            print(f"  [operator] reply needed: save it as {stages / companion.artifact}")
+            return NEEDS_REPLY, None
     (stages / "NEXT_PROMPT.txt").unlink(missing_ok=True)
 
     run_dir = create_run_dir(runs_dir, prompt)
@@ -132,8 +148,31 @@ def operate(stages: Path, *, runs_dir: Path | None = None, model: str = "operato
         print(out[-2000:])
         if rc != 0:
             return rc, run_dir
+    companions_failed = False
+    for companion in companions:
+        (run_dir / f"{companion.slug}.prompt.txt").write_text(
+            companions_mod.companion_prompt(companion, dossier, prompt=prompt), encoding="utf-8")
+        (run_dir / companion.artifact).write_text(
+            (stages / companion.artifact).read_text(encoding="utf-8"), encoding="utf-8")
+        record = companions_mod.check_and_record(
+            companion, run_dir, manifest, lean_project=lean_project_dir(),
+            timeout=companion_build_timeout())
+        manifest["stages"].append({"stage": companion.slug, "artifact": companion.artifact})
+        write_manifest(run_dir, manifest)
+        static = "passed" if record["static"]["passed"] else "FAILED: " + "; ".join(
+            record["static"]["errors"])
+        print(f"  [mythos] {companion.slug:<16} -> {companion.artifact} "
+              f"(static {static}; build {record['build']['status']})")
+        companions_failed = companions_failed or not companions_mod.companion_ok(record)
+    # Close the run: without this the manifest of a finished operator run
+    # reads as "status unknown" (no status.run, no status.outcome).
+    manifest["scene_file"] = str(code_path)
+    manifest["scene_name"] = scene_name
+    manifest["completed_utc"] = datetime.now(timezone.utc).isoformat()
+    mark_run_completed(manifest)
+    write_manifest(run_dir, manifest)
     print(f"  [mythos] run recorded -> {run_dir}")
-    return 0, run_dir
+    return (1 if companions_failed else 0), run_dir
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -145,9 +184,12 @@ def main(argv: list[str] | None = None) -> int:
                         help="recorded in the manifest, e.g. the model the session runs on")
     parser.add_argument("--render", action="store_true")
     parser.add_argument("-q", "--quality", default="l", choices=list("lmhpk"))
+    parser.add_argument("--companions", default="",
+                        help="comma-separated companions to record: paper, lean")
     args = parser.parse_args(argv)
     rc, _ = operate(args.stages, runs_dir=args.runs_dir, model=args.model,
-                    render=args.render, quality=args.quality)
+                    render=args.render, quality=args.quality,
+                    companions=companions_mod.parse_companions(args.companions))
     return rc
 
 

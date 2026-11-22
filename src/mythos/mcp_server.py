@@ -112,6 +112,14 @@ class CreateAnimationInput(BaseModel):
         le=10,
         description="Maximum model repairs after a failed check or render.",
     )
+    profile: Literal["math", "motion"] = Field(
+        default="math",
+        description=(
+            "Prompt profile. math: explain a mathematical idea (default). motion: "
+            "meet a motion-design brief exactly; the prompt is the brief, passed in "
+            "unchanged, and repairs are capped at 4."
+        ),
+    )
 
 
 class RunIdInput(BaseModel):
@@ -187,6 +195,7 @@ def m2m_create_animation(params: CreateAnimationInput) -> str:
         "quality": params.quality,
         "offline": params.offline,
         "max_repairs": params.max_repairs,
+        "profile": params.profile,
     }
     if params.model:
         options["model"] = params.model

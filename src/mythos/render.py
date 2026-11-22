@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import importlib.util
 import re
+from functools import partial as _bind
 import shutil
 import subprocess
 import sys
@@ -141,7 +142,20 @@ def validate_scene_name(scene_name: str) -> str:
     return scene_name
 
 
-def apply_resource_limits() -> None:
+MIN_CPU_SECONDS = 600
+
+
+def cpu_limit_for(timeout: float) -> int:
+    """CPU seconds allowed for a render with the wall-clock budget ``timeout``.
+
+    The cap was a fixed 600 s, so on Linux a film that needs more CPU than
+    that could never finish, whatever ``M2M_RENDER_TIMEOUT`` said. Manim
+    renders on one core: the CPU cap now follows the wall-clock budget.
+    """
+    return max(MIN_CPU_SECONDS, int(timeout))
+
+
+def apply_resource_limits(cpu_seconds: int = MIN_CPU_SECONDS) -> None:
     """Best-effort CPU and address-space caps for the Manim child.
 
     Residual risk: ``resource`` is unavailable on Windows; even on Linux these
@@ -151,7 +165,7 @@ def apply_resource_limits() -> None:
     if resource is None:
         return
     try:
-        resource.setrlimit(resource.RLIMIT_CPU, (600, 600))
+        resource.setrlimit(resource.RLIMIT_CPU, (cpu_seconds, cpu_seconds))
     except (ValueError, OSError):
         pass
     try:
@@ -234,7 +248,8 @@ def render_scene_file(
             errors="replace",
             timeout=timeout,
             check=False,
-            preexec_fn=apply_resource_limits if resource is not None else None,
+            preexec_fn=(_bind(apply_resource_limits, cpu_limit_for(timeout))
+                        if resource is not None else None),
         )
     except FileNotFoundError as exc:
         # This exception is from launching our command, before scene code runs.

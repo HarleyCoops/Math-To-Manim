@@ -69,7 +69,8 @@ class AgentResult:
 class AgentRuntime(Protocol):
     name: str
 
-    def run(self, spec: AgentSpec, prompt: str, *, cwd: Path) -> AgentResult: ...
+    def run(self, spec: AgentSpec, prompt: str, *, cwd: Path,
+            images: tuple[Path, ...] = ()) -> AgentResult: ...
 
 
 def load_agent_file(path: Path, *, tools: tuple[str, ...] = (),
@@ -93,6 +94,29 @@ def load_agent_file(path: Path, *, tools: tuple[str, ...] = (),
 
     return AgentSpec(name=value("name") or Path(path).stem, system=body.strip(),
                      tools=tools, model=value("model"), schema=schema)
+
+
+_MEDIA_TYPES = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+                ".gif": "image/gif", ".webp": "image/webp"}
+
+
+def image_block(path: Path) -> dict[str, Any]:
+    """One image file as an Anthropic image content block."""
+    import base64
+
+    media = _MEDIA_TYPES.get(Path(path).suffix.lower())
+    if media is None:
+        raise ValueError(f"unsupported attachment type: {path}")
+    data = base64.b64encode(Path(path).read_bytes()).decode("ascii")
+    return {"type": "image", "source": {"type": "base64", "media_type": media,
+                                       "data": data}}
+
+
+async def _with_images(prompt: str, images: tuple[Path, ...]):
+    """The prompt as one streamed user message: the images, then the text."""
+    content = [image_block(p) for p in images] + [{"type": "text", "text": prompt}]
+    yield {"type": "user", "message": {"role": "user", "content": content},
+           "parent_tool_use_id": None, "session_id": "studio"}
 
 
 class LocalSdkRuntime:
@@ -126,7 +150,8 @@ class LocalSdkRuntime:
             options["env"] = {"CLAUDE_CONFIG_DIR": self.config_dir}
         return options
 
-    def run(self, spec: AgentSpec, prompt: str, *, cwd: Path) -> AgentResult:
+    def run(self, spec: AgentSpec, prompt: str, *, cwd: Path,
+            images: tuple[Path, ...] = ()) -> AgentResult:
         options = self._options(spec, cwd)
         query_fn = self._query_fn
         sdk_options: Any = options
@@ -142,7 +167,8 @@ class LocalSdkRuntime:
         result = AgentResult(ok=False, runtime=self.name, model=options["model"])
 
         async def collect() -> None:
-            async for message in query_fn(prompt=prompt, options=sdk_options):
+            sdk_prompt = _with_images(prompt, images) if images else prompt
+            async for message in query_fn(prompt=sdk_prompt, options=sdk_options):
                 if not hasattr(message, "structured_output"):
                     continue  # only the final result message carries the answer
                 result.session_id = getattr(message, "session_id", None)

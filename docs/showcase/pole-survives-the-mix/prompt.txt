@@ -1,0 +1,9 @@
+Use the Fable pipeline.
+
+Build 3 copies of a curve, shift 2 of them by log 2 and log 4, then add them with weights -1, 3 and -2. Explain and visualize within a gorgeous 3D space why a pole inside the critical strip survives that mix.
+
+Original context: https://github.com/leecrossley/prime-window-rh-criterion/blob/main/results/dirichlet-window-transfer/DelayedPole.lean (Lean 4: delay, compactDifference, symbol, compactDifference_poleData). The mix is D(u) = -g(u) + 3 g(u - log 2) - 2 g(u - log 4) with zero-extended delays. On the Laplace side it multiplies the transform by m(s) = (1 - 2^(-s)) (2*2^(-s) - 1). For 0 < Re s < 1 we have 1/2 < |2^(-s)| < 1, so m has no zero there and every simple pole keeps a nonzero residue m(rho) r.
+
+Art direction: maximize art, explanation, space and zooming into formulas. One continuous 3D world on the dark Mythos stage; the camera flies between stations; every formula gets a zoom.
+
+Beyond the film, the run also produces a PhD-level LaTeX explanation of the mathematics for publication and a computational Lean file (companions: paper, lean).

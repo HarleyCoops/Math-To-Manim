@@ -1,0 +1,150 @@
+{
+  "target": "If Phi(s) = r/(s - rho) + (analytic) near a point rho with 0 < Re rho < 1 and r != 0, then m(s) Phi(s) = m(rho) r/(s - rho) + (analytic) near rho, and m(rho) r != 0, where m(s) = (1 - 2^{-s})(2*2^{-s} - 1) is the Laplace symbol of the mix -g(u) + 3g(u - log 2) - 2g(u - log 4).",
+  "nodes": [
+    {
+      "id": "pole_survives",
+      "name": "A pole inside the strip survives the mix",
+      "why_needed": "The target.",
+      "depth": 0,
+      "assumed": false,
+      "visual_seed": "A white pillar that stands on a ridge of a coloured landscape, far above the floor."
+    },
+    {
+      "id": "residue_rule",
+      "name": "Residue rule: r becomes m(rho) r",
+      "why_needed": "It is what 'survives' means: the pole stays simple and its residue is not zero.",
+      "depth": 1,
+      "assumed": false,
+      "visual_seed": "A fraction r/(s - rho) on the floor; a second fraction with m(rho) riding on top of r."
+    },
+    {
+      "id": "no_zero_in_strip",
+      "name": "m has no zero with 0 < Re s < 1",
+      "why_needed": "The residue rule needs m(rho) != 0.",
+      "depth": 1,
+      "assumed": false,
+      "visual_seed": "A spiral ribbon that winds upward between two red rods and touches them only with its edges."
+    },
+    {
+      "id": "annulus",
+      "name": "1/2 < |q| < 1 inside the strip",
+      "why_needed": "It keeps q away from the two zeros of the quadratic.",
+      "depth": 2,
+      "assumed": false,
+      "visual_seed": "A gold circle that shrinks from the outer ring to the inner ring as Re s runs from 0 to 1."
+    },
+    {
+      "id": "factorisation",
+      "name": "-1 + 3q - 2q^2 = (1 - q)(2q - 1)",
+      "why_needed": "It names the only two ways the mix can give zero.",
+      "depth": 2,
+      "assumed": false,
+      "visual_seed": "A quadratic that splits into two ember factors; the camera visits each."
+    },
+    {
+      "id": "symbol",
+      "name": "The mix is multiplication by m(s) = -1 + 3*2^{-s} - 2*4^{-s}",
+      "why_needed": "It turns a question about curves into a question about one function.",
+      "depth": 3,
+      "assumed": false,
+      "visual_seed": "Three coloured terms on a floor board, one for each copy."
+    },
+    {
+      "id": "delay_rule",
+      "name": "A delay by a multiplies a tone by e^{-rho a}",
+      "why_needed": "It is why each copy contributes one term of m.",
+      "depth": 4,
+      "assumed": false,
+      "visual_seed": "A spiral that slides along its own axis and lands on itself, turned and smaller."
+    },
+    {
+      "id": "tone_is_pole",
+      "name": "The tone e^{rho u} has transform 1/(s - rho)",
+      "why_needed": "It links a pole of the transform to a visible part of the curve.",
+      "depth": 4,
+      "assumed": false,
+      "visual_seed": "A growing spiral whose floor shadow is a growing wave."
+    },
+    {
+      "id": "the_mix",
+      "name": "D(u) = -g(u) + 3g(u - log 2) - 2g(u - log 4)",
+      "why_needed": "The object of the film.",
+      "depth": 5,
+      "assumed": false,
+      "visual_seed": "Three lanes: coral, gold, blue. The gold and blue curves slide right, all three stretch, then merge into one ivory curve."
+    },
+    {
+      "id": "complex_exp",
+      "name": "Complex exponentials and the complex plane",
+      "why_needed": "Needed to read a spiral and the number q.",
+      "depth": 6,
+      "assumed": true,
+      "visual_seed": "A point that turns on a circle."
+    },
+    {
+      "id": "laplace",
+      "name": "The one-sided Laplace transform",
+      "why_needed": "The transform in which delays become factors.",
+      "depth": 6,
+      "assumed": true,
+      "visual_seed": "One integral sign on a card, shown once."
+    }
+  ],
+  "edges": [
+    [
+      "complex_exp",
+      "tone_is_pole"
+    ],
+    [
+      "laplace",
+      "tone_is_pole"
+    ],
+    [
+      "the_mix",
+      "symbol"
+    ],
+    [
+      "tone_is_pole",
+      "delay_rule"
+    ],
+    [
+      "delay_rule",
+      "symbol"
+    ],
+    [
+      "symbol",
+      "factorisation"
+    ],
+    [
+      "factorisation",
+      "no_zero_in_strip"
+    ],
+    [
+      "annulus",
+      "no_zero_in_strip"
+    ],
+    [
+      "no_zero_in_strip",
+      "residue_rule"
+    ],
+    [
+      "residue_rule",
+      "pole_survives"
+    ],
+    [
+      "complex_exp",
+      "annulus"
+    ]
+  ],
+  "spine": [
+    "the_mix",
+    "tone_is_pole",
+    "delay_rule",
+    "symbol",
+    "factorisation",
+    "annulus",
+    "no_zero_in_strip",
+    "residue_rule",
+    "pole_survives"
+  ]
+}

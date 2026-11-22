@@ -24,6 +24,7 @@ from typing import Any, Callable
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+from mythos import trace
 from mythos.settings import (
     DEFAULT_COMMAND,
     DEFAULT_MODEL,
@@ -133,6 +134,7 @@ def claude_cli_command(
     system_extra: str | None,
     prompt: str,
     os_name: str = os.name,
+    output_format: str = "text",
 ) -> tuple[list[str], str | None]:
     """Build the ``claude -p`` argv and decide how the prompt travels.
 
@@ -141,7 +143,7 @@ def claude_cli_command(
     command line fits the limit of the resolved executable; otherwise (and
     always off Windows) it goes through stdin.
     """
-    cmd = [executable, "-p", "--output-format", "text", "--model", model]
+    cmd = [executable, "-p", "--output-format", output_format, "--model", model]
     if system_extra:
         cmd += ["--append-system-prompt", system_extra]
     if os_name != "nt":
@@ -166,7 +168,41 @@ def run_model(
     model: str = DEFAULT_MODEL,
     timeout: float = DEFAULT_TIMEOUT,
 ) -> str:
-    """Send one prompt to the configured backend and return raw text output."""
+    """Send one prompt to the configured backend and return raw text output.
+
+    When a trace writer is bound (:func:`mythos.trace.bind`), the call is
+    recorded as one ``agent_call`` event: prompt, system text, reply, latency
+    and, on the Claude CLI, token usage.
+    """
+    binding = trace.current()
+    if binding is None:
+        return _dispatch(prompt, system_extra=system_extra, command=command,
+                         model=model, timeout=timeout, usage=None)
+    usage: dict[str, Any] = {}
+    watch = trace.Stopwatch()
+    reply: str | None = None
+    error: str | None = None
+    try:
+        reply = _dispatch(prompt, system_extra=system_extra, command=command,
+                          model=model, timeout=timeout, usage=usage)
+        return reply
+    except Exception as exc:  # noqa: BLE001 - recorded, then re-raised
+        error = f"{type(exc).__name__}: {str(exc)[:2000]}"
+        raise
+    finally:
+        binding.writer.emit(
+            "agent_call", stage=binding.stage,
+            input={"backend": backend_kind(command), "system": system_extra,
+                   "prompt": prompt},
+            output={"text": reply} if error is None else {"error": error},
+            model=usage.get("model") or model,
+            tokens_in=usage.get("tokens_in"), tokens_out=usage.get("tokens_out"),
+            latency_ms=watch.ms, parent_seq=binding.parent_seq, prompt=prompt,
+            runtime=f"{backend_kind(command)}-cli")
+
+
+def _dispatch(prompt: str, *, system_extra: str | None, command: str, model: str,
+              timeout: float, usage: dict[str, Any] | None) -> str:
     kind = backend_kind(command)
     if kind == "fugu":
         return call_fugu_chat(
@@ -181,7 +217,7 @@ def run_model(
         return _run_codex(executable, prompt, system_extra=system_extra,
                           model=model, timeout=timeout)
     return _run_claude(executable, prompt, system_extra=system_extra,
-                       model=model, timeout=timeout)
+                       model=model, timeout=timeout, usage=usage)
 
 
 def _run_codex(executable: str, prompt: str, *, system_extra: str | None,
@@ -216,9 +252,13 @@ def _run_codex(executable: str, prompt: str, *, system_extra: str | None,
 
 
 def _run_claude(executable: str, prompt: str, *, system_extra: str | None,
-                model: str, timeout: float) -> str:
+                model: str, timeout: float,
+                usage: dict[str, Any] | None = None) -> str:
+    # With a usage dict to fill, ask the CLI for its JSON result envelope,
+    # which carries token counts; the text reply is its ``result`` field.
     cmd, stdin_prompt = claude_cli_command(
-        executable, model=model, system_extra=system_extra, prompt=prompt)
+        executable, model=model, system_extra=system_extra, prompt=prompt,
+        output_format="json" if usage is not None else "text")
     # This repo runs the chain on the Claude CLI's subscription login.
     # A stray ANTHROPIC_API_KEY in the environment would silently
     # override that login (and 401 if stale), so scrub it.
@@ -242,7 +282,36 @@ def _run_claude(executable: str, prompt: str, *, system_extra: str | None,
             "Run `claude /login` (or `codex login`), or set "
             "M2M_COMMAND/M2M_MODEL to a configured backend."
         )
-    return completed.stdout
+    if usage is None:
+        return completed.stdout
+    return parse_claude_json_result(completed.stdout, usage)
+
+
+def parse_claude_json_result(stdout: str, usage: dict[str, Any]) -> str:
+    """The reply text of ``claude -p --output-format json``; fills ``usage``."""
+    try:
+        envelope = json.loads(stdout)
+    except json.JSONDecodeError:
+        return stdout  # not an envelope: treat as plain text
+    if not isinstance(envelope, dict):
+        return stdout
+    raw = envelope.get("usage") or {}
+    tokens_in = sum(int(raw.get(k) or 0) for k in (
+        "input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens"))
+    usage["tokens_in"] = tokens_in or None
+    usage["tokens_out"] = raw.get("output_tokens")
+    usage["cost_usd"] = envelope.get("total_cost_usd")
+    models = list((envelope.get("modelUsage") or {}).keys())
+    if models:
+        usage["model"] = models[0]
+    text = envelope.get("result")
+    if envelope.get("is_error"):
+        raise RuntimeError(f"Mythos model call returned an error: {str(text)[:2000]}")
+    if not isinstance(text, str):
+        raise RuntimeError("Claude CLI JSON result carried no text")
+    if text.strip().lower().startswith("not logged in"):
+        raise BackendAuthError("The Claude CLI backend is not logged in. Run `claude /login`.")
+    return text
 
 
 def _raise_for_failure(completed: subprocess.CompletedProcess, cmd: list[str]) -> None:
