@@ -8,52 +8,11 @@
   </picture>
 </a>
 
-**Turn frontier mathematics into verified 3D Manim & Blender films in a single CLI call.**
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/HarleyCoops/Math-To-Manim/blob/main/notebooks/math_to_manim_neon_colab.ipynb)
-[![Playable Gallery](https://img.shields.io/badge/Playable%20Gallery-GitHub%20Pages-38bdf8?logo=github)](https://harleycoops.github.io/Math-To-Manim/)
-[![Latest Film Release](https://img.shields.io/badge/MP4%20Release-Nov%202026%20GRH-eab308?logo=github)](https://github.com/HarleyCoops/Math-To-Manim/releases/tag/riemann-hypothesis-film-2026-11-20)
-[![License: MIT](https://img.shields.io/badge/License-MIT-34d399.svg)](LICENSE)
-
-[![Highlights from Chaining Theta Lifts to the Critical Line: 3D zeta surface over the critical strip with the first five zero wells, Stepanov's multiplicity rings over function fields contrasted with discrete von Mangoldt prime pillars over the integers, a 10-layer automorphic theta-lift tower for X = 100, and the twin November 20, 2026 GRH announcements.](docs/assets/riemann-hypothesis-2026/riemann-hypothesis-2026.gif)](https://github.com/HarleyCoops/Math-To-Manim/releases/download/riemann-hypothesis-film-2026-11-20/riemann-hypothesis-2026.mp4)
-
-> **[Watch the 720p30 MP4 (52.4s)](https://github.com/HarleyCoops/Math-To-Manim/releases/download/riemann-hypothesis-film-2026-11-20/riemann-hypothesis-2026.mp4)** · **[Open Playable Multi-Model Gallery](https://harleycoops.github.io/Math-To-Manim/)** · **[Try Zero-Install in Colab](https://colab.research.google.com/github/HarleyCoops/Math-To-Manim/blob/main/notebooks/math_to_manim_neon_colab.ipynb)** · **[Full Film Archive](docs/SHOWCASE.md)**
-
----
-
-## 3-Line Quickstart (Gemini 4 Neon CLI)
-
-```bash
-pip install -e ".[render]" google-genai
-math-to-manim-neon doctor
-math-to-manim-neon run "Explain the Nov 2026 Riemann Hypothesis proofs" --render -q m --publish
-```
-
-No local Manim/LaTeX setup? Click **[Open in Colab](https://colab.research.google.com/github/HarleyCoops/Math-To-Manim/blob/main/notebooks/math_to_manim_neon_colab.ipynb)** to render a 3D scene directly in your browser.
-
----
-
-## Multi-Model Frontier Films
-
-Each frontier model runs inside its own isolated provider silo (`src/<silo>/`, enforced by `tests/test_silo_boundaries.py`), taking a mathematical topic or raw sketch all the way to verified 3D code and MP4:
-
-| Film | Model / Silo | Length | Watch / Inspect |
-|---|---|---:|---|
-| **The Mix That Cannot Kill a Pole** *(L. Crossley's delayed-difference step)* | Claude Fable 5.2 (`src/mythos/`) | 264 s | [MP4](docs/showcase/assets/pole-survives-the-mix.mp4) · [GIF](docs/showcase/assets/pole-survives-the-mix.gif) · [Paper](docs/showcase/pole-survives-the-mix/paper.pdf) · [Lean](docs/showcase/pole-survives-the-mix/DelayedPoleSurvival.lean) · [Source](examples/mythos/pole_survives_the_mix.py) · [Dossier](docs/showcase/pole-survives-the-mix/README.md) |
-| **Chaining Theta Lifts to the Critical Line** *(Nov 20, 2026 GRH)* | Gemini 4 Neon (`src/neon/`) | 52.4 s | [MP4 Release](https://github.com/HarleyCoops/Math-To-Manim/releases/download/riemann-hypothesis-film-2026-11-20/riemann-hypothesis-2026.mp4) · [Contact Sheet](docs/assets/riemann-hypothesis-2026/contact-sheet.png) · [Source](docs/assets/riemann-hypothesis-2026/src/riemann_hypothesis_2026.py) |
-| **Base 12 Computer: From a Notebook Sketch** | Claude Fable 5.2 (`src/mythos/`) | 104 s | [MP4](docs/assets/base12-computer/base12-computer-journey.mp4) · [Sketch](docs/assets/base12-computer/sketch.jpg) · [Source](docs/assets/base12-computer/src/base12_computer_journey.py) |
-| **Altermagnetism** & **Unit Distance Disproof** | Claude Fable 5.2 (`src/studio/`) | 37–39 s | [Altermagnetism MP4](docs/showcase/assets/studio-altermagnetism.mp4) · [Unit Distance MP4](docs/showcase/assets/studio-unit-distance.mp4) |
-| **Every Dial Has a Loose Switch** *(Aaronson–Ambainis)* | Claude Opus 5.5 (`src/mythos/`) | 10 min | [GIF](docs/assets/loose-switch/loose-switch-journey.gif) · [Contact Sheet](docs/assets/loose-switch/contact-sheet.png) |
-| **From Score SDEs to One-Step Consistency** | Gemini 4 Argon (`src/argon/`) | 70.4 s | [MP4](docs/showcase/assets/score-sde-consistency.mp4) · [Source](examples/argon/score_sde_consistency.py) · [Dossier](docs/showcase/score-sde-consistency/README.md) |
-| **A Frontier for the Zeros** *(Quasi-Riemann)* | GPT-6 Astra + Jev (`src/astra/`) | 221 s | [MP4 Release](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4) |
-
-See **[docs/SHOWCASE.md](docs/SHOWCASE.md)** for the complete archive of films, Studio Blender+Manim comparisons, Mythos MCP docs, and legacy installation guides.
-
----
-
 ## Featured: The Mix That Cannot Kill a Pole (film, paper and Lean file)
 
-![Collage of twelve frames from the film: the title; three delayed and weighted copies that merge into one curve D(u); the spiral tone of the first zeta zero and its floor shadow; the larger ivory spiral that the mix returns; the headline "A delay becomes a multiplication"; the camera inside the factor (1 − q); a gold circle that shrinks between the circles |q| = 1 and |q| = 1/2; the two kill points on those circles; the strip wound into a ribbon with two red rods; the surface |m(s)| over the strip; the residue rule on the floor; the five stations in one row with the end card.](docs/showcase/assets/pole-survives-the-mix-contact-sheet.png)
+[![Ten scenes from the film, 40 seconds: two copies slide right by log 2 and log 4; three weighted curves merge into the curve D; a coral spiral grows along its axis; three arrows −1, 3q and −2q² are laid head to tail and do not close; a larger ivory spiral grows around the coral one; the camera dives into 1/2 < |q| < 1; a flat annulus winds up into a three-turn ribbon; two red rods rise through the ribbon and touch only its edges; the surface |m(s)| rises from the floor of the strip; the camera pulls back until five stations stand in one row.](docs/showcase/assets/pole-survives-the-mix.gif)](docs/showcase/assets/pole-survives-the-mix.mp4)
+
+> **[Watch the film (720p, 264 s)](docs/showcase/assets/pole-survives-the-mix.mp4)** · **[Paper (PDF)](docs/showcase/pole-survives-the-mix/paper.pdf)** · **[Lean file](docs/showcase/pole-survives-the-mix/DelayedPoleSurvival.lean)** · **[Manim source](examples/mythos/pole_survives_the_mix.py)** · **[Stage artifacts and run record](docs/showcase/pole-survives-the-mix/README.md)**
 
 Take a curve g. Make three copies. Delay two of them by log 2 and log 4. Add the copies with weights −1, 3 and −2.
 The weights sum to zero, so the mix cancels things. It does not cancel a pole of the transform of g that lies inside the critical strip 0 < Re s < 1.
@@ -61,22 +20,45 @@ This 4-minute film shows why, in one continuous 3D world with five stations. The
 **Credit.** The question and the mathematics are Lee Crossley's. All credit goes to his Lean file [`DelayedPole.lean`](https://github.com/leecrossley/prime-window-rh-criterion/blob/main/results/dirichlet-window-transfer/DelayedPole.lean) in [prime-window-rh-criterion](https://github.com/leecrossley/prime-window-rh-criterion). The film, the paper and the Lean file here only explain his result.
 His result is one step of a conditional criterion. It is not a proof of the Riemann hypothesis.
 
-[Film (720p)](docs/showcase/assets/pole-survives-the-mix.mp4) ·
-[Paper (PDF)](docs/showcase/pole-survives-the-mix/paper.pdf) ·
-[Lean file](docs/showcase/pole-survives-the-mix/DelayedPoleSurvival.lean) ·
-[Manim source](examples/mythos/pole_survives_the_mix.py) ·
-[Stage artifacts and run record](docs/showcase/pole-survives-the-mix/README.md)
+![Collage of twelve frames from the film: the title; three delayed and weighted copies that merge into one curve D(u); the spiral tone of the first zeta zero and its floor shadow; the larger ivory spiral that the mix returns; the headline "A delay becomes a multiplication"; the camera inside the factor (1 − q); a gold circle that shrinks between the circles |q| = 1 and |q| = 1/2; the two kill points on those circles; the strip wound into a ribbon with two red rods; the surface |m(s)| over the strip; the residue rule on the floor; the five stations in one row with the end card.](docs/showcase/assets/pole-survives-the-mix-contact-sheet.png)
 
-### The scenes
+---
 
-![Ten scenes from the film, 40 seconds: two copies slide right by log 2 and log 4; three weighted curves merge into the curve D; a coral spiral grows along its axis; three arrows −1, 3q and −2q² are laid head to tail and do not close; a larger ivory spiral grows around the coral one; the camera dives into 1/2 < |q| < 1; a flat annulus winds up into a three-turn ribbon; two red rods rise through the ribbon and touch only its edges; the surface |m(s)| rises from the floor of the strip; the camera pulls back until five stations stand in one row.](docs/showcase/assets/pole-survives-the-mix.gif)
+## The wall: 20 earlier films
 
-How it was made:
+Math-To-Manim turns frontier mathematics into verified 3D Manim and Blender films in a single CLI call.
+The film above is the newest one. These are 20 of the films that came before it.
+
+[![Animated wall of 20 earlier films in a grid of 4 columns and 5 rows, each tile an 8-second loop: 01 Chaining Theta Lifts to the Critical Line; 02 Base 12 Computer; 03 From Score SDEs to One-Step Consistency; 04 Every Orbit Is a Great Circle; 05 Morse Theory on a Torus; 06 The Shape and Its Shadow; 07 The Third Side; 08 Every Dial Has a Loose Switch; 09 The Traitor Axis; 10 Exceptional-point monodromy; 11 The Valley; 12 Vortex; 13 The Associate Family; 14 Holonomy; 15 The Last Day; 16 QED in Minkowski Spacetime; 17 Hopf Fibration; 18 Lorenz Attractor; 19 Rhombicosidodecahedron; 20 Area of a Circle.](docs/showcase/assets/gif-wall.gif)](docs/SHOWCASE.md)
+
+- **01** [Chaining Theta Lifts to the Critical Line](https://github.com/HarleyCoops/Math-To-Manim/releases/download/riemann-hypothesis-film-2026-11-20/riemann-hypothesis-2026.mp4) · **02** [Base 12 Computer](docs/assets/base12-computer/base12-computer-journey.mp4) · **03** [From Score SDEs to One-Step Consistency](docs/showcase/assets/score-sde-consistency.mp4) · **04** [Every Orbit Is a Great Circle](docs/showcase/assets/every-orbit-great-circle.mp4)
+- **05** [Morse Theory on a Torus](docs/showcase/assets/astra-morse-torus.mp4) · **06** [The Shape and Its Shadow](docs/showcase/assets/mahler-film.mp4) · **07** [The Third Side](docs/showcase/assets/the-third-side.mp4) · **08** [Every Dial Has a Loose Switch](docs/assets/loose-switch/loose-switch-journey.gif)
+- **09** [The Traitor Axis](docs/showcase/assets/traitor-axis.gif) · **10** [Exceptional-point monodromy](docs/showcase/assets/exceptional-point-monodromy.gif) · **11** [The Valley](docs/showcase/assets/the-valley.gif) · **12** [Vortex](docs/showcase/assets/vortex-leapfrog.gif)
+- **13** [The Associate Family](docs/showcase/assets/associate-family-riso.gif) · **14** [Holonomy](docs/showcase/assets/blueprint-holonomy.gif) · **15** [The Last Day](docs/showcase/assets/the-last-day.gif) · **16** [QED in Minkowski Spacetime](docs/showcase/assets/qed-minkowski-epic-3d.gif)
+- **17** [Hopf Fibration](docs/showcase/assets/hopf-fibration.gif) · **18** [Lorenz Attractor](docs/showcase/assets/lorenz-attractor.gif) · **19** [Rhombicosidodecahedron](docs/showcase/assets/rhombicosidodecahedron.gif) · **20** [Area of a Circle](docs/showcase/assets/circle-area-3d-unwrapped.gif)
+
+The numbers are the tile numbers. A link opens the full MP4, or the full GIF when the repo has no MP4.
+Also in the archive: [Altermagnetism](docs/showcase/assets/studio-altermagnetism.mp4), [Unit Distance Disproof](docs/showcase/assets/studio-unit-distance.mp4) and [A Frontier for the Zeros](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4).
+
+The newer films come from separate model silos under `src/`: Claude Fable 5.2 and Claude Opus 5.5 (`mythos`, `studio`), Gemini 4 Neon (`neon`), Gemini 4 Argon (`argon`), and GPT-6 Astra with Jev (`astra`).
+See **[docs/SHOWCASE.md](docs/SHOWCASE.md)** for the complete archive of films, Studio Blender+Manim comparisons, Mythos MCP docs, and installation guides.
+To rebuild the wall from the GIFs in the repo, run `python scripts/build_gif_wall.py`.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/HarleyCoops/Math-To-Manim/blob/main/notebooks/math_to_manim_neon_colab.ipynb)
+[![Playable Gallery](https://img.shields.io/badge/Playable%20Gallery-GitHub%20Pages-38bdf8?logo=github)](https://harleycoops.github.io/Math-To-Manim/)
+[![GRH Film Release](https://img.shields.io/badge/MP4%20Release-Nov%202026%20GRH-eab308?logo=github)](https://github.com/HarleyCoops/Math-To-Manim/releases/tag/riemann-hypothesis-film-2026-11-20)
+[![License: MIT](https://img.shields.io/badge/License-MIT-34d399.svg)](LICENSE)
+
+---
+
+## The Mix That Cannot Kill a Pole: how it was made, the paper and the Lean file
+
+### How it was made
 
 - The input was Lee Crossley's question, with his [`DelayedPole.lean`](https://github.com/leecrossley/prime-window-rh-criterion/blob/main/results/dirichlet-window-transfer/DelayedPole.lean) as context. The art direction was: one 3D world, and a zoom into every formula.
 - A Claude Fable 5.2 session answered the six Mythos stages and codegen through `scripts/operate_mythos_chain.py`. The harness validated each reply.
 - The chain wrote one Manim `ThreeDScene`, `PoleSurvivesTheMixJourney` (844 lines). The static check rejected the first version: six `\tfrac12` fragments had no braces.
-- The harness rendered 187 animations at 1920 × 1080, 60 fps, in 891 seconds. The film is 264 seconds long. The GIF above is 40 seconds of it.
+- The harness rendered 187 animations at 1920 × 1080, 60 fps, in 891 seconds. The film is 264 seconds long. The GIF at the top of this page is 40 seconds of it.
 - Two new companion stages wrote the paper and the Lean file ([`docs/MYTHOS_COMPANIONS.md`](docs/MYTHOS_COMPANIONS.md)). The harness compiled the paper with pdflatex and checked the Lean file with Lean 4.33.1 and Mathlib.
 - The film has no narration. No independent reviewer checked the film or the paper.
 
