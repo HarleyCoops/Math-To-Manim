@@ -1,0 +1,36 @@
+{
+  "core_claim": "The mix -1, 3, -2 of three delayed copies multiplies each pure tone e^{rho u} by one number m(rho) = (1 - 2^{-rho})(2*2^{-rho} - 1), and that number is zero only on the two walls of the critical strip, so every pole inside the strip survives.",
+  "audience": "A viewer who knows what a complex number and an exponential are, and who has heard of the Riemann zeta function, but who has never used a Laplace transform. They fear the words 'pole' and 'residue'. The film gives each word one picture: a pole is one pure tone, a residue is how loud the tone is. A research mathematician must also find every statement exact.",
+  "emotional_arc": [
+    "Curiosity: three copies of one wiggly curve are slid and stacked. Why these delays, why these weights?",
+    "Unease: the weights sum to zero. The mix cancels things. Does it cancel the poles that the whole method needs?",
+    "Clarity: a pole is one spiral tone; a delay only turns and shrinks it; the mix is three arrows head to tail.",
+    "Revelation: the arrows close up only if q = 1 or q = 1/2, and inside the strip q is trapped strictly between those two circles.",
+    "Calm: a ribbon that never touches two rods, a landscape that touches the floor only on its walls, and one honest sentence about what this does and does not prove."
+  ],
+  "scope": {
+    "in": [
+      "the definition of the mix D(u) = -g(u) + 3g(u - log 2) - 2g(u - log 4) with zero-extended delays",
+      "a pure tone e^{rho u} and its Laplace transform 1/(s - rho)",
+      "a delay by a multiplies the transform by e^{-sa}",
+      "the symbol m(s) = -1 + 3*2^{-s} - 2*4^{-s} = (1 - q)(2q - 1), q = 2^{-s}",
+      "|q| = 2^{-Re s}; the strip maps into the open annulus 1/2 < |q| < 1",
+      "the zeros of m: s = 2 pi i k / log 2 and s = 1 + 2 pi i k / log 2",
+      "the residue rule r -> m(rho) r and the floor |m| >= (1 - 2^{-sigma})(2^{1-sigma} - 1)",
+      "the worked number |m(rho_1)| = 3.984 at the first zeta zero"
+    ],
+    "out": [
+      "the Landau window theorem that uses the surviving poles",
+      "the definition of the observable g for a Dirichlet family and of PoleData in full",
+      "the tent weight and the prime-window criterion (they are in the paper and in the Lean file)",
+      "any claim that the Riemann hypothesis is proved: it is not"
+    ]
+  },
+  "duration_seconds": 260,
+  "title_options": [
+    "The Mix That Cannot Kill a Pole",
+    "Three Echoes and a Pole",
+    "Blind Only on the Walls"
+  ],
+  "the_big_zoom": "In the q-plane station the camera dives straight down, 3x, into the right-hand side of the implication 0 < Re s < 1 => 1/2 < |q| < 1. The ember 1/2 and the ember 1 fill the frame with |q| caught between two strict inequality signs. This is the whole proof in one line: the kill points are the two ends, and q is never at an end."
+}

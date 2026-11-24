@@ -17,6 +17,12 @@ calls ``os.getenv``.
     M2M_MANIM                 manim launcher override      default: active interpreter's manim
     M2M_PREREQ_CACHE_TTL_DAYS prerequisite cache TTL       default 30
     M2M_LATEX_DEEP_CHECK      1/true/yes/on: also compile MathTex fragments with lualatex
+    M2M_CLAUDE_CONFIG_DIR     Claude login folder for Agent SDK sessions (motion profile)
+                              default: CLAUDE_CONFIG_DIR, else the CLI's default login
+    M2M_TRACE_SCRUB_NAMES     comma-separated extra names removed from run traces
+    M2M_LEAN_PROJECT          Lake project (requires Mathlib) that checks Companion.lean
+                              default: unset, the Lean build is recorded as skipped
+    M2M_COMPANION_TIMEOUT     seconds per companion build (pdflatex, lake)   default 900
     FUGU_API_KEY | SAKANA_API_KEY | SAKAA_API_KEY       key for the fugu-api backend
     FUGU_BASE_URL | SAKANA_BASE_URL | SAKAA_BASE_URL    OpenAI-compatible endpoint
                                                            default https://api.sakana.ai/v1
@@ -139,3 +145,27 @@ class PipelineSettings:
             "on",
         }
         return cls(prereq_cache_ttl_days=ttl, latex_deep_check=deep)
+
+
+def agent_config_dir() -> str | None:
+    """Claude login folder for Agent SDK sessions (None: the CLI default)."""
+    return os.getenv("M2M_CLAUDE_CONFIG_DIR") or os.getenv("CLAUDE_CONFIG_DIR") or None
+
+
+def trace_scrub_names() -> tuple[str, ...]:
+    """Extra personal names the trace scrubber removes (M2M_TRACE_SCRUB_NAMES)."""
+    raw = os.getenv("M2M_TRACE_SCRUB_NAMES", "")
+    return tuple(n.strip() for n in raw.split(",") if n.strip())
+
+
+def lean_project_dir() -> str | None:
+    """Lake project used to check the Lean companion (M2M_LEAN_PROJECT)."""
+    return os.getenv("M2M_LEAN_PROJECT") or None
+
+
+def companion_build_timeout() -> float:
+    """Seconds allowed for one companion build (M2M_COMPANION_TIMEOUT)."""
+    try:
+        return max(1.0, float(os.getenv("M2M_COMPANION_TIMEOUT", "900")))
+    except ValueError:
+        return 900.0

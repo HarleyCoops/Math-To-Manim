@@ -1,4 +1,4 @@
-# Math To Manim
+# Math-To-Manim
 
 <a href="https://www.star-history.com/?repos=HarleyCoops%2FMath-To-Manim&type=date&legend=top-left">
   <picture>
@@ -8,749 +8,248 @@
   </picture>
 </a>
 
-## Base 12 Computer: From a Notebook Sketch
+## Featured: The Mix That Cannot Kill a Pole (film, paper and Lean file)
 
-[![Highlights from the film: twelve labelled modules on a circle, all 66 wires and the count C(12,2) = 66, a camera zoom into the 66, the graph folding onto the twelve corners of an icosahedron, the split 66 = 30 + 30 + 6 in three colours, a pulse counting 0 to B in base twelve, and the flat sketch again with 144 in base ten = 100 in base twelve.](docs/assets/base12-computer/base12-computer-journey.gif)](docs/assets/base12-computer/base12-computer-journey.mp4)
+[![Ten scenes from the film, 40 seconds: two copies slide right by log 2 and log 4; three weighted curves merge into the curve D; a coral spiral grows along its axis; three arrows −1, 3q and −2q² are laid head to tail and do not close; a larger ivory spiral grows around the coral one; the camera dives into 1/2 < |q| < 1; a flat annulus winds up into a three-turn ribbon; two red rods rise through the ribbon and touch only its edges; the surface |m(s)| rises from the floor of the strip; the camera pulls back until five stations stand in one row.](docs/showcase/assets/pole-survives-the-mix.gif)](docs/showcase/assets/pole-survives-the-mix.mp4)
 
-[Watch the complete film (104 s, 720p30)](docs/assets/base12-computer/base12-computer-journey.mp4) ·
-[Read the generated scene](docs/assets/base12-computer/src/base12_computer_journey.py)
+> **[Watch the film (720p, 264 s)](docs/showcase/assets/pole-survives-the-mix.mp4)** · **[Paper (PDF)](docs/showcase/pole-survives-the-mix/paper.pdf)** · **[Lean file](docs/showcase/pole-survives-the-mix/DelayedPoleSurvival.lean)** · **[Manim source](examples/mythos/pole_survives_the_mix.py)** · **[Stage artifacts and run record](docs/showcase/pole-survives-the-mix/README.md)**
 
-A 104-second film made from one photograph of a pencil drawing.
-The drawing is a page of a notebook with the title "Base 12 Computer": twelve modules on a circle, and a line from each module to every other module.
+Take a curve g. Make three copies. Delay two of them by log 2 and log 4. Add the copies with weights −1, 3 and −2.
+The weights sum to zero, so the mix cancels things. It does not cancel a pole of the transform of g that lies inside the critical strip 0 < Re s < 1.
+This 4-minute film shows why, in one continuous 3D world with five stations. The run also wrote an 11-page paper and a Lean file that prove the same statement.
+**Credit.** The question and the mathematics are Lee Crossley's. All credit goes to his Lean file [`DelayedPole.lean`](https://github.com/leecrossley/prime-window-rh-criterion/blob/main/results/dirichlet-window-transfer/DelayedPole.lean) in [prime-window-rh-criterion](https://github.com/leecrossley/prime-window-rh-criterion). The film, the paper and the Lean file here only explain his result.
+His result is one step of a conditional criterion. It is not a proof of the Riemann hypothesis.
 
-<img src="docs/assets/base12-computer/sketch.jpg" alt="Photograph of a notebook page with the title Base 12 Computer. A pencil circle has twelve points with the labels clock, clock, counter, input, input, Decoder, Decoder, 12V amp, Display, counter, output, output. Straight lines join every point to every other point." width="520" />
-
-**The only input was the drawing.**
-No person wrote a film brief, a list of formulas or a scene description.
-The request that came with the photograph was one sentence: animate it as a rotating 3D version with LaTeX formulas on screen.
-
-How it was made:
-
-- Claude Fable 5.2 read the photograph. It read the twelve labels in their clockwise order and saw that the lines make the complete graph on twelve points.
-- `m2m_create_animation` accepts text only. The model wrote a text description of the drawing and sent it to the Mythos MCP server (`math-to-manim serve-mcp`). The server did not receive the image.
-- The six Mythos stages and codegen ran on Claude Fable 5.2. The session that read the drawing answered each stage prompt through `M2M_COMMAND`, because the `claude` CLI had no login in that sandbox.
-- The mathematics came from the chain, not from the page. The drawing has no formulas. The chain added the count C(12,2) = 66, the icosahedron (the regular solid with twelve corners), the split 66 = 30 edges + 30 second neighbours + 6 antipodal pairs, and the base-twelve counter.
-- The chain wrote one Manim `ThreeDScene`, `Base12ComputerJourney` (316 lines). It passed validation and rendered on the first attempt, with no repair pass. The run outcome was `film_ready`.
-
-## Every Dial Has a Loose Switch
-
-![Highlights from the film: the n-bit cube, the polynomial 0.1 + 0.55x1 + 0.2x2x4 + 0.1x3, a quantum look as a fan over many bits, influence bars for the four bits, the decision tree whose depth stays polynomial, and the constant c = 8√15/(125π⁴) ≈ 0.002545.](docs/assets/loose-switch/loose-switch-journey.gif)
-
-A 10-minute film about the proof of the Aaronson–Ambainis conjecture, made by the Mythos chain in this repo.
-The conjecture asked whether a quantum computer can be exponentially faster than an ordinary one on random inputs.
-The proof shows it cannot: every bounded polynomial of degree d has a bit whose influence is at least c·v^{5/2}/d^6, with c = 8√15/(125π⁴) ≈ 0.0025.
-([announcement and Lean proof](https://github.com/physical-superintelligence/aaronson-ambainis))
-
-How it was made:
-
-- The input was a written film brief: the intent, the prerequisites, the exact formulas and a worked example with checked numbers, a palette, and nine scenes.
-- The six Mythos stages (intent, cartographer, curriculum, math director, cinematographer, scene composer) and codegen ran on Claude Opus 5.5.
-- The chain wrote one Manim `ThreeDScene`, `LooseSwitchJourney` (964 lines). One repair pass restored the paper background that the brief asked for.
-- Manim rendered 586 animations into the film. The GIF above is 31 seconds of it.
-
-Twelve frames, one every 50 seconds:
-
-![Contact sheet of twelve frames: the headline "We will count only one thing: how many times you look", the 4-cube with 32 edges, the dial reading 0.2 at one corner, deg p ≤ 2T, Var(p) ≥ ε, flipping bit 2 on the cube, influence as the squared jump (0.55)², the pair term g(x2, x4) = 0.2x2x4, the influence bound, "The guarantee now exists, with an explicit floor", the comparison with c ≈ 0.00254, and the closing line.](docs/assets/loose-switch/contact-sheet.png)
-
-## Fable 5.2 Learns Manim
-
-![Title image "Fable 5.2 Learns Manim". On the right, a 3D drawing of the Hopf fibration: linked circles in coral, blue and gold wrap a coral torus, with a vertical axis through the middle. Below the title, the formula h(z1, z2) = (2 z1 conj(z2), |z1|^2 - |z2|^2), h: S^3 -> S^2.](docs/assets/fable-5-2/hero.png)
-
-Claude Fable 5.2 wrote this week's changes to the Mythos chain, and the images in this section.
-The title image is a still from a Manim `ThreeDScene` that the model wrote: [`docs/assets/fable-5-2/src/hero.py`](docs/assets/fable-5-2/src/hero.py).
-The chain itself calls the model set in `M2M_MODEL` (default `claude-fable-5-2`).
-
-### What changed in the chain
-
-Two commits changed how a run reports its state.
-
-**`a49352e`: explicit job and run lifecycles.**
-A job's status now moves only through a transition table: `queued` to `running`, then `completed` or `failed`.
-The run manifest records three fields under `status`:
-
-- `run`: `running`, `completed` or `failed`.
-- `stage`: the step that is running now. On a failed run, the step that failed.
-- `outcome`: how a finished run ended. One of `film_ready`, `scene_ready`, `validation_failed`, `render_failed`, `render_timed_out`, `render_blocked`, `chain_failed`.
-
-Before this commit, a crashed run looked the same on disk as a run in progress.
-Now it is recorded as failed, with the step that failed.
-
-![Diagram of the lifecycles in src/mythos/lifecycle.py. Job status: queued to running, running to completed or failed, queued to failed. Run stage: the ten step names from intent to repair. Run outcome: the seven values and what each means. Before and after: a crashed run's manifest.json, first without and then with the fields run, stage, outcome, error and failed_utc.](docs/assets/fable-5-2/lifecycle.png)
-
-**`9e154fd`: `serve-mcp` runs the Mythos chain and returns the Mythos job.**
-`src/mythos/mcp_server.py` is now an MCP server over the Mythos service.
-It has seven tools: `m2m_create_animation`, `m2m_get_job`, `m2m_list_runs`, `m2m_get_run`, `m2m_get_artifact`, `m2m_get_scene_code`, `m2m_cinematic_charter`.
-An agent that polls a job gets `status`, `stage` and `outcome` in the job record.
-A `completed` job can still have the outcome `render_failed`, so read `outcome` to know if a film exists.
-The Grok chain has its own server: `math-to-manim-grok serve-mcp`.
-No silo imports another silo (`tests/test_silo_boundaries.py`).
-
-![Diagram of the Mythos MCP server. Left: the seven tool names, each with one line on what it does. Right: the order of calls (m2m_create_animation, then m2m_get_job until done, then m2m_get_scene_code), one real job record with status "running", stage "math-director" and outcome null, and a table of status, stage and outcome for a running job, a finished offline run and a failed run.](docs/assets/fable-5-2/mcp.png)
-
-The job records in both diagrams are real output.
-[`capture_job_records.py`](docs/assets/fable-5-2/src/capture_job_records.py) calls the MCP tool functions with a stub model backend that stops at the fourth stage.
-
-### How it works now
-
-The chain has six reasoning stages. Each stage writes one JSON file into the run directory.
-Then `codegen` writes the Manim scene, `verify` checks it, and `render` runs Manim.
-If a check or a render fails, `repair` asks the model to rewrite the scene file. The default limit is 3 repairs.
-
-![Diagram of the Mythos chain. Left: the six reasoning stages and the file each writes: intent (01_intent.json), cartographer (02_knowledge_map.json), curriculum (03_curriculum.json), math-director (04_math_dossier.json), cinematographer (05_shot_list.json), scene-composer (06_scene_spec.json). Right: codegen writes mythos_scene.py, verify writes validation.json, render writes a log; a failed check or render goes to repair, which sends a new file back to verify, at most 3 rounds by default; the run ends and manifest.json records status.run and status.outcome.](docs/assets/fable-5-2/chain.png)
-
-Run the chain without a model, to test the setup:
-
-```bash
-math-to-manim-mythos run "Why does a top precess?" --offline
-```
-
-Run the chain with the model and render the film:
-
-```bash
-math-to-manim-mythos run "Why does a top precess?" --render -q m
-```
-
-Serve the chain to agents over MCP (needs the `mcp` extra: `pip install -e ".[mcp]"`):
-
-```bash
-math-to-manim-mythos serve-mcp
-math-to-manim-mythos serve-mcp --transport streamable-http --port 8643
-```
-
-Runs are written to `runs/mythos/<timestamp>-<slug>/`. The stage table is in `src/mythos/stages.py` and the runner is in `src/mythos/harness.py`.
-
-### Studio: from a question to an MP4
-
-Studio is the next pipeline, in `src/studio/`. One command now takes a question and writes a film:
-
-```bash
-math-to-manim-studio run "What is altermagnetism? How can a magnet have zero net magnetization and still split electron bands by spin?"
-math-to-manim-studio run "offline rehearsal" --offline   # no model: renders a fixed 4-shot spec
-math-to-manim-studio runs
-math-to-manim-studio status <run-id>
-```
-
-The run has three stages, recorded in `runs/studio/<run-id>/manifest.json` under `status.run`, `status.stage` and `status.outcome`:
-
-1. **directing.** The Director agent writes `brief.json`: the answer, the equations and the beats.
-2. **speccing.** The Spec Author agent writes `scenespec.json`. Code validates it and checks a budget (at most 1280x720, 30 fps, 60 s, four 3D shots). A rejected answer goes back to the agent with the list of problems, at most 3 attempts. Every attempt is recorded in `trace.jsonl`.
-3. **rendering.** Each shot has its own state: `queued`, `rendering`, `measuring`, `accepted` or `failed`. Blender EEVEE renders the 3D shots. Manim renders the cards, and the caption and equation overlay for each 3D shot. Code checks the frames. ffmpeg joins the segments into `film.mp4` and makes `contact_sheet.png`.
-
-Surfaces and curves in a SceneSpec are expressions such as `0.3 * (x**2 - y**2)`. `src/studio/spec/expr.py` evaluates them through an allow-list of arithmetic and named functions, so a spec cannot run code.
-
-Two films made this way, with no manual step between the question and the MP4:
-
-**Altermagnetism** (37 s, 7 shots). [Watch the film](docs/showcase/assets/studio-altermagnetism.mp4).
-
-![Contact sheet of the altermagnetism film, seven shots. A title card; a crystal of coral atoms with spin arrows up and blue atoms with spin arrows down, under the equation M = m_A + m_B = 0; a text card on the ordinary antiferromagnet; a top view where gold neighbour atoms lie along x around coral atoms and along y around blue atoms; two crossing bowl-shaped energy surfaces under E_up(k) = E_down(Rk); a saddle surface with two coral lobes, two blue lobes and white diagonal zero lines under E_up(k) - E_down(k) proportional to k_x^2 - k_y^2; a closing card.](docs/assets/fable-5-2/studio-altermagnetism-contact-sheet.png)
-
-**The unit distance conjecture is false** (39 s, 8 shots). [Watch the film](docs/showcase/assets/studio-unit-distance.mp4). The subject is the [disproof that OpenAI announced on May 20, 2026](https://openai.com/index/model-disproves-discrete-geometry-conjecture/). The facts were given to the pipeline inside the question.
-
-![Contact sheet of the unit distance film, eight shots. A card that defines u(n); a tilted square grid of blue points with a circle and twelve white arrows from the centre to grid points at distance one; a card with the grid lower bound and the conjecture; a card with the upper bound O(n^(4/3)); the grid again with one coral arrow under |(a+bi)-(c+di)| = 1; a schematic with many more arrows from one centre; a card on why the number fields exist; a closing card with u(n) >= n^(1+delta).](docs/assets/fable-5-2/studio-unit-distance-contact-sheet.png)
-
-Known limits of these two films:
-
-- No critic reviewed them. In the altermagnetism film, spin arrows of adjacent atoms touch in shot 2, and objects enter the caption band in shots 2, 4 and 5. Layout rules were then added to the Spec Author prompt, and the second film has no such overlap.
-- The sixth shot of the unit distance film is a schematic. It is not the point set from the proof.
-- No agent checked the facts against sources. The films have no narration and no audio.
-- A SceneSpec cannot move objects yet. Only the camera moves.
-
-Also built and tested:
-
-- `math-to-manim-studio doctor` checks each tool, renders a test shot in Blender and in Manim, and writes the measured seconds per frame to `runs/studio/env.lock.json`.
-- `math-to-manim-studio agent-check` runs one agent through the Claude Agent SDK and checks its structured output.
-- `SceneSpec` is one typed scene description. `src/studio/spec/convert.py` holds the conversions between engine conventions: colour, axes and cameras.
-- `math-to-manim-studio compare src/studio/examples/lattice.json --shot lattice` renders one shot with Manim and with Blender EEVEE from the same camera.
-
-![One SceneSpec shot rendered twice from the same camera. Left: Manim. Right: Blender EEVEE. Both show the same 18 atoms in two colours, coral with spin arrows up and blue with spin arrows down, at the same positions in the frame.](docs/assets/fable-5-2/studio-engines.png)
-
-The two engines shade the atoms differently. The positions agree, because both draw the same compiled shot and the camera values come from one function.
-
-Still planned:
-
-- three.js as the third engine, and the interactive page.
-- The other agents. The Director and the Spec Author are built. Story Scout, Physics Verifier, Visual Critic and Fact Checker are not.
-- A critic that looks at each shot's contact sheet, with at most 3 repair rounds for a shot.
-- Objects that move, narration and audio.
-- A viewer that shows a run while it runs.
-
-The agents run on the Claude Agent SDK on the user's PC. Blender EEVEE also runs there.
-
-![Diagram marked "Planned", drawn with dashed outlines. Nine agents each write one typed file. One SceneSpec feeds three engines: Manim, Blender and three.js. Manim and Blender shots become an MP4 film; three.js becomes an interactive web page. For each shot: build, measure, review, then shot done, with a repair path from review back to build of at most 3 rounds.](docs/assets/fable-5-2/studio-planned.png)
-
-## Chapters in production
-
-1. **Local smoothing and the Kakeya conjecture**
-2. **The Exponential Time Hypothesis is false**
-3. **Existence of quantum chromodynamics and completions of the Standard Model**
-
-[Production brief](papers/three-frontiers/README.md) | [Production request](papers/three-frontiers/prompt.txt)
-
-The film retains these exact original titles. Static full-screen explanations alternate with 3D exploration, LaTeX, rotations and zooms. GPT-6 Astra is the author/auditor model; orchestration and Manim rendering run on the local Windows workstation, with no four-minute ceiling.
-
-**Status:** the full Astra film is not yet rendered. Local Manim preview rendering works, but the latest local Codex startup failed with Windows access denied before its first model response.
-
-
-
-## New Film (Argon Google Agent SDK): From Score SDEs to One-Step Consistency
-
-[![Continuous-time Score SDEs, the Probability Flow ODE, and OpenAI Consistency Models rendered in 3D](docs/showcase/assets/score-sde-consistency.gif)](docs/showcase/assets/score-sde-consistency.mp4)
-
-[Watch the complete `.mp4` (70.4 s, 720p30)](docs/showcase/assets/score-sde-consistency.mp4) ·
-[View the contact sheet](docs/showcase/assets/score-sde-consistency-contact-sheet.png) ·
-[Inspect the Manim source](examples/argon/score_sde_consistency.py) ·
-[Read the 6-stage Argon ADK production record](docs/showcase/score-sde-consistency/README.md) ·
-[Production request](docs/prompts/score-sde-consistency.md)
-
-A sharp bimodal data distribution $p_0(x)=\tfrac12\mathcal{N}(-\mu_0,\sigma_0^2)+\tfrac12\mathcal{N}(+\mu_0,\sigma_0^2)$ melts under the variance-exploding Itô forward SDE $\mathrm{d}x=\sqrt{2t}\,\mathrm{d}w_t$, merging its two modes at the exact bifurcation time $t^*=\sqrt{\mu_0^2-\sigma_0^2}\approx 1.969$. The score vector field $\nabla_x\log p_t(x)=\bigl(\mu_0\tanh(\mu_0 x/v(t))-x\bigr)/v(t)$ and Tweedie's MMSE denoiser $D(x,t)=x+t^2\nabla_x\log p_t(x)$ point back uphill toward the clean modes. Stripping away half the score drift removes the Brownian jitter to yield the deterministic **Probability Flow ODE** $\mathrm{d}x/\mathrm{d}t=-t\,\nabla_x\log p_t(x)$ with identical marginals $p_t(x)$, and **OpenAI Consistency Models** (Song, Dhariwal, Chen, & Sutskever, ICML 2023) learn the boundary-enforced flow map $f_\theta(x_t,t)=c_{\text{skip}}(t)\,x_t+c_{\text{out}}(t)\,F_\theta(x_t,t)=x_\varepsilon$ so every point along an ODE trajectory leaps to the clean manifold in **1 NFE**.
-
-$$
-\mathrm{d}x = -t\,\nabla_x\log p_t(x)\,\mathrm{d}t \quad\Longrightarrow\quad f_\theta(x_t,t)=f_\theta(x_{t'},t')=x_\varepsilon,\qquad c_{\text{skip}}(\varepsilon)=1,\;c_{\text{out}}(\varepsilon)=0.
-$$
-
-### How the Argon Google Agent SDK (`google-adk`) pipeline built this film
-
-The [`argon/`](src/argon/) package ports the six-stage Math-To-Manim reasoning chain to the **Google Agent Development Kit (`google-adk`)** and **`google-genai` SDK** (`gemini-4-argon` / `ArgonClient`):
-
-1. **Six `LlmAgent` specialists** (`argon_intent`, `argon_cartographer`, `argon_curriculum`, `argon_math_director`, `argon_cinematographer`, `argon_composer`) each run as its own `LlmAgent` through an `InMemoryRunner`, one stage at a time.
-2. **ADK FunctionTools**: `execute_math_check` verifies algebraic identities, bifurcation thresholds, and skip-connection boundary conditions in a sandboxed AST NumPy evaluator during stage 4; `verify_scene` checks AST syntax, banned imports, and `ThreeDScene` camera discipline (`set_camera_orientation` / `move_camera`) during stage 6.
-3. **Strict contract validation & reproducible operator harness**: [`scripts/operate_argon_chain.py`](scripts/operate_argon_chain.py) validates all six JSON artifacts (`01_intent.json` through `06_scene_spec.json`), runs the ADK tools, renders the 3D scene via Manim, and writes a versioned `manifest.json` under `runs/argon/`.
-
-```bash
-pip install -e ".[argon,dev,render]"
-math-to-manim-argon doctor
-python scripts/operate_argon_chain.py docs/showcase/score-sde-consistency --render -q m
-```
+![Collage of twelve frames from the film: the title; three delayed and weighted copies that merge into one curve D(u); the spiral tone of the first zeta zero and its floor shadow; the larger ivory spiral that the mix returns; the headline "A delay becomes a multiplication"; the camera inside the factor (1 − q); a gold circle that shrinks between the circles |q| = 1 and |q| = 1/2; the two kill points on those circles; the strip wound into a ribbon with two red rods; the surface |m(s)| over the strip; the residue rule on the floor; the five stations in one row with the end card.](docs/showcase/assets/pole-survives-the-mix-contact-sheet.png)
 
 ---
 
-<a href="docs/showcase/README.md">
-  <picture>
-    <source media="(prefers-reduced-motion: reduce)" srcset="docs/showcase/assets/showcase-collage-poster.png" />
-    <img src="docs/showcase/assets/showcase-collage.gif" alt="Six animated examples: Morse theory, the box diagonal, Hopf fibers, parallel transport, polyhedral geometry, and minimal surfaces" width="100%" />
-  </picture>
-</a>
+## The wall: 20 earlier films
 
-*Six real renders from the Astra Morse film and the existing showcase. [Explore the films →](docs/showcase/README.md)*
+Math-To-Manim turns frontier mathematics into verified 3D Manim and Blender films in a single CLI call.
+The film above is the newest one. These are 20 of the films that came before it.
 
-### A question becomes a mathematical world you can move through.
+[![Animated wall of 20 earlier films in a grid of 4 columns and 5 rows, each tile an 8-second loop: 01 Chaining Theta Lifts to the Critical Line; 02 Base 12 Computer; 03 From Score SDEs to One-Step Consistency; 04 Every Orbit Is a Great Circle; 05 Morse Theory on a Torus; 06 The Shape and Its Shadow; 07 The Third Side; 08 Every Dial Has a Loose Switch; 09 The Traitor Axis; 10 Exceptional-point monodromy; 11 The Valley; 12 Vortex; 13 The Associate Family; 14 Holonomy; 15 The Last Day; 16 QED in Minkowski Spacetime; 17 Hopf Fibration; 18 Lorenz Attractor; 19 Rhombicosidodecahedron; 20 Area of a Circle.](docs/showcase/assets/gif-wall.gif)](docs/SHOWCASE.md)
 
-**GPT-6 Astra builds the explanation. Jev challenges every step. Manim makes it visible.**
+- **01** [Chaining Theta Lifts to the Critical Line](https://github.com/HarleyCoops/Math-To-Manim/releases/download/riemann-hypothesis-film-2026-11-20/riemann-hypothesis-2026.mp4) · **02** [Base 12 Computer](docs/assets/base12-computer/base12-computer-journey.mp4) · **03** [From Score SDEs to One-Step Consistency](docs/showcase/assets/score-sde-consistency.mp4) · **04** [Every Orbit Is a Great Circle](docs/showcase/assets/every-orbit-great-circle.mp4)
+- **05** [Morse Theory on a Torus](docs/showcase/assets/astra-morse-torus.mp4) · **06** [The Shape and Its Shadow](docs/showcase/assets/mahler-film.mp4) · **07** [The Third Side](docs/showcase/assets/the-third-side.mp4) · **08** [Every Dial Has a Loose Switch](docs/assets/loose-switch/loose-switch-journey.gif)
+- **09** [The Traitor Axis](docs/showcase/assets/traitor-axis.gif) · **10** [Exceptional-point monodromy](docs/showcase/assets/exceptional-point-monodromy.gif) · **11** [The Valley](docs/showcase/assets/the-valley.gif) · **12** [Vortex](docs/showcase/assets/vortex-leapfrog.gif)
+- **13** [The Associate Family](docs/showcase/assets/associate-family-riso.gif) · **14** [Holonomy](docs/showcase/assets/blueprint-holonomy.gif) · **15** [The Last Day](docs/showcase/assets/the-last-day.gif) · **16** [QED in Minkowski Spacetime](docs/showcase/assets/qed-minkowski-epic-3d.gif)
+- **17** [Hopf Fibration](docs/showcase/assets/hopf-fibration.gif) · **18** [Lorenz Attractor](docs/showcase/assets/lorenz-attractor.gif) · **19** [Rhombicosidodecahedron](docs/showcase/assets/rhombicosidodecahedron.gif) · **20** [Area of a Circle](docs/showcase/assets/circle-area-3d-unwrapped.gif)
 
-The primary pipeline now uses the official **Codex SDK**, your **Codex ChatGPT
-login**, and `gpt-6-astra` for authors and evidence auditors. Real **TypeSafe Jev
-(`jev-1.13.0`)** evaluates each checkpoint through its separate API. Astra develops the
-learning brief, verifies the mathematics, directs the visual argument, writes
-the scene, and reviews the actual render. Jev reviews are **advisory by default**:
-their scores are retained, but do not trigger regeneration or extra investigations.
-Strict gates remain available with `--review-mode gated`.
+The numbers are the tile numbers. A link opens the full MP4, or the full GIF when the repo has no MP4.
+Also in the archive: [Altermagnetism](docs/showcase/assets/studio-altermagnetism.mp4), [Unit Distance Disproof](docs/showcase/assets/studio-unit-distance.mp4) and [A Frontier for the Zeros](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4).
 
-Use `--review-mode off` to skip Jev and its credential requirement while keeping
-independent Astra audits. These runs are labeled `astra_only`.
-`math-to-manim serve-mcp` now exposes this same Astra chain over MCP.
-The [Astra bundle pathway](docs/ASTRA_BUNDLE.md) distributes the installable
-package, locked Codex runtime, completed Quasi-Riemann film and its evidence.
-The [OpenAI mathematics in 3D series](papers/README.md) starts with the Mahler
-pilot, *The Shape and Its Shadow*: a completed three-minute cloud render with
-independent Astra review of its source and 23 actual frames.
-Its completed flagship is the Quasi-Riemann film,
-*A Frontier for the Zeros*: bone backgrounds, sculptural zeta landscapes,
-phase-winding closeups, and a journey into the manuscript's zero-free frontier.
-The 221-second cloud movie is now available at 720p/30 fps with a completed
-manifest, matching source and movie hashes, and a successful full-file decode.
+The newer films come from separate model silos under `src/`: Claude Fable 5.2 and Claude Opus 5.5 (`mythos`, `studio`), Gemini 4 Neon (`neon`), Gemini 4 Argon (`argon`), and GPT-6 Astra with Jev (`astra`).
+See **[docs/SHOWCASE.md](docs/SHOWCASE.md)** for the complete archive of films, Studio Blender+Manim comparisons, Mythos MCP docs, and installation guides.
+To rebuild the wall from the GIFs in the repo, run `python scripts/build_gif_wall.py`.
 
-### OpenAI Mathematics in 3D
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/HarleyCoops/Math-To-Manim/blob/main/notebooks/math_to_manim_neon_colab.ipynb)
+[![Playable Gallery](https://img.shields.io/badge/Playable%20Gallery-GitHub%20Pages-38bdf8?logo=github)](https://harleycoops.github.io/Math-To-Manim/)
+[![GRH Film Release](https://img.shields.io/badge/MP4%20Release-Nov%202026%20GRH-eab308?logo=github)](https://github.com/HarleyCoops/Math-To-Manim/releases/tag/riemann-hypothesis-film-2026-11-20)
+[![License: MIT](https://img.shields.io/badge/License-MIT-34d399.svg)](LICENSE)
 
-An open film project inspired by the [OpenAI manuscript map](https://github.com/HarleyCoops/math).
-Each episode follows one mathematical idea through space: geometry first,
-readable LaTeX at the moment it matters, and camera motion that explains.
+---
 
-**Watch [A Frontier for the Zeros](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4).**
-The September 30 Quasi-Riemann manuscript reports that zeta and every
-Dirichlet L-function have no zeros in `Re(s)>7/8`, with principal poles
-allowed. The film explains how the paper's two estimates lead to a
-holomorphic continuation of the reciprocal. The full Riemann hypothesis
-remains open in the source.
-
-[Explore the series and proposed episodes](papers/README.md) ·
-[Read the source dossier](papers/quasi-riemann/source-context.md) ·
-[Cloud film jobs](https://github.com/HarleyCoops/Math-To-Manim/actions/workflows/quasi-riemann-film.yml)
-
-To finish an existing scene without spending additional model credits:
-
-```bash
-math-to-manim render-existing runs/astra/<run-id> --candidate runs/astra/<run-id>/attempts/<candidate>.json -q m
-```
-
-This local-only path makes **zero Astra or Jev calls**. Manim renders and joins
-the animation segments, then extracts review frames. Output is marked
-`not_reviewed`, not Jev-approved; previous review records remain unchanged.
-
-[Run the chain](#installation) · [How jev works](#astra-and-jev) ·
-[Creation story](#the-morning-of-january-20-2025) · [Older films](docs/showcase/README.md)
-
-## OpenAI Mathematics in 3D: A Frontier for the Zeros
-
-Primes become sculptural zeta landscapes. A loop around a sampled zero winds
-once in the image plane. The camera then travels through the manuscript's
-comparison estimates and reciprocal-L continuation argument, with LaTeX at
-each step and the strict 7/8 frontier kept visible.
-
-**221.03 seconds, rendered on GitHub Actions at 720p/30 fps.** Astra source
-audits are retained. The saved scene was rendered with zero model calls and
-retains `not_reviewed` status; Jev was off.
-
-[![The numerical zeta landscape and the manuscript's zero-free frontier](docs/assets/quasi-riemann-film-poster.png)](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4)
-
-[Watch the complete film](https://github.com/HarleyCoops/Math-To-Manim/releases/download/quasi-riemann-film-2026-10-07/quasi-riemann-720p.mp4) ·
-[Get the Astra bundle](https://github.com/HarleyCoops/Math-To-Manim/releases/tag/v2.0.0) ·
-[View the rendered frames](docs/assets/quasi-riemann-film-contact-sheet.png) ·
-[Read the episode and scope](papers/quasi-riemann/README.md)
-
-The film illustrates the manuscript's reported result. The full Riemann
-hypothesis remains open; this project has not independently verified the
-complete proof or Lean artifacts.
-
-## OpenAI Mathematics in 3D: The Shape and Its Shadow
-
-A coral cube reveals its cyan polar octahedron. Eight exact tetrahedra earn the
-volume product $32/3$; reciprocal stretches preserve it. The camera then follows
-the manuscript's tilted analytic lens, feasible simplices and integrated-volume
-argument, flying into the LaTeX terms before returning to the full inequality.
-
-**179.8 seconds, rendered on GitHub Actions at 720p/30 fps.** Codex SDK / GPT-6
-Astra authoring and evidence audits; Jev explicitly off for this pilot.
-
-[![An isolated gold tetrahedron explains the octahedron's exact volume](docs/showcase/assets/mahler-film.gif)](docs/showcase/assets/mahler-film.mp4)
-
-[Watch the complete movie](docs/showcase/assets/mahler-film.mp4) ·
-[See the rendered frames](docs/showcase/assets/mahler-contact-sheet.png) ·
-[Read the episode and review scope](papers/mahler/README.md) ·
-[Inspect the scene](papers/mahler/scene.py)
-
-The all-dimensional theorem and reported formalization are attributed manuscript
-claims. The film explains the route; it does not independently validate the proof.
-
-## The New Film: Every Orbit Is a Great Circle
-
-A planet's position traces an ellipse, but its velocity traces a circle. Lift
-the velocity circles of every orbit with one energy onto a sphere and each one
-becomes a great circle through the same two points. An orbit's eccentricity is
-the sine of its circle's tilt, a head-on fall toward the star is the circle
-through the north pole, and changing an orbit's shape at fixed energy is a
-rotation of the sphere.
-
-$$
-\vec v=\frac{GM}{h}\,(-\sin\theta,\;e+\cos\theta),\qquad e=\sin\alpha .
-$$
-
-Earth's circle tilts 0.96°; Halley's comet's tilts 75.3°.
-
-**166 seconds, rendered at 1080p and 60 fps.**
-
-[![Velocity circles lift onto a glass sphere and become great circles hinged on two gold points](docs/showcase/assets/every-orbit-great-circle.gif)](docs/showcase/assets/every-orbit-great-circle.mp4)
-
-[Watch the full movie](docs/showcase/assets/every-orbit-great-circle.mp4) ·
-[View the contact sheet](docs/showcase/assets/every-orbit-great-circle-contact-sheet.png) ·
-[Inspect the Manim source](examples/mythos/every_orbit_great_circle.py) ·
-[Read the production record](docs/showcase/every-orbit-great-circle/README.md) ·
-[Production request](docs/prompts/every-orbit-great-circle.md)
+## The Mix That Cannot Kill a Pole: how it was made, the paper and the Lean file
 
 ### How it was made
 
-**A Claude session was the model inside the Mythos six-agent chain.** The
-Mythos harness builds a prompt for each stage: intent, knowledge map,
-curriculum, math dossier, shot list and scene spec. Each prompt holds the stage
-charter, the previous stage's JSON and the Cinematic Charter. The session
-answered every prompt and then wrote the Manim scene. The harness's own checks
-judged each answer: `validate_stage_artifact`, the versioned run manifest and
-the static scene checks (AST, LaTeX fragments and charter lint).
-[`scripts/operate_mythos_chain.py`](scripts/operate_mythos_chain.py)
-runs the chain this way for any operator. It writes the next stage's exact
-prompt, waits for the reply, validates it and records the run.
+- The input was Lee Crossley's question, with his [`DelayedPole.lean`](https://github.com/leecrossley/prime-window-rh-criterion/blob/main/results/dirichlet-window-transfer/DelayedPole.lean) as context. The art direction was: one 3D world, and a zoom into every formula.
+- A Claude Fable 5.2 session answered the six Mythos stages and codegen through `scripts/operate_mythos_chain.py`. The harness validated each reply.
+- The chain wrote one Manim `ThreeDScene`, `PoleSurvivesTheMixJourney` (844 lines). The static check rejected the first version: six `\tfrac12` fragments had no braces.
+- The harness rendered 187 animations at 1920 × 1080, 60 fps, in 891 seconds. The film is 264 seconds long. The GIF at the top of this page is 40 seconds of it.
+- Two new companion stages wrote the paper and the Lean file ([`docs/MYTHOS_COMPANIONS.md`](docs/MYTHOS_COMPANIONS.md)). The harness compiled the paper with pdflatex and checked the Lean file with Lean 4.33.1 and Mathlib.
+- The film has no narration. No independent reviewer checked the film or the paper.
 
-**The session reviewed its own renders.** Four passes over contact sheets and
-full-resolution crops changed the scene. The drawings got larger, the camera
-gained a 3× dive into α, and a right triangle now shows why
-$R^2=d^2+p_0^2$. Three defects that only appear at 1080p were fixed: seams in
-the rings, banding in the glows and faceted highlights. The six stage artifacts
-are unchanged; each revision and the frame that prompted it is logged in
-[`08_review.json`](docs/showcase/every-orbit-great-circle/08_review.json).
+### The calculation, in the paper
 
-**The lighting is computed in the scene.** Manim's built-in shading is off.
-Every frame, the glass sphere's 2,592 faces get key light, a soft sheen and a
-faint Fresnel term from the true camera position. The sharp highlight and the
-rim glow are smooth layers that face the camera. Each great circle is split
-into the arcs in front of the glass and the arcs behind it, so the near half of
-the glass veils the far half. Planets move by Kepler's equation, so they speed
-up near the star and slow down far from it.
+![Three pages of the paper. Page 4: exponentials are eigenfunctions of the mix; the zero set of the symbol, s = 2πik/log 2 or s = 1 + 2πik/log 2; sharp bounds on vertical lines. Page 5: a graph of |m(1/2 + it)| that oscillates between 0.1213 and 4.1213, with the first three zeta zeros marked; the lemma on an analytic multiplier and a simple pole. Page 9: the worked example at the first zeta zero, with a table of q, 1 − q, 2q − 1, m and the residues.](docs/showcase/assets/pole-survives-the-mix-paper-pages.png)
 
-**The numbers are tested.**
-[`tests/test_every_orbit_great_circle.py`](tests/test_every_orbit_great_circle.py)
-checks Kepler timing, the velocity circle, equal energy across the family, the
-two shared points, the lift to great circles and every angle quoted on screen.
-The film was rendered with Manim in parallel animation ranges and joined
-without re-encoding. FFprobe and a full FFmpeg decode verified the result. No Astra or
-Jev calls were made.
+The mix, with delays that are zero before they start:
 
-## Morse Theory On A Torus
+$$D(u) = -g(u) + 3\,g(u-\log 2) - 2\,g(u-\log 4)$$
 
-A horizontal plane rises through an upright torus. The included surface changes
-from a disk to a cylinder, then a punctured torus, and finally a closed torus.
-Four critical points explain when those changes happen:
+A delay by $a$ multiplies the Laplace transform by $e^{-sa}$. So the mix multiplies the transform by one function, the symbol. Write $q = 2^{-s}$:
 
-$$
-M_a=\{p\in T^2:h(p)\le a\},\qquad
-\chi(T^2)=m_0-m_1+m_2=1-2+1=0.
-$$
+$$m(s) = -1 + 3\cdot 2^{-s} - 2\cdot 4^{-s} = -1 + 3q - 2q^2 = (1-q)(2q-1)$$
 
-The film uses a genuine Morse height with isolated critical points, rather than
-the degenerate height of a horizontal donut. The colored object is the surface
-below the scanning plane; it is not a volume of water.
+The symbol is zero only when $q = 1$ or $q = \tfrac{1}{2}$. The size of $q$ depends only on the real part of $s$:
 
-**The complete 98-second movie is rendered and stitched at 720p, 30 fps.**
+$$|q| = 2^{-\mathrm{Re}\,s}, \qquad 0 < \mathrm{Re}\,s < 1 \;\Longrightarrow\; \tfrac{1}{2} < |q| < 1$$
 
-[![Morse theory on a torus — selected moments](docs/showcase/assets/astra-morse-torus.gif)](docs/showcase/assets/astra-morse-torus.mp4)
+So every zero of $m$ is on a wall of the strip, and no zero is inside:
 
-[Watch the full movie](docs/showcase/assets/astra-morse-torus.mp4) ·
-[View the contact sheet](docs/showcase/assets/astra-morse-torus-contact-sheet.png) ·
-[Inspect the Manim source](examples/astra/morse_torus.py) ·
-[Read the production record](docs/showcase/astra-morse-torus/README.md) ·
-[Production request](docs/prompts/astra-morse-torus.md)
+$$m(s) = 0 \iff s = \frac{2\pi i k}{\log 2} \ \text{ or }\ s = 1 + \frac{2\pi i k}{\log 2}, \quad k \in \mathbb{Z}$$
 
-The GIF shows selected moments. The full MP4 decoded without errors and its
-resolution, frame rate, and duration were checked with FFprobe. At the user's
-request, the final candidate was rendered locally with **no further model/API
-calls**. Earlier Jev verdicts are preserved; the final film is **not Jev-approved**.
+The triangle inequality gives a floor and a ceiling on each vertical line $\mathrm{Re}\,s = \sigma$, with $x = 2^{-\sigma}$:
 
-## Astra And Jev
+$$(1-x)(2x-1) \;\le\; |m(\sigma + it)| \;\le\; (1+x)(2x+1)$$
 
-The diagram below documents the optional **gated** mode. Default advisory mode
-records one Jev evaluation per checkpoint and continues without repair loops.
+Near a pole, the transform is $r/(s-\rho)$ plus an analytic part. The symbol is entire, so the pole stays and only the residue changes:
 
-```mermaid
-flowchart TD
-    Q[Your mathematics or physics question] --> B[Astra: learner and prerequisite brief]
-    B --> A1[Astra: evidence audit]
-    A1 --> J1{jev: scope and teaching gate}
-    J1 -- revise --> B
-    J1 -- pass --> M[Astra: mathematical dossier and tool checks]
-    M --> A2[Astra: mathematical evidence audit]
-    A2 --> J2{Jev: mathematical evidence gate}
-    J2 -- revise --> M
-    J2 -- pass --> S[Astra: geometry, camera and LaTeX storyboard]
-    S --> A3[Astra: storyboard audit]
-    A3 --> J3{jev: visual argument and notation gate}
-    J3 -- revise --> S
-    J3 -- pass --> C[Astra: complete Manim scene]
-    C --> V[Static source checks]
-    V --> P[Manim: real final-frame execution probe]
-    P --> A4[Astra: source and probe audit]
-    A4 --> J4{jev: code and storyboard fidelity}
-    J4 -- revise --> C
-    J4 -- pass --> R[Local Manim render and frame extraction]
-    R --> A5[Astra: frame inspection and text observations]
-    A5 --> J5{Jev: text observations of rendered frames}
-    J5 -- math defect --> M
-    J5 -- visual defect --> S
-    J5 -- implementation defect --> C
-    J5 -- pass --> F[Accepted film, evidence and run manifest]
-    classDef author fill:#102c46,stroke:#41d6c3,color:#f2f7ff
-    classDef judge fill:#34234c,stroke:#c69aff,color:#f2f7ff
-    classDef output fill:#453617,stroke:#ffd166,color:#fff5d6
-    class B,M,S,C author
-    class J1,J2,J3,J4,J5 judge
-    class R,F output
+$$m(s)\,\frac{r}{s-\rho} = \frac{m(\rho)\,r}{s-\rho} + r\,\frac{m(s)-m(\rho)}{s-\rho}, \qquad m(\rho)\,r \ne 0$$
+
+The worked example of the paper, at the first zeta zero $\rho_1 = \tfrac{1}{2} + 14.134725\,i$:
+
+| Quantity | Value |
+|---|---|
+| $q = 2^{-\rho_1}$ | $-0.658571 + 0.257458\,i$ |
+| $\lvert q\rvert = 2^{-1/2}$, $\arg q$ | $0.707107$, $158.648^\circ$ |
+| $1 - q$ | $1.658571 - 0.257458\,i$ |
+| $2q - 1$ | $-2.317141 + 0.514916\,i$ |
+| $m(\rho_1) = (1-q)(2q-1)$ | $-3.710574 + 1.450591\,i$ |
+| $\lvert m(\rho_1)\rvert$ | $3.984040$ |
+| floor and ceiling on the critical line, $3/\sqrt2 \mp 2$ | $0.121320$ and $4.121320$ |
+| residue of the transform at $\rho_1$, $1/(\tfrac{1}{4} + \gamma_1^2)$ | $0.004999$ |
+| size of the residue after the mix | $0.019916$ |
+
+The pole of the first zeta zero becomes about 4 times larger. The paper also shows that the two zeros on the walls are necessary: they are what makes the weight of the mix a compact tent on (1, 4).
+
+### The same calculation, in Lean
+
+The file [`DelayedPoleSurvival.lean`](docs/showcase/pole-survives-the-mix/DelayedPoleSurvival.lean) imports only Mathlib. It has no `sorry`. Its theorems use the axioms `propext`, `Classical.choice` and `Quot.sound` only.
+
+The Lean reference is Lee Crossley's [`DelayedPole.lean`](https://github.com/leecrossley/prime-window-rh-criterion/blob/main/results/dirichlet-window-transfer/DelayedPole.lean) (CC BY 4.0). Read his file first: it is the original, and it has the application to Dirichlet families that our file does not have.
+Our file restates his definitions `delay`, `compactDifference` (here `mix`) and `symbol`. It adapts his proofs of `laplace_delay`, `symbol_real` (here `symbol_pos_of_real`) and `compactDifference_poleData` (here `mix_poleData`).
+
+The three definitions:
+
+```lean
+/-- Delay `g` by `a`, and put zero where the delayed curve has not started. -/
+def delay (a : ℝ) (g : ℝ → ℝ) (u : ℝ) : ℝ := if a < u then g (u - a) else 0
+
+/-- Three copies of `g` with delays `0`, `c`, `2c` and weights `-1`, `3`, `-2`. -/
+def mix (c : ℝ) (g : ℝ → ℝ) (u : ℝ) : ℝ :=
+  -delay 0 g u + 3 * delay c g u - 2 * delay (2 * c) g u
+
+/-- The multiplier of the mix on the Laplace side. With `c = log 2` and
+`q = 2^(-s)` this is `(1 - q)(2q - 1)`. -/
+def symbol (c : ℝ) (s : ℂ) : ℂ := (1 - cexp (-s * c)) * (2 * cexp (-s * c) - 1)
 ```
 
-| Checkpoint | What Astra produces | What jev must check |
-|---|---|---|
-| Brief | Learner, prerequisites, definitions, scope and acceptance criteria | Does the proposed explanation answer the question at the right level? |
-| Mathematics | Derivations, hypotheses, parametrizations, references and numerical checks | Does the text evidence support explicit domains and documented formula checks? |
-| Storyboard | Timed shots, surface geometry, camera moves, color semantics and exact formulas | Do the pictures teach the argument? Can the notation be read? |
-| Scene | Complete Python scene | Does the implementation preserve the checked mathematics and shot plan? |
-| Render | MP4 and sampled frames | Do Astra’s frame observations support readable formulas and intended geometry? |
+The radius of q, and the strip that goes into the annulus:
 
-Each gate has two parts: a fresh **Astra evidence audit**, followed by a real
-**TypeSafe Jev** request. Jev receives the candidate and the audit as text and
-returns typed **Score**, **Noul**, and **Choice** answers. It does not receive
-images: Astra inspects the rendered frames and supplies explicit observations.
+```lean
+/-- `|e^(-sc)| = e^(-Re(s) c)`: the radius of `q` depends only on `Re s`. -/
+theorem norm_q (c : ℝ) (s : ℂ) : ‖cexp (-s * (c : ℂ))‖ = Real.exp (-s.re * c) := by
+  simp [Complex.norm_exp]
 
-Two focused Score questions require an expected score of at least **3.2/4** and
-confidence of **0.65**. Evidence sufficiency must be at least **0.8** and blocking
-defect probability at most **0.2**. Astra's unresolved blockers also prevent
-approval. Choice routes repairs to the earliest responsible role; uncertain
-routing stays at the current stage. Repairs invalidate downstream approvals.
-
-These are initial engineering thresholds, not calibrated correctness guarantees
-or formal proofs. Jev evaluates supplied evidence; it does not independently
-prove the mathematics. API failures stop the run without an Astra substitute.
-See [the Jev contract](docs/JEV.md) for the exact gates and evidence handling.
-
-The [detailed design map](docs/JEV_DESIGN_MAP.md) covers 16 artistic and teaching
-decisions, from geometric reveals to LaTeX hierarchy and local-to-global camera
-movement. Jev can also select focused investigations: check a formula, clarify a definition,
-inspect source or frames, or replan camera and label layout. Our CLI executes the
-choice through Astra and records concrete recommendations; Jev itself does not
-run tools or write prose. Low-confidence selections do not execute.
-
-```mermaid
-flowchart LR
-    D[Uncertainty or rejected gate] --> J{Jev: choose investigation}
-    J --> T[CLI dispatches an allowed Astra tool task]
-    T --> E[Specific findings and evidence]
-    E --> R[Astra revises candidate]
-    R --> G[Fresh audit and Jev gate]
+/-- The strip `0 < Re s < 1` goes into the open annulus `1/2 < |q| < 1`. -/
+theorem q_mem_annulus {s : ℂ} (h0 : 0 < s.re) (h1 : s.re < 1) :
+    1 / 2 < ‖cexp (-s * (Real.log 2 : ℂ))‖ ∧ ‖cexp (-s * (Real.log 2 : ℂ))‖ < 1 := by
+  rw [norm_q]; exact radius_bounds h0 h1
 ```
+
+The floor (statement only; the proof is 12 lines), and the theorem that the symbol has no zero inside the strip:
+
+```lean
+/-- The quantitative floor: on the line `Re s = σ`, `0 < σ < 1`,
+`|m(s)| ≥ (1 - 2^(-σ)) (2·2^(-σ) - 1) > 0`. -/
+theorem symbol_norm_lower {s : ℂ} (h0 : 0 < s.re) (h1 : s.re < 1) :
+    (1 - Real.exp (-s.re * Real.log 2)) * (2 * Real.exp (-s.re * Real.log 2) - 1)
+      ≤ ‖symbol (Real.log 2) s‖
+
+/-- **No blind spot inside the strip.** The symbol has no zero with `0 < Re s < 1`. -/
+theorem symbol_ne_zero {s : ℂ} (h0 : 0 < s.re) (h1 : s.re < 1) :
+    symbol (Real.log 2) s ≠ 0 :=
+  norm_pos_iff.mp (lt_of_lt_of_le (floor_pos h0 h1) (symbol_norm_lower h0 h1))
+```
+
+The pole survives:
+
+```lean
+/-- **The pole survives the mix.** A simple pole of `Φ` at a point `ρ` of the
+open strip, with residue `r ≠ 0`, is a simple pole of `m·Φ` with the nonzero
+residue `m(ρ) r`. -/
+theorem pole_survives_mix {Φ h : ℂ → ℂ} {ρ r : ℂ} (h0 : 0 < ρ.re) (h1 : ρ.re < 1)
+    (hr : r ≠ 0) (hh : AnalyticAt ℂ h ρ)
+    (hΦ : ∀ᶠ s in 𝓝[≠] ρ, Φ s = r / (s - ρ) + h s) :
+    symbol (Real.log 2) ρ * r ≠ 0 ∧ ∃ h' : ℂ → ℂ, AnalyticAt ℂ h' ρ ∧
+      ∀ᶠ s in 𝓝[≠] ρ, symbol (Real.log 2) s * Φ s =
+        (symbol (Real.log 2) ρ * r) / (s - ρ) + h' s :=
+  ⟨mul_ne_zero (symbol_ne_zero h0 h1) hr,
+    pole_transfer (symbol_differentiable _) hh hΦ⟩
+```
+
+The file also evaluates the numbers in floating point. This is a test, not a proof. The comment on each `#eval` line is the value that Lean printed:
+
+```lean
+/-- `q = 2^(-s)` at `s = σ + i t`: radius `2^(-σ)`, angle `-t log 2`. -/
+def q (σ t : Float) : Cx :=
+  let r := Float.exp (-(σ * log2))
+  ⟨r * Float.cos (t * log2), -(r * Float.sin (t * log2))⟩
+
+/-- The symbol `m(s) = (1 - q)(2q - 1)` at `s = σ + i t`. -/
+def symbolF (σ t : Float) : Cx :=
+  let z := q σ t
+  Cx.mul ⟨1 - z.re, -z.im⟩ ⟨2 * z.re - 1, 2 * z.im⟩
+
+#eval (q 0.5 gamma1).re                     -- -0.658571
+#eval (q 0.5 gamma1).im                     -- 0.257458
+#eval (q 0.5 gamma1).abs                    -- 0.707107
+#eval (symbolF 0.5 gamma1).re               -- -3.710574
+#eval (symbolF 0.5 gamma1).im               -- 1.450591
+#eval (symbolF 0.5 gamma1).abs              -- 3.984040
+#eval floorF 0.5                            -- 0.121320
+#eval gridMinRatio                          -- 1.000000
+#eval gridMinAbs                            -- 0.003454
+#eval 2 * 3.141592653589793 / log2          -- 9.064720
+```
+
+More theorems are in the file: `laplace_delay` and `laplace_mix` (a delay, and the mix, are multiplications on the Laplace side), `symbol_zero_left` and `symbol_zero_right` (both walls carry zeros), `tent_eq` (the tent weight), and `mix_poleData`, a Mathlib-only version of Crossley's `compactDifference_poleData`.
+The numbers of the scene are tested in [`tests/test_pole_survives_the_mix.py`](tests/test_pole_survives_the_mix.py).
+
+---
+
+## Featured: Chaining Theta Lifts to the Critical Line (`math-to-manim-neon`)
+
+On **November 20, 2026**, two separate claimed proofs of the Generalized Riemann Hypothesis were announced on the same day:
+- **Levent Alpöge & Claude (Anthropic):** 4-page overview + **175,000+ Lean 4 files** (~250,000 pages equivalent) bypassing the missing integer derivative in Stepanov's method by chaining roughly $\sqrt{X}$ automorphic theta lifts for a von Mangoldt sum of length $X$.
+- **Alessandro Masullo (Stanford, announced by Ravi Vakil):** 12-year, **~940-page** all-human manuscript vetted by Brian Conrad.
+
+Both claims are newly announced and await independent peer and formal-kernel verification.
+
+### How the Gemini 4 Neon-first CLI (`src/neon/`) works
+
+Instead of splitting reasoning across six sequential JSON-handoff stages, `math-to-manim-neon` unifies planning, numerical verification, codegen, static scene checks, Manim rendering, and showcase publishing into **one CLI call**:
+
+- **Pluggable Neon backends (`src/neon/backends.py`):** native `google-genai` SDK (`gemini-4-neon` with `ThinkingConfig` + live function calling), official `gemini-api` CLI, or session-driven `operator` mode.
+- **First-class toolbelt (`src/neon/tools.py`):**
+  - `verify_math`: sandboxed real & complex NumPy/AST numerical evaluator.
+  - `check_scene`: AST syntax, `ThreeDScene` camera discipline, and banned-import guard.
+  - `render_scene`: secret-scrubbed Manim render + `ffprobe` + 12-frame contact sheet & highlights GIF.
+  - `publish_film`: writes showcase assets and production logs (`01_neon_plan.json`, `tool_calls.jsonl`, `validation.json`, `manifest.json`).
+- **This film:** `RiemannThetaLiftJourney` (421 lines) passed all 5 `verify_math` checks and `check_scene` with **0 repairs** (`outcome: film_published`).
+
+![12-frame contact sheet of Chaining Theta Lifts to the Critical Line](docs/assets/riemann-hypothesis-2026/contact-sheet.png)
+
+---
+
+## Featured: Base 12 Computer — From a Notebook Sketch
+
+[![Highlights from Base 12 Computer](docs/assets/base12-computer/base12-computer-journey.gif)](docs/assets/base12-computer/base12-computer-journey.mp4)
+
+[Watch the complete film (104 s, 720p30)](docs/assets/base12-computer/base12-computer-journey.mp4) ·
+[Original pencil sketch](docs/assets/base12-computer/sketch.jpg) ·
+[Generated ThreeDScene (316 lines)](docs/assets/base12-computer/src/base12_computer_journey.py)
+
+Made from a single photograph of a notebook page with zero formulas written on it: Claude Fable 5.2 recognized $K_{12}$ with $\binom{12}{2}=66$ wires, folded it onto an icosahedron ($66 = 30 + 30 + 6$), and rendered a base-12 counter on the first attempt with zero repairs.
+
+---
+
+## Architecture & Testing
+
+Every provider lives in an independent silo under `src/` (`neon`, `studio`, `mythos`, `argon`, `astra`, `grok`, `glm`, `mimo`, `sol`) with strict zero-cross-import boundaries:
 
 ```bash
-math-to-manim recommend runs/astra/<run-id> --stage render --design --execute
+pytest tests/test_silo_boundaries.py tests/test_neon_silo.py
 ```
 
-### What Jev Decides
+Full documentation for all silos, Studio (Blender EEVEE + Manim), Mythos MCP, and Astra+Jev lives in **[docs/SHOWCASE.md](docs/SHOWCASE.md)**.
 
-| Decision | TypeSafe primitive | What the chain does with it |
-|---|---|---|
-| Is the checkpoint supported by evidence? | Two `Score` answers plus `Noul` checks | Advance only when the readiness policy passes and Astra has no unresolved blockers |
-| Where should a repair start? | `Choice` | Route to brief, mathematics, storyboard or scene; invalidate downstream approvals |
-| Which investigation would help? | `Choice` over allowed actions | Dispatch a focused Astra tool session when confidence is sufficient |
-| Where can the film improve? | Sixteen independent `Score` questions | Record supported strengths, concrete improvement opportunities and evidence gaps |
-
-The artistic map examines **dramatic questions and geometric reveals**,
-**definition order and reading time**, **LaTeX hierarchy and mathematical
-integrity**, **symbol-to-geometry links**, **purposeful camera movement and
-local-to-global views**, **depth and overlay clearance**, **surface/volume/boundary
-distinctions**, **topology changes**, **color semantics**, and **an earned finale**.
-Every rubric specifies its evidence, repair action and verification criterion.
-
-Available investigations are `check_math`, `clarify_definitions`, `inspect_scene`,
-`inspect_frames`, and `replan_camera`, plus `no_action`. Jev chooses among these;
-our CLI executes them through Astra. For example, a camera investigation can
-recommend an exact target, zoom and label position, while a definition check can
-identify the first unexplained symbol and propose replacement wording. These
-written recommendations come from Astra, not from Jev.
-
-A rejected gate may receive one additional investigation and a new Jev decision
-on the expanded evidence. Both decisions remain recorded. Mathematical blockers
-cannot be overruled by an artistic score. Low-confidence action choices do not
-execute, and advisory design scores do not silently change an approved film.
-Source changes still require a new render and review.
-
-```bash
-# Inspect every decision, evidence requirement and repair mapping offline.
-math-to-manim design-map
-math-to-manim design-map --stage render
-
-# Ask real Jev to evaluate the design and select a focused investigation.
-math-to-manim recommend runs/astra/<run-id> --stage render --design --execute
-```
-
-Each live evaluation retains its input, raw TypeSafe response, interpreted
-scores and action selection. New calls also retain **HTTP receipts**: UTC time,
-endpoint, status and request-body hash, with credentials excluded. Astra tool
-traces and recommendations are separate, so model roles remain inspectable.
-See the [complete design and optimization map](docs/JEV_DESIGN_MAP.md) and
-[API/evidence contract](docs/JEV.md).
-
-## Installation
-
-The [Astra bundle](https://github.com/HarleyCoops/Math-To-Manim/releases/tag/v2.0.0)
-includes the wheel, source distribution, locked runtime manifests, finished
-Quasi-Riemann film, retained scene and checksums. Follow the
-[bundle guide](docs/ASTRA_BUNDLE.md), or install its wheel directly:
-
-```bash
-python -m pip install "math-to-manim[astra] @ https://github.com/HarleyCoops/Math-To-Manim/releases/download/v2.0.0/math_to_manim-2.0.0-py3-none-any.whl"
-math-to-manim setup
-math-to-manim login
-math-to-manim doctor --review-mode off
-math-to-manim run "Explain a mathematical idea through 3D geometry" -q m --review-mode off
-```
-
-This pathway uses Codex ChatGPT login and independent Astra audits. Install
-Python 3.10+, Node.js 18+ and npm, plus Manim's system dependencies, FFmpeg
-and LaTeX. `setup` installs the locked SDK in a user-writable cache; runs go
-under `runs/astra/` in the current working directory. Jev-off mode needs no
-TypeSafe credential.
-
-### Render system setup
-
-The Python `render` extra installs Manim; it does not install system TeX tools
-or FFmpeg. Manim's default `MathTex`/`Tex` path needs **both `latex` and
-`dvisvgm` on PATH**, plus the packages used by its TeX template. Start with
-the [official Manim installation guide](https://docs.manim.community/en/stable/installation/uv.html).
-Installing the two binaries alone does not prove every formula or template can compile.
-
-**macOS:** a compact system installation is
-[Homebrew BasicTeX](https://formulae.brew.sh/cask/basictex). With Homebrew
-already installed:
-
-```bash
-brew install cairo pkg-config ffmpeg
-brew install --cask basictex
-# Open a new terminal, or add the MacTeX binary link for this shell:
-export PATH="/Library/TeX/texbin:$PATH"
-sudo tlmgr update --self
-sudo tlmgr install dvisvgm standalone preview varwidth
-```
-
-BasicTeX uses TeX Live's package manager. The [TUG tlmgr guide](https://www.tug.org/texlive/tlmgr.html)
-explains updates and why system MacTeX installations use `sudo`.
-`standalone`, `preview`, and `varwidth` provide the small standalone-document
-support; these four additions are a starting point, not Manim's complete
-default template package set. Install the additional packages listed in the
-Manim guide if its default preamble reports missing files, or use full MacTeX.
-
-For a user-owned installation without `sudo`, follow
-[TinyTeX's official instructions](https://yihui.org/tinytex/#installation).
-On macOS, `--no-path` avoids the installer's request to modify system PATH:
-
-```bash
-curl -sL "https://tinytex.yihui.org/install-bin-unix.sh" | sh -s -- --no-path
-export PATH="$HOME/Library/TinyTeX/bin/universal-darwin:$PATH"
-tlmgr install dvisvgm standalone preview varwidth
-```
-
-Use the actual binary directory beneath `~/Library/TinyTeX/bin` if your
-architecture differs. Add it to your shell startup configuration for future
-sessions. TinyTeX also needs the Manim template packages described above;
-Manim does not automatically install missing TeX packages.
-
-**Windows:** Manim recommends [MiKTeX](https://miktex.org/howto/install-miktex).
-Choose its per-user installation, then use MiKTeX Console to install missing
-template packages and `dvisvgm`. Install FFmpeg separately using the
-[downloads linked by FFmpeg](https://ffmpeg.org/download.html).
-Ensure the selected TeX binary directory and FFmpeg binary directory are on
-your user PATH and restart PowerShell. Find the actual locations with
-`Get-Command latex,dvisvgm,ffmpeg`; a common system MiKTeX location is
-`C:\Program Files\MiKTeX\miktex\bin\x64`, but per-user locations differ.
-TeX Live and TinyTeX are alternatives; TinyTeX normally installs beneath
-`%APPDATA%\TinyTeX` (see its official installation page).
-
-**Linux:** install TeX Live through your distribution package manager.
-The [Manim guide](https://docs.manim.community/en/stable/installation/uv.html)
-documents full TeX Live packages for Debian/Ubuntu and Fedora. For this
-repository's smaller Debian/Ubuntu setup, the existing
-[`requirements-system.txt`](requirements/requirements-system.txt) lists Cairo/Pango build
-dependencies, FFmpeg, `dvisvgm`, and the LaTeX/font packages;
-[`scripts/bootstrap-render.sh`](scripts/bootstrap-render.sh) installs that list
-and creates a render venv. Review it before running it. Other distributions
-need equivalent packages. TinyTeX's Linux installer supports a user-owned
-`~/.TinyTeX`; put its binaries or the user-local symlinks on PATH.
-
-Verify from the same terminal and active Python environment used for a run:
-
-```bash
-python -m manim --version
-ffmpeg -version
-latex --version
-dvisvgm --version
-math-to-manim-mythos doctor
-```
-
-Mythos doctor exits nonzero when either TeX binary is missing and explicitly
-reports that MathTex/Tex cannot render. For a scene using only plain `Text`
-and geometry, `math-to-manim-mythos doctor --no-latex` checks the remaining
-requirements while still reporting unavailable TeX rendering. It does not
-disable LaTeX inside scenes. Scene generation without `--render` needs no
-render toolchain.
-
-If a render reports a named missing executable (such as
-`FileNotFoundError: ... 'latex'`), the Mythos harness records an environment
-error and stops with **zero model repair calls**. The CLI exits nonzero; API
-jobs are marked failed. Inspect `manifest.json` (`render_error`) and the
-recorded render log, install/fix PATH, then rerender the saved scene.
-Ordinary scene syntax/API errors retain the existing repair loop.
-
-### Install from source
-
-Install Python 3.10+, Node.js 18+, Manim's system dependencies, FFmpeg and LaTeX.
-Then, in the repository:
-
-```bash
-python -m venv .venv
-# Activate .venv with the command for your shell.
-pip install -e ".[dev,render]"
-npm ci
-npx codex login
-# Save TYPESAFE_API_KEY=your-key in the git-ignored .env.local file.
-math-to-manim doctor
-math-to-manim run "Explain a new mathematical or physical idea" -q h
-```
-
-The pinned Codex SDK and CLI are **0.156.1**. Astra uses **GPT-6 Astra**; TypeSafe SDK **0.7.2** calls **Jev 1.13.0**.
-Use `--effort high`, `xhigh`, or `max`; `high` is the default. `-q h` renders
-1080p at 60 fps with Manim's high quality preset. `--max-revisions 6` bounds the
-repair loop. `--no-render` stops after the checked scene and produces no film.
-
-```bash
-math-to-manim resume runs/astra/<run-id>
-math-to-manim runs
-```
-
-Astra authentication uses cached Codex login. TypeSafe uses `TYPESAFE_API_KEY`
-from the environment or repository `.env.local`. API keys are removed from
-child environments. The SDK's built-in read only permission mode applies to
-Astra author and audit sessions; the trusted Python harness writes returned artifacts
-and launches the local renderer. **Local rendering is not a container security
-boundary.** Static checks reduce accidental misuse but do not make arbitrary
-Python safe. See [the architecture](docs/ASTRA_PIPELINE.md).
-
-## Run Artifacts
-
-Each `runs/astra/<run-id>/` records the original request, accepted artifacts,
-all candidate attempts, independent reviews, SDK thread IDs, tool traces,
-render logs, sampled frames and a completion manifest. SHA-256 hashes bind
-reviews to their supplied files. Resume reuses only matching accepted stages
-and always rerenders and rechecks the film before completion.
-
-## The Morning Of January 20, 2025
-
-I started Math To Manim on the morning of January 20, 2025, the day
-[DeepSeek R1 was released](https://huggingface.co/deepseek-ai/DeepSeek-R1/commit/5a56bdbde75a16bdfbf3a8e9c852be3dfcfb8eef).
-GRPO made me wonder how far **recursive self reasoning** could go: could a model
-revisit its own argument, discover what it skipped, and explain it better?
-
-The repository was created at 11:04:50 UTC; the
-[earliest original commit](https://github.com/HarleyCoops/Math-To-Manim/commit/09a2f22ec02b0374d38373d28f76c5764a1e9a2e)
-was authored at 04:24:50 Mountain time, twenty minutes later. That intuition
-became a practical loop: discover prerequisites, teach them forward, inspect
-the result, and revise. It remains a research hypothesis about learning.
-
-Today's Astra/jev loop repairs artifacts at inference time. **It does not update
-model weights.** The separate [RL experiment](docs/PRIME_INTELLECT_RL.md) and
-[visual improvement environment](environments/m2m2_visual_improvement/README.md)
-explore learning across attempts. Neither measured training gains nor recursive
-self improvement is claimed here.
-
-[Repository screenshot](docs/assets/math-to-manim-root.png) ·
-[R1 release screenshot](docs/assets/deepseek-r1-release.png). Both were captured
-September 24, 2026, not on release morning.
-
-## Testing
-
-```bash
-python -m pytest
-python -m pytest tests/test_astra.py
-python -m pytest tests/test_argon.py tests/test_score_sde_consistency.py
-```
-
-Offline tests verify gate failures, backward repair, invalidated approvals,
-evidence references, credential filtering, source checks and resume behavior.
-Live runs have separate manifests; a passing unit suite does not prove that a
-film has been generated.
-
-## Provider Pipelines And Films
-
-The provider-specific implementations remain available under their explicit
-commands: `math-to-manim-argon` (`m2m-argon`), `math-to-manim-mythos`,
-`math-to-manim-sol`, `math-to-manim-grok`, `math-to-manim-glm`, and
-`math-to-manim-mimo`. They do not orchestrate the Astra chain. The primary
-`math-to-manim` and `m2m` commands run Astra.
-
-The [motion showcase](docs/showcase/README.md) retains the older films.
-Legacy service and pipeline references remain in [the documentation](docs/).
+---
 
 ## License
 
-[MIT](LICENSE).
+MIT — see [LICENSE](LICENSE).

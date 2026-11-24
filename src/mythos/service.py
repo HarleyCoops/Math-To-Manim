@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from mythos.charters import get_profile
 from mythos.harness import MythosHarness
 from mythos.layout import MANIFEST_FILE, iter_run_dirs, read_manifest
 from mythos.lifecycle import (
@@ -92,7 +93,12 @@ class MythosService:
     # ------------------------------------------------------------------ #
 
     def _build_harness(self, options: dict[str, Any]) -> MythosHarness:
-        return self._harness_factory(
+        factory = self._harness_factory
+        if get_profile(options.get("profile")).name == "motion" and factory is MythosHarness:
+            from mythos.motion import MotionHarness
+
+            factory = MotionHarness
+        return factory(
             command=options.get("command", DEFAULT_COMMAND),
             model=options.get("model", DEFAULT_MODEL),
             timeout=float(options.get("timeout", DEFAULT_TIMEOUT)),
@@ -123,7 +129,8 @@ class MythosService:
                 job.prompt,
                 render=bool(job.options.get("render", False)),
                 quality=str(job.options.get("quality", "l")),
-                max_repairs=int(job.options.get("max_repairs", 3)),
+                max_repairs=int(job.options.get(
+                    "max_repairs", 4 if job.options.get("profile") == "motion" else 3)),
                 run_dir_callback=_record_run_dir,
             )
             with self._lock:
@@ -146,6 +153,7 @@ class MythosService:
     def _new_job(self, prompt: str, **options: Any) -> Job:
         if not prompt or not prompt.strip():
             raise ValueError("prompt must be a non-empty string")
+        options["profile"] = get_profile(options.get("profile")).name
         job = Job(
             id=uuid.uuid4().hex[:12],
             prompt=prompt.strip(),

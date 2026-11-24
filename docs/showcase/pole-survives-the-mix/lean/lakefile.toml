@@ -1,0 +1,9 @@
+# Lake project that checks ../DelayedPoleSurvival.lean (Mathlib only).
+#   lake update && lake exe cache get
+#   lake env lean ../DelayedPoleSurvival.lean
+name = "primewindow"
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "0df444a360eaa60ab8c11dca51a86af692955474"

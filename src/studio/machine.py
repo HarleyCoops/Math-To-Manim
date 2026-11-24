@@ -62,16 +62,27 @@ def write_manifest(run_dir: Path, manifest: dict[str, Any]) -> None:
 
 def run_film(question: str, *, offline: bool = False, spec_path: Path | str | None = None,
              runtime: AgentRuntime | None = None, runner: Runner = run_command,
-             samples: int = 32, log: Callable[[str], None] = print) -> dict[str, Any]:
+             samples: int = 32, log: Callable[[str], None] = print,
+             attachments: tuple[Path | str, ...] = ()) -> dict[str, Any]:
     """Run every stage and return the final manifest. Raises nothing for a failed run."""
     question = question.strip()
     if not question:
         raise ValueError("question must not be empty")
     run_dir = create_run_dir(question)
+    images: list[Path] = []
+    if attachments:  # copied into the run folder so the run keeps its inputs
+        import shutil
+
+        (run_dir / "attachments").mkdir(exist_ok=True)
+        for source in attachments:
+            target = run_dir / "attachments" / Path(source).name
+            shutil.copyfile(source, target)
+            images.append(target)
     manifest: dict[str, Any] = {
         "studio": __version__,
         "run_id": run_dir.name,
         "question": question,
+        "attachments": [f"attachments/{p.name}" for p in images],
         "mode": "spec" if spec_path else ("offline" if offline else "agents"),
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "status": {"run": "running", "stage": STAGES[0], "outcome": None},
@@ -101,7 +112,7 @@ def run_film(question: str, *, offline: bool = False, spec_path: Path | str | No
         else:
             runtime = runtime or get_runtime()
             manifest["runtime"] = runtime.name
-            brief = direct(runtime, question, run_dir, log).model_dump()
+            brief = direct(runtime, question, run_dir, log, tuple(images)).model_dump()
         (run_dir / "brief.json").write_text(json.dumps(brief, indent=2), encoding="utf-8")
         leave("directing", started, artifact="brief.json")
 
@@ -111,7 +122,8 @@ def run_film(question: str, *, offline: bool = False, spec_path: Path | str | No
         else:
             from studio.authoring import Brief
 
-            spec = write_spec(runtime, question, Brief.model_validate(brief), run_dir, log)
+            spec = write_spec(runtime, question, Brief.model_validate(brief), run_dir, log,
+                              tuple(images))
         (run_dir / "scenespec.json").write_text(
             json.dumps(spec.model_dump(), indent=2), encoding="utf-8")
         manifest["title"] = spec.title

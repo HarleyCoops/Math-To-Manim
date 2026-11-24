@@ -1,0 +1,65 @@
+{
+  "acts": [
+    {
+      "act_number": 1,
+      "title": "Three copies, two delays, three weights",
+      "opening_question": "What is the mix?",
+      "teaches": "the_mix",
+      "narrative": "On a deck in space one curve g draws itself. It splits into three lanes. The gold copy slides right by log 2 and the blue copy by log 4; a flat zero grows behind each. The three heights stretch to -1, 3 and -2 times, and the lanes merge into one ivory curve D. The camera drifts sideways the whole time so the lanes read as depth.",
+      "headline": "The Mix That Cannot Kill a Pole",
+      "payoff": "I can say exactly what the mix does to a curve.",
+      "estimated_seconds": 42
+    },
+    {
+      "act_number": 2,
+      "title": "A pole is one pure tone",
+      "opening_question": "The transform of g has poles. What is a pole, in the curve itself?",
+      "teaches": "tone_is_pole",
+      "narrative": "The camera flies to a second deck. A coral spiral grows along the u-axis: the tone e^{rho u} of the first zeta zero. Its floor shadow is a growing wave, and g is a chord of such waves. A card shows the one integral that turns the tone into 1/(s - rho). A gold copy of the spiral slides by log 2 and is seen, along the axis, to be the old spiral times q. Three arrows -1, 3q, -2q^2 are laid head to tail; they do not close; the gap is m(rho). The ivory spiral m(rho) e^{rho u} grows around the coral one, 3.98 times larger.",
+      "headline": "A pole is one pure tone.",
+      "payoff": "A pole is a spiral in the curve, and the mix returns the same spiral times m(rho).",
+      "estimated_seconds": 62
+    },
+    {
+      "act_number": 3,
+      "title": "A delay becomes a multiplication",
+      "opening_question": "Which number is m, for every tone at once?",
+      "teaches": "symbol",
+      "narrative": "A floor board, read from above. m(s) = -1 + 3*2^{-s} - 2*4^{-s} is written in the three lane colours and the camera visits each term. With q = 2^{-s} the quadratic factors into (1 - q)(2q - 1) and the camera visits each factor: zero only at q = 1, zero only at q = 1/2.",
+      "headline": "A delay becomes\na multiplication.",
+      "payoff": "The mix can kill a tone only when q is 1 or 1/2.",
+      "estimated_seconds": 44
+    },
+    {
+      "act_number": 4,
+      "title": "Where q lives",
+      "opening_question": "So where can q be?",
+      "teaches": "annulus",
+      "narrative": "The q-plane is drawn on the floor. A gold circle of radius 2^{-Re s} shrinks from 1 to 1/2 as Re s runs from 0 to 1. THE BIG ZOOM dives into 1/2 < |q| < 1. The two kill points flash on the circles. Then the camera tilts, the imaginary part of s becomes height, and the annulus winds up into a three-turn ribbon. The kill points become two rods that touch only the edges. A white bead, the first zeta zero, rides in the middle.",
+      "headline": "Where can q be?",
+      "payoff": "Inside the strip q is strictly between the circles, and the kill points are on the circles.",
+      "estimated_seconds": 58
+    },
+    {
+      "act_number": 5,
+      "title": "How much of the tone gets through",
+      "opening_question": "The pole survives. How strong is it afterwards?",
+      "teaches": "residue_rule",
+      "narrative": "The strip itself is a floor. Each point rises to the height |m(s)|: a landscape of ridges and valleys that touches the floor only on the two walls, once every 9.06. An inset graph shows the positive floor of the valleys, 0.121 on the critical line. A white pillar marks the first zeta zero on a ridge, height 3.984. The camera rises to read the residue rule on the floor and dives into m(rho) r/(s - rho).",
+      "headline": "How much of the tone\ngets through?",
+      "payoff": "The pole stays a pole; its residue is multiplied by m(rho), which is not zero.",
+      "estimated_seconds": 50
+    },
+    {
+      "act_number": 6,
+      "title": "Blind only on the walls",
+      "opening_question": "What did the mix remove, then?",
+      "teaches": "pole_survives",
+      "narrative": "The camera pulls far back until all five stations stand in one row in space. A card gives the result in three lines: s = 0 removed, s = 1 removed, every pole with 0 < Re s < 1 survives, and names what is and is not proved.",
+      "headline": "The mix is blind\nonly on the walls.",
+      "payoff": "The mix removes two boundary modes and nothing inside the strip.",
+      "estimated_seconds": 16
+    }
+  ],
+  "through_line": "Act 1 builds the mix and ends on the worry that a cancelling sum may cancel the poles. Act 2 answers 'what is a pole?' with a spiral and shows that the mix returns the spiral times one number. Act 3 asks for that number for all tones and finds a quadratic with two roots. Act 4 asks where q can be and finds it trapped between the roots. Act 5 turns 'not zero' into a size. Act 6 says what was removed and what was not."
+}

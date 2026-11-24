@@ -55,7 +55,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
 
     runtime = None if args.offline else get_runtime(args.runtime)
     return _finish(run_film(args.question, offline=args.offline, runtime=runtime,
-                            samples=args.samples))
+                            samples=args.samples, attachments=tuple(args.attach or ())))
 
 
 def _cmd_film(args: argparse.Namespace) -> int:
@@ -116,6 +116,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     run = sub.add_parser("run", help="Answer a question with a film: agents, render, film.mp4")
     run.add_argument("question")
+    run.add_argument("--attach", action="append", metavar="IMAGE",
+                     help="image to send with the question (repeatable)")
     run.add_argument("--offline", action="store_true",
                      help="render the built-in rehearsal film; no model calls")
     run.add_argument("--runtime", default=None, choices=["local-sdk", "managed-agents"])

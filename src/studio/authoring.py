@@ -121,7 +121,7 @@ def _problems(exc: Exception) -> str:
 
 def ask(runtime: AgentRuntime, agent_file: str, step: str, prompt: str,
         parse: Callable[[dict[str, Any]], T], run_dir: Path,
-        log: Callable[[str], None] = print) -> T:
+        log: Callable[[str], None] = print, images: tuple[Path, ...] = ()) -> T:
     """Ask one agent for a JSON object until ``parse`` accepts it."""
     spec = load_agent_file(AGENTS_DIR / agent_file)
     folder = run_dir / "agents"
@@ -131,7 +131,10 @@ def ask(runtime: AgentRuntime, agent_file: str, step: str, prompt: str,
     for attempt in range(1, ATTEMPTS + 1):
         (folder / f"{step}_{attempt}_prompt.txt").write_text(current, encoding="utf-8")
         started = time.perf_counter()
-        result = runtime.run(spec, current, cwd=folder)
+        if images:  # only then, so runtimes without image support still work
+            result = runtime.run(spec, current, cwd=folder, images=images)
+        else:
+            result = runtime.run(spec, current, cwd=folder)
         reply = result.text or ""
         (folder / f"{step}_{attempt}_reply.txt").write_text(reply, encoding="utf-8")
         record = {
@@ -172,14 +175,25 @@ def _trace(run_dir: Path, record: dict[str, Any]) -> None:
         handle.write(json.dumps(record) + "\n")
 
 
+def _attached(images: tuple[Path, ...]) -> str:
+    if not images:
+        return ""
+    names = ", ".join(Path(p).name for p in images)
+    return (f"\n\nThe user attached {len(images)} image(s) ({names}); they are shown "
+            "with this message and are part of the request.\n")
+
+
 def direct(runtime: AgentRuntime, question: str, run_dir: Path,
-           log: Callable[[str], None] = print) -> Brief:
+           log: Callable[[str], None] = print, images: tuple[Path, ...] = ()) -> Brief:
     return ask(runtime, "director.md", "director",
-               f"The question the film must answer:\n\n{question}\n", parse_brief, run_dir, log)
+               f"The question the film must answer:\n\n{question}\n{_attached(images)}",
+               parse_brief, run_dir, log, images)
 
 
 def write_spec(runtime: AgentRuntime, question: str, brief: Brief, run_dir: Path,
-               log: Callable[[str], None] = print) -> SceneSpec:
-    prompt = (f"The question:\n\n{question}\n\nThe Director's brief:\n\n"
+               log: Callable[[str], None] = print,
+               images: tuple[Path, ...] = ()) -> SceneSpec:
+    prompt = (f"The question:\n\n{question}\n{_attached(images)}\nThe Director's brief:\n\n"
               f"{json.dumps(brief.model_dump(), indent=2)}\n\nWrite the SceneSpec.")
-    return ask(runtime, "spec-author.md", "spec_author", prompt, parse_spec, run_dir, log)
+    return ask(runtime, "spec-author.md", "spec_author", prompt, parse_spec, run_dir, log,
+               images)

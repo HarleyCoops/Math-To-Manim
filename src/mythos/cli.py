@@ -27,18 +27,50 @@ from mythos.settings import (
 )
 
 
-def _cmd_run(args: argparse.Namespace) -> int:
-    from mythos.harness import MythosHarness
+def _read_prompt(args: argparse.Namespace) -> str:
+    if args.brief_file:
+        if args.prompt:
+            raise SystemExit("give a prompt or --brief-file, not both")
+        # The brief goes into the chain exactly as written.
+        with open(args.brief_file, encoding="utf-8") as handle:
+            return handle.read()
+    if not args.prompt:
+        raise SystemExit("a prompt (or --brief-file) is required")
+    return args.prompt
 
+
+def _cmd_run(args: argparse.Namespace) -> int:
+    from mythos.charters import get_profile
+
+    profile = get_profile(args.profile).name
+    prompt = _read_prompt(args)
     fallbacks = (tuple(m.strip() for m in args.fallbacks.split(",") if m.strip())
                  if args.fallbacks is not None else None)
-    harness = MythosHarness(command=args.command, model=args.model,
-                            timeout=args.timeout,
-                            render_timeout=args.render_timeout,
-                            offline=args.offline,
-                            model_fallbacks=fallbacks)
-    manifest = harness.run(args.prompt, render=args.render, quality=args.quality,
-                           max_repairs=args.max_repairs)
+    options = dict(command=args.command, model=args.model, timeout=args.timeout,
+                   render_timeout=args.render_timeout, offline=args.offline,
+                   model_fallbacks=fallbacks)
+    if profile == "motion":
+        from pathlib import Path
+
+        from mythos.motion import MotionHarness
+
+        max_repairs = 4 if args.max_repairs is None else args.max_repairs
+        manifest = MotionHarness(**options).run(
+            prompt, render=args.render, quality=args.quality, max_repairs=max_repairs,
+            task_id=args.task_id, run_dir=Path(args.out) if args.out else None)
+        return 0 if manifest.get("motion_status") in {"passed", "scene_ready"} else 1
+    from mythos.harness import MythosHarness
+
+    from mythos.companions import parse_companions
+
+    try:
+        companions = parse_companions(args.companions)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from None
+    harness = MythosHarness(**options)
+    max_repairs = 3 if args.max_repairs is None else args.max_repairs
+    manifest = harness.run(prompt, render=args.render, quality=args.quality,
+                           max_repairs=max_repairs, companions=companions)
     return 1 if manifest.get("render_error") else 0
 
 
@@ -93,8 +125,20 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     run = sub.add_parser("run", help="Run the Mythos 6-agent chain on a prompt")
-    run.add_argument("prompt")
+    run.add_argument("prompt", nargs="?", default=None)
+    run.add_argument("--brief-file", default=None,
+                     help="read the prompt or brief from this file, unchanged")
+    run.add_argument("--profile", default="math", choices=["math", "motion"],
+                     help="prompt profile: math (explain an idea, default) or motion "
+                          "(meet a motion-design brief)")
+    run.add_argument("--task-id", default=None,
+                     help="motion profile: task id recorded in the trace")
+    run.add_argument("--out", default=None,
+                     help="motion profile: run directory (default: a new one under runs/mythos)")
     run.add_argument("--render", action="store_true")
+    run.add_argument("--companions", default="",
+                     help="math profile: also write companions after the film, "
+                          "comma-separated: paper (LaTeX), lean (Lean 4 + Mathlib)")
     run.add_argument("-q", "--quality", default="l", choices=list("lmhpk"))
     run.add_argument("--model", default=DEFAULT_MODEL)
     run.add_argument("--command", default=DEFAULT_COMMAND)
@@ -107,7 +151,9 @@ def build_parser() -> argparse.ArgumentParser:
                           "same CLI login (default: M2M_MODEL_FALLBACKS or "
                           "claude-opus-4-8,claude-sonnet-5; '' disables)")
     run.add_argument("--offline", action="store_true")
-    run.add_argument("--max-repairs", type=int, default=3)
+    run.add_argument("--max-repairs", type=int, default=None,
+                     help="repair attempts (default: 3 for math, 4 for motion; "
+                          "motion is capped at 4)")
     run.set_defaults(func=_cmd_run)
 
     runs = sub.add_parser("runs", help="List on-disk runs, newest first")

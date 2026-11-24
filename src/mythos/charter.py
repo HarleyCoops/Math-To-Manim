@@ -17,12 +17,15 @@ from typing import Any
 CINEMATIC_CHARTER = """\
 MYTHOS CINEMATIC CHARTER — the generated scene MUST obey all of it.
 
-1. CAMERA IS THE NARRATOR. Use ThreeDScene with the top-down stage pattern:
-   set_camera_orientation(phi=0, theta=-90*DEGREES) so the stage reads as 2D;
-   tilt into 3D only for set pieces. Move the camera with
-   self.move_camera(...) / set_camera_orientation(...); NEVER call .animate
-   on self.camera, and never use add_fixed_in_frame_mobjects for formulas you
-   intend to zoom into (keep those in world space).
+1. CAMERA IS THE NARRATOR. Use ThreeDScene. A formula that the camera zooms
+   into lies in world space on the floor (z = 0) and is read from straight
+   above with the top-down stage pattern:
+   set_camera_orientation(phi=0, theta=-90*DEGREES). Between zooms the camera
+   may rest at a small tilt (phi <= 25 degrees); tilt fully into 3D for set
+   pieces. Move the camera with self.move_camera(...) /
+   set_camera_orientation(...); NEVER call .animate on self.camera, and never
+   use add_fixed_in_frame_mobjects for formulas you intend to zoom into (keep
+   those in world space).
 2. HEADLINE BEFORE SYMBOLS. Introduce every major idea with a full-screen
    plain-language statement (font_size >= 64), hold it, fade it, THEN show
    the mathematics.
@@ -31,8 +34,9 @@ MYTHOS CINEMATIC CHARTER — the generated scene MUST obey all of it.
    move_camera(frame_center=part.get_center(), zoom=...)). Pull back to
    zoom=1 afterward so the part is seen inside the whole.
 4. CAPTION EVERYTHING. Every formula on screen gets a one-line plain-English
-   lower-third caption (italic, font_size 28-32). Max ONE headline or TWO
-   text blocks visible at once. Replace captions; never stack them.
+   lower-third caption (italic, font_size 28-32, at most 14 words). Max ONE
+   headline or TWO text blocks visible at once. Replace captions; never
+   stack them.
 5. PACING. self.wait(0.6-1.6) between beats. A viewer who knows no notation
    must be able to follow from captions and camera motion alone.
 6. PALETTE. Default house palette: background #0c0c0b, text #faf9f5,
@@ -45,6 +49,25 @@ MYTHOS CINEMATIC CHARTER — the generated scene MUST obey all of it.
 7. CRAFT. Build formulas from multi-argument MathTex so terms are
    addressable; use glow layers (stroke copies) for emphasis; LaggedStart
    for ensembles; no external assets, file IO, or network. Manim CE 0.19+.
+8. SPACE. Build one continuous 3D world, not a sequence of slides. Give each
+   idea its own station (a floor deck with its own objects), 15-20 units from
+   the next. Fly between stations with ONE move_camera call (frame_center,
+   phi, theta and zoom together) and remove the station you leave. Plan at
+   least two 3D set pieces; during a set piece the camera is never still
+   (a theta sweep, or ambient rotation at rate <= 0.16). Keep every visible
+   object within 20 units of the frame center along the view axis (the
+   ThreeDCamera focal distance): objects beyond it distort.
+9. GEOMETRY IS COMPUTED. Every 3D structure carries the mathematics: compute
+   its coordinates in the scene file from the formulas of the dossier, and
+   compute every number shown on screen from the same functions. Do not type
+   a decimal that the file could calculate.
+10. FORMULA ON A CARD. Over a 3D set piece, a formula that is not zoomed sits
+    on one fixed-in-frame card at the top of the frame, with a dark plate
+    behind it. A new card replaces the old one.
+11. HONEST PICTURES. A picture must not claim more than the mathematics. If
+    a quantity is small but not zero, show its true size and state the
+    number. Label a schematic as a schematic. State what the film does not
+    prove.
 """
 
 #: Appended to every reasoning-stage prompt so agents return machine-readable JSON.

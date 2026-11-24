@@ -1,0 +1,24 @@
+{
+  "run_id": "20261121-054622-riemann-hypothesis-2026",
+  "created_utc": "2026-11-21T05:46:22Z",
+  "model": "gemini-4-neon",
+  "backend": "operator",
+  "prompt": "Cinema Edition: 5-act 3D Manim film explaining the November 20, 2026 Riemann Hypothesis proof claims (Weil explicit formula, Stepanov's missing integer derivative, Levent Alpoege & Claude chaining sqrt(X) theta lifts in 175,000+ Lean 4 files, and Alessandro Masullo's 940-page human proof)",
+  "status": {
+    "run": "running",
+    "stage": "publish",
+    "outcome": null,
+    "error": null,
+    "updated_utc": "2026-11-21T06:01:25Z"
+  },
+  "scene_class": "RiemannThetaLiftCinema",
+  "scene_file": "C:\\Users\\chris\\.gemini\\antigravity\\scratch\\Math-To-Manim-Neon\\runs\\neon\\20261121-054622-riemann-hypothesis-2026\\neon_scene.py",
+  "video_path": "C:\\Users\\chris\\.gemini\\antigravity\\scratch\\Math-To-Manim-Neon\\runs\\neon\\20261121-054622-riemann-hypothesis-2026\\RiemannThetaLiftCinema.mp4",
+  "duration_seconds": 55.0,
+  "resolution": "1280x720",
+  "contact_sheet_path": "C:\\Users\\chris\\.gemini\\antigravity\\scratch\\Math-To-Manim-Neon\\runs\\neon\\20261121-054622-riemann-hypothesis-2026\\contact-sheet.png",
+  "gif_path": "C:\\Users\\chris\\.gemini\\antigravity\\scratch\\Math-To-Manim-Neon\\runs\\neon\\20261121-054622-riemann-hypothesis-2026\\highlights.gif",
+  "published_assets": {},
+  "tool_calls_count": 7,
+  "repairs": 0
+}
